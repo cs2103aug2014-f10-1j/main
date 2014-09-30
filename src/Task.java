@@ -8,6 +8,7 @@ public class Task {
 	private String taskName;
 	private ArrayList<String> tags = new ArrayList<String>();
 
+	
 	///////////Tasks Methods/////////////
 	public Task(String taskName) {
 		this.taskName = taskName;
@@ -53,9 +54,7 @@ public class Task {
 		if(tags.hasTag(tag)){
 			tags.remove(tag.toUpperCase());
 		}
-		else{
-			
-		}
+		else;
 	}
 	
 }
