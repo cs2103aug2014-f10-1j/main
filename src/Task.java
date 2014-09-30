@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 public class Task {
 	
-	private static final String MESSAGE_NOT_FOUND = "Not found! Please try again!";
 
 	private String taskName;
 	private Calendar deadline = null;
