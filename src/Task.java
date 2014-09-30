@@ -1,11 +1,13 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Calendar;
 
 public class Task {
 	
 	private static final String MESSAGE_NOT_FOUND = "Not found! Please try again!";
 
 	private String taskName;
+	private Calendar deadline = null;
 	private ArrayList<String> tags = new ArrayList<String>();
 
 	
@@ -20,6 +22,20 @@ public class Task {
 
 	public void setTaskName(String newTaskName) {
 		this.taskName = newTaskName;
+	}
+	
+	///////////Deadline Methods/////////////
+	public setDeadline(Calendar deadline){
+		this.deadline=deadline;
+	}
+	
+	public Calendar getDeadline(){
+		return this.deadline;
+	}
+	
+	//This one needs to be checked later
+	public boolean isDue(){
+		return deadline.before(Calendar.getInstance());
 	}
 	
 	///////////Tags Methods/////////////
