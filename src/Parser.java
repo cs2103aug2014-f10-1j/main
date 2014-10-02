@@ -1,5 +1,14 @@
-import java.util.*;
-
+//import java.util.*;
+/*
+ * Parser is used to interpret the user input to a pack of 
+ * information and later on pass it to the Logic part
+ * 
+ * Need to be modified later, since I just found out that the COMMAND_TYPE
+ * may not be useful here (don't need to specify it)
+ * 
+ * @author: Jiang Shenhao
+ * 
+ */
 public class Parser {
 
 	enum COMMAND_TYPE{
@@ -71,7 +80,7 @@ public class Parser {
 	}
 	
 	private static ParserContent wrongContent(){
-		String[] invalidInput={"invalid","input"};
+		String[] invalidInput={"invalid"};
 		ParserContent wrongMessage=new ParserContent(invalidInput);
 		return wrongMessage;
 	}
