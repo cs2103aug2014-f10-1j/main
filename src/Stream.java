@@ -25,5 +25,34 @@ public class Stream {
 	public Boolean hasTask(String task) {
 		return st.hasTask(task);
 	}
+	
+	/**
+	 * Adds a description to the task
+	 * 
+	 * @author A0118007R
+	 */
+	
+	public void setDescription(String task, String description){
+		try {
+			Task currentTask = st.getTask(task);
+			currentTask.setDescription(description);
+		} catch(Exception e){
+			
+		} 
+	}
+	
+	/**
+	 * Deletes a specific task
+	 * 
+	 * @author A0118007R
+	 */
+	
+	public void deleteTask(String task){
+		try{
+			st.deleteTask(task);
+		} catch(Exception e){
+			
+		}
+	}
 
 }
