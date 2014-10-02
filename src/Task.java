@@ -9,8 +9,7 @@ public class Task {
 	private Calendar deadline = null;
 	private ArrayList<String> tags = new ArrayList<String>();
 
-	
-	///////////Tasks Methods/////////////
+	// Tasks Methods
 	public Task(String taskName) {
 		this.taskName = taskName;
 	}
@@ -23,8 +22,8 @@ public class Task {
 		this.taskName = newTaskName;
 	}
 	
-	///////////Deadline Methods/////////////
-	public setDeadline(Calendar deadline){
+	//Deadline Methods
+	public void setDeadline(Calendar deadline){
 		this.deadline=deadline;
 	}
 	
@@ -37,7 +36,7 @@ public class Task {
 		return deadline.before(Calendar.getInstance());
 	}
 	
-	///////////Tags Methods/////////////
+	//Tags Methods
 	public void addTag(String newTag){
 		tags.add(newTag.toUpperCase());
 		Collections.sort(tags);
@@ -66,7 +65,7 @@ public class Task {
 	}
 	
 	public void deleteTag(String tag){
-		if(tags.hasTag(tag)){
+		if(hasTag(tag)){
 			tags.remove(tag.toUpperCase());
 		}
 		else;
