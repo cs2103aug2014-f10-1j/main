@@ -4,7 +4,7 @@
  * CommandKey is the identifier like "add" or "delete"
  * while commandContent is the additional info
  * 
- * @author: Jiang Shenhao
+ * @author: A0119401U
  */
 public class ParserContent {
 	private String commandKey;

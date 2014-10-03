@@ -6,7 +6,7 @@
  * Need to be modified later, since I just found out that the COMMAND_TYPE
  * may not be useful here (don't need to specify it)
  * 
- * @author: Jiang Shenhao
+ * @author: A0119401U
  * 
  */
 public class Parser {
