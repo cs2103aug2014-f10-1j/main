@@ -36,4 +36,12 @@ public class StreamAddTaskTest {
 					e.getMessage());
 		}
 	}
+	
+	@Test
+	public void deleteTest() throws Exception{
+		str.initialize();
+		str.addTask("Submit CE2");
+		str.deleteTask("Submit CE2");
+		assertEquals(str.hasTask("Submit CE2"), false);
+	}
 }
