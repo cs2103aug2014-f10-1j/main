@@ -3,9 +3,9 @@ import java.util.HashMap;
 
 
 public class FileIO {
-	public static HashMap<String, String> load() throws IOException {
+	public static HashMap<String, Task> load() throws IOException {
 		return null;
 	}
-	public static void save(HashMap<String, String> allTasks) throws IOException {
+	public static void save(HashMap<String, Task> allTasks) throws IOException {
 	}
 }
