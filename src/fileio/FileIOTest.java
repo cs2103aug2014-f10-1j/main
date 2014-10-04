@@ -23,14 +23,15 @@ import stream.Task;
 
 public class FileIOTest {
 
-	private static final String FAIL_EXCEPTION_MESSAGE = "%$1s, caused by %$2s - %$3s";
+	private static final String FAIL_EXCEPTION_MESSAGE = "%1$s, caused by %2$s - %3$s";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
+	private static final String TEST_SAVE_LOCATION = "streamtest.json";
 	private Task task1, task2;
 	private HashMap<String, Task> map;
 
 	@Before 
 	public void setUp() throws Exception {
-		FileIO.SAVE_LOCATION = "streamtest.json";
+		FileIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		File saveFile = new File(FileIO.SAVE_LOCATION);
 		if (!saveFile.createNewFile()) {
 			throw new IOException("Test file could not be created.");
@@ -52,11 +53,11 @@ public class FileIOTest {
 		task2.addTag("epic");
 		task2.addTag("popular");
 		task2.addTag("urgent");
-		
+
 		map = new HashMap<String, Task>();
 		map.put(task1.getTaskName(), task1);
 		map.put(task2.getTaskName(), task2);
-		
+
 
 		String fileContent = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
@@ -70,7 +71,6 @@ public class FileIOTest {
 			throw new IOException("Check file could not be created.");
 		}
 	}
-
 	@After 
 	public void tearDown() throws Exception {
 		new File(FileIO.SAVE_LOCATION).delete();
@@ -96,14 +96,16 @@ public class FileIOTest {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		}
 	}
-	
 	@Test
 	public void loadTest() {
 		String testMessage = "Load map from file";
+		FileIO.SAVE_LOCATION = CHECK_FILE;
 		try {
 			assertEquals(testMessage, map, FileIO.load());
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
+		} finally {
+			FileIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		}
 	}
 
@@ -163,7 +165,7 @@ public class FileIOTest {
 	private void testOneFormatCalendar(String testMessage, String expected, Calendar calendar) {
 		assertEquals(testMessage, expected, FileIO.formatDate(calendar));
 	}
-	
+
 	private String fileToString(File file) throws IOException {
 		StringBuilder stringBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {

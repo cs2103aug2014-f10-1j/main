@@ -29,9 +29,12 @@ public class FileIO {
 
 	public static HashMap<String, Task> load() throws StreamIOException {
 		JSONArray tasksJson = loadFromFile(new File(SAVE_LOCATION));
-		return jsonToMap(tasksJson);
+		if (tasksJson == null) {
+			return null;
+		} else {
+			return jsonToMap(tasksJson);
+		}
 	}
-
 	public static void save(HashMap<String, Task> allTasks) throws StreamIOException {
 		JSONArray tasksJson = mapToJson(allTasks);
 		writeToFile(new File(SAVE_LOCATION), tasksJson);
@@ -55,7 +58,11 @@ public class FileIO {
 				stringBuilder.append(line).append("\n");
 			}
 			String mapJsonString = stringBuilder.toString().trim();
-			return new JSONArray(mapJsonString);
+			if (mapJsonString.isEmpty()) {
+				return null;
+			} else {
+				return new JSONArray(mapJsonString);
+			}
 		} catch (IOException e) {
 			throw new StreamIOException("Could not load file - " + e.getMessage());
 		} catch (JSONException e) {
