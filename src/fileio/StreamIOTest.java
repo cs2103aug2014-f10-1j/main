@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import stream.Task;
 
+//@author A0096529N
 public class StreamIOTest {
 
 	private static final String FAIL_EXCEPTION_MESSAGE = "%1$s, caused by %2$s - %3$s";
@@ -102,7 +103,7 @@ public class StreamIOTest {
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		} catch (IOException e) {
-			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "IOException", e.getMessage()));
 		}
 	}
 	@Test
