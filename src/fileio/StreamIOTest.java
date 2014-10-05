@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import stream.Task;
 
-public class FileIOTest {
+public class StreamIOTest {
 
 	private static final String FAIL_EXCEPTION_MESSAGE = "%1$s, caused by %2$s - %3$s";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
@@ -32,15 +32,15 @@ public class FileIOTest {
 
 	@Before 
 	public void setUp() throws Exception {
-		FileIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
-		File saveFile = new File(FileIO.SAVE_LOCATION);
+		StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
+		File saveFile = new File(StreamIO.SAVE_LOCATION);
 		if (!saveFile.createNewFile()) {
 			throw new IOException("Test file could not be created - " + saveFile.getAbsolutePath());
 		}
 
 		task1 = new Task("Code Jarvis");
 		Calendar calendar = Calendar.getInstance();
-		Date date = FileIO.dateFormat.parse("20410719000000");
+		Date date = StreamIO.dateFormat.parse("20410719000000");
 		calendar.setTime(date);		// instead of Calendar.set(), for loadTest, serialized calendar.
 		task1.setDeadline(calendar);
 		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
@@ -49,7 +49,7 @@ public class FileIOTest {
 
 		task2 = new Task("Build IoT");
 		Calendar calendar2 = Calendar.getInstance();
-		Date date2 = FileIO.dateFormat.parse("20180101123456");
+		Date date2 = StreamIO.dateFormat.parse("20180101123456");
 		calendar2.setTime(date2);	// instead of Calendar.set(), for loadTest, serialized calendar.
 		task2.setDeadline(calendar2);
 		task2.setDescription("Internet of Things");
@@ -76,7 +76,7 @@ public class FileIOTest {
 	}
 	@After 
 	public void tearDown() throws Exception {
-		new File(FileIO.SAVE_LOCATION).delete();
+		new File(StreamIO.SAVE_LOCATION).delete();
 		new File(CHECK_FILE).delete();
 	}
 
@@ -90,8 +90,8 @@ public class FileIOTest {
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
 		try {
-			File saveFile = new File(FileIO.SAVE_LOCATION);
-			FileIO.save(map);
+			File saveFile = new File(StreamIO.SAVE_LOCATION);
+			StreamIO.save(map);
 			assertEquals(testMessage, expectedFileContent, fileToString(saveFile));
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
@@ -102,17 +102,17 @@ public class FileIOTest {
 	@Test
 	public void loadTest() {
 		String testMessage = "Load map from file";
-		FileIO.SAVE_LOCATION = CHECK_FILE;
+		StreamIO.SAVE_LOCATION = CHECK_FILE;
 		try {
 			String expectedMap = serializeTaskMap(map);
-			String actualMap = serializeTaskMap(FileIO.load());
+			String actualMap = serializeTaskMap(StreamIO.load());
 			System.out.println(expectedMap);
 			System.out.println(actualMap);
 			assertEquals(testMessage, expectedMap, actualMap);
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		} finally {
-			FileIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
+			StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		}
 	}
 
@@ -126,7 +126,7 @@ public class FileIOTest {
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
 		try {
-			assertEquals(testMessage, expectedJsonString, FileIO.mapToJson(map).toString());
+			assertEquals(testMessage, expectedJsonString, StreamIO.mapToJson(map).toString());
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		}
@@ -145,7 +145,7 @@ public class FileIOTest {
 	}
 	private void testOneTaskToJson(String testMessage, String expected, Task task) {
 		try {
-			assertEquals(testMessage, expected, FileIO.taskToJson(task).toString());
+			assertEquals(testMessage, expected, StreamIO.taskToJson(task).toString());
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		}
@@ -167,10 +167,10 @@ public class FileIOTest {
 		testOneFormatCalendar("Format calendar 23:59:59 24/12/2014", "20141224235959", calendar);
 	}
 	private void testOneFormatDate(String testMessage, String expected, Date date) {
-		assertEquals(testMessage, expected, FileIO.formatDate(date));
+		assertEquals(testMessage, expected, StreamIO.formatDate(date));
 	}
 	private void testOneFormatCalendar(String testMessage, String expected, Calendar calendar) {
-		assertEquals(testMessage, expected, FileIO.formatDate(calendar));
+		assertEquals(testMessage, expected, StreamIO.formatDate(calendar));
 	}
 
 	private String fileToString(File file) throws IOException {

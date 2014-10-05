@@ -23,7 +23,7 @@ import stream.Task;
  * @author Steven Khong
  *
  */
-public class FileIO {
+public class StreamIO {
 
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
 	static String SAVE_LOCATION = "stream.json";
