@@ -20,6 +20,25 @@ import stream.Task;
 
 //@author A0096529N
 /**
+ * <h1>StreamIO - Stream file IO component</h1>
+ * 
+ * <p>File management component responsible for 
+ * saving to and loading from storage file 
+ * containing application state.</p>
+ * 
+ * <h2>Storage Format</h2>
+ * <p>Application state is serialized into JSON
+ * format.</p>
+ * 
+ * <h2>Storage Location</h2>
+ * <p>Save location defaults to "stream.json", and
+ * may not be modified.</p>
+ * 
+ * <h2>API</h2>
+ * StreamIO.save(HashMap&lt;String, Task&gt;) <br/>
+ * StreamIO.load()
+ * <p>Refer to method documentation for details.</p>
+ * 
  * @author Steven Khong
  *
  */
@@ -28,6 +47,17 @@ public class StreamIO {
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
 	static String SAVE_LOCATION = "stream.json";
 
+	/**
+	 * <p>Reads and inflate the contents of serialized 
+	 * storage file into HashMap<String, Task> object.</p>
+	 * 
+	 * @return <strong>HashMap</strong> of tasks if 
+	 * the storage file is present, or <strong>null</strong> 
+	 * if there is no storage file found.
+	 * @throws StreamIOException when JSON conversion fail due
+	 * file corruption or IO failures when loading/accessing
+	 * storage file.
+	 */
 	public static HashMap<String, Task> load() throws StreamIOException {
 		JSONArray tasksJson = loadFromFile(new File(SAVE_LOCATION));
 		if (tasksJson == null) {
@@ -36,6 +66,18 @@ public class StreamIO {
 			return jsonToMap(tasksJson);
 		}
 	}
+	
+	
+	/**
+	 * <p>Serializes and write the contents 
+	 * of HashMap<String, Task> object into 
+	 * storage file.</p>
+	 * 
+	 * @param allTasks - map of all the tasks
+	 * @throws StreamIOException when JSON conversion fail due
+	 * file corruption or IO failures when loading/accessing
+	 * storage file.
+	 */
 	public static void save(HashMap<String, Task> allTasks) throws StreamIOException {
 		JSONArray tasksJson = mapToJson(allTasks);
 		writeToFile(new File(SAVE_LOCATION), tasksJson);
