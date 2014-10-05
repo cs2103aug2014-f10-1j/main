@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +25,7 @@ import stream.Task;
  */
 public class FileIO {
 
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
+	static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
 	static String SAVE_LOCATION = "stream.json";
 
 	public static HashMap<String, Task> load() throws StreamIOException {
@@ -77,8 +78,17 @@ public class FileIO {
 		}
 		return mapJson;
 	}
-	static HashMap<String, Task> jsonToMap(JSONArray tasksJson) {
-		return null;	//TODO implement method
+	static HashMap<String, Task> jsonToMap(JSONArray tasksJson) throws StreamIOException {
+		try {
+			HashMap<String, Task> map = new HashMap<String, Task>();
+			for (int i=0; i<tasksJson.length(); i++) {
+				Task task = jsonToTask(tasksJson.getJSONObject(i));
+				map.put(task.getTaskName(), task);
+			}
+			return map;
+		} catch (JSONException e) {
+			throw new StreamIOException("JSON conversion failed - " + e.getMessage());
+		}
 	}
 	static JSONObject taskToJson(Task task) throws StreamIOException {
 		try {
@@ -92,8 +102,25 @@ public class FileIO {
 			throw new StreamIOException("JSON conversion failed - " + e.getMessage());
 		}
 	}
-	static Task jsonToTask(JSONObject taskJson) {
-		return null;	//TODO implement method
+	static Task jsonToTask(JSONObject taskJson) throws StreamIOException {
+		try {
+			String taskName = taskJson.getString(TaskKey.NAME);
+			Task task = new Task(taskName);
+			task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
+			
+			Calendar deadline = Calendar.getInstance();
+			Date deadlineDate = dateFormat.parse(taskJson.getString(TaskKey.DEADLINE));
+			deadline.setTime(deadlineDate);
+			task.setDeadline(deadline);
+			
+			JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
+			for (int i=0; i<tagsJson.length(); i++) {
+				task.addTag(tagsJson.getString(i));
+			}
+			return task;
+		} catch (JSONException | ParseException e) {
+			throw new StreamIOException("JSON conversion failed - " + e.getMessage());
+		}
 	}
 	static String formatDate(Calendar calendar) {
 		if (calendar == null) {

@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,12 +35,13 @@ public class FileIOTest {
 		FileIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		File saveFile = new File(FileIO.SAVE_LOCATION);
 		if (!saveFile.createNewFile()) {
-			throw new IOException("Test file could not be created.");
+			throw new IOException("Test file could not be created - " + saveFile.getAbsolutePath());
 		}
 
 		task1 = new Task("Code Jarvis");
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(2041, 6, 19, 0, 0, 0);
+		Date date = FileIO.dateFormat.parse("20410719000000");
+		calendar.setTime(date);		// instead of Calendar.set(), for loadTest, serialized calendar.
 		task1.setDeadline(calendar);
 		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
 		task1.addTag("epic");
@@ -47,7 +49,8 @@ public class FileIOTest {
 
 		task2 = new Task("Build IoT");
 		Calendar calendar2 = Calendar.getInstance();
-		calendar2.set(2018, 0, 1, 12, 34, 56);
+		Date date2 = FileIO.dateFormat.parse("20180101123456");
+		calendar2.setTime(date2);	// instead of Calendar.set(), for loadTest, serialized calendar.
 		task2.setDeadline(calendar2);
 		task2.setDescription("Internet of Things");
 		task2.addTag("epic");
@@ -101,7 +104,11 @@ public class FileIOTest {
 		String testMessage = "Load map from file";
 		FileIO.SAVE_LOCATION = CHECK_FILE;
 		try {
-			assertEquals(testMessage, map, FileIO.load());
+			String expectedMap = serializeTaskMap(map);
+			String actualMap = serializeTaskMap(FileIO.load());
+			System.out.println(expectedMap);
+			System.out.println(actualMap);
+			assertEquals(testMessage, expectedMap, actualMap);
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		} finally {
@@ -183,5 +190,9 @@ public class FileIOTest {
 			}
 			fos.write(content.getBytes());
 		}
+	}
+	private String serializeTaskMap(HashMap<String, Task> taskMap) {
+		JSONObject taskMapJson = new JSONObject(taskMap);
+		return taskMapJson.toString();
 	}
 }
