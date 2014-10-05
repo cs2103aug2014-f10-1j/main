@@ -25,6 +25,10 @@ import stream.Task;
 public class StreamIOTest {
 
 	private static final String FAIL_EXCEPTION_MESSAGE = "%1$s, caused by %2$s - %3$s";
+	private static final String CREATEFILE_EXCEPTION_MESSAGE = "Test file could not be created "
+			+ "- %1$s\nDelete the file if already present.";
+	private static final String CHECKFILE_EXCEPTION_MESSAGE = "Check file could not be created "
+			+ "- %1$s\nDelete the file if already present.";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
 	private Task task1, task2;
@@ -35,7 +39,7 @@ public class StreamIOTest {
 		StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		File saveFile = new File(StreamIO.SAVE_LOCATION);
 		if (!saveFile.createNewFile()) {
-			throw new IOException("Test file could not be created - " + saveFile.getAbsolutePath());
+			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE, saveFile.getAbsolutePath()));
 		}
 
 		task1 = new Task("Code Jarvis");
@@ -68,10 +72,12 @@ public class StreamIOTest {
 				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
+		
+		File checkFile = new File(CHECK_FILE);
 		try {
-			stringToFile(new File(CHECK_FILE), fileContent);
+			stringToFile(checkFile, fileContent);
 		} catch (IOException e) {
-			throw new IOException("Check file could not be created.");
+			throw new IOException(String.format(CHECKFILE_EXCEPTION_MESSAGE, e.getMessage()), e);
 		}
 	}
 	@After 
