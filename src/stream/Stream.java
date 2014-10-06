@@ -1,4 +1,7 @@
 package stream;
+
+import java.util.List;
+
 public class Stream {
 
 	private static StreamObject st;
@@ -65,6 +68,19 @@ public class Stream {
 		} catch(Exception e){
 			
 		}
+	}
+	
+	//@author A0096529N	
+	/**
+	 * Search for tasks with specified key phrase, 
+	 * in the task name, description and tags.
+	 * 
+	 * @return tasks - a list of tasks containing 
+	 * the key phrase.
+	 * @author Steven Khong
+	 */
+	public List<Task> search(String keyphrase) {
+		return st.findTasks(keyphrase);
 	}
 	
 	public static void main(String[] args){

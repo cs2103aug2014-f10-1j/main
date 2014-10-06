@@ -72,7 +72,35 @@ public class StreamObject {
 	 * @author Steven Khong
 	 */
 	public List<Task> findTasks(String keyphrase) {
+		// Split key phrase into keywords
+		String[] keywords  = null;
+		if (keyphrase.contains(" ")) {
+			keywords = keyphrase.split(" ");
+		} else {
+			keywords = new String[] {keyphrase};
+		}
+		
 		List<Task> tasks = new ArrayList<Task>();
+		for (String key : allTasks.keySet()) {
+			Task task = allTasks.get(key);
+			
+			// check for matches between keywords and tags
+			if (task.hasTag(keywords)) {
+				tasks.add(task);
+				continue;
+			}
+			// check if task description contains key phrase
+			if (task.getDescription().contains(keyphrase)) {
+				tasks.add(task);
+				continue;
+			}
+			// check if task name contains key phrase
+			if (task.getTaskName().contains(keyphrase)) {
+				tasks.add(task);
+				continue;
+			}
+		}
+		
 		return tasks;
 	}
 }
