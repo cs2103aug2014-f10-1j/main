@@ -1,3 +1,4 @@
+package parser;
 
 /*
  * Content of the parser to be used by the Logic Part

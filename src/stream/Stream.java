@@ -1,3 +1,4 @@
+package stream;
 public class Stream {
 
 	private static StreamObject st;

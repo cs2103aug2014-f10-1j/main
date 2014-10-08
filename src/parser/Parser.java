@@ -1,3 +1,4 @@
+package parser;
 //import java.util.*;
 /*
  * Parser is used to interpret the user input to a pack of 
