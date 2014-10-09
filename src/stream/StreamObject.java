@@ -18,44 +18,72 @@ public class StreamObject {
 		this.allTasks = new HashMap<String, Task>();
 	}
 
-	public void addTask(String newTask) throws ModificationException {
-		if (this.allTasks.containsKey(newTask)) {
+	/**
+	 * Adds a new task to StreamObject
+	 * 
+	 * <p>Precondition: newTaskName != null</p>
+	 * 
+	 * @param newTaskName name of the new task
+	 * @throws ModificationException if task with 
+	 * newTaskName is already present.
+	 */
+	public void addTask(String newTaskName) throws ModificationException {
+		if (this.allTasks.containsKey(newTaskName)) {
 			throw new ModificationException(String.format(ERROR_TASK_ALREADY_EXISTS, 
-					newTask));
+					newTaskName));
 		} else {
-			this.allTasks.put(newTask, new Task(newTask));
+			this.allTasks.put(newTaskName, new Task(newTaskName));
 		}
 	}
 
-	public Boolean hasTask(String task) {
-		return this.allTasks.containsKey(task);
+	/**
+	 * Checks if a specific task is present
+	 * 
+	 * <p>Precondition: taskName != null</p>
+	 * 
+	 * @param taskName name of task to check for
+	 * @return true if task with the given
+	 * taskName is found.
+	 */
+	public Boolean hasTask(String taskName) {
+		return this.allTasks.containsKey(taskName);
 	}
 
+	//@author A0118007R
 	/**
 	 * Gets a specific task
 	 * 
-	 * @author A0118007R
+	 * <p>Precondition: taskName != null</p>
+	 * 
+	 * @param taskName name of task to be returned
+	 * @throws ModificationException if taskName given
+	 * does not return a match, i.e. task not found
 	 */
-	public Task getTask(String task) throws ModificationException{
-		if (hasTask(task)){
-			return allTasks.get(task);
+	public Task getTask(String taskName) throws ModificationException{
+		if (hasTask(taskName)){
+			return allTasks.get(taskName);
 		} else {
 			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
-					task));
+					taskName));
 		}
 	}
 
+	//@author A0118007R
 	/**
 	 * Deletes a specific task
 	 * 
-	 * @author A0118007R
+	 * <p>Precondition: taskName != null</p>
+	 * 
+	 * @param taskName name of task to be deleted
+	 * @throws ModificationException if taskName given
+	 * does not return a match, i.e. task not found
 	 */
-	public void deleteTask(String task) throws ModificationException {
-		if(hasTask(task)){
-			allTasks.remove(task);
+	public void deleteTask(String taskName) throws ModificationException {
+		if(hasTask(taskName)){
+			allTasks.remove(taskName);
 		} else {
 			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
-					task));
+					taskName));
 		}
 	}
 
@@ -63,11 +91,12 @@ public class StreamObject {
 	/**
 	 * Modify a task's deadline
 	 * 
-	 * <p>Precondition: deadline != null</p>
+	 * <p>Precondition: taskName, deadline != null</p>
 	 * 
 	 * @param taskName to be modified
 	 * @param deadline to be set in the task
-	 * @throws ModificationException 
+	 * @throws ModificationException if taskName given
+	 * does not return a match, i.e. task not found
 	 */
 	public void changeDeadline(String taskName, Calendar deadline) 
 			throws ModificationException {
@@ -83,7 +112,7 @@ public class StreamObject {
 	/**
 	 * Remove the given tag from a specified task
 	 * 
-	 * <p>Precondition: tag != null</p>
+	 * <p>Precondition: taskName, tag != null</p>
 	 * 
 	 * @param taskName to be modified
 	 * @param tag to be removed from the task
@@ -92,11 +121,7 @@ public class StreamObject {
 	 */
 	public void removeTag(String taskName, String tag) 
 			throws ModificationException {
-		Task task = allTasks.get(taskName);
-		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
-					taskName));
-		}
+		Task task = getTask(taskName);
 		task.deleteTag(tag);
 	}
 	
@@ -105,7 +130,7 @@ public class StreamObject {
 	 * Add the given tag from a specified task. Does
 	 * nothing if tag already present.
 	 * 
-	 * <p>Precondition: tag != null</p>
+	 * <p>Precondition: taskName, tag != null</p>
 	 * 
 	 * @param taskName to be modified
 	 * @param tag to be added to the task
@@ -114,11 +139,7 @@ public class StreamObject {
 	 */
 	public void addTag(String taskName, String tag) 
 			throws ModificationException {
-		Task task = allTasks.get(taskName);
-		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
-					taskName));
-		}
+		Task task = getTask(taskName);
 		if (!task.hasTag(tag)) {
 			task.addTag(tag);
 			// TODO update UI job done
@@ -129,7 +150,7 @@ public class StreamObject {
 	/**
 	 * Change task name of the task
 	 * 
-	 * <p>Precondition: newName != null</p>
+	 * <p>Precondition: taskName, newName != null</p>
 	 * 
 	 * @param taskName to be modified
 	 * @param newTaskName name to be set to the task
@@ -139,11 +160,8 @@ public class StreamObject {
 	 */
 	public void updateTaskName(String taskName, String newTaskName) 
 			throws ModificationException {
-		Task task = allTasks.get(taskName);
-		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
-					taskName));
-		} else if (allTasks.containsKey(newTaskName)) {
+		Task task = getTask(taskName);
+		if (allTasks.containsKey(newTaskName)) {
 			throw new ModificationException(String.format(ERROR_NEW_TASK_NAME_NOT_AVAILABLE, 
 					newTaskName));
 		}
@@ -164,7 +182,7 @@ public class StreamObject {
 	 * <p>Precondition: keyphrase != null</p>
 	 * 
 	 * @return tasks - a list of tasks containing 
-	 * the key phrase.
+	 * the key phrase, empty list if nothing matches
 	 * @author Steven Khong
 	 */
 	public List<Task> findTasks(String keyphrase) {
