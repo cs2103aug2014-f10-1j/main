@@ -172,9 +172,10 @@ public class Stream {
 				
 			case DEL:
 				printReceivedCommand("DELETE");
-				
+				int taskIndex = Integer.parseInt(content);
+				String taskName = st.getTaskNames().get(taskIndex - 1);
 				try {
-					deleteTask(content);
+					deleteTask(taskName);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -183,7 +184,8 @@ public class Stream {
 			case DESC:
 				printReceivedCommand("DESCRIBE");
 				contents = content.split(" ", 2);
-				String taskName = contents[0];
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = st.getTaskNames().get(taskIndex - 1);
 				String description = contents [1];
 				
 				try {
@@ -196,7 +198,8 @@ public class Stream {
 			case MODIFY:
 				printReceivedCommand("MODIFY");
 				contents = content.split(" ", 2);
-				String oldTaskName = contents[0];
+				taskIndex = Integer.parseInt(contents[0]);
+				String oldTaskName = st.getTaskNames().get(taskIndex - 1);
 				String newTaskName = contents[1];
 				
 				try {
@@ -208,10 +211,15 @@ public class Stream {
 			
 			case VIEW:
 				printReceivedCommand("VIEW");
-				String nameOfTask = content;
+				taskIndex = Integer.parseInt(content);
+				String nameOfTask = st.getTaskNames().get(taskIndex - 1);
 				printDetails(nameOfTask);
 				break;
 			
+			case CLEAR:
+				printReceivedCommand("CLEAR");
+				initialize();
+				break;
 			case EXIT:
 				printReceivedCommand("EXIT");
 				System.out.println("Thank you for using this internal release of Stream[BETA]!");
