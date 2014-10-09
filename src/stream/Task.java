@@ -106,6 +106,7 @@ public class Task {
 	 * Checks if there is a match between a list
 	 * of given keywords and the tags on this task.
 	 * 
+	 * <p>Precondition: tags != null</p>
 	 * 
 	 * @param tags list of keywords
 	 * @return true if there is a match, false otherwise.

@@ -74,6 +74,11 @@ public class Stream {
 	/**
 	 * Search for tasks with specified key phrase, 
 	 * in the task name, description and tags.
+	 * <p>Key phrase will be broken down into key
+	 * words (by splitting with space character).
+	 * Key words will be used to search in the tags.</p>
+	 * 
+	 * <p>Precondition: keyphrase != null</p>
 	 * 
 	 * @return tasks - a list of tasks containing 
 	 * the key phrase.

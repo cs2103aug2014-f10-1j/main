@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+//@author A0096529N
 public class StreamSearchTest {
 
 	private StreamObject streamObject;
