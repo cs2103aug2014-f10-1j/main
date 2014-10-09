@@ -163,6 +163,7 @@ public class Stream {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				break;
 				
 			case DEL:
 				printReceivedCommand("DELETE");
@@ -172,6 +173,7 @@ public class Stream {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				break;
 			
 			case DESC:
 				printReceivedCommand("DESCRIBE");
@@ -184,6 +186,7 @@ public class Stream {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				break;
 			
 			case MODIFY:
 				printReceivedCommand("MODIFY");
@@ -196,12 +199,18 @@ public class Stream {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				break;
 			
 			case VIEW:
 				printReceivedCommand("VIEW");
 				String nameOfTask = content;
 				printDetails(nameOfTask);
-				
+				break;
+			
+			case EXIT:
+				printReceivedCommand("EXIT");
+				System.out.println("Thank you for using this internal release of Stream[BETA]!");
+				System.exit(0);
 			default:
 				System.out
 						.println("Unknown command with contents : " + content);

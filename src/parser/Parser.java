@@ -13,7 +13,7 @@ package parser;
 public class Parser {
 
 	public enum CommandType {
-		ADD, DEL, DESC, VIEW, MODIFY, ERROR;
+		ADD, DEL, DESC, VIEW, MODIFY, EXIT, ERROR;
 	}
 	
 	public static ParserContent interpretCommand(String command){
@@ -42,6 +42,9 @@ public class Parser {
 			case "mod":
 			case "modify":
 				commandKey = CommandType.MODIFY;
+				return newContent(commandKey, contents);
+			case "exit":
+				commandKey = CommandType.EXIT;
 				return newContent(commandKey, contents);
 			default:
 				commandKey = CommandType.ERROR;
