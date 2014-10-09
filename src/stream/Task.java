@@ -11,6 +11,7 @@ public class Task {
 	private String taskDescription;
 	
 	private final String ERROR_NO_DESCRIPTION =  "Error: The task \"%1$s\" does not have a description.";
+	private final String ERROR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
 
 	private Calendar deadline = null;
 	private ArrayList<String> tags;
@@ -31,6 +32,14 @@ public class Task {
 		this.taskName = newTaskName;
 	}
 	
+	//author A0118007R
+	/**change the name of a task
+	 * 
+	 */
+	
+	public void changeTaskName(String name){
+		this.setTaskName(name);
+	}
 
 	/**
 	 * The methods below are related to set descriptions to a specified task
@@ -50,7 +59,9 @@ public class Task {
 			return currentDescription;
 		}
 	}
-
+	
+	//author Shenhao
+	
 	//Deadline Methods
 	public void setDeadline(Calendar deadline){
 		this.deadline=deadline;
@@ -96,8 +107,9 @@ public class Task {
 	public void deleteTag(String tag){
 		if(hasTag(tag)){
 			tags.remove(tag.toUpperCase());
+		} else {
+			System.out.println(String.format(ERROR_TAG_DOES_NOT_EXIST, tag));
 		}
-		else;
 	}
 	
 

@@ -31,6 +31,7 @@ public class Stream {
 		return st.hasTask(task);
 	}
 	
+	//author A0118007R
 	/**
 	 * Adds a description to the task
 	 * 
@@ -88,8 +89,10 @@ public class Stream {
 		return st.findTasks(keyphrase);
 	}
 	
+	//author A0118007R
 	public static void main(String[] args){
 		System.out.println(MESSAGE_WELCOME);
+		
 	}
 
 }
