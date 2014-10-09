@@ -96,9 +96,6 @@ public class Stream {
 	//author A0118007R
 	public static void main(String[] args){
 		System.out.println(MESSAGE_WELCOME);
-<<<<<<< HEAD
-		
-=======
 		String input = "add TaskName";
 		ParserContent parsedContent = Parser.interpretCommand(input);
 		CommandType command = parsedContent.getCommandKey();
@@ -109,7 +106,6 @@ public class Stream {
 		default:
 			System.out.println("Unknown command with contents : " + content);
 		}
->>>>>>> f62b7ed062c77458494d3eedb486e240a34dcd64
 	}
 
 }
