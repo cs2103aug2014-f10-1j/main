@@ -2,6 +2,10 @@ package stream;
 
 import java.util.List;
 
+import parser.Parser;
+import parser.Parser.CommandType;
+import parser.ParserContent;
+
 public class Stream {
 
 	private static StreamObject st;
@@ -90,6 +94,16 @@ public class Stream {
 	
 	public static void main(String[] args){
 		System.out.println(MESSAGE_WELCOME);
+		String input = "add TaskName";
+		ParserContent parsedContent = Parser.interpretCommand(input);
+		CommandType command = parsedContent.getCommandKey();
+		String content = parsedContent.getCommandContent();
+		switch(command) {
+		case ADD:
+			System.out.println("Command received [ADD] with contents : " + content);
+		default:
+			System.out.println("Unknown command with contents : " + content);
+		}
 	}
 
 }
