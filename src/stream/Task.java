@@ -101,4 +101,21 @@ public class Task {
 	}
 	
 
+	//@author A0096529N
+	/**
+	 * Checks if there is a match between a list
+	 * of given keywords and the tags on this task.
+	 * 
+	 * 
+	 * @param tags list of keywords
+	 * @return true if there is a match, false otherwise.
+	 */
+	public boolean hasTag(String[] tags) {
+		for (String tag : tags) {
+			if (this.hasTag(tag)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
