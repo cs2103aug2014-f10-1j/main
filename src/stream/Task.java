@@ -13,13 +13,14 @@ public class Task {
 	private final String ERROR_NO_DESCRIPTION =  "Error: The task \"%1$s\" does not have a description.";
 
 	private Calendar deadline = null;
-	private ArrayList<String> tags = new ArrayList<String>();
+	private ArrayList<String> tags;
 
 
 	// Tasks Methods
 	public Task(String taskName) {
 		this.taskName = taskName;
 		this.taskDescription = null;
+		this.tags = new ArrayList<String>();
 	}
 
 	public String getTaskName() {
