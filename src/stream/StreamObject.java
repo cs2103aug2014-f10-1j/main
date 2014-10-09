@@ -2,14 +2,10 @@ package stream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import fileio.StreamIO;
 import fileio.StreamIOException;
-
-
 
 public class StreamObject {
 
@@ -86,16 +82,12 @@ public class StreamObject {
 		
 		try {
 			allTasks = StreamIO.load();
-			 Iterator taskIterator = allTasks.entrySet().iterator();
-			    while (taskIterator.hasNext()) {
-			        Map.Entry currentEntry = (Map.Entry)taskIterator.next();
-			        String taskName = (String)currentEntry.getKey();
-			        taskList.add(taskName); 
-			        taskIterator.remove(); 
-			    }
 		} catch (StreamIOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// No previous state - first use.
+		}
+		
+		for (String key:allTasks.keySet()) {
+			taskList.add(key);
 		}
 		
 	}
