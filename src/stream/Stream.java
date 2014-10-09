@@ -1,6 +1,8 @@
 package stream;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import parser.Parser;
 import parser.Parser.CommandType;
@@ -11,7 +13,7 @@ public class Stream {
 	private static StreamObject st;
 	private static final String MESSAGE_WELCOME = "Welcome to Stream!";
 
-	public void initialize() {
+	public static void initialize() {
 		st = new StreamObject();
 	}
 
@@ -21,7 +23,7 @@ public class Stream {
 	 * @author Wilson Kurniawan
 	 * @command must include the new task to be added
 	 */
-	public void addTask(String newTask) throws Exception {
+	public static void addTask(String newTask) throws Exception {
 		st.addTask(newTask);
 	}
 
@@ -31,80 +33,178 @@ public class Stream {
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-	public Boolean hasTask(String task) {
+	public static Boolean hasTask(String task) {
 		return st.hasTask(task);
 	}
+
+	// author A0118007R
 	
-	//author A0118007R
+	public static void printDetails(String task){
+		try {
+			Task currentTask = st.getTask(task);
+			currentTask.printTaskDetails();
+		} catch (Exception e){
+			
+		}
+	}
+	
+	public static void changeName(String oldName, String newName){
+		try {
+			st.updateTaskName(oldName, newName);
+		} catch (Exception e) {
+
+		}
+	}
+
 	/**
 	 * Adds a description to the task
 	 * 
 	 * @author A0118007R
 	 */
-	
-	public void setDescription(String task, String description){
+	public static void setDescription(String task, String description) {
 		try {
 			Task currentTask = st.getTask(task);
 			currentTask.setDescription(description);
-		} catch(Exception e){
-			
-		} 
+		} catch (Exception e) {
+
+		}
 	}
-	
+
 	/**
-	 * Modify a task's description
-	 * This method is just to differentiate the set new description and modify description part
+	 * Modify a task's description This method is just to differentiate the set
+	 * new description and modify description part
+	 * 
 	 * @author A0118007R
 	 */
-	
-	public void changeDescription(String task, String newDescription){
+
+	public static void changeDescription(String task, String newDescription) {
 		setDescription(task, newDescription);
 	}
-	
+
 	/**
 	 * Deletes a specific task
 	 * 
 	 * @author A0118007R
 	 */
-	
-	public void deleteTask(String task){
-		try{
+
+	public static void deleteTask(String task) {
+		try {
 			st.deleteTask(task);
-		} catch(Exception e){
-			
+		} catch (Exception e) {
+
 		}
 	}
-	
-	//@author A0096529N	
+
+	// @author A0096529N
 	/**
-	 * Search for tasks with specified key phrase, 
-	 * in the task name, description and tags.
-	 * <p>Key phrase will be broken down into key
-	 * words (by splitting with space character).
-	 * Key words will be used to search in the tags.</p>
+	 * Search for tasks with specified key phrase, in the task name, description
+	 * and tags.
+	 * <p>
+	 * Key phrase will be broken down into key words (by splitting with space
+	 * character). Key words will be used to search in the tags.
+	 * </p>
 	 * 
-	 * <p>Precondition: keyphrase != null</p>
+	 * <p>
+	 * Precondition: keyphrase != null
+	 * </p>
 	 * 
-	 * @return tasks - a list of tasks containing 
-	 * the key phrase.
+	 * @return tasks - a list of tasks containing the key phrase.
 	 * @author Steven Khong
 	 */
-	public List<Task> search(String keyphrase) {
+	public static List<Task> search(String keyphrase) {
 		return st.findTasks(keyphrase);
 	}
+
+	// author A0118007R
 	
-	//author A0118007R
-	public static void main(String[] args){
+	
+	public static void printReceivedCommand(String command){
+		System.out.println("Command received [" + command + "]");
+	}
+	public static Scanner inputScanner = new Scanner(System.in);
+	
+	public static void main(String[] args) {
 		System.out.println(MESSAGE_WELCOME);
-		String input = "add TaskName";
+		initialize();
+		st.load();
+		while (true){
+			System.out.println("========================================================");
+			System.out.print("Enter Command: ");
+			String input = inputScanner.nextLine();
+			processAndExecute(input);
+			System.out.println(" ");
+			System.out.println("Your current tasks: ");
+			ArrayList<String> myTasks = st.getTaskNames();
+			int numberOfTasks = myTasks.size();
+			
+			for (int i = 1; i <= numberOfTasks; i++){
+				System.out.println(i + ". " + myTasks.get(i-1));
+			}
+			
+			st.save();
+		}
+		
+		
+		
+	}
+
+	private static void processAndExecute(String input) {
 		ParserContent parsedContent = Parser.interpretCommand(input);
 		CommandType command = parsedContent.getCommandKey();
 		String content = parsedContent.getCommandContent();
-		switch(command) {
-		case ADD:
-			System.out.println("Command received [ADD] with contents : " + content);
-		default:
-			System.out.println("Unknown command with contents : " + content);
+		String[] contents;
+		
+		switch (command) {
+			case ADD:
+				printReceivedCommand("ADD");
+				
+				try {
+					addTask(content);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			case DEL:
+				printReceivedCommand("DELETE");
+				
+				try {
+					deleteTask(content);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+			case DESC:
+				printReceivedCommand("DESCRIBE");
+				contents = content.split(" ", 2);
+				String taskName = contents[0];
+				String description = contents [1];
+				
+				try {
+					setDescription(taskName, description);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+			case MODIFY:
+				printReceivedCommand("MODIFY");
+				contents = content.split(" ", 2);
+				String oldTaskName = contents[0];
+				String newTaskName = contents[1];
+				
+				try {
+					changeName(oldTaskName, newTaskName);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+			case VIEW:
+				printReceivedCommand("VIEW");
+				String nameOfTask = content;
+				printDetails(nameOfTask);
+				
+			default:
+				System.out
+						.println("Unknown command with contents : " + content);
 		}
 	}
 

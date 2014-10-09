@@ -9,8 +9,8 @@ public class StreamAddTaskTest {
 	@Test
 	public void addTaskTest1() throws Exception {
 		str.initialize();
-		str.addTask("Submit CE2");
-		str.addTask("Study for midterms");
+		Stream.addTask("Submit CE2");
+		Stream.addTask("Study for midterms");
 		assertEquals("Submit CE2 is added to the list.", true,
 				str.hasTask("Submit CE2"));
 	}
@@ -30,7 +30,7 @@ public class StreamAddTaskTest {
 	@Test
 	public void addTaskTest4() {
 		try {
-			str.addTask("Submit CE2");
+			Stream.addTask("Submit CE2");
 		} catch (Exception e) {
 			assertEquals("Exception should be generated.",
 					"Error: \"Submit CE2\" already exists in the tasks list.",
@@ -41,7 +41,7 @@ public class StreamAddTaskTest {
 	@Test
 	public void deleteTest() throws Exception{
 		str.initialize();
-		str.addTask("Submit CE2");
+		Stream.addTask("Submit CE2");
 		str.deleteTask("Submit CE2");
 		assertEquals(str.hasTask("Submit CE2"), false);
 	}

@@ -33,12 +33,12 @@ public class Task {
 	}
 	
 	//author A0118007R
-	/**change the name of a task
-	 * 
-	 */
 	
-	public void changeTaskName(String name){
-		this.setTaskName(name);
+	public void printTaskDetails(){
+		System.out.println("Task name = " + taskName);
+		System.out.println("Description = " + taskDescription);
+		System.out.println("Deadline = ");
+		System.out.println("Tags = ");
 	}
 
 	/**

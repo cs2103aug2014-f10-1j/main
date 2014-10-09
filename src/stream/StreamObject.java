@@ -2,7 +2,12 @@ package stream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import fileio.StreamIO;
+import fileio.StreamIOException;
 
 
 
@@ -13,9 +18,15 @@ public class StreamObject {
 	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "Error: The name \"%1$s\" is not available.";
 
 	private HashMap<String, Task> allTasks;
+	private ArrayList<String> taskList;
 
 	public StreamObject() {
 		this.allTasks = new HashMap<String, Task>();
+		this.taskList = new ArrayList<String>();
+	}
+	
+	public ArrayList<String> getTaskNames(){
+		return taskList;
 	}
 
 	/**
@@ -33,6 +44,7 @@ public class StreamObject {
 					newTaskName));
 		} else {
 			this.allTasks.put(newTaskName, new Task(newTaskName));
+			this.taskList.add(newTaskName);
 		}
 	}
 
@@ -50,6 +62,43 @@ public class StreamObject {
 	}
 
 	//@author A0118007R
+	
+	/**
+	 * Save
+	 */
+	
+	public void save(){
+		try {
+			StreamIO.save(allTasks);
+		} catch (StreamIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * load
+	 */
+	
+	public void load(){
+		this.allTasks = new HashMap<String, Task>();
+		this.taskList = new ArrayList<String>();
+		
+		try {
+			allTasks = StreamIO.load();
+			 Iterator taskIterator = allTasks.entrySet().iterator();
+			    while (taskIterator.hasNext()) {
+			        Map.Entry currentEntry = (Map.Entry)taskIterator.next();
+			        String taskName = (String)currentEntry.getKey();
+			        taskList.add(taskName); 
+			        taskIterator.remove(); 
+			    }
+		} catch (StreamIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	/**
 	 * Gets a specific task
 	 * 
@@ -81,6 +130,7 @@ public class StreamObject {
 	public void deleteTask(String taskName) throws ModificationException {
 		if(hasTask(taskName)){
 			allTasks.remove(taskName);
+			taskList.remove(taskName);
 		} else {
 			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
 					taskName));
@@ -169,6 +219,9 @@ public class StreamObject {
 		allTasks.remove(task.getTaskName());
 		task.setTaskName(newTaskName);
 		allTasks.put(newTaskName, task);
+		
+		taskList.remove(taskName);
+		taskList.add(newTaskName);
 	}
 	
 	//@author A0096529N

@@ -12,26 +12,21 @@ import parser.Parser.CommandType;
 public class ParserContent {
 	private CommandType commandKey;
 	private String commandContent;
-	
-	public ParserContent(CommandType commandKey, String[] command){
-		this.commandKey=commandKey;
-		if(command.length>1){
-			for(int i=1;i<command.length;i++){
-				this.commandContent+=command[i];
-				this.commandContent+=" ";
-			}
-			this.commandContent.trim();
-		}
-		else{
-			this.commandContent="";
+
+	public ParserContent(CommandType commandKey, String[] command) {
+		this.commandKey = commandKey;
+		if (command.length > 1) {
+			this.commandContent = command[1].trim();
+		} else {
+			this.commandContent = "";
 		}
 	}
-	
-	public CommandType getCommandKey(){
+
+	public CommandType getCommandKey() {
 		return this.commandKey;
 	}
-	
-	public String getCommandContent(){
+
+	public String getCommandContent() {
 		return this.commandContent;
 	}
 
