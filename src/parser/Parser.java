@@ -12,7 +12,7 @@ package parser;
  */
 public class Parser {
 
-	enum COMMAND_TYPE{
+	public enum CommandType {
 		ADD, UPDATE, DESC, DUE, DELETE, FIND, VIEW, MARK, UNDO,
 		
 		//if the input has no meaning to the software
@@ -25,7 +25,7 @@ public class Parser {
 	}
 	
 	private static ParserContent executeCommand(String[] content){
-		COMMAND_TYPE commandKey=determineKey(content[0].toLowerCase());
+		CommandType commandKey=determineKey(content[0].toLowerCase());
 		
 		switch(commandKey){
 			case ADD:
@@ -34,55 +34,55 @@ public class Parser {
 			case DUE:
 			case FIND:
 			case MARK:
-				return packedContent(content);
+				return packedContent(commandKey, content);
 			case DELETE:
 			case VIEW:
 			case UNDO:
-				return singleContent(content);
+				return singleContent(commandKey, content);
 			default:
 				return wrongContent();
 		}
 	}
 	
-	private static COMMAND_TYPE determineKey(String key){
+	private static CommandType determineKey(String key){
 		switch(key){
 			case "add":
-				return COMMAND_TYPE.ADD;
+				return CommandType.ADD;
 			case "update":
-				return COMMAND_TYPE.UPDATE;
+				return CommandType.UPDATE;
 			case "desc":
 			case "describe":
-				return COMMAND_TYPE.DESC;
+				return CommandType.DESC;
 			case "due":
-				return COMMAND_TYPE.DUE;
+				return CommandType.DUE;
 			case "delete":
-				return COMMAND_TYPE.DELETE;
+				return CommandType.DELETE;
 			case "find":
-				return COMMAND_TYPE.FIND;
+				return CommandType.FIND;
 			case "view":
-				return COMMAND_TYPE.VIEW;
+				return CommandType.VIEW;
 			case "mark":
-				return COMMAND_TYPE.MARK;
+				return CommandType.MARK;
 			case "undo":
-				return COMMAND_TYPE.UNDO;
+				return CommandType.UNDO;
 			default:
-				return COMMAND_TYPE.WRONG;
+				return CommandType.WRONG;
 		}
 	}
 	
-	private static ParserContent packedContent(String[] content){
-		ParserContent command=new ParserContent(content);
+	private static ParserContent packedContent(CommandType key, String[] content){
+		ParserContent command=new ParserContent(key, content);
 		return command;
 	}
 	
-	private static ParserContent singleContent(String[] content){
-		ParserContent command=new ParserContent(content);
+	private static ParserContent singleContent(CommandType key, String[] content){
+		ParserContent command=new ParserContent(key, content);
 		return command;
 	}
 	
 	private static ParserContent wrongContent(){
 		String[] invalidInput={"invalid"};
-		ParserContent wrongMessage=new ParserContent(invalidInput);
+		ParserContent wrongMessage=new ParserContent(CommandType.WRONG, invalidInput);
 		return wrongMessage;
 	}
 }

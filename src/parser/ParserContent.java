@@ -1,5 +1,7 @@
 package parser;
 
+import parser.Parser.CommandType;
+
 /*
  * Content of the parser to be used by the Logic Part
  * CommandKey is the identifier like "add" or "delete"
@@ -8,11 +10,11 @@ package parser;
  * @author: Jiang Shenhao
  */
 public class ParserContent {
-	private String commandKey;
+	private CommandType commandKey;
 	private String commandContent;
 	
-	public ParserContent(String[] command){
-		this.commandKey=command[0];
+	public ParserContent(CommandType commandKey, String[] command){
+		this.commandKey=commandKey;
 		if(command.length>1){
 			for(int i=1;i<command.length;i++){
 				this.commandContent+=command[i];
@@ -25,12 +27,12 @@ public class ParserContent {
 		}
 	}
 	
-	public String getCommandKey(){
+	public CommandType getCommandKey(){
 		return this.commandKey;
 	}
 	
 	public String getCommandContent(){
-		return this.commandKey;
+		return this.commandContent;
 	}
 
 }
