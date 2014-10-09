@@ -128,24 +128,29 @@ public class Stream {
 		initialize();
 		st.load();
 		while (true){
+			printTasks();
 			System.out.println("========================================================");
 			System.out.print("Enter Command: ");
 			String input = inputScanner.nextLine();
 			processAndExecute(input);
-			System.out.println(" ");
-			System.out.println("Your current tasks: ");
-			ArrayList<String> myTasks = st.getTaskNames();
-			int numberOfTasks = myTasks.size();
 			
-			for (int i = 1; i <= numberOfTasks; i++){
-				System.out.println(i + ". " + myTasks.get(i-1));
-			}
 			
 			st.save();
 		}
 		
 		
 		
+	}
+
+	private static void printTasks() {
+		System.out.println(" ");
+		System.out.println("Your current tasks: ");
+		ArrayList<String> myTasks = st.getTaskNames();
+		int numberOfTasks = myTasks.size();
+		
+		for (int i = 1; i <= numberOfTasks; i++){
+			System.out.println(i + ". " + myTasks.get(i-1));
+		}
 	}
 
 	private static void processAndExecute(String input) {
