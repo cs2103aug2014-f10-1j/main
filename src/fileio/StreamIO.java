@@ -150,14 +150,18 @@ public class StreamIO {
 			Task task = new Task(taskName);
 			task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
 			
-			Calendar deadline = Calendar.getInstance();
-			Date deadlineDate = dateFormat.parse(taskJson.getString(TaskKey.DEADLINE));
-			deadline.setTime(deadlineDate);
-			task.setDeadline(deadline);
+			if (taskJson.has(TaskKey.DEADLINE)) {
+				Calendar deadline = Calendar.getInstance();
+				Date deadlineDate = dateFormat.parse(taskJson.getString(TaskKey.DEADLINE));
+				deadline.setTime(deadlineDate);
+				task.setDeadline(deadline);
+			}
 			
-			JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
-			for (int i=0; i<tagsJson.length(); i++) {
-				task.addTag(tagsJson.getString(i));
+			if (taskJson.has(TaskKey.TAGS)) {
+				JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
+				for (int i=0; i<tagsJson.length(); i++) {
+					task.addTag(tagsJson.getString(i));
+				}
 			}
 			return task;
 		} catch (JSONException | ParseException e) {
