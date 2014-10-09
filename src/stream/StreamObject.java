@@ -8,15 +8,9 @@ import java.util.List;
 
 public class StreamObject {
 
-	private static String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
-
-	/**
-	 * String for error when adding a description to a non-existent task
-	 * 
-	 * @author A0118007R
-	 */
-	private static final String ERROR_TASK_DOES_NOT_EXIST = "Error: The task \"%1$s\" does not exist!";
-	private static final String NEW_TASK_NAME_NOT_AVAILABLE_ERROR = "Error: The name \"%1$s\" is not available!";
+	private static final String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
+	private static final String ERROR_TASK_DOES_NOT_EXIST = "Error: The task \"%1$s\" does not exist.";
+	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "Error: The name \"%1$s\" is not available.";
 
 	private HashMap<String, Task> allTasks;
 
@@ -24,9 +18,9 @@ public class StreamObject {
 		this.allTasks = new HashMap<String, Task>();
 	}
 
-	public void addTask(String newTask) throws Exception {
+	public void addTask(String newTask) throws ModificationException {
 		if (this.allTasks.containsKey(newTask)) {
-			throw new Exception(String.format(ERROR_TASK_ALREADY_EXISTS,
+			throw new ModificationException(String.format(ERROR_TASK_ALREADY_EXISTS, 
 					newTask));
 		} else {
 			this.allTasks.put(newTask, new Task(newTask));
@@ -42,11 +36,11 @@ public class StreamObject {
 	 * 
 	 * @author A0118007R
 	 */
-	public Task getTask(String task) throws Exception{
+	public Task getTask(String task) throws ModificationException{
 		if (hasTask(task)){
 			return allTasks.get(task);
 		} else {
-			throw new Exception(String.format(ERROR_TASK_DOES_NOT_EXIST, 
+			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
 					task));
 		}
 	}
@@ -56,11 +50,12 @@ public class StreamObject {
 	 * 
 	 * @author A0118007R
 	 */
-	public void deleteTask(String task) throws Exception{
+	public void deleteTask(String task) throws ModificationException {
 		if(hasTask(task)){
 			allTasks.remove(task);
 		} else {
-			throw new Exception(String.format(ERROR_TASK_DOES_NOT_EXIST, task));
+			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
+					task));
 		}
 	}
 
@@ -74,10 +69,12 @@ public class StreamObject {
 	 * @param deadline to be set in the task
 	 * @throws ModificationException 
 	 */
-	public void changeDeadline(String taskName, Calendar deadline) throws ModificationException {
+	public void changeDeadline(String taskName, Calendar deadline) 
+			throws ModificationException {
 		Task task = allTasks.get(taskName);
 		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, taskName));
+			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
+					taskName));
 		}
 		task.setDeadline(deadline);
 	}
@@ -93,10 +90,12 @@ public class StreamObject {
 	 * @throws ModificationException if taskName given
 	 * does not return a match, i.e. task not found
 	 */
-	public void removeTag(String taskName, String tag) throws ModificationException {
+	public void removeTag(String taskName, String tag) 
+			throws ModificationException {
 		Task task = allTasks.get(taskName);
 		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, taskName));
+			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
+					taskName));
 		}
 		task.deleteTag(tag);
 	}
@@ -113,10 +112,12 @@ public class StreamObject {
 	 * @throws ModificationException if taskName given
 	 * does not return a match, i.e. task not found
 	 */
-	public void addTag(String taskName, String tag) throws ModificationException {
+	public void addTag(String taskName, String tag) 
+			throws ModificationException {
 		Task task = allTasks.get(taskName);
 		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, taskName));
+			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
+					taskName));
 		}
 		if (!task.hasTag(tag)) {
 			task.addTag(tag);
@@ -136,12 +137,15 @@ public class StreamObject {
 	 * does not return a match, i.e. task not found. Or
 	 * when task with newTaskName is already present.
 	 */
-	public void updateTaskName(String taskName, String newTaskName) throws ModificationException {
+	public void updateTaskName(String taskName, String newTaskName) 
+			throws ModificationException {
 		Task task = allTasks.get(taskName);
 		if (task == null) {
-			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, taskName));
+			throw new ModificationException(String.format(ERROR_TASK_DOES_NOT_EXIST, 
+					taskName));
 		} else if (allTasks.containsKey(newTaskName)) {
-			throw new ModificationException(String.format(NEW_TASK_NAME_NOT_AVAILABLE_ERROR, newTaskName));
+			throw new ModificationException(String.format(ERROR_NEW_TASK_NAME_NOT_AVAILABLE, 
+					newTaskName));
 		}
 
 		allTasks.remove(task.getTaskName());
