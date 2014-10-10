@@ -134,7 +134,7 @@ public class StreamIOTest {
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
 		try {
-			assertEquals(testMessage, expectedJsonString, StreamIO.taskListToJson(map).toString());
+			assertEquals(testMessage, expectedJsonString, StreamIO.listToJson(map).toString());
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		}

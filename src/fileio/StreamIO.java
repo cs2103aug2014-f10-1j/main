@@ -63,7 +63,7 @@ public class StreamIO {
 		if (tasksJson == null) {
 			return null;
 		} else {
-			return jsonToMap(tasksJson);
+			return jsonToList(tasksJson);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class StreamIO {
 	 * storage file.
 	 */
 	public static void save(List<Task> allTasks) throws StreamIOException {
-		JSONArray tasksJson = taskListToJson(allTasks);
+		JSONArray tasksJson = listToJson(allTasks);
 		writeToFile(new File(SAVE_LOCATION), tasksJson);
 	}
 
@@ -111,7 +111,7 @@ public class StreamIO {
 			throw new StreamIOException("File corrupted, could not parse file contents - " + e.getMessage());
 		}
 	}
-	static JSONArray taskListToJson(List<Task> taskList) throws StreamIOException {
+	static JSONArray listToJson(List<Task> taskList) throws StreamIOException {
 		JSONArray taskListJson = new JSONArray();
 		for (Task task:taskList) {
 			JSONObject taskJson = taskToJson(task);
@@ -119,7 +119,7 @@ public class StreamIO {
 		}
 		return taskListJson;
 	}
-	static List<Task> jsonToMap(JSONArray tasksJson) throws StreamIOException {
+	static List<Task> jsonToList(JSONArray tasksJson) throws StreamIOException {
 		try {
 			List<Task> taskList = new ArrayList<Task>();
 			for (int i=0; i<tasksJson.length(); i++) {
