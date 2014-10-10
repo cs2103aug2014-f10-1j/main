@@ -1,4 +1,5 @@
 package parser;
+
 //import java.util.*;
 /*
  * Parser is used to interpret the user input to a pack of 
@@ -13,18 +14,18 @@ package parser;
 public class Parser {
 
 	public enum CommandType {
-		ADD, DEL, DESC, VIEW, MODIFY, CLEAR, EXIT, ERROR;
+		ADD, DEL, DESC, VIEW, MODIFY, CLEAR, UNDO, EXIT, ERROR, RECOVER;
 	}
-	
-	public static ParserContent interpretCommand(String command){
-		String[] content=command.split(" ", 2);
+
+	public static ParserContent interpretCommand(String command) {
+		String[] content = command.split(" ", 2);
 		return executeCommand(content);
 	}
-	
-	private static ParserContent executeCommand(String[] contents){
+
+	private static ParserContent executeCommand(String[] contents) {
 		CommandType commandKey;
 		String key = contents[0];
-		switch(key){
+		switch (key) {
 			case "add":
 				commandKey = CommandType.ADD;
 				return newContent(commandKey, contents);
@@ -47,6 +48,12 @@ public class Parser {
 			case "clr":
 				commandKey = CommandType.CLEAR;
 				return newContent(commandKey, contents);
+			case "undo":
+				commandKey = CommandType.UNDO;
+				return newContent(commandKey, contents);
+			case "recover":
+				commandKey = CommandType.RECOVER;
+				return newContent(commandKey, contents);
 			case "exit":
 				commandKey = CommandType.EXIT;
 				return newContent(commandKey, contents);
@@ -55,19 +62,16 @@ public class Parser {
 				return wrongContent();
 		}
 	}
-	
-	
-	
-	private static ParserContent newContent(CommandType key, String[] contents){
+
+	private static ParserContent newContent(CommandType key, String[] contents) {
 		ParserContent command = new ParserContent(key, contents);
 		return command;
 	}
-	
-	
-	
-	private static ParserContent wrongContent(){
-		String[] invalidInput={"invalid"};
-		ParserContent wrongMessage=new ParserContent(CommandType.ERROR, invalidInput);
+
+	private static ParserContent wrongContent() {
+		String[] invalidInput = { "invalid" };
+		ParserContent wrongMessage = new ParserContent(CommandType.ERROR,
+				invalidInput);
 		return wrongMessage;
 	}
 }
