@@ -45,10 +45,10 @@ public class StreamAddTaskTest {
 	}
 	
 	@Test
-	public void deleteTest() throws Exception{
+	public void deleteTest() throws ModificationException {
 		stream.initialize();
 		stream.addTask("Submit CE2");
 		stream.deleteTask("Submit CE2");
-		assertEquals(stream.hasTask("Submit CE2"), false);
+		assertEquals(false, stream.hasTask("Submit CE2"));
 	}
 }

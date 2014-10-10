@@ -2,7 +2,6 @@ package stream;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import fileio.StreamIO;
@@ -13,18 +12,13 @@ public class StreamObject {
 	private static final String ERROR_TASK_DOES_NOT_EXIST = "Error: The task \"%1$s\" does not exist.";
 	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "Error: The name \"%1$s\" is not available.";
 
-	private HashMap<String, Task> allTasks;
-	private ArrayList<String> taskList;
+	private List<Task> allTasks;
 
 	public StreamObject() {
-		this.allTasks = new HashMap<String, Task>();
-		this.taskList = new ArrayList<String>();
+		this.allTasks = new ArrayList<Task>();
 	}
 
-	public ArrayList<String> getTaskNames() {
-		return taskList;
-	}
-
+	// @author A0118007R
 	/**
 	 * Adds a new task to StreamObject
 	 * 
@@ -34,17 +28,29 @@ public class StreamObject {
 	 * 
 	 * @param newTaskName
 	 *            name of the new task
+	 * @throws ModificationException
+	 *             if task with newTaskName is already present.
+	 * 
 	 */
 	public void addTask(String newTaskName) throws ModificationException {
-		this.allTasks.put(newTaskName, new Task(newTaskName));
-		this.taskList.add(newTaskName);
+		if (getTask1(newTaskName) == null) {
+			allTasks.add(new Task(newTaskName));
+		} else {
+			throw new ModificationException(String.format(
+					ERROR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
+		}
 	}
 
+	// @author A0093874N
+	/**
+	 * TODO
+	 * @param task
+	 */
 	public void recoverTask(Task task) {
-		this.allTasks.put(task.getTaskName(), task);
-		this.taskList.add(task.getTaskName());
+		this.allTasks.add(task);
 	}
 
+	// @author A0118007R
 	/**
 	 * Checks if a specific task is present
 	 * 
@@ -57,44 +63,10 @@ public class StreamObject {
 	 * @return true if task with the given taskName is found.
 	 */
 	public Boolean hasTask(String taskName) {
-		return this.allTasks.containsKey(taskName);
+		return getTask1(taskName) != null;
 	}
 
 	// @author A0118007R
-
-	/**
-	 * Save
-	 */
-
-	public void save() {
-		try {
-			StreamIO.save(allTasks);
-		} catch (StreamIOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * load
-	 */
-
-	public void load() {
-		this.allTasks = new HashMap<String, Task>();
-		this.taskList = new ArrayList<String>();
-
-		try {
-			allTasks = StreamIO.load();
-		} catch (StreamIOException e) {
-			// No previous state - first use.
-		}
-
-		for (String key : allTasks.keySet()) {
-			taskList.add(key);
-		}
-		
-	}
-
 	/**
 	 * Gets a specific task
 	 * 
@@ -104,41 +76,121 @@ public class StreamObject {
 	 * 
 	 * @param taskName
 	 *            name of task to be returned
+	 * @return task with matching taskName
 	 * @throws ModificationException
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
 	 */
 	public Task getTask(String taskName) throws ModificationException {
-		if (hasTask(taskName)) {
-			return allTasks.get(taskName);
-		} else {
+		Task result = getTask1(taskName);
+		if (result == null) {
 			throw new ModificationException(String.format(
 					ERROR_TASK_DOES_NOT_EXIST, taskName));
+		} else {
+			return result;
 		}
 	}
 
-	// @author A0118007R
 	/**
-	 * Deletes a specific task
+	 * 
+	 * @return list of task names
+	 */
+	public List<String> getTaskNames() {
+		List<String> taskList = new ArrayList<String>();
+		for (Task task:allTasks) {
+			taskList.add(task.getTaskName());
+		}
+		return taskList;
+	}
+	
+	// @author A0096529N
+	/**
+	 * Private helper method used to get a task, 
+	 * returns null if not found
 	 * 
 	 * <p>
 	 * Precondition: taskName != null
 	 * </p>
 	 * 
 	 * @param taskName
-	 *            name of task to be deleted
+	 *            name of task to be returned
+	 * @return task with matching taskName, or null if not found.
+	 */
+	private Task getTask1(String taskName) {
+		for (Task task:allTasks) {
+			if (task.getTaskName().equals(taskName)) {
+				return task;
+			}
+		}
+		return null;
+	}
+
+	// @author A0096529N
+	/**
+	 * Search for tasks with specified key phrase, in the task name, description
+	 * and tags.
+	 * <p>
+	 * Key phrase will be broken down into key words (by splitting with space
+	 * character). Key words will be used to search in the tags.
+	 * </p>
+	 * 
+	 * <p>
+	 * Precondition: keyphrase != null
+	 * </p>
+	 * 
+	 * @return tasks - a list of tasks containing the key phrase, empty list if
+	 *         nothing matches
+	 */
+	public List<Task> findTasks(String keyphrase) {
+		// Split key phrase into keywords
+		String[] keywords = null;
+		if (keyphrase.contains(" ")) {
+			keywords = keyphrase.split(" ");
+		} else {
+			keywords = new String[] { keyphrase };
+		}
+
+		List<Task> tasks = new ArrayList<Task>();
+		for (Task task : allTasks) {
+
+			// check for matches between keywords and tags
+			if (task.hasTag(keywords)) {
+				tasks.add(task);
+				continue;
+			}
+			// check if task description contains key phrase
+			if (task.getDescription().contains(keyphrase)) {
+				tasks.add(task);
+				continue;
+			}
+			// check if task name contains key phrase
+			if (task.getTaskName().contains(keyphrase)) {
+				tasks.add(task);
+				continue;
+			}
+		}
+
+		return tasks;
+	}
+
+	// @author A0096529N
+	/**
+	 * Gets the index of a task
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            name of task to be located
+	 * @return index of task with matching taskName
 	 * @throws ModificationException
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
 	 */
-	public void deleteTask(String taskName) throws ModificationException {
-		if (hasTask(taskName)) {
-			allTasks.remove(taskName);
-			taskList.remove(taskName);
-		} else {
-			throw new ModificationException(String.format(
-					ERROR_TASK_DOES_NOT_EXIST, taskName));
-		}
+	public int indexOf(String taskName) throws ModificationException {
+		Task task = getTask(taskName);
+		return allTasks.indexOf(task);
 	}
 
 	// @author A0096529N
@@ -159,11 +211,7 @@ public class StreamObject {
 	 */
 	public void changeDeadline(String taskName, Calendar deadline)
 			throws ModificationException {
-		Task task = allTasks.get(taskName);
-		if (task == null) {
-			throw new ModificationException(String.format(
-					ERROR_TASK_DOES_NOT_EXIST, taskName));
-		}
+		Task task = getTask(taskName);
 		task.setDeadline(deadline);
 	}
 
@@ -234,68 +282,58 @@ public class StreamObject {
 	public void updateTaskName(String taskName, String newTaskName)
 			throws ModificationException {
 		Task task = getTask(taskName);
-		if (allTasks.containsKey(newTaskName)) {
+		if (getTask1(newTaskName) != null) {
 			throw new ModificationException(String.format(
 					ERROR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
+		} else {
+			task.setTaskName(newTaskName);
 		}
+	}
 
-		allTasks.remove(task.getTaskName());
-		task.setTaskName(newTaskName);
-		allTasks.put(newTaskName, task);
-
-		int index = taskList.indexOf(taskName);
-		taskList.add(index, newTaskName);
-		taskList.remove(index + 1);
+	// @author A0118007R
+	/**
+	 * Deletes a specific task
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            name of task to be deleted
+	 * @throws ModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
+	 */
+	public void deleteTask(String taskName) throws ModificationException {
+		Task task = getTask1(taskName);
+		allTasks.remove(task);
 	}
 
 	// @author A0096529N
-	
 	/**
-	 * Search for tasks with specified key phrase, in the task name, description
-	 * and tags.
-	 * <p>
-	 * Key phrase will be broken down into key words (by splitting with space
-	 * character). Key words will be used to search in the tags.
-	 * </p>
+	 * Saves task list into storage file
 	 * 
-	 * <p>
-	 * Precondition: keyphrase != null
-	 * </p>
-	 * 
-	 * @return tasks - a list of tasks containing the key phrase, empty list if
-	 *         nothing matches
-	 * @author Steven Khong
+	 * @throws StreamIOException when JSON conversion fail due
+	 * file corruption or IO failures when loading/accessing
+	 * storage file.
 	 */
-	public List<Task> findTasks(String keyphrase) {
-		// Split key phrase into keywords
-		String[] keywords = null;
-		if (keyphrase.contains(" ")) {
-			keywords = keyphrase.split(" ");
-		} else {
-			keywords = new String[] { keyphrase };
-		}
-
-		List<Task> tasks = new ArrayList<Task>();
-		for (String key : allTasks.keySet()) {
-			Task task = allTasks.get(key);
-
-			// check for matches between keywords and tags
-			if (task.hasTag(keywords)) {
-				tasks.add(task);
-				continue;
-			}
-			// check if task description contains key phrase
-			if (task.getDescription().contains(keyphrase)) {
-				tasks.add(task);
-				continue;
-			}
-			// check if task name contains key phrase
-			if (task.getTaskName().contains(keyphrase)) {
-				tasks.add(task);
-				continue;
-			}
-		}
-
-		return tasks;
+	public void save() throws StreamIOException {
+		StreamIO.save(allTasks);
 	}
+
+	// @author A0096529N
+	/**
+	 * Loads task list from storage file
+	 * 
+	 */
+	public void load() {
+		try {
+			allTasks = StreamIO.load();
+		} catch (StreamIOException e) {
+			// No previous state - first use.
+			allTasks = new ArrayList<Task>();
+		}
+
+	}
+
 }

@@ -6,11 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,16 +49,16 @@ public class StreamIO {
 
 	/**
 	 * <p>Reads and inflate the contents of serialized 
-	 * storage file into HashMap<String, Task> object.</p>
+	 * storage file into List&lt;Task&gt; object.</p>
 	 * 
-	 * @return <strong>HashMap</strong> of tasks if 
+	 * @return <strong>List</strong> of tasks if 
 	 * the storage file is present, or <strong>null</strong> 
 	 * if there is no storage file found.
 	 * @throws StreamIOException when JSON conversion fail due
 	 * file corruption or IO failures when loading/accessing
 	 * storage file.
 	 */
-	public static HashMap<String, Task> load() throws StreamIOException {
+	public static List<Task> load() throws StreamIOException {
 		JSONArray tasksJson = loadFromFile(new File(SAVE_LOCATION));
 		if (tasksJson == null) {
 			return null;
@@ -66,20 +66,19 @@ public class StreamIO {
 			return jsonToMap(tasksJson);
 		}
 	}
-	
-	
+
 	/**
 	 * <p>Serializes and write the contents 
 	 * of HashMap<String, Task> object into 
 	 * storage file.</p>
 	 * 
-	 * @param allTasks - map of all the tasks
+	 * @param allTasks - list of all the tasks
 	 * @throws StreamIOException when JSON conversion fail due
 	 * file corruption or IO failures when loading/accessing
 	 * storage file.
 	 */
-	public static void save(HashMap<String, Task> allTasks) throws StreamIOException {
-		JSONArray tasksJson = mapToJson(allTasks);
+	public static void save(List<Task> allTasks) throws StreamIOException {
+		JSONArray tasksJson = taskListToJson(allTasks);
 		writeToFile(new File(SAVE_LOCATION), tasksJson);
 	}
 
@@ -100,11 +99,11 @@ public class StreamIO {
 			while ((line = reader.readLine()) != null) {
 				stringBuilder.append(line).append("\n");
 			}
-			String mapJsonString = stringBuilder.toString().trim();
-			if (mapJsonString.isEmpty()) {
+			String taskListJsonString = stringBuilder.toString().trim();
+			if (taskListJsonString.isEmpty()) {
 				return null;
 			} else {
-				return new JSONArray(mapJsonString);
+				return new JSONArray(taskListJsonString);
 			}
 		} catch (IOException e) {
 			throw new StreamIOException("Could not load file - " + e.getMessage());
@@ -112,22 +111,22 @@ public class StreamIO {
 			throw new StreamIOException("File corrupted, could not parse file contents - " + e.getMessage());
 		}
 	}
-	static JSONArray mapToJson(Map<String, Task> map) throws StreamIOException {
-		JSONArray mapJson = new JSONArray();
-		for (String key:map.keySet()) {
-			JSONObject taskJson = taskToJson(map.get(key));
-			mapJson.put(taskJson);
+	static JSONArray taskListToJson(List<Task> taskList) throws StreamIOException {
+		JSONArray taskListJson = new JSONArray();
+		for (Task task:taskList) {
+			JSONObject taskJson = taskToJson(task);
+			taskListJson.put(taskJson);
 		}
-		return mapJson;
+		return taskListJson;
 	}
-	static HashMap<String, Task> jsonToMap(JSONArray tasksJson) throws StreamIOException {
+	static List<Task> jsonToMap(JSONArray tasksJson) throws StreamIOException {
 		try {
-			HashMap<String, Task> map = new HashMap<String, Task>();
+			List<Task> taskList = new ArrayList<Task>();
 			for (int i=0; i<tasksJson.length(); i++) {
 				Task task = jsonToTask(tasksJson.getJSONObject(i));
-				map.put(task.getTaskName(), task);
+				taskList.add(task);
 			}
-			return map;
+			return taskList;
 		} catch (JSONException e) {
 			throw new StreamIOException("JSON conversion failed - " + e.getMessage());
 		}
@@ -149,14 +148,14 @@ public class StreamIO {
 			String taskName = taskJson.getString(TaskKey.NAME);
 			Task task = new Task(taskName);
 			task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
-			
+
 			if (taskJson.has(TaskKey.DEADLINE)) {
 				Calendar deadline = Calendar.getInstance();
 				Date deadlineDate = dateFormat.parse(taskJson.getString(TaskKey.DEADLINE));
 				deadline.setTime(deadlineDate);
 				task.setDeadline(deadline);
 			}
-			
+
 			if (taskJson.has(TaskKey.TAGS)) {
 				JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
 				for (int i=0; i<tagsJson.length(); i++) {

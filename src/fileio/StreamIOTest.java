@@ -10,9 +10,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONObject;
@@ -33,7 +34,7 @@ public class StreamIOTest {
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
 	private Task task1, task2;
-	private HashMap<String, Task> map;
+	private List<Task> map;
 
 	@Before 
 	public void setUp() throws Exception {
@@ -62,9 +63,9 @@ public class StreamIOTest {
 		task2.addTag("popular");
 		task2.addTag("urgent");
 
-		map = new HashMap<String, Task>();
-		map.put(task1.getTaskName(), task1);
-		map.put(task2.getTaskName(), task2);
+		map = new ArrayList<Task>();
+		map.add(task1);
+		map.add(task2);
 
 
 		String fileContent = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
@@ -133,7 +134,7 @@ public class StreamIOTest {
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
 		try {
-			assertEquals(testMessage, expectedJsonString, StreamIO.mapToJson(map).toString());
+			assertEquals(testMessage, expectedJsonString, StreamIO.taskListToJson(map).toString());
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
 		}
@@ -198,8 +199,8 @@ public class StreamIOTest {
 			fos.write(content.getBytes());
 		}
 	}
-	private String serializeTaskMap(HashMap<String, Task> taskMap) {
-		JSONObject taskMapJson = new JSONObject(taskMap);
-		return taskMapJson.toString();
+	private String serializeTaskMap(List<Task> taskList) {
+		JSONObject taskListJson = new JSONObject(taskList);
+		return taskListJson.toString();
 	}
 }

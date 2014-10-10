@@ -1,10 +1,10 @@
 package stream;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
+import fileio.StreamIOException;
 import parser.Parser;
 import parser.Parser.CommandType;
 import parser.ParserContent;
@@ -16,24 +16,66 @@ public class Stream {
 	private Stack<Task> dumpedTasks;
 	private static final String MESSAGE_WELCOME = "Welcome to Stream!";
 	private static final String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
+	private static final String ERROR_SAVE_FAILED = "Error: Auto-save failed, cause by - %1$s";
 
-	void initialize() {
-		st = new StreamObject();
-		inputStack = new Stack<String>();
-		dumpedTasks = new Stack<Task>();
-	}
+	public static void main(String[] args) {
+		Scanner inputScanner = new Scanner(System.in);
+		try {	// try-finally block to ensure inputScanner closure. Any better implementation? (arrow shape)
+			printMessage(MESSAGE_WELCOME);
+			Stream stream = Stream.newStream();
+			stream.load(); // can consider placing this step into Stream.initialize(), so no need call here.
+			while (true) {
+				stream.printTasks();
+				printMessage("========================================================");
+				printMessage("Enter Command: ");
+				String input = inputScanner.nextLine();
+				// TODO restrict "recover" from user somehow
+				/*
+				 * workaround for now: if we spot "recover", halt immediately. any
+				 * better idea?
+				 */
+				if (input.length() >= 7 && input.substring(0, 7) == "recover") {
+					printMessage("Unknown command with contents : ");
+				} else {
+					stream.processAndExecute(input);
+				}
 	
+				stream.save();
+			}
+		} finally {
+			inputScanner.close();
+		}
+	}
+
+	// @author A0096529N
+	/**
+	 * Lazy initializer
+	 * @return
+	 */
 	public static Stream newStream() {
 		Stream stream = new Stream();
 		stream.initialize();
 		return stream;
 	}
 
-	public void load() {
+	// @author A0093874N
+	void initialize() {
+		st = new StreamObject();
+		inputStack = new Stack<String>();
+		dumpedTasks = new Stack<Task>();
+	}
+
+	// @author A0096529N
+	void load() {
 		st.load();
 	}
-	public void save() {
-		st.save();
+	// @author A0096529N
+	void save() {
+		try {
+			st.save();
+		} catch (StreamIOException e) {
+			printMessage(ERROR_SAVE_FAILED, e.getMessage());
+		}
 	}
 
 	// @author A0093874N
@@ -55,8 +97,9 @@ public class Stream {
 					ERROR_TASK_ALREADY_EXISTS, newTask));
 		} else {
 			st.addTask(newTask);
-			int currentNoOfTasks = st.getTaskNames().size();
-			inputStack.push("delete " + currentNoOfTasks);
+			int taskIndex = st.indexOf(newTask);
+			//++taskIndex to correct for start-from-1 index listing
+			inputStack.push("delete " + ++taskIndex);
 		}
 	}
 
@@ -71,43 +114,35 @@ public class Stream {
 	}
 
 	// @author A0118007R
-
 	public void printDetails(String task) {
 		try {
 			Task currentTask = st.getTask(task);
 			currentTask.printTaskDetails();
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 	}
 
-	public void changeName(String oldName, String newName, int index) {
-		try {
-			st.updateTaskName(oldName, newName);
-			//
-			inputStack.push("modify " + index + " " + oldName);
-			//
-		} catch (Exception e) {
-
-		}
+	public void changeName(String oldName, String newName, int index) 
+			throws ModificationException {
+		st.updateTaskName(oldName, newName);
+		inputStack.push("modify " + index + " " + oldName);
 	}
 
 	/**
 	 * Adds a description to the task
 	 * 
 	 * @author A0118007R improved by A0093874N
+	 * @throws ModificationException 
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
 	 */
-	public void setDescription(String task, int index, String description) {
-		try {
-			Task currentTask = st.getTask(task);
-			String oldDescription = currentTask.getDescription();
-			currentTask.setDescription(description);
-			//
-			inputStack.push("desc " + index + " " + oldDescription);
-			//
-		} catch (Exception e) {
-
-		}
+	public void setDescription(String task, int index, String description) 
+			throws ModificationException {
+		Task currentTask = st.getTask(task);
+		String oldDescription = currentTask.getDescription();
+		currentTask.setDescription(description);
+		inputStack.push("desc " + index + " " + oldDescription);
 	}
 
 	/**
@@ -115,36 +150,31 @@ public class Stream {
 	 * new description and modify description part
 	 * 
 	 * @author A0118007R
+	 * @throws ModificationException 
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
 	 */
-
 	public void changeDescription(String task, int index,
-			String newDescription) {
-		try {
-			setDescription(task, index, newDescription);
-		} catch (Exception e) {
-
-		}
+			String newDescription) throws ModificationException {
+		setDescription(task, index, newDescription);
 	}
 
 	/**
 	 * Deletes a specific task
 	 * 
 	 * @author A0118007R improved by A0093874N
+	 * @throws ModificationException 
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
 	 */
-
-	public void deleteTask(String task) {
-		try {
-			Task deletedTask = st.getTask(task);
-			st.deleteTask(task);
-			dumpedTasks.push(deletedTask);
-			inputStack.push("recover 1");
-		} catch (Exception e) {
-
-		}
+	public void deleteTask(String task) throws ModificationException {
+		Task deletedTask = st.getTask(task);
+		st.deleteTask(task);
+		dumpedTasks.push(deletedTask);
+		inputStack.push("recover 1");
 	}
 
 	// @author A0096529N
-
 	/**
 	 * Search for tasks with specified key phrase, in the task name, description
 	 * and tags.
@@ -165,13 +195,13 @@ public class Stream {
 	}
 
 	// @author A0093874N
-
 	/**
 	 * Clears all tasks upon receiving the command "clear".
 	 * 
 	 * @author Wilson Kurniawan
+	 * @throws ModificationException 
 	 */
-	public void clearAllTasks() {
+	public void clearAllTasks() throws ModificationException {
 		int noOfTasks = st.getTaskNames().size();
 		for (int i = noOfTasks - 1; i >= 0; i--) {
 			deleteTask(st.getTaskNames().get(i));
@@ -185,47 +215,8 @@ public class Stream {
 	}
 
 	// @author A0118007R
-
 	public static void printReceivedCommand(String command) {
-		System.out.println("Command received [" + command + "]");
-	}
-
-	public static Scanner inputScanner = new Scanner(System.in);
-
-	public static void main(String[] args) {
-		System.out.println(MESSAGE_WELCOME);
-		Stream stream = Stream.newStream();
-		stream.load(); // can consider placing this step into Stream.initialize(), so no need call here.
-		while (true) {
-			stream.printTasks();
-			System.out
-					.println("========================================================");
-			System.out.print("Enter Command: ");
-			String input = inputScanner.nextLine();
-			// TODO restrict "recover" from user somehow
-			/*
-			 * workaround for now: if we spot "recover", halt immediately. any
-			 * better idea?
-			 */
-			if (input.length() >= 7 && input.substring(0, 7) == "recover") {
-				System.out.println("Unknown command with contents : ");
-			} else {
-				stream.processAndExecute(input);
-			}
-
-			stream.save();
-		}
-	}
-
-	void printTasks() {
-		System.out.println(" ");
-		System.out.println("Your current tasks: ");
-		ArrayList<String> myTasks = st.getTaskNames();
-		int numberOfTasks = myTasks.size();
-
-		for (int i = 1; i <= numberOfTasks; i++) {
-			System.out.println(i + ". " + myTasks.get(i - 1));
-		}
+		printMessage("Command received [" + command + "]");
 	}
 
 	void processAndExecute(String input) {
@@ -236,105 +227,131 @@ public class Stream {
 		String taskName;
 
 		switch (command) {
-			case ADD:
-				printReceivedCommand("ADD");
-				try {
-					addTask(content);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+		case ADD:
+			printReceivedCommand("ADD");
+			try {
+				addTask(content);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
-			case DEL:
-				printReceivedCommand("DELETE");
-				int taskIndex = Integer.parseInt(content);
-				taskName = st.getTaskNames().get(taskIndex - 1);
-				try {
-					deleteTask(taskName);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+		case DEL:
+			printReceivedCommand("DELETE");
+			int taskIndex = Integer.parseInt(content);
+			taskName = st.getTaskNames().get(taskIndex - 1);
+			try {
+				deleteTask(taskName);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
-			case DESC:
-				printReceivedCommand("DESCRIBE");
-				contents = content.split(" ", 2);
-				taskIndex = Integer.parseInt(contents[0]);
-				taskName = st.getTaskNames().get(taskIndex - 1);
-				String description = contents[1];
-				try {
-					setDescription(taskName, taskIndex, description);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+		case DESC:
+			printReceivedCommand("DESCRIBE");
+			contents = content.split(" ", 2);
+			taskIndex = Integer.parseInt(contents[0]);
+			taskName = st.getTaskNames().get(taskIndex - 1);
+			String description = contents[1];
+			try {
+				setDescription(taskName, taskIndex, description);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
-			case MODIFY:
-				printReceivedCommand("MODIFY");
-				contents = content.split(" ", 2);
-				taskIndex = Integer.parseInt(contents[0]);
-				String oldTaskName = st.getTaskNames().get(taskIndex - 1);
-				String newTaskName = contents[1];
-				try {
-					changeName(oldTaskName, newTaskName, taskIndex);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+		case MODIFY:
+			printReceivedCommand("MODIFY");
+			contents = content.split(" ", 2);
+			taskIndex = Integer.parseInt(contents[0]);
+			String oldTaskName = st.getTaskNames().get(taskIndex - 1);
+			String newTaskName = contents[1];
+			try {
+				changeName(oldTaskName, newTaskName, taskIndex);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
-			case VIEW:
-				printReceivedCommand("VIEW");
-				taskIndex = Integer.parseInt(content);
-				taskName = st.getTaskNames().get(taskIndex - 1);
-				printDetails(taskName);
-				break;
+		case VIEW:
+			printReceivedCommand("VIEW");
+			taskIndex = Integer.parseInt(content);
+			taskName = st.getTaskNames().get(taskIndex - 1);
+			printDetails(taskName);
+			break;
 
-			case CLEAR:
-				printReceivedCommand("CLEAR");
-				try {
-					clearAllTasks();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+		case CLEAR:
+			printReceivedCommand("CLEAR");
+			try {
+				clearAllTasks();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
-			case UNDO:
-				printReceivedCommand("UNDO");
-				if (inputStack.isEmpty()) {
-					System.out.println("Nothing to undo!");
-				} else {
-					String undoneInput = inputStack.pop();
-					processAndExecute(undoneInput);
+		case UNDO:
+			printReceivedCommand("UNDO");
+			if (inputStack.isEmpty()) {
+				printMessage("Nothing to undo!");
+			} else {
+				String undoneInput = inputStack.pop();
+				processAndExecute(undoneInput);
 
-					/*
-					 * VERY IMPORTANT because almost all inputs will add its
-					 * counterpart to the inputStack. If not popped, the undo
-					 * process will be trapped between just two processes.
-					 */
-					inputStack.pop();
-				}
-				break;
+				/*
+				 * VERY IMPORTANT because almost all inputs will add its
+				 * counterpart to the inputStack. If not popped, the undo
+				 * process will be trapped between just two processes.
+				 */
+				inputStack.pop();
+			}
+			break;
 
-			case RECOVER:
-				printReceivedCommand("RECOVER");
-				int noOfTasksToRecover = Integer.parseInt(content);
-				for (int i = 0; i < noOfTasksToRecover; i++) {
-					Task task = dumpedTasks.pop();
-					st.recoverTask(task);
-				}
-				inputStack.push("some fake input to be popped");
-				break;
+		case RECOVER:
+			printReceivedCommand("RECOVER");
+			int noOfTasksToRecover = Integer.parseInt(content);
+			for (int i = 0; i < noOfTasksToRecover; i++) {
+				Task task = dumpedTasks.pop();
+				st.recoverTask(task);
+			}
+			inputStack.push("some fake input to be popped");
+			break;
 
-			case EXIT:
-				printReceivedCommand("EXIT");
-				System.out
-						.println("Thank you for using this internal release of Stream[BETA]!");
-				System.exit(0);
+		case EXIT:
+			printReceivedCommand("EXIT");
+			printMessage("Thank you for using this internal release of Stream[BETA]!");
+			System.exit(0);
 
-			default:
-				System.out
-						.println("Unknown command with contents : " + content);
+		default:
+			printMessage("Unknown command with contents : " + content);
 		}
 	}
 
+	private void printTasks() {
+		printMessage(" ");
+		printMessage("Your current tasks: ");
+		List<String> myTasks = st.getTaskNames();
+		int numberOfTasks = myTasks.size();
+
+		for (int i = 1; i <= numberOfTasks; i++) {
+			printMessage(i + ". " + myTasks.get(i - 1));
+		}
+	}
+	
+	//@author A0096529N
+	/**
+	 * Prints message valve method
+	 * 
+	 * @param format A format string
+	 * @param args Arguments referenced by the format specifiers 
+	 * in the format string. If there are more arguments than 
+	 * format specifiers, the extra arguments are ignored. The 
+	 * number of arguments is variable and may be zero. The maximum 
+	 * number of arguments is limited by the maximum dimension of 
+	 * a Java array as defined by The Java™ Virtual Machine 
+	 * Specification. The behaviour on a null argument depends 
+	 * on the conversion.
+	 */
+	private static void printMessage(String format, Object... args) {
+		System.out.println(String.format(format, args));
+	}
 }
