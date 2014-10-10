@@ -11,16 +11,29 @@ import parser.ParserContent;
 
 public class Stream {
 
-	private static StreamObject st;
-	private static Stack<String> inputStack;
-	private static Stack<Task> dumpedTasks;
+	private StreamObject st;
+	private Stack<String> inputStack;
+	private Stack<Task> dumpedTasks;
 	private static final String MESSAGE_WELCOME = "Welcome to Stream!";
 	private static final String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
 
-	public static void initialize() {
+	void initialize() {
 		st = new StreamObject();
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<Task>();
+	}
+	
+	public static Stream newStream() {
+		Stream stream = new Stream();
+		stream.initialize();
+		return stream;
+	}
+
+	public void load() {
+		st.load();
+	}
+	public void save() {
+		st.save();
 	}
 
 	// @author A0093874N
@@ -36,7 +49,7 @@ public class Stream {
 	 * @throws ModificationException
 	 *             if task named newTask is already present.
 	 */
-	public static void addTask(String newTask) throws ModificationException {
+	public void addTask(String newTask) throws ModificationException {
 		if (hasTask(newTask)) {
 			throw new ModificationException(String.format(
 					ERROR_TASK_ALREADY_EXISTS, newTask));
@@ -53,13 +66,13 @@ public class Stream {
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-	public static Boolean hasTask(String task) {
+	public Boolean hasTask(String task) {
 		return st.hasTask(task);
 	}
 
 	// @author A0118007R
 
-	public static void printDetails(String task) {
+	public void printDetails(String task) {
 		try {
 			Task currentTask = st.getTask(task);
 			currentTask.printTaskDetails();
@@ -68,7 +81,7 @@ public class Stream {
 		}
 	}
 
-	public static void changeName(String oldName, String newName, int index) {
+	public void changeName(String oldName, String newName, int index) {
 		try {
 			st.updateTaskName(oldName, newName);
 			//
@@ -84,7 +97,7 @@ public class Stream {
 	 * 
 	 * @author A0118007R improved by A0093874N
 	 */
-	public static void setDescription(String task, int index, String description) {
+	public void setDescription(String task, int index, String description) {
 		try {
 			Task currentTask = st.getTask(task);
 			String oldDescription = currentTask.getDescription();
@@ -104,7 +117,7 @@ public class Stream {
 	 * @author A0118007R
 	 */
 
-	public static void changeDescription(String task, int index,
+	public void changeDescription(String task, int index,
 			String newDescription) {
 		try {
 			setDescription(task, index, newDescription);
@@ -119,7 +132,7 @@ public class Stream {
 	 * @author A0118007R improved by A0093874N
 	 */
 
-	public static void deleteTask(String task) {
+	public void deleteTask(String task) {
 		try {
 			Task deletedTask = st.getTask(task);
 			st.deleteTask(task);
@@ -147,7 +160,7 @@ public class Stream {
 	 * @return tasks - a list of tasks containing the key phrase.
 	 * @author Steven Khong
 	 */
-	public static List<Task> search(String keyphrase) {
+	public List<Task> search(String keyphrase) {
 		return st.findTasks(keyphrase);
 	}
 
@@ -158,7 +171,7 @@ public class Stream {
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-	public static void clearAllTasks() {
+	public void clearAllTasks() {
 		int noOfTasks = st.getTaskNames().size();
 		for (int i = noOfTasks - 1; i >= 0; i--) {
 			deleteTask(st.getTaskNames().get(i));
@@ -181,10 +194,10 @@ public class Stream {
 
 	public static void main(String[] args) {
 		System.out.println(MESSAGE_WELCOME);
-		initialize();
-		st.load();
+		Stream stream = Stream.newStream();
+		stream.load(); // can consider placing this step into Stream.initialize(), so no need call here.
 		while (true) {
-			printTasks();
+			stream.printTasks();
 			System.out
 					.println("========================================================");
 			System.out.print("Enter Command: ");
@@ -197,14 +210,14 @@ public class Stream {
 			if (input.length() >= 7 && input.substring(0, 7) == "recover") {
 				System.out.println("Unknown command with contents : ");
 			} else {
-				processAndExecute(input);
+				stream.processAndExecute(input);
 			}
 
-			st.save();
+			stream.save();
 		}
 	}
 
-	private static void printTasks() {
+	void printTasks() {
 		System.out.println(" ");
 		System.out.println("Your current tasks: ");
 		ArrayList<String> myTasks = st.getTaskNames();
@@ -215,7 +228,7 @@ public class Stream {
 		}
 	}
 
-	static void processAndExecute(String input) {
+	void processAndExecute(String input) {
 		ParserContent parsedContent = Parser.interpretCommand(input);
 		CommandType command = parsedContent.getCommandKey();
 		String content = parsedContent.getCommandContent();
