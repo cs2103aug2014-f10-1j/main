@@ -17,7 +17,8 @@ public class Stream {
 	private static final String MESSAGE_WELCOME = "Welcome to Stream!";
 	private static final String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
 	private static final String ERROR_SAVE_FAILED = "Error: Auto-save failed, cause by - %1$s";
-
+	
+	//@author A0118007R
 	public static void main(String[] args) {
 		Scanner inputScanner = new Scanner(System.in);
 		try {	// try-finally block to ensure inputScanner closure. Any better implementation? (arrow shape)
@@ -27,7 +28,7 @@ public class Stream {
 			while (true) {
 				stream.printTasks();
 				printMessage("========================================================");
-				printMessage("Enter Command: ");
+				System.out.print("Enter Command: ");
 				String input = inputScanner.nextLine();
 				// TODO restrict "recover" from user somehow
 				/*
