@@ -109,6 +109,23 @@ public class Stream {
 
 		}
 	}
+	
+	//@author A0119401U
+	/**
+	 * Mark the selected task as done
+	 * 
+	 */
+	public void markAsDone(String task, int index) {
+		try {
+			Task currentTask = st.getTask(task);
+			currentTask.markAsDone();
+			//
+			inputStack.push("mark " + index + " " + "done");
+			//
+		} catch (Exception e) {
+			
+		}
+	}
 
 	/**
 	 * Modify a task's description This method is just to differentiate the set
@@ -277,6 +294,18 @@ public class Stream {
 				String newTaskName = contents[1];
 				try {
 					changeName(oldTaskName, newTaskName, taskIndex);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+			
+			case MARK:
+				printReceivedCommand("MARK");
+				contents = content.split(" ",2);
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = st.getTaskNames().get(taskIndex-1);
+				try {
+					markAsDone(taskName, taskIndex);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

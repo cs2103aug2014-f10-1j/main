@@ -36,13 +36,19 @@ public class Task {
 	}
 	
 	//Description Part
-	//@author A0118007R
+	//@author A0118007R  updated by A0119401U
 	
 	public void printTaskDetails(){
 		System.out.println("Task name = " + taskName);
 		System.out.println("Description = " + taskDescription);
 		System.out.println("Deadline = ");
 		System.out.println("Tags = ");
+		if(isDone){
+			System.out.println("Status: Done.");
+		}
+		else{
+			System.out.println("Status: Not finished.");
+		}
 	}
 
 	/**

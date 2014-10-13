@@ -14,7 +14,7 @@ package parser;
 public class Parser {
 
 	public enum CommandType {
-		ADD, DEL, DESC, VIEW, MODIFY, CLEAR, UNDO, EXIT, ERROR, RECOVER;
+		ADD, DEL, DESC, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER;
 	}
 
 	public static ParserContent interpretCommand(String command) {
@@ -43,6 +43,11 @@ public class Parser {
 			case "mod":
 			case "modify":
 				commandKey = CommandType.MODIFY;
+				return newContent(commandKey, contents);
+			case "mark":
+			case "done":
+			case "finished":
+				commandKey = CommandType.MARK;
 				return newContent(commandKey, contents);
 			case "clear":
 			case "clr":

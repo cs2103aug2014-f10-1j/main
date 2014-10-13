@@ -247,6 +247,27 @@ public class StreamObject {
 		taskList.add(index, newTaskName);
 		taskList.remove(index + 1);
 	}
+	
+	//@author A0119401U
+	/**
+	 * 
+	 * Mark the selected task as done
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 * 
+	 * @throws ModificationException
+	 */
+	public void markTaskAsDone(String taskName)
+			throws ModificationException {
+		Task task = this.getTask(taskName);
+		allTasks.remove(taskName);
+		task.markAsDone();
+		allTasks.put(taskName, task);
+	}
 
 	// @author A0096529N
 	
