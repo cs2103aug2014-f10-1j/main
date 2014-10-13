@@ -5,25 +5,28 @@ import java.util.Calendar;
 
 public class Task {
 	
-
-	private String taskName;
-
-	private String taskDescription;
-	
 	private final String ERROR_NO_DESCRIPTION =  "Error: The task \"%1$s\" does not have a description.";
 	private final String ERROR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
-
-	private Calendar deadline = null;
+	
+	//Attributes
+	private String taskName;
+	private String taskDescription;
+	private Calendar deadline;
 	private ArrayList<String> tags;
+	private boolean isDone;
 
 
-	// Tasks Methods
+	//Constructor
 	public Task(String taskName) {
 		this.taskName = taskName;
 		this.taskDescription = null;
+		this.deadline = null;
 		this.tags = new ArrayList<String>();
+		this.isDone = false;
 	}
 
+	
+	//Name Part
 	public String getTaskName() {
 		return this.taskName;
 	}
@@ -32,7 +35,8 @@ public class Task {
 		this.taskName = newTaskName;
 	}
 	
-	//author A0118007R
+	//Description Part
+	//@author A0118007R
 	
 	public void printTaskDetails(){
 		System.out.println("Task name = " + taskName);
@@ -60,9 +64,8 @@ public class Task {
 		}
 	}
 	
-	//author Shenhao
-	
-	//Deadline Methods
+	//@author A0119401U
+	//Deadline Part
 	public void setDeadline(Calendar deadline){
 		this.deadline=deadline;
 	}
@@ -76,7 +79,7 @@ public class Task {
 		return deadline.before(Calendar.getInstance());
 	}
 	
-	//Tags Methods
+	//Tags Part
 	public void addTag(String newTag){
 		tags.add(newTag.toUpperCase());
 		Collections.sort(tags);
@@ -110,6 +113,16 @@ public class Task {
 		} else {
 			System.out.println(String.format(ERROR_TAG_DOES_NOT_EXIST, tag));
 		}
+	}
+	
+	//Mark_As_Done Part
+	
+	public boolean getProgress(){
+		return this.isDone;
+	}
+	
+	public void markAsDone(){
+		this.isDone = true;
 	}
 	
 
