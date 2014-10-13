@@ -36,12 +36,22 @@ public class Task {
 	}
 	
 	//Description Part
-	//@author A0118007R  updated by A0119401U
+	//@author A0118007R  
+	//updated by A0119401U
 	
 	public void printTaskDetails(){
 		System.out.println("Task name = " + taskName);
 		System.out.println("Description = " + taskDescription);
-		System.out.println("Deadline = ");
+		String strDeadline = null;
+		if(deadline==null){
+			strDeadline = "not specified";
+		}
+		else{
+			strDeadline+=deadline.get(Calendar.YEAR);
+			strDeadline+=(deadline.get(Calendar.MONTH)+1);
+			strDeadline+=deadline.get(Calendar.DATE);
+		}
+		System.out.println("Deadline = " + strDeadline);
 		System.out.println("Tags = ");
 		if(isDone){
 			System.out.println("Status: Done.");

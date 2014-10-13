@@ -1,6 +1,8 @@
 package stream;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
@@ -120,6 +122,26 @@ public class Stream {
 			st.markTaskAsDone(task);
 			//
 			inputStack.push("mark " + index + " " + "done");
+			//
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	//@author A0119401U
+	/**
+	 * Set the due date of the selected task
+	 * 
+	 * @param taskName, taskIndex, calendar
+	 * 
+	 * @author A0119401U
+	 * 
+	 */
+	public void setDueDate(String taskName, int taskIndex, Calendar calendar) {
+		try {
+			st.setDueTime(taskName, calendar);
+			//
+			inputStack.push("due " + taskIndex + " " + calendar.get(Calendar.DATE)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.YEAR));
 			//
 		} catch (Exception e) {
 			
@@ -292,6 +314,30 @@ public class Stream {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				break;
+			
+			case DUE:
+				printReceivedCommand("DUE");
+				contents = content.split(" ",2);
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = st.getTaskNames().get(taskIndex - 1);
+				String dueDate[] = contents[1].split("/");
+				int year;
+				if(dueDate.length==2){
+					year = Calendar.getInstance().get(Calendar.YEAR);
+				}
+				else{
+					year = Integer.parseInt(dueDate[2]);
+				}
+				int day = Integer.parseInt(dueDate[0]);
+				int month = Integer.parseInt(dueDate[1]);
+				Calendar calendar = new GregorianCalendar(year,month-1,day);
+				try {
+					setDueDate(taskName, taskIndex, calendar);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				break;
 
 			case MODIFY:

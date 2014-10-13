@@ -268,6 +268,29 @@ public class StreamObject {
 		task.markAsDone();
 		allTasks.put(taskName, task);
 	}
+	
+	//@author A0119401U
+	/**
+	 * 
+	 * Set the due time of the selected task
+	 * 
+	 * @param taskName, calendar
+	 * 
+	 * @throws ModificationException
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * The case "calendar is null" will be dealt with by Task.java
+	 */
+	public void setDueTime(String taskName, Calendar calendar)
+			throws ModificationException {
+		Task task = this.getTask(taskName);
+		allTasks.remove(taskName);
+		task.setDeadline(calendar);
+		allTasks.put(taskName, task);
+	}
 
 	// @author A0096529N
 	

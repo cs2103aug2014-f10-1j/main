@@ -13,7 +13,7 @@ package parser;
 public class Parser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER;
+		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER;
 	}
 
 	private CommandType commandKey;
@@ -38,6 +38,10 @@ public class Parser {
 			case "desc":
 			case "describe":
 				this.commandKey = CommandType.DESC;
+				break;
+			case "due":
+			case "by":
+				this.commandKey = CommandType.DUE;
 				break;
 			case "view":
 				this.commandKey = CommandType.VIEW;
