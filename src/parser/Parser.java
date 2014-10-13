@@ -1,6 +1,5 @@
 package parser;
 
-//import java.util.*;
 /*
  * Parser is used to interpret the user input to a pack of 
  * information and later on pass it to the Logic part
@@ -8,75 +7,88 @@ package parser;
  * Need to be modified later, since I just found out that the COMMAND_TYPE
  * may not be useful here (don't need to specify it)
  * 
- * @author: Jiang Shenhao
+ * @author: A0119401U
  * 
  */
 public class Parser {
 
 	public enum CommandType {
-		ADD, DEL, DESC, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER;
+		INIT, ADD, DEL, DESC, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER;
 	}
 
-	public static ParserContent interpretCommand(String command) {
-		String[] content = command.split(" ", 2);
-		return executeCommand(content);
+	private CommandType commandKey;
+	private String commandContent;
+	
+	public Parser(){
+		this.commandKey = CommandType.INIT;
+		this.commandContent = null;
 	}
-
-	private static ParserContent executeCommand(String[] contents) {
-		CommandType commandKey;
+	
+	public void interpretCommand(String input) {
+		String[] contents = input.trim().toLowerCase().split(" ",2);
 		String key = contents[0];
-		switch (key) {
+		switch(key) {
 			case "add":
-				commandKey = CommandType.ADD;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.ADD;
+				break;
 			case "del":
 			case "delete":
-				commandKey = CommandType.DEL;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.DEL;
+				break;
 			case "desc":
 			case "describe":
-				commandKey = CommandType.DESC;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.DESC;
+				break;
 			case "view":
-				commandKey = CommandType.VIEW;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.VIEW;
+				break;
 			case "mod":
 			case "modify":
-				commandKey = CommandType.MODIFY;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.MODIFY;
+				break;
 			case "mark":
 			case "done":
 			case "finished":
-				commandKey = CommandType.MARK;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.MARK;
+				break;
 			case "clear":
 			case "clr":
-				commandKey = CommandType.CLEAR;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.CLEAR;
+				break;
 			case "undo":
-				commandKey = CommandType.UNDO;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.UNDO;
+				break;
 			case "recover":
-				commandKey = CommandType.RECOVER;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.RECOVER;
+				break;
 			case "exit":
-				commandKey = CommandType.EXIT;
-				return newContent(commandKey, contents);
+				this.commandKey = CommandType.EXIT;
+				break;
 			default:
-				commandKey = CommandType.ERROR;
-				return wrongContent();
+				this.commandKey = CommandType.ERROR;
+				break;
 		}
+		this.commandContent = executeCommand(contents);
 	}
-
-	private static ParserContent newContent(CommandType key, String[] contents) {
-		ParserContent command = new ParserContent(key, contents);
-		return command;
+	
+	private static String executeCommand(String[] contents){
+		String content = null;
+		if(contents.length>1){
+			content = contents[1];
+		}
+		else{
+			content = "";
+		}
+		
+		return content;
 	}
-
-	private static ParserContent wrongContent() {
-		String[] invalidInput = { "invalid" };
-		ParserContent wrongMessage = new ParserContent(CommandType.ERROR,
-				invalidInput);
-		return wrongMessage;
+	
+	public CommandType getCommandType(){
+		return this.commandKey;
 	}
+	
+	public String getCommandContent(){
+		return this.commandContent;
+	}
+	
 }

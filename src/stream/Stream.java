@@ -7,7 +7,7 @@ import java.util.Stack;
 
 import parser.Parser;
 import parser.Parser.CommandType;
-import parser.ParserContent;
+//import parser.ParserContent;
 
 public class Stream {
 
@@ -117,8 +117,7 @@ public class Stream {
 	 */
 	public void markAsDone(String task, int index) {
 		try {
-			Task currentTask = st.getTask(task);
-			currentTask.markAsDone();
+			st.markTaskAsDone(task);
 			//
 			inputStack.push("mark " + index + " " + "done");
 			//
@@ -246,9 +245,18 @@ public class Stream {
 	}
 
 	void processAndExecute(String input) {
+		
+		//updated by A0119401U
+		/*
 		ParserContent parsedContent = Parser.interpretCommand(input);
 		CommandType command = parsedContent.getCommandKey();
 		String content = parsedContent.getCommandContent();
+		*/
+		
+		Parser parser = new Parser();
+		parser.interpretCommand(input);
+		CommandType command = parser.getCommandType();
+		String content = parser.getCommandContent();
 		String[] contents;
 		String taskName;
 
