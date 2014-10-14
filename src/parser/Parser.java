@@ -1,11 +1,11 @@
 package parser;
 
+//@author A0119401U
 /*
- * Parser is used to interpret the user input to a pack of 
- * information and later on pass it to the Logic part
+ * Once initialized, a new Parser object is created
+ * and it is used to interpret the user input to pack into
+ * the attributes of the class and later on pass it to the Logic part
  * 
- * Need to be modified later, since I just found out that the COMMAND_TYPE
- * may not be useful here (don't need to specify it)
  * 
  * @author: A0119401U
  * 
