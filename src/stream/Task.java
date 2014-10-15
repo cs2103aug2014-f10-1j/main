@@ -7,6 +7,8 @@ public class Task {
 	
 	private final String ERROR_NO_DESCRIPTION =  "Error: The task \"%1$s\" does not have a description.";
 	private final String ERROR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
+	private final String[] MONTHS = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+	
 	
 	//Attributes
 	private String taskName;
@@ -35,7 +37,7 @@ public class Task {
 		this.taskName = newTaskName;
 	}
 	
-	//Description Part
+
 	//@author A0118007R  
 	//updated by A0119401U
 	
@@ -48,7 +50,7 @@ public class Task {
 		}
 		else{
 			
-			strDeadline = deadline.get(Calendar.DATE) + " " + (deadline.get(Calendar.MONTH) + 1) + " " + deadline.get(Calendar.YEAR);
+			strDeadline = deadline.get(Calendar.DATE) + " " + MONTHS[(deadline.get(Calendar.MONTH))] + " " + deadline.get(Calendar.YEAR);
 		}
 		System.out.println("Deadline = " + strDeadline);
 		System.out.println("Tags = ");
@@ -60,6 +62,8 @@ public class Task {
 		}
 	}
 
+	//Description Part
+	//@author A0118007R
 	/**
 	 * The methods below are related to set descriptions to a specified task
 	 * 
