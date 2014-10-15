@@ -90,6 +90,13 @@ public class Task {
 		return this.deadline;
 	}
 	
+	//@author A0118007R
+	
+	public void setNullDeadline(){
+		this.deadline = null;
+	}
+	//@author A0119401U
+	
 	//This one needs to be checked later
 	public boolean isDue(){
 		return deadline.before(Calendar.getInstance());

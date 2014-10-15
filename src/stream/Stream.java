@@ -139,10 +139,17 @@ public class Stream {
 	 */
 	public void setDueDate(String taskName, int taskIndex, Calendar calendar) {
 		try {
+			Task currentTask = st.getTask(taskName);
+			Calendar currentDeadline = currentTask.getDeadline();
 			st.setDueTime(taskName, calendar);
+			if (currentDeadline == null){
+				inputStack.push("due " + taskIndex + " " + "null");
+			} else {
+				
 			//
-			inputStack.push("due " + taskIndex + " " + calendar.get(Calendar.DATE)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.YEAR));
+			inputStack.push("due " + taskIndex + " " + currentDeadline.get(Calendar.DATE)+"/"+(currentDeadline.get(Calendar.MONTH)+1)+"/"+currentDeadline.get(Calendar.YEAR));
 			//
+			}
 		} catch (Exception e) {
 			
 		}
@@ -318,25 +325,39 @@ public class Stream {
 			
 			case DUE:
 				printReceivedCommand("DUE");
-				contents = content.split(" ",2);
+				contents = content.split(" ", 2);
+
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = st.getTaskNames().get(taskIndex - 1);
-				String dueDate[] = contents[1].split("/");
-				int year;
-				if(dueDate.length==2){
-					year = Calendar.getInstance().get(Calendar.YEAR);
-				} else {
-					year = Integer.parseInt(dueDate[2]);
-				}
-				int day = Integer.parseInt(dueDate[0]);
-				int month = Integer.parseInt(dueDate[1]);
-				Calendar calendar = new GregorianCalendar(year,month-1,day);
-				try {
-					setDueDate(taskName, taskIndex, calendar);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 				
+				if (contents[1].trim().equals("null")) {
+					try {
+						Task currentTask = st.getTask(taskName);
+						currentTask.setNullDeadline();
+					} catch (ModificationException e) {
+
+					}
+				} else {
+
+					String[] dueDate = contents[1].split("/");
+					int year;
+
+					if (dueDate.length == 2) {
+						year = Calendar.getInstance().get(Calendar.YEAR);
+					} else {
+						year = Integer.parseInt(dueDate[2]);
+					}
+					int day = Integer.parseInt(dueDate[0]);
+					int month = Integer.parseInt(dueDate[1]);
+					Calendar calendar = new GregorianCalendar(year, month - 1,
+							day);
+
+					try {
+						setDueDate(taskName, taskIndex, calendar);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 				break;
 
 			case MODIFY:
