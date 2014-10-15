@@ -65,8 +65,8 @@ public class StreamIOTest {
 		task2.addTag("urgent");
 
 		map = new HashMap<String, StreamTask>();
-		map.put(task1.getTaskName(), task1);
-		map.put(task2.getTaskName(), task2);
+		map.put(task1.getTaskName().toLowerCase(), task1);
+		map.put(task2.getTaskName().toLowerCase(), task2);
 
 
 		String fileContent = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","

@@ -1,15 +1,14 @@
-
-
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-// import exception.StreamIOException;
+import exception.StreamIOException;
 import exception.StreamModificationException;
-// import fileio.StreamIO;
+import fileio.StreamIO;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
 import model.StreamTask;
@@ -18,17 +17,36 @@ import model.StreamObject;
 public class Stream {
 
 	private StreamObject st;
+	private StreamIO stio;
+
 	private Stack<String> inputStack;
 	private Stack<StreamTask> dumpedTasks;
+	private ArrayList<String> logMessages;
+	private String timeStart;
+
 	private static final String MESSAGE_WELCOME = "Welcome to Stream!";
 	private static final String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
+	private static final String SAVE_LOCATION = "stream.json";
 
 	void initialize() {
 		st = new StreamObject();
+		stio = new StreamIO(SAVE_LOCATION);
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<StreamTask>();
+		logMessages = new ArrayList<String>();
+
+		Calendar now = Calendar.getInstance();
+		String day = addZeroToTime(now.get(Calendar.DAY_OF_MONTH));
+		String mth = addZeroToTime(now.get(Calendar.MONTH));
+		Integer yr = now.get(Calendar.YEAR);
+		String hr = addZeroToTime(now.get(Calendar.HOUR_OF_DAY));
+		String min = addZeroToTime(now.get(Calendar.MINUTE));
+		String sec = addZeroToTime(now.get(Calendar.SECOND));
+		timeStart = day + mth + yr.toString().substring(2) + " " + hr + min
+				+ sec;
+
 	}
-	
+
 	public static Stream newStream() {
 		Stream stream = new Stream();
 		stream.initialize();
@@ -38,6 +56,7 @@ public class Stream {
 	public void load() {
 		st.load();
 	}
+
 	public void save() {
 		st.save();
 	}
@@ -45,24 +64,29 @@ public class Stream {
 	// @author A0093874N
 
 	/**
-	 * Adds a new task to the task list.
-	 * 
 	 * <p>
-	 * Precondition: newTaskName != null
+	 * Adds a new task named <i>newTaskName</i> to the task list.
+	 * </p>
+	 * <p>
+	 * Precondition: <i>newTaskName</i> is not null
 	 * </p>
 	 * 
 	 * @author Wilson Kurniawan
 	 * @throws StreamModificationException
-	 *             if task named newTask is already present.
+	 *             if task named <i>newTaskName</i> is already present.
+	 * @return <strong>String</strong> Logging message
 	 */
-	public void addTask(String newTask) throws StreamModificationException {
-		if (hasTask(newTask)) {
+	public String addTask(String newTaskName)
+			throws StreamModificationException {
+		assert (newTaskName == null) : "Error: pre-condition not fulfilled";
+		if (hasTask(newTaskName)) {
 			throw new StreamModificationException(String.format(
-					ERROR_TASK_ALREADY_EXISTS, newTask));
+					ERROR_TASK_ALREADY_EXISTS, newTaskName));
 		} else {
-			st.addTask(newTask);
+			st.addTask(newTaskName);
 			int currentNoOfTasks = st.getTaskNames().size();
-			inputStack.push("delete " + currentNoOfTasks);
+			inputStack.push("dismiss " + currentNoOfTasks);
+			return "Added " + newTaskName;
 		}
 	}
 
@@ -115,8 +139,8 @@ public class Stream {
 
 		}
 	}
-	
-	//@author A0119401U
+
+	// @author A0119401U
 	/**
 	 * Mark the selected task as done
 	 * 
@@ -128,16 +152,16 @@ public class Stream {
 			inputStack.push("mark " + index + " " + "ongoing");
 			//
 		} catch (Exception e) {
-			
+
 		}
 	}
-	
-	//@author A0118007R
+
+	// @author A0118007R
 	/**
 	 * Mark the selected task as ongoing
 	 * 
 	 */
-	
+
 	public void markAsOngoing(String task, int index) {
 		try {
 			st.markTaskAsOngoing(task);
@@ -145,15 +169,16 @@ public class Stream {
 			inputStack.push("mark " + index + " " + "done");
 			//
 		} catch (Exception e) {
-			
+
 		}
 	}
-	
-	//@author A0119401U
+
+	// @author A0119401U
 	/**
 	 * Set the due date of the selected task
 	 * 
-	 * @param taskName, taskIndex, calendar
+	 * @param taskName
+	 *            , taskIndex, calendar
 	 * 
 	 * @author A0119401U
 	 * 
@@ -163,16 +188,19 @@ public class Stream {
 			StreamTask currentTask = st.getTask(taskName);
 			Calendar currentDeadline = currentTask.getDeadline();
 			st.setDueTime(taskName, calendar);
-			if (currentDeadline == null){
+			if (currentDeadline == null) {
 				inputStack.push("due " + taskIndex + " " + "null");
 			} else {
-				
-			//
-			inputStack.push("due " + taskIndex + " " + currentDeadline.get(Calendar.DATE)+"/"+(currentDeadline.get(Calendar.MONTH)+1)+"/"+currentDeadline.get(Calendar.YEAR));
-			//
+
+				//
+				inputStack.push("due " + taskIndex + " "
+						+ currentDeadline.get(Calendar.DATE) + "/"
+						+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
+						+ currentDeadline.get(Calendar.YEAR));
+				//
 			}
 		} catch (Exception e) {
-			
+
 		}
 	}
 
@@ -183,10 +211,17 @@ public class Stream {
 	 * @author A0118007R
 	 */
 
-	public void changeDescription(String task, int index,
-			String newDescription) {
+	public void changeDescription(String task, int index, String newDescription) {
 		try {
 			setDescription(task, index, newDescription);
+		} catch (Exception e) {
+
+		}
+	}
+
+	public void dismissTask(String task) {
+		try {
+			st.deleteTask(task);
 		} catch (Exception e) {
 
 		}
@@ -201,7 +236,7 @@ public class Stream {
 	public void deleteTask(String task) {
 		try {
 			StreamTask deletedTask = st.getTask(task);
-			st.deleteTask(task);
+			dismissTask(task);
 			dumpedTasks.push(deletedTask);
 			inputStack.push("recover 1");
 		} catch (Exception e) {
@@ -258,22 +293,36 @@ public class Stream {
 
 	public static Scanner inputScanner = new Scanner(System.in);
 
+	public static String addZeroToTime(Integer time) {
+		String convertedTime = time.toString();
+		if (time < 10) {
+			convertedTime = "0" + convertedTime;
+		}
+		if (time < 1) {
+			convertedTime = "0" + convertedTime;
+		}
+		return convertedTime;
+	}
+
 	public static void main(String[] args) {
 		System.out.println(MESSAGE_WELCOME);
 		Stream stream = Stream.newStream();
-		stream.load(); // can consider placing this step into Stream.initialize(), so no need call here.
+		stream.load(); // can consider placing this step into
+						// Stream.initialize(), so no need call here.
 		while (true) {
 			stream.printTasks();
 			System.out
 					.println("========================================================");
 			System.out.print("Enter Command: ");
 			String input = inputScanner.nextLine();
-			// TODO restrict "recover" from user somehow
+			// TODO restrict "recover" and "dismiss" from user somehow
 			/*
-			 * workaround for now: if we spot "recover", halt immediately. any
-			 * better idea?
+			 * workaround for now: if we spot "recover" or "dismiss", halt
+			 * immediately. any better idea?
 			 */
-			if (input.length() >= 7 && input.substring(0, 7) == "recover") {
+			if (input.length() >= 7
+					&& (input.substring(0, 7).equals("recover") || input
+							.substring(0, 7).equals("dismiss"))) {
 				System.out.println("Unknown command with contents : ");
 			} else {
 				stream.processAndExecute(input);
@@ -295,20 +344,21 @@ public class Stream {
 	}
 
 	void processAndExecute(String input) {
-		
-		//updated by A0119401U
+
+		// updated by A0119401U
 		/*
-		ParserContent parsedContent = Parser.interpretCommand(input);
-		CommandType command = parsedContent.getCommandKey();
-		String content = parsedContent.getCommandContent();
-		*/
-		
+		 * ParserContent parsedContent = Parser.interpretCommand(input);
+		 * CommandType command = parsedContent.getCommandKey(); String content =
+		 * parsedContent.getCommandContent();
+		 */
+
 		StreamParser parser = new StreamParser();
 		parser.interpretCommand(input);
 		CommandType command = parser.getCommandType();
 		String content = parser.getCommandContent();
 		String[] contents;
 		String taskName;
+		int taskIndex;
 
 		switch (command) {
 			case ADD:
@@ -322,7 +372,7 @@ public class Stream {
 
 			case DEL:
 				printReceivedCommand("DELETE");
-				int taskIndex = Integer.parseInt(content);
+				taskIndex = Integer.parseInt(content);
 				taskName = st.getTaskNames().get(taskIndex - 1);
 				try {
 					deleteTask(taskName);
@@ -343,18 +393,17 @@ public class Stream {
 					e.printStackTrace();
 				}
 				break;
-			
+
 			case DUE:
 				printReceivedCommand("DUE");
 				contents = content.split(" ", 2);
 
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = st.getTaskNames().get(taskIndex - 1);
-				
+
 				if (contents[1].trim().equals("null")) {
 					try {
-					
-						
+
 						st.setNullDeadline(taskName);
 					} catch (StreamModificationException e) {
 
@@ -394,14 +443,14 @@ public class Stream {
 					e.printStackTrace();
 				}
 				break;
-			
+
 			case MARK:
 				printReceivedCommand("MARK");
-				contents = content.split(" ",2);
+				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = st.getTaskNames().get(taskIndex-1);
+				taskName = st.getTaskNames().get(taskIndex - 1);
 				try {
-					if (contents[1].trim().equals("done")){
+					if (contents[1].trim().equals("done")) {
 						markAsDone(taskName, taskIndex);
 					} else {
 						markAsOngoing(taskName, taskIndex);
@@ -450,6 +499,18 @@ public class Stream {
 				for (int i = 0; i < noOfTasksToRecover; i++) {
 					StreamTask task = dumpedTasks.pop();
 					st.recoverTask(task);
+				}
+				inputStack.push("some fake input to be popped");
+				break;
+
+			case DISMISS:
+				printReceivedCommand("DISMISS");
+				taskIndex = Integer.parseInt(content);
+				taskName = st.getTaskNames().get(taskIndex - 1);
+				try {
+					dismissTask(taskName);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				inputStack.push("some fake input to be popped");
 				break;

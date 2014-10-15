@@ -47,8 +47,12 @@ import exception.StreamIOException;
 public class StreamIO {
 
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
-	static String SAVE_LOCATION = "stream.json";
+	static String SAVE_LOCATION;
 
+	public StreamIO(String saveLocation) {
+		SAVE_LOCATION = saveLocation;
+	}
+	
 	/**
 	 * <p>Reads and inflate the contents of serialized 
 	 * storage file into HashMap<String, Task> object.</p>
