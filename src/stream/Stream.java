@@ -325,8 +325,7 @@ public class Stream {
 				int year;
 				if(dueDate.length==2){
 					year = Calendar.getInstance().get(Calendar.YEAR);
-				}
-				else{
+				} else {
 					year = Integer.parseInt(dueDate[2]);
 				}
 				int day = Integer.parseInt(dueDate[0]);
