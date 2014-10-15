@@ -42,22 +42,21 @@ public class Task {
 	public void printTaskDetails(){
 		System.out.println("Task name = " + taskName);
 		System.out.println("Description = " + taskDescription);
-		String strDeadline = null;
+		String strDeadline;
 		if(deadline==null){
 			strDeadline = "not specified";
 		}
 		else{
-			strDeadline+=deadline.get(Calendar.YEAR);
-			strDeadline+=(deadline.get(Calendar.MONTH)+1);
-			strDeadline+=deadline.get(Calendar.DATE);
+			
+			strDeadline = deadline.get(Calendar.DATE) + " " + (deadline.get(Calendar.MONTH) + 1) + " " + deadline.get(Calendar.YEAR);
 		}
 		System.out.println("Deadline = " + strDeadline);
 		System.out.println("Tags = ");
 		if(isDone){
-			System.out.println("Status: Done.");
+			System.out.println("Status: Done");
 		}
 		else{
-			System.out.println("Status: Not finished.");
+			System.out.println("Status: Not finished");
 		}
 	}
 
