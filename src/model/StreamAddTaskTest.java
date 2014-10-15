@@ -1,4 +1,4 @@
-package stream;
+package model;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -6,11 +6,10 @@ import org.junit.Test;
 
 public class StreamAddTaskTest {
 
-	private static Stream stream;
+	private static StreamObject stream = new StreamObject();
 
 	@Before
 	public void setup() throws Exception {
-		stream = Stream.newStream();
 		stream.addTask("Submit CE2");
 		stream.addTask("Study for midterms");
 	}
@@ -46,7 +45,6 @@ public class StreamAddTaskTest {
 	
 	@Test
 	public void deleteTest() throws Exception{
-		stream.initialize();
 		stream.addTask("Submit CE2");
 		stream.deleteTask("Submit CE2");
 		assertEquals(stream.hasTask("Submit CE2"), false);

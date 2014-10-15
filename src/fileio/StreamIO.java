@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import model.StreamTask;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import stream.Task;
+import exception.StreamIOException;
 
 //@author A0096529N
 /**
@@ -58,7 +60,7 @@ public class StreamIO {
 	 * file corruption or IO failures when loading/accessing
 	 * storage file.
 	 */
-	public static HashMap<String, Task> load() throws StreamIOException {
+	public static HashMap<String, StreamTask> load() throws StreamIOException {
 		JSONArray tasksJson = loadFromFile(new File(SAVE_LOCATION));
 		if (tasksJson == null) {
 			return null;
@@ -78,7 +80,7 @@ public class StreamIO {
 	 * file corruption or IO failures when loading/accessing
 	 * storage file.
 	 */
-	public static void save(HashMap<String, Task> allTasks) throws StreamIOException {
+	public static void save(HashMap<String, StreamTask> allTasks) throws StreamIOException {
 		JSONArray tasksJson = mapToJson(allTasks);
 		writeToFile(new File(SAVE_LOCATION), tasksJson);
 	}
@@ -112,7 +114,7 @@ public class StreamIO {
 			throw new StreamIOException("File corrupted, could not parse file contents - " + e.getMessage());
 		}
 	}
-	static JSONArray mapToJson(Map<String, Task> map) throws StreamIOException {
+	static JSONArray mapToJson(Map<String, StreamTask> map) throws StreamIOException {
 		JSONArray mapJson = new JSONArray();
 		for (String key:map.keySet()) {
 			JSONObject taskJson = taskToJson(map.get(key));
@@ -120,19 +122,19 @@ public class StreamIO {
 		}
 		return mapJson;
 	}
-	static HashMap<String, Task> jsonToMap(JSONArray tasksJson) throws StreamIOException {
+	static HashMap<String, StreamTask> jsonToMap(JSONArray tasksJson) throws StreamIOException {
 		try {
-			HashMap<String, Task> map = new HashMap<String, Task>();
+			HashMap<String, StreamTask> map = new HashMap<String, StreamTask>();
 			for (int i=0; i<tasksJson.length(); i++) {
-				Task task = jsonToTask(tasksJson.getJSONObject(i));
-				map.put(task.getTaskName(), task);
+				StreamTask task = jsonToTask(tasksJson.getJSONObject(i));
+				map.put(task.getTaskName().toLowerCase(), task);
 			}
 			return map;
 		} catch (JSONException e) {
 			throw new StreamIOException("JSON conversion failed - " + e.getMessage());
 		}
 	}
-	static JSONObject taskToJson(Task task) throws StreamIOException {
+	static JSONObject taskToJson(StreamTask task) throws StreamIOException {
 		try {
 			JSONObject taskJson = new JSONObject();
 			taskJson.put(TaskKey.NAME, task.getTaskName());
@@ -144,10 +146,10 @@ public class StreamIO {
 			throw new StreamIOException("JSON conversion failed - " + e.getMessage());
 		}
 	}
-	static Task jsonToTask(JSONObject taskJson) throws StreamIOException {
+	static StreamTask jsonToTask(JSONObject taskJson) throws StreamIOException {
 		try {
 			String taskName = taskJson.getString(TaskKey.NAME);
-			Task task = new Task(taskName);
+			StreamTask task = new StreamTask(taskName);
 			task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
 			
 			if (taskJson.has(TaskKey.DEADLINE)) {

@@ -1,4 +1,4 @@
-package stream;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,22 +7,26 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-import parser.Parser;
-import parser.Parser.CommandType;
-//import parser.ParserContent;
+// import exception.StreamIOException;
+import exception.StreamModificationException;
+// import fileio.StreamIO;
+import parser.StreamParser;
+import parser.StreamParser.CommandType;
+import model.StreamTask;
+import model.StreamObject;
 
 public class Stream {
 
 	private StreamObject st;
 	private Stack<String> inputStack;
-	private Stack<Task> dumpedTasks;
+	private Stack<StreamTask> dumpedTasks;
 	private static final String MESSAGE_WELCOME = "Welcome to Stream!";
 	private static final String ERROR_TASK_ALREADY_EXISTS = "Error: \"%1$s\" already exists in the tasks list.";
 
 	void initialize() {
 		st = new StreamObject();
 		inputStack = new Stack<String>();
-		dumpedTasks = new Stack<Task>();
+		dumpedTasks = new Stack<StreamTask>();
 	}
 	
 	public static Stream newStream() {
@@ -48,12 +52,12 @@ public class Stream {
 	 * </p>
 	 * 
 	 * @author Wilson Kurniawan
-	 * @throws ModificationException
+	 * @throws StreamModificationException
 	 *             if task named newTask is already present.
 	 */
-	public void addTask(String newTask) throws ModificationException {
+	public void addTask(String newTask) throws StreamModificationException {
 		if (hasTask(newTask)) {
-			throw new ModificationException(String.format(
+			throw new StreamModificationException(String.format(
 					ERROR_TASK_ALREADY_EXISTS, newTask));
 		} else {
 			st.addTask(newTask);
@@ -76,7 +80,7 @@ public class Stream {
 
 	public void printDetails(String task) {
 		try {
-			Task currentTask = st.getTask(task);
+			StreamTask currentTask = st.getTask(task);
 			currentTask.printTaskDetails();
 		} catch (Exception e) {
 
@@ -101,7 +105,7 @@ public class Stream {
 	 */
 	public void setDescription(String task, int index, String description) {
 		try {
-			Task currentTask = st.getTask(task);
+			StreamTask currentTask = st.getTask(task);
 			String oldDescription = currentTask.getDescription();
 			currentTask.setDescription(description);
 			//
@@ -156,7 +160,7 @@ public class Stream {
 	 */
 	public void setDueDate(String taskName, int taskIndex, Calendar calendar) {
 		try {
-			Task currentTask = st.getTask(taskName);
+			StreamTask currentTask = st.getTask(taskName);
 			Calendar currentDeadline = currentTask.getDeadline();
 			st.setDueTime(taskName, calendar);
 			if (currentDeadline == null){
@@ -196,7 +200,7 @@ public class Stream {
 
 	public void deleteTask(String task) {
 		try {
-			Task deletedTask = st.getTask(task);
+			StreamTask deletedTask = st.getTask(task);
 			st.deleteTask(task);
 			dumpedTasks.push(deletedTask);
 			inputStack.push("recover 1");
@@ -222,7 +226,7 @@ public class Stream {
 	 * @return tasks - a list of tasks containing the key phrase.
 	 * @author Steven Khong
 	 */
-	public List<Task> search(String keyphrase) {
+	public List<StreamTask> search(String keyphrase) {
 		return st.findTasks(keyphrase);
 	}
 
@@ -299,7 +303,7 @@ public class Stream {
 		String content = parsedContent.getCommandContent();
 		*/
 		
-		Parser parser = new Parser();
+		StreamParser parser = new StreamParser();
 		parser.interpretCommand(input);
 		CommandType command = parser.getCommandType();
 		String content = parser.getCommandContent();
@@ -352,7 +356,7 @@ public class Stream {
 					
 						
 						st.setNullDeadline(taskName);
-					} catch (ModificationException e) {
+					} catch (StreamModificationException e) {
 
 					}
 				} else {
@@ -444,7 +448,7 @@ public class Stream {
 				printReceivedCommand("RECOVER");
 				int noOfTasksToRecover = Integer.parseInt(content);
 				for (int i = 0; i < noOfTasksToRecover; i++) {
-					Task task = dumpedTasks.pop();
+					StreamTask task = dumpedTasks.pop();
 					st.recoverTask(task);
 				}
 				inputStack.push("some fake input to be popped");

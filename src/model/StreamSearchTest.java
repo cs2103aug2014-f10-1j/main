@@ -1,4 +1,4 @@
-package stream;
+package model;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,9 +15,9 @@ import org.junit.Test;
 public class StreamSearchTest {
 
 	private StreamObject streamObject;
-	private Task task1, task2;
-	private static final Comparator<Task> taskComparator = new Comparator<Task>() {
-		@Override public int compare(Task o1, Task o2) {
+	private StreamTask task1, task2;
+	private static final Comparator<StreamTask> taskComparator = new Comparator<StreamTask>() {
+		@Override public int compare(StreamTask o1, StreamTask o2) {
 			return o1.getTaskName().compareTo(o2.getTaskName());
 		}
 	};; 
@@ -47,8 +47,8 @@ public class StreamSearchTest {
 		testOneSearch("Search for panda", streamObject.findTasks("im looking for a panda"), task2);
 	}
 
-	private void testOneSearch(String testMessage, List<Task> actualTasks, Task...tasks) {
-		List<Task> expectedTasks = Arrays.asList(tasks);
+	private void testOneSearch(String testMessage, List<StreamTask> actualTasks, StreamTask...tasks) {
+		List<StreamTask> expectedTasks = Arrays.asList(tasks);
 		Collections.sort(expectedTasks, taskComparator);
 		Collections.sort(actualTasks, taskComparator);
 		assertEquals(testMessage, expectedTasks, actualTasks);

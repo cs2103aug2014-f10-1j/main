@@ -10,7 +10,7 @@ package parser;
  * @author: A0119401U
  * 
  */
-public class Parser {
+public class StreamParser {
 
 	public enum CommandType {
 		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER;
@@ -18,16 +18,16 @@ public class Parser {
 
 	private CommandType commandKey;
 	private String commandContent;
-	
-	public Parser(){
+
+	public StreamParser() {
 		this.commandKey = CommandType.INIT;
 		this.commandContent = null;
 	}
-	
+
 	public void interpretCommand(String input) {
-		String[] contents = input.trim().toLowerCase().split(" ",2);
-		String key = contents[0];
-		switch(key) {
+		String[] contents = input.trim().split(" ", 2);
+		String key = contents[0].toLowerCase();
+		switch (key) {
 			case "add":
 				this.commandKey = CommandType.ADD;
 				break;
@@ -74,25 +74,24 @@ public class Parser {
 		}
 		this.commandContent = executeCommand(contents);
 	}
-	
-	private static String executeCommand(String[] contents){
+
+	private static String executeCommand(String[] contents) {
 		String content = null;
-		if(contents.length>1){
+		if (contents.length > 1) {
 			content = contents[1];
-		}
-		else{
+		} else {
 			content = "";
 		}
-		
+
 		return content;
 	}
-	
-	public CommandType getCommandType(){
+
+	public CommandType getCommandType() {
 		return this.commandKey;
 	}
-	
-	public String getCommandContent(){
+
+	public String getCommandContent() {
 		return this.commandContent;
 	}
-	
+
 }

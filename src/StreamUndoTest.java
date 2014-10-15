@@ -1,4 +1,4 @@
-package stream;
+
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,7 @@ public class StreamUndoTest {
 	public void setUp() throws Exception {
 		st.initialize();
 	}
-
+	
 	@Test
 	public void undoAddTest() throws Exception {
 		st.processAndExecute("add do CS2103");

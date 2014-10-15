@@ -15,12 +15,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import model.StreamTask;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import stream.Task;
+import exception.StreamIOException;
 
 //@author A0096529N
 public class StreamIOTest {
@@ -32,8 +34,8 @@ public class StreamIOTest {
 			+ "- %1$s\nDelete the file if already present.";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
-	private Task task1, task2;
-	private HashMap<String, Task> map;
+	private StreamTask task1, task2;
+	private HashMap<String, StreamTask> map;
 
 	@Before 
 	public void setUp() throws Exception {
@@ -43,7 +45,7 @@ public class StreamIOTest {
 			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE, saveFile.getAbsolutePath()));
 		}
 
-		task1 = new Task("Code Jarvis");
+		task1 = new StreamTask("Code Jarvis");
 		Calendar calendar = Calendar.getInstance();
 		Date date = StreamIO.dateFormat.parse("20410719000000");
 		calendar.setTime(date);		// instead of Calendar.set(), for loadTest, serialized calendar.
@@ -52,7 +54,7 @@ public class StreamIOTest {
 		task1.addTag("epic");
 		task1.addTag("impossible");
 
-		task2 = new Task("Build IoT");
+		task2 = new StreamTask("Build IoT");
 		Calendar calendar2 = Calendar.getInstance();
 		Date date2 = StreamIO.dateFormat.parse("20180101123456");
 		calendar2.setTime(date2);	// instead of Calendar.set(), for loadTest, serialized calendar.
@@ -62,7 +64,7 @@ public class StreamIOTest {
 		task2.addTag("popular");
 		task2.addTag("urgent");
 
-		map = new HashMap<String, Task>();
+		map = new HashMap<String, StreamTask>();
 		map.put(task1.getTaskName(), task1);
 		map.put(task2.getTaskName(), task2);
 
@@ -150,7 +152,7 @@ public class StreamIOTest {
 						+ "\"taskName\":\"Build IoT\","
 						+ "\"taskDescription\":\"Internet of Things\"}", task2);
 	}
-	private void testOneTaskToJson(String testMessage, String expected, Task task) {
+	private void testOneTaskToJson(String testMessage, String expected, StreamTask task) {
 		try {
 			assertEquals(testMessage, expected, StreamIO.taskToJson(task).toString());
 		} catch (StreamIOException e) {
@@ -198,7 +200,7 @@ public class StreamIOTest {
 			fos.write(content.getBytes());
 		}
 	}
-	private String serializeTaskMap(HashMap<String, Task> taskMap) {
+	private String serializeTaskMap(HashMap<String, StreamTask> taskMap) {
 		JSONObject taskMapJson = new JSONObject(taskMap);
 		return taskMapJson.toString();
 	}
