@@ -269,6 +269,14 @@ public class StreamObject {
 		allTasks.put(taskName, task);
 	}
 	
+	public void markTaskAsOngoing(String taskName)
+			throws ModificationException {
+		Task task = this.getTask(taskName);
+		allTasks.remove(taskName);
+		task.markAsOngoing();
+		allTasks.put(taskName, task);
+	}
+	
 	//@author A0119401U
 	/**
 	 * 
@@ -291,6 +299,14 @@ public class StreamObject {
 		task.setDeadline(calendar);
 		allTasks.put(taskName, task);
 	}
+	
+	public void setNullDeadline(String taskName)
+			throws ModificationException {
+		Task currentTask = this.getTask(taskName);
+		currentTask.setNullDeadline();
+	}
+	
+	
 
 	// @author A0096529N
 	

@@ -148,6 +148,10 @@ public class Task {
 		this.isDone = true;
 	}
 	
+	public void markAsOngoing(){
+		this.isDone = false;
+	}
+	
 
 	//@author A0096529N
 	/**

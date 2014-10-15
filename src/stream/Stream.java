@@ -121,6 +121,23 @@ public class Stream {
 		try {
 			st.markTaskAsDone(task);
 			//
+			inputStack.push("mark " + index + " " + "ongoing");
+			//
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	//@author A0118007R
+	/**
+	 * Mark the selected task as ongoing
+	 * 
+	 */
+	
+	public void markAsOngoing(String task, int index) {
+		try {
+			st.markTaskAsOngoing(task);
+			//
 			inputStack.push("mark " + index + " " + "done");
 			//
 		} catch (Exception e) {
@@ -332,8 +349,9 @@ public class Stream {
 				
 				if (contents[1].trim().equals("null")) {
 					try {
-						Task currentTask = st.getTask(taskName);
-						currentTask.setNullDeadline();
+					
+						
+						st.setNullDeadline(taskName);
 					} catch (ModificationException e) {
 
 					}
@@ -379,7 +397,11 @@ public class Stream {
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = st.getTaskNames().get(taskIndex-1);
 				try {
-					markAsDone(taskName, taskIndex);
+					if (contents[1].trim().equals("done")){
+						markAsDone(taskName, taskIndex);
+					} else {
+						markAsOngoing(taskName, taskIndex);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
