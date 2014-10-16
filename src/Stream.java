@@ -56,6 +56,7 @@ public class Stream {
 	private static final String LOG_MESSAGE_TAGS_NOT_ADDED = "Tags not added to %1$s: %2$s";
 	private static final String LOG_MESSAGE_TAGS_REMOVED = "Tags removed from %1$s: %2$s";
 	private static final String LOG_MESSAGE_TAGS_NOT_REMOVED = "Tags not removed %1$s: %2$s";
+	private static final String LOG_MESSAGE_SEARCH = "Searching for %1$s, %2$s queries found";
 
 	public Stream(String file) {
 		st = new StreamObject();
@@ -485,7 +486,7 @@ public class Stream {
 						if (st.addTag(taskName, tags[i])) {
 							tagsAdded.add(tags[i]);
 						} else {
-							tagsNotAdded.add(tags[i]);							
+							tagsNotAdded.add(tags[i]);
 						}
 					}
 					inputStack.push("untag " + taskIndex + " "
@@ -511,7 +512,7 @@ public class Stream {
 						if (st.removeTag(taskName, tags[i])) {
 							tagsRemoved.add(tags[i]);
 						} else {
-							tagsNotRemoved.add(tags[i]);							
+							tagsNotRemoved.add(tags[i]);
 						}
 					}
 					inputStack.push("tag " + taskIndex + " "
@@ -524,6 +525,18 @@ public class Stream {
 						showAndLog(String.format(LOG_MESSAGE_TAGS_NOT_REMOVED,
 								taskName, stringify(tagsNotRemoved, ", ")));
 					}
+					break;
+
+				case SEARCH:
+					printReceivedCommand("SEARCH");
+					List<StreamTask> searchResult = st.findTasks(content);
+					System.out.println("Search result for " + content);
+					for (int i = 1; i <= searchResult.size(); i++) {
+						System.out.println(i + ". "
+								+ searchResult.get(i - 1).getTaskName());
+					}
+					showAndLog(String.format(LOG_MESSAGE_SEARCH, content,
+							searchResult.size()));
 					break;
 
 				case VIEW:

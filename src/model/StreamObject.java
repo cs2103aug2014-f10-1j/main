@@ -361,13 +361,17 @@ public class StreamObject {
 				tasks.add(task);
 				continue;
 			}
+			// improved by A0093874N: case-insensitive search
 			// check if task description contains key phrase
-			if (task.getDescription().contains(keyphrase)) {
+			if (task.getDescription() != null
+					&& task.getDescription().toLowerCase()
+							.contains(keyphrase.toLowerCase())) {
 				tasks.add(task);
 				continue;
 			}
 			// check if task name contains key phrase
-			if (task.getTaskName().contains(keyphrase)) {
+			if (task.getTaskName().toLowerCase()
+					.contains(keyphrase.toLowerCase())) {
 				tasks.add(task);
 				continue;
 			}

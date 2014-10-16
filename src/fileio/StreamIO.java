@@ -180,7 +180,9 @@ public class StreamIO {
 		try {
 			String taskName = taskJson.getString(TaskKey.NAME);
 			StreamTask task = new StreamTask(taskName);
-			task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
+			if (taskJson.has(TaskKey.DESCRIPTION)){
+				task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));				
+			}
 
 			if (taskJson.has(TaskKey.DEADLINE)) {
 				Calendar deadline = Calendar.getInstance();

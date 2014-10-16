@@ -6,7 +6,8 @@ import java.util.Calendar;
 
 public class StreamTask {
 
-	private final String ERROR_NO_DESCRIPTION = "Error: The task \"%1$s\" does not have a description.";
+	// private final String ERROR_NO_DESCRIPTION =
+	// "Error: The task \"%1$s\" does not have a description.";
 	private final String ERROR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
 	private final String[] MONTHS = { "January", "February", "March", "April",
 			"May", "June", "July", "August", "September", "October",
@@ -42,7 +43,13 @@ public class StreamTask {
 
 	public void printTaskDetails() {
 		System.out.println("Task name = " + taskName);
-		System.out.println("Description = " + taskDescription);
+		String strDesc;
+		if (taskDescription == null) {
+			strDesc = "Not specified";
+		} else {
+			strDesc = taskDescription;
+		}
+		System.out.println("Description = " + strDesc);
 		String strDeadline;
 		if (deadline == null) {
 			strDeadline = "Not specified";
@@ -54,7 +61,7 @@ public class StreamTask {
 		System.out.println("Deadline = " + strDeadline);
 		System.out.print("Tags = ");
 		String strTags = "";
-		for (String tag: tags) {
+		for (String tag : tags) {
 			strTags += ", " + tag;
 		}
 		if (strTags.equals("")) {
@@ -78,16 +85,15 @@ public class StreamTask {
 	 */
 
 	public void setDescription(String description) {
-		this.taskDescription = description;
+		if (description.equals("null")) {
+			this.taskDescription = null;
+		} else {
+			this.taskDescription = description;
+		}
 	}
 
 	public String getDescription() {
-		String currentDescription = this.taskDescription;
-		if (currentDescription == null) {
-			return String.format(ERROR_NO_DESCRIPTION, this.getTaskName());
-		} else {
-			return currentDescription;
-		}
+		return this.taskDescription;
 	}
 
 	// @author A0119401U
