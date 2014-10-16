@@ -28,7 +28,7 @@ public class Stream {
 	private static final int POS_YEAR_SUBSTRING = 2;
 
 	private static final String FILENAME_TO_USE = "stream";
-	
+
 	private static final String VERSION = "v0.2";
 	private static final String MESSAGE_WELCOME = "Welcome to Stream "
 			+ VERSION + "!";
@@ -52,6 +52,10 @@ public class Stream {
 	private static final String LOG_MESSAGE_DUE_NEVER = "Due date for %1$s is removed";
 	private static final String LOG_MESSAGE_DUE = "Due date for %1$s set to %2$s";
 	private static final String LOG_MESSAGE_CMD_UNKNOWN = "Unknown command entered";
+	private static final String LOG_MESSAGE_TAGS_ADDED = "Tags added to %1$s: %2$s";
+	private static final String LOG_MESSAGE_TAGS_NOT_ADDED = "Tags not added to %1$s: %2$s";
+	private static final String LOG_MESSAGE_TAGS_REMOVED = "Tags removed from %1$s: %2$s";
+	private static final String LOG_MESSAGE_TAGS_NOT_REMOVED = "Tags not removed %1$s: %2$s";
 
 	public Stream(String file) {
 		st = new StreamObject();
@@ -335,7 +339,7 @@ public class Stream {
 	}
 
 	// @author A0093874N
-	
+
 	public static String addZeroToTime(Integer time) {
 		String convertedTime = time.toString();
 		if (time < 10) {
@@ -359,10 +363,18 @@ public class Stream {
 	}
 
 	// @author A0093874N
-	
+
 	void showAndLog(String logMessage) {
 		System.out.println(logMessage);
 		logMessages.add(logMessage);
+	}
+
+	static String stringify(ArrayList<String> array, String connector) {
+		String result = "";
+		for (String str : array) {
+			result += connector + str;
+		}
+		return result.substring(connector.length());
 	}
 
 	void processAndExecute(String input) {
@@ -378,6 +390,7 @@ public class Stream {
 		CommandType command = parser.getCommandType();
 		String content = parser.getCommandContent();
 		String[] contents;
+		String[] tags;
 		String taskName;
 		String logMessage;
 		int taskIndex;
@@ -459,6 +472,58 @@ public class Stream {
 						logMessage = markAsOngoing(taskName, taskIndex);
 					}
 					showAndLog(logMessage);
+					break;
+
+				case TAG:
+					printReceivedCommand("TAG");
+					tags = content.split(" ");
+					ArrayList<String> tagsAdded = new ArrayList<String>();
+					ArrayList<String> tagsNotAdded = new ArrayList<String>();
+					taskIndex = Integer.parseInt(tags[0]);
+					taskName = st.getTaskNames().get(taskIndex - 1);
+					for (int i = 1; i < tags.length; i++) {
+						if (st.addTag(taskName, tags[i])) {
+							tagsAdded.add(tags[i]);
+						} else {
+							tagsNotAdded.add(tags[i]);							
+						}
+					}
+					inputStack.push("untag " + taskIndex + " "
+							+ stringify(tagsAdded, " "));
+					if (!tagsAdded.isEmpty()) {
+						showAndLog(String.format(LOG_MESSAGE_TAGS_ADDED,
+								taskName, stringify(tagsAdded, ", ")));
+					}
+					if (!tagsNotAdded.isEmpty()) {
+						showAndLog(String.format(LOG_MESSAGE_TAGS_NOT_ADDED,
+								taskName, stringify(tagsNotAdded, ", ")));
+					}
+					break;
+
+				case UNTAG:
+					printReceivedCommand("UNTAG");
+					tags = content.split(" ");
+					ArrayList<String> tagsRemoved = new ArrayList<String>();
+					ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+					taskIndex = Integer.parseInt(tags[0]);
+					taskName = st.getTaskNames().get(taskIndex - 1);
+					for (int i = 1; i < tags.length; i++) {
+						if (st.removeTag(taskName, tags[i])) {
+							tagsRemoved.add(tags[i]);
+						} else {
+							tagsNotRemoved.add(tags[i]);							
+						}
+					}
+					inputStack.push("tag " + taskIndex + " "
+							+ stringify(tagsRemoved, " "));
+					if (!tagsRemoved.isEmpty()) {
+						showAndLog(String.format(LOG_MESSAGE_TAGS_REMOVED,
+								taskName, stringify(tagsRemoved, ", ")));
+					}
+					if (!tagsNotRemoved.isEmpty()) {
+						showAndLog(String.format(LOG_MESSAGE_TAGS_NOT_REMOVED,
+								taskName, stringify(tagsNotRemoved, ", ")));
+					}
 					break;
 
 				case VIEW:
@@ -572,5 +637,5 @@ public class Stream {
 			stream.save();
 		}
 	}
-	
+
 }

@@ -192,10 +192,16 @@ public class StreamObject {
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
 	 */
-	public void removeTag(String taskName, String tag)
+	public Boolean removeTag(String taskName, String tag)
 			throws StreamModificationException {
 		StreamTask task = getTask(taskName);
-		task.deleteTag(tag);
+		if (task.hasTag(tag)) {
+			task.deleteTag(tag);
+			// Slight improvement by A0093874N
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// @author A0096529N
@@ -215,12 +221,15 @@ public class StreamObject {
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
 	 */
-	public void addTag(String taskName, String tag)
+	public Boolean addTag(String taskName, String tag)
 			throws StreamModificationException {
 		StreamTask task = getTask(taskName);
 		if (!task.hasTag(tag)) {
 			task.addTag(tag);
-			// TODO update UI job done
+			// Slight improvement by A0093874N
+			return true;
+		} else {
+			return false;
 		}
 	}
 

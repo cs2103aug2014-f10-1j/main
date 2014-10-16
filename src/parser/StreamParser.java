@@ -13,7 +13,7 @@ package parser;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, MARK, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, MARK, TAG, UNTAG, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -54,6 +54,12 @@ public class StreamParser {
 			case "done":
 			case "finished":
 				this.commandKey = CommandType.MARK;
+				break;
+			case "tag":
+				this.commandKey = CommandType.TAG;
+				break;
+			case "untag":
+				this.commandKey = CommandType.UNTAG;
 				break;
 			case "clear":
 			case "clr":

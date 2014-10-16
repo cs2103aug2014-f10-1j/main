@@ -45,15 +45,23 @@ public class StreamTask {
 		System.out.println("Description = " + taskDescription);
 		String strDeadline;
 		if (deadline == null) {
-			strDeadline = "not specified";
+			strDeadline = "Not specified";
 		} else {
-
 			strDeadline = deadline.get(Calendar.DATE) + " "
 					+ MONTHS[(deadline.get(Calendar.MONTH))] + " "
 					+ deadline.get(Calendar.YEAR);
 		}
 		System.out.println("Deadline = " + strDeadline);
-		System.out.println("Tags = ");
+		System.out.print("Tags = ");
+		String strTags = "";
+		for (String tag: tags) {
+			strTags += ", " + tag;
+		}
+		if (strTags.equals("")) {
+			System.out.println("No tags found");
+		} else {
+			System.out.println(strTags.substring(2));
+		}
 		if (isDone) {
 			System.out.println("Status: Done");
 		} else {
