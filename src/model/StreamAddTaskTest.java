@@ -6,10 +6,11 @@ import org.junit.Test;
 
 public class StreamAddTaskTest {
 
-	private static StreamObject stream = new StreamObject();
+	private static StreamObject stream;
 
 	@Before
 	public void setup() throws Exception {
+		stream = new StreamObject();
 		stream.addTask("Submit CE2");
 		stream.addTask("Study for midterms");
 	}
@@ -38,14 +39,13 @@ public class StreamAddTaskTest {
 			stream.addTask("Submit CE2");
 		} catch (Exception e) {
 			assertEquals("Exception should be generated.",
-					"Error: \"Submit CE2\" already exists in the tasks list.",
+					"\"Submit CE2\" already exists in the tasks list.",
 					e.getMessage());
 		}
 	}
 	
 	@Test
-	public void deleteTest() throws Exception{
-		stream.addTask("Submit CE2");
+	public void deleteTest() throws Exception {
 		stream.deleteTask("Submit CE2");
 		assertEquals(stream.hasTask("Submit CE2"), false);
 	}

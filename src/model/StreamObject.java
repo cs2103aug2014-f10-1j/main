@@ -11,8 +11,9 @@ import fileio.StreamIO;
 
 public class StreamObject {
 
-	private static final String ERROR_TASK_DOES_NOT_EXIST = "Error: The task \"%1$s\" does not exist.";
-	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "Error: The name \"%1$s\" is not available.";
+	private static final String ERROR_TASK_ALREADY_EXISTS = "\"%1$s\" already exists in the tasks list.";
+	private static final String ERROR_TASK_DOES_NOT_EXIST = "The task \"%1$s\" does not exist.";
+	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "The name \"%1$s\" is not available.";
 
 	private HashMap<String, StreamTask> allTasks;
 	private ArrayList<String> taskList;
@@ -37,12 +38,18 @@ public class StreamObject {
 	 *            name of the new task
 	 */
 	public void addTask(String newTaskName) throws StreamModificationException {
-		this.allTasks.put(newTaskName.toLowerCase(), new StreamTask(newTaskName));
-		this.taskList.add(newTaskName);
+		if (hasTask(newTaskName)) {
+			throw new StreamModificationException(String.format(
+					ERROR_TASK_ALREADY_EXISTS, newTaskName));
+		} else {
+			this.allTasks.put(newTaskName.toLowerCase(), new StreamTask(
+					newTaskName));
+			this.taskList.add(newTaskName);
+		}
 	}
 
 	public void recoverTask(StreamTask task) {
-		this.allTasks.put(task.getTaskName(), task);
+		this.allTasks.put(task.getTaskName().toLowerCase(), task);
 		this.taskList.add(task.getTaskName());
 	}
 
@@ -93,7 +100,7 @@ public class StreamObject {
 		for (String key : allTasks.keySet()) {
 			taskList.add(allTasks.get(key).getTaskName());
 		}
-		
+
 	}
 
 	/**
@@ -109,7 +116,8 @@ public class StreamObject {
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
 	 */
-	public StreamTask getTask(String taskName) throws StreamModificationException {
+	public StreamTask getTask(String taskName)
+			throws StreamModificationException {
 		if (hasTask(taskName.toLowerCase())) {
 			return allTasks.get(taskName.toLowerCase());
 		} else {
@@ -248,8 +256,8 @@ public class StreamObject {
 		taskList.add(index, newTaskName);
 		taskList.remove(index + 1);
 	}
-	
-	//@author A0119401U
+
+	// @author A0119401U
 	/**
 	 * 
 	 * Mark the selected task as done
@@ -269,7 +277,7 @@ public class StreamObject {
 		task.markAsDone();
 		allTasks.put(taskName.toLowerCase(), task);
 	}
-	
+
 	public void markTaskAsOngoing(String taskName)
 			throws StreamModificationException {
 		StreamTask task = this.getTask(taskName);
@@ -277,21 +285,22 @@ public class StreamObject {
 		task.markAsOngoing();
 		allTasks.put(taskName.toLowerCase(), task);
 	}
-	
-	//@author A0119401U
+
+	// @author A0119401U
 	/**
 	 * 
 	 * Set the due time of the selected task
 	 * 
-	 * @param taskName, calendar
+	 * @param taskName
+	 *            , calendar
 	 * 
 	 * @throws StreamModificationException
 	 * 
-	 * <p>
-	 * Precondition: taskName != null
-	 * </p>
+	 *             <p>
+	 *             Precondition: taskName != null
+	 *             </p>
 	 * 
-	 * The case "calendar is null" will be dealt with by Task.java
+	 *             The case "calendar is null" will be dealt with by Task.java
 	 */
 	public void setDueTime(String taskName, Calendar calendar)
 			throws StreamModificationException {
@@ -300,17 +309,15 @@ public class StreamObject {
 		task.setDeadline(calendar);
 		allTasks.put(taskName.toLowerCase(), task);
 	}
-	
+
 	public void setNullDeadline(String taskName)
 			throws StreamModificationException {
 		StreamTask currentTask = this.getTask(taskName.toLowerCase());
 		currentTask.setNullDeadline();
 	}
-	
-	
 
 	// @author A0096529N
-	
+
 	/**
 	 * Search for tasks with specified key phrase, in the task name, description
 	 * and tags.
