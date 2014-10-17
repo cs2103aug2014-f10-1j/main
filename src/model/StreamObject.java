@@ -15,8 +15,8 @@ public class StreamObject {
 	private static final String ERROR_TASK_DOES_NOT_EXIST = "The task \"%1$s\" does not exist.";
 	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "The name \"%1$s\" is not available.";
 
-	private HashMap<String, StreamTask> allTasks;
-	private ArrayList<String> taskList;
+	protected HashMap<String, StreamTask> allTasks;
+	protected ArrayList<String> taskList;
 
 	public StreamObject() {
 		this.allTasks = new HashMap<String, StreamTask>();
