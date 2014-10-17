@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +21,8 @@ public class StreamSearchTest {
 		}
 	};; 
 
-	@Before public void setUp() throws Exception {
+	@Before 
+	public void setUp() throws Exception {
 		streamObject = new StreamObject();
 		streamObject.addTask("Find X");
 		task1 = streamObject.getTask("Find X");
@@ -39,11 +39,16 @@ public class StreamSearchTest {
 		task2.addTag("nolink");
 	}
 
-	@After public void tearDown() throws Exception {}
-
-	@Test public void testSearch() {
+	@Test 
+	public void testSearch1() {
 		testOneSearch("Search for nothing", streamObject.findTasks("nothing"));
+	}
+	@Test 
+	public void testSearch2() {
 		testOneSearch("Search for x", streamObject.findTasks("x"), task1, task2);
+	}
+	@Test 
+	public void testSearch3() {
 		testOneSearch("Search for panda", streamObject.findTasks("im looking for a panda"), task2);
 	}
 
