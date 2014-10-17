@@ -18,7 +18,7 @@ public class StreamTask {
 	private String taskDescription;
 	private Calendar deadline;
 	private ArrayList<String> tags;
-	private boolean isDone;
+	private boolean done;
 
 	// Constructor
 	public StreamTask(String taskName) {
@@ -26,7 +26,7 @@ public class StreamTask {
 		this.taskDescription = null;
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
-		this.isDone = false;
+		this.done = false;
 	}
 
 	// Name Part
@@ -69,7 +69,7 @@ public class StreamTask {
 		} else {
 			System.out.println(strTags.substring(2));
 		}
-		if (isDone) {
+		if (done) {
 			System.out.println("Status: Done");
 		} else {
 			System.out.println("Status: Not finished");
@@ -155,16 +155,16 @@ public class StreamTask {
 
 	// Mark_As_Done Part
 
-	public boolean getProgress() {
-		return this.isDone;
+	public boolean isDone() {
+		return this.done;
 	}
 
 	public void markAsDone() {
-		this.isDone = true;
+		this.done = true;
 	}
 
 	public void markAsOngoing() {
-		this.isDone = false;
+		this.done = false;
 	}
 
 	// @author A0096529N
