@@ -1,7 +1,0 @@
-show
->> Unknown command entered
-del 4
->> Command received [DELETE]
->> Deleted happy birthday
-exit
->> Command received [EXIT]
