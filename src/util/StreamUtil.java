@@ -40,6 +40,8 @@ public class StreamUtil {
 	public static final String LOG_TAGS_REMOVED = "Tags removed from %1$s: %2$s";
 	public static final String LOG_TAGS_NOT_REMOVED = "Tags not removed %1$s: %2$s";
 	public static final String LOG_SEARCH = "Searching for %1$s, %2$s queries found";
+	public static final String LOG_LOAD_FAILED = "Load from file failed, %1$s";
+	public static final String LOG_SAVE_FAILED = "Save to file failed, %1$s";
 
 	// Exception messages
 

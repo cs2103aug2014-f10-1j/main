@@ -2,17 +2,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-import exception.StreamModificationException;
-import fileio.StreamIO;
+import model.StreamObject;
+import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
-import model.StreamTask;
-import model.StreamObject;
 import util.StreamUtil;
+import exception.StreamIOException;
+import exception.StreamModificationException;
+import fileio.StreamIO;
 
 /**
  * <b>Stream</b> is the main product of the project. It is the amalgamation of
@@ -43,7 +45,6 @@ public class Stream {
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
 	public Stream(String file) {
-		stobj = new StreamObject();
 		stio = new StreamIO(String.format(StreamUtil.PARAM_SAVEFILE, file));
 		parser = new StreamParser();
 
@@ -53,26 +54,40 @@ public class Stream {
 		orderingStack = new Stack<ArrayList<String>>();
 		logMessages = new ArrayList<String>();
 
-		stobj.load();
+		load();
 	}
 
-	// TODO for both load and save: see the issue I open in GitHub
-
-	/**
-	 * @deprecated by A0093874N; replaced by directly loading during
-	 *             initialization process.
-	 */
-
-	// TODO who's the author of load()?
-
+	//@author A0096529N
 	private void load() {
-		stobj.load();
+		try {
+			HashMap<String, StreamTask> allTasks = new HashMap<String, StreamTask>();
+			ArrayList<String> taskList = new ArrayList<String>();
+			StreamIO.load(allTasks, taskList);
+			
+			stobj = new StreamObject(allTasks, taskList);
+			
+		} catch (StreamIOException e) {
+			log(String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage()));
+			
+			stobj = new StreamObject();
+		}
+		
 	}
 
-	// TODO who's the author of save()?
-
-	private void save() {
-		stobj.save();
+	//@author A0096529N
+	private String save() {
+		String result = null;
+		try {
+			HashMap<String, StreamTask> allTasks = stobj.getAllTasks();
+			ArrayList<String> taskList = stobj.getTaskList();
+			StreamIO.save(allTasks, taskList);
+			result = "File saved to " + StreamIO.getSaveLocation();
+		} catch (StreamIOException e) {
+			result = String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage());
+			log(result);
+		}
+		
+		return result;
 	}
 
 	// @author A0093874N
@@ -420,7 +435,7 @@ public class Stream {
 		String commandReceived = String.format(StreamUtil.LOG_CMD_RECEIVED,
 				command);
 		System.out.println(commandReceived);
-		logMessages.add(StreamUtil.showAsTerminalResponse(commandReceived));
+		log(StreamUtil.showAsTerminalResponse(commandReceived));
 	}
 
 	// @author A0093874N
@@ -430,7 +445,12 @@ public class Stream {
 	 */
 	private void showAndLogResult(String logMessage) {
 		System.out.println(logMessage);
-		logMessages.add(StreamUtil.showAsTerminalResponse(logMessage));
+		log(StreamUtil.showAsTerminalResponse(logMessage));
+	}
+	
+	// @author A0096529N
+	private void log(String message) {
+		logMessages.add(message);
 	}
 
 	// @author A0093874N
@@ -701,7 +721,7 @@ public class Stream {
 				.println("========================================================");
 		System.out.print("Enter Command: ");
 		String input = INPUT_SCANNER.nextLine();
-		logMessages.add(input);
+		log(input);
 		if (input.length() >= 7
 				&& (input.substring(0, 7).equals("recover") || input.substring(
 						0, 7).equals("dismiss"))) {

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,29 +84,6 @@ public class StreamIO {
 		}
 	}
 
-	private static void loadTaskList(List<String> taskList, JSONObject tasksJson) throws StreamIOException {
-		try {
-			JSONObject orderListJson = tasksJson.getJSONObject(TaskKey.TASKLIST);
-			List<String> storedList = jsonToTaskList(orderListJson);
-			taskList.addAll(storedList);
-		} catch (JSONException e) {
-			throw new StreamIOException(
-					"File corrupted, could not parse file contents - "
-							+ e.getMessage(), e);
-		}
-	}
-	private static void loadMap(Map<String, StreamTask> allTasks, JSONObject tasksJson) throws StreamIOException {
-		try {
-			JSONArray tasksMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
-			HashMap<String, StreamTask> storedTasks = jsonToMap(tasksMapJson);
-			allTasks.putAll(storedTasks);
-		} catch (JSONException e) {
-			throw new StreamIOException(
-					"File corrupted, could not parse file contents - "
-							+ e.getMessage(), e);
-		}
-	}
-
 	/**
 	 * <p>
 	 * Serializes and write the contents of StreamObject into
@@ -134,7 +111,34 @@ public class StreamIO {
 		}
 	}
 
-	private static JSONObject taskListToJson(List<String> taskList) throws StreamIOException {
+	public static String getSaveLocation() {
+		return SAVE_LOCATION;
+	}
+	
+	static void loadTaskList(List<String> taskList, JSONObject tasksJson) throws StreamIOException {
+		try {
+			JSONObject orderListJson = tasksJson.getJSONObject(TaskKey.TASKLIST);
+			List<String> storedList = jsonToTaskList(orderListJson);
+			taskList.addAll(storedList);
+		} catch (JSONException e) {
+			throw new StreamIOException(
+					"File corrupted, could not parse file contents - "
+							+ e.getMessage(), e);
+		}
+	}
+	static void loadMap(Map<String, StreamTask> allTasks, JSONObject tasksJson) throws StreamIOException {
+		try {
+			JSONArray tasksMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
+			HashMap<String, StreamTask> storedTasks = jsonToMap(tasksMapJson);
+			allTasks.putAll(storedTasks);
+		} catch (JSONException e) {
+			throw new StreamIOException(
+					"File corrupted, could not parse file contents - "
+							+ e.getMessage(), e);
+		}
+	}
+
+	static JSONObject taskListToJson(List<String> taskList) throws StreamIOException {
 		try {
 			JSONObject orderListJson = new JSONObject();
 			for (int i=0; i<taskList.size(); i++) {
@@ -147,7 +151,7 @@ public class StreamIO {
 		}
 	}
 
-	private static List<String> jsonToTaskList(JSONObject orderListJson) throws StreamIOException {
+	static List<String> jsonToTaskList(JSONObject orderListJson) throws StreamIOException {
 		try {
 			List<String> taskList = new ArrayList<String>();
 			for (int i=0; orderListJson.has(String.valueOf(i)); i++) {

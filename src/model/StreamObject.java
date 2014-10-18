@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import util.StreamUtil;
-import exception.StreamIOException;
 import exception.StreamModificationException;
-import fileio.StreamIO;
 
 public class StreamObject {
 
@@ -92,36 +90,6 @@ public class StreamObject {
 	}
 
 	// @author A0118007R
-
-	/**
-	 * Save
-	 */
-
-	public void save() {
-		try {
-			StreamIO.save(allTasks, taskList);
-		} catch (StreamIOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * load
-	 */
-
-	public void load() {
-		this.allTasks = new HashMap<String, StreamTask>();
-		this.taskList = new ArrayList<String>();
-
-		try {
-			StreamIO.load(allTasks, taskList);
-		} catch (StreamIOException e) {
-			// No previous state - first use.
-		}
-
-	}
-
 	/**
 	 * Gets a specific task
 	 * 
@@ -345,7 +313,6 @@ public class StreamObject {
 	}
 
 	// @author A0096529N
-
 	/**
 	 * Search for tasks with specified key phrase, in the task name, description
 	 * and tags.
@@ -400,14 +367,27 @@ public class StreamObject {
 	}
 
 	// @author A0093874N
-
 	/**
 	 * Gets the number of tasks added.
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-
 	public int getNumberOfTasks() {
 		return taskList.size();
+	}
+	
+	//@author A0096529N
+	/**
+	 * @return allTasks a copy of the task map. 
+	 */
+	public HashMap<String, StreamTask> getAllTasks() {
+		return new HashMap<String, StreamTask>(this.allTasks);
+	}	
+	//@author A0096529N
+	/**
+	 * @return taskList - a copy of the task list.
+	 */
+	public ArrayList<String> getTaskList() {
+		return new ArrayList<String>(this.taskList);
 	}
 }
