@@ -14,4 +14,4 @@ tmp/
 local.properties
 .settings/
 .loadpath
-stream.json
+*.json
