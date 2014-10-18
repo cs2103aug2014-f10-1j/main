@@ -102,10 +102,6 @@ public class StreamObject {
 			// No previous state - first use.
 		}
 
-		for (String key : allTasks.keySet()) {
-			taskList.add(allTasks.get(key).getTaskName());
-		}
-
 	}
 
 	/**
