@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class StreamIOTest {
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
+	private ArrayList<String> taskList;
 
 	@Before 
 	public void setUp() throws Exception {
@@ -67,14 +69,19 @@ public class StreamIOTest {
 		map = new HashMap<String, StreamTask>();
 		map.put(task1.getTaskName().toLowerCase(), task1);
 		map.put(task2.getTaskName().toLowerCase(), task2);
+		
+		taskList = new ArrayList<String>();
+		taskList.add(task1.getTaskName());
+		taskList.add(task2.getTaskName());
 
 
-		String fileContent = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+		String fileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
 				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
-				+ "\"taskDescription\":\"Internet of Things\"}]";
+				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		
 		File checkFile = new File(CHECK_FILE);
 		try {
@@ -92,15 +99,16 @@ public class StreamIOTest {
 	@Test
 	public void saveTest() {
 		String testMessage = "Write map to file";
-		String expectedFileContent = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+		String expectedFileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
 				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
-				+ "\"taskDescription\":\"Internet of Things\"}]";
+				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		try {
 			File saveFile = new File(StreamIO.SAVE_LOCATION);
-			StreamIO.save(map);
+			StreamIO.save(map, taskList);
 			assertEquals(testMessage, expectedFileContent, fileToString(saveFile));
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
@@ -113,8 +121,10 @@ public class StreamIOTest {
 		String testMessage = "Load map from file";
 		StreamIO.SAVE_LOCATION = CHECK_FILE;
 		try {
+			StreamIO.load(map, taskList);
+			
 			String expectedMap = serializeTaskMap(map);
-			String actualMap = serializeTaskMap(StreamIO.load());
+			String actualMap = serializeTaskMap(map);
 			System.out.println(expectedMap);
 			System.out.println(actualMap);
 			assertEquals(testMessage, expectedMap, actualMap);

@@ -23,6 +23,11 @@ public class StreamObject {
 		this.taskList = new ArrayList<String>();
 	}
 
+	public StreamObject(HashMap<String, StreamTask> allTasks, ArrayList<String> taskList) {
+		this.allTasks = allTasks;
+		this.taskList = taskList;
+	}
+
 	public ArrayList<String> getTaskNames() {
 		return taskList;
 	}
@@ -76,7 +81,7 @@ public class StreamObject {
 
 	public void save() {
 		try {
-			StreamIO.save(allTasks);
+			StreamIO.save(allTasks, taskList);
 		} catch (StreamIOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,7 +97,7 @@ public class StreamObject {
 		this.taskList = new ArrayList<String>();
 
 		try {
-			allTasks = StreamIO.load();
+			StreamIO.load(allTasks, taskList);
 		} catch (StreamIOException e) {
 			// No previous state - first use.
 		}
