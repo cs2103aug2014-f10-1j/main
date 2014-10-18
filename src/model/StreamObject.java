@@ -14,16 +14,16 @@ public class StreamObject {
 	private static final String ERROR_TASK_DOES_NOT_EXIST = "The task \"%1$s\" does not exist.";
 	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "The name \"%1$s\" is not available.";
 
-	protected HashMap<String, StreamTask> allTasks;
+	protected HashMap<String, StreamTask> taskMap;
 	protected ArrayList<String> taskList;
 
 	public StreamObject() {
-		this.allTasks = new HashMap<String, StreamTask>();
+		this.taskMap = new HashMap<String, StreamTask>();
 		this.taskList = new ArrayList<String>();
 	}
 
-	public StreamObject(HashMap<String, StreamTask> allTasks, ArrayList<String> taskList) {
-		this.allTasks = allTasks;
+	public StreamObject(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
+		this.taskMap = taskMap;
 		this.taskList = taskList;
 	}
 
@@ -63,14 +63,14 @@ public class StreamObject {
 			throw new StreamModificationException(String.format(
 					ERROR_TASK_ALREADY_EXISTS, newTaskName));
 		} else {
-			this.allTasks.put(newTaskName.toLowerCase(), new StreamTask(
+			this.taskMap.put(newTaskName.toLowerCase(), new StreamTask(
 					newTaskName));
 			this.taskList.add(newTaskName);
 		}
 	}
 
 	public void recoverTask(StreamTask task) {
-		this.allTasks.put(task.getTaskName().toLowerCase(), task);
+		this.taskMap.put(task.getTaskName().toLowerCase(), task);
 		this.taskList.add(task.getTaskName());
 	}
 
@@ -86,7 +86,7 @@ public class StreamObject {
 	 * @return true if task with the given taskName is found.
 	 */
 	public Boolean hasTask(String taskName) {
-		return this.allTasks.containsKey(taskName.toLowerCase());
+		return this.taskMap.containsKey(taskName.toLowerCase());
 	}
 
 	// @author A0118007R
@@ -106,7 +106,7 @@ public class StreamObject {
 	public StreamTask getTask(String taskName)
 			throws StreamModificationException {
 		if (hasTask(taskName.toLowerCase())) {
-			return allTasks.get(taskName.toLowerCase());
+			return taskMap.get(taskName.toLowerCase());
 		} else {
 			throw new StreamModificationException(String.format(
 					ERROR_TASK_DOES_NOT_EXIST, taskName));
@@ -129,7 +129,7 @@ public class StreamObject {
 	 */
 	public void deleteTask(String taskName) throws StreamModificationException {
 		if (hasTask(taskName)) {
-			allTasks.remove(taskName.toLowerCase());
+			taskMap.remove(taskName.toLowerCase());
 			taskList.remove(taskName);
 		} else {
 			throw new StreamModificationException(String.format(
@@ -155,7 +155,7 @@ public class StreamObject {
 	 */
 	public void changeDeadline(String taskName, Calendar deadline)
 			throws StreamModificationException {
-		StreamTask task = allTasks.get(taskName.toLowerCase());
+		StreamTask task = taskMap.get(taskName.toLowerCase());
 		if (task == null) {
 			throw new StreamModificationException(String.format(
 					ERROR_TASK_DOES_NOT_EXIST, taskName));
@@ -239,14 +239,14 @@ public class StreamObject {
 	public void updateTaskName(String taskName, String newTaskName)
 			throws StreamModificationException {
 		StreamTask task = getTask(taskName.toLowerCase());
-		if (allTasks.containsKey(newTaskName.toLowerCase())) {
+		if (taskMap.containsKey(newTaskName.toLowerCase())) {
 			throw new StreamModificationException(String.format(
 					ERROR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
 		}
 
-		allTasks.remove(task.getTaskName().toLowerCase());
+		taskMap.remove(task.getTaskName().toLowerCase());
 		task.setTaskName(newTaskName);
-		allTasks.put(newTaskName.toLowerCase(), task);
+		taskMap.put(newTaskName.toLowerCase(), task);
 
 		int index = taskList.indexOf(taskName);
 		taskList.add(index, newTaskName);
@@ -269,17 +269,17 @@ public class StreamObject {
 	public void markTaskAsDone(String taskName)
 			throws StreamModificationException {
 		StreamTask task = this.getTask(taskName);
-		allTasks.remove(taskName.toLowerCase());
+		taskMap.remove(taskName.toLowerCase());
 		task.markAsDone();
-		allTasks.put(taskName.toLowerCase(), task);
+		taskMap.put(taskName.toLowerCase(), task);
 	}
 
 	public void markTaskAsOngoing(String taskName)
 			throws StreamModificationException {
 		StreamTask task = this.getTask(taskName);
-		allTasks.remove(taskName.toLowerCase());
+		taskMap.remove(taskName.toLowerCase());
 		task.markAsOngoing();
-		allTasks.put(taskName.toLowerCase(), task);
+		taskMap.put(taskName.toLowerCase(), task);
 	}
 
 	// @author A0119401U
@@ -301,9 +301,9 @@ public class StreamObject {
 	public void setDueTime(String taskName, Calendar calendar)
 			throws StreamModificationException {
 		StreamTask task = this.getTask(taskName);
-		allTasks.remove(taskName.toLowerCase());
+		taskMap.remove(taskName.toLowerCase());
 		task.setDeadline(calendar);
-		allTasks.put(taskName.toLowerCase(), task);
+		taskMap.put(taskName.toLowerCase(), task);
 	}
 
 	public void setNullDeadline(String taskName)
@@ -339,8 +339,8 @@ public class StreamObject {
 		}
 
 		List<StreamTask> tasks = new ArrayList<StreamTask>();
-		for (String key : allTasks.keySet()) {
-			StreamTask task = allTasks.get(key);
+		for (String key : taskMap.keySet()) {
+			StreamTask task = taskMap.get(key);
 
 			// check for matches between keywords and tags
 			if (task.hasTag(keywords)) {
@@ -378,14 +378,14 @@ public class StreamObject {
 	
 	//@author A0096529N
 	/**
-	 * @return allTasks a copy of the task map. 
+	 * @return taskMap a copy of the task map. 
 	 */
-	public HashMap<String, StreamTask> getAllTasks() {
-		return new HashMap<String, StreamTask>(this.allTasks);
+	public HashMap<String, StreamTask> getTaskMap() {
+		return new HashMap<String, StreamTask>(this.taskMap);
 	}	
 	//@author A0096529N
 	/**
-	 * @return taskList - a copy of the task list.
+	 * @return taskList a copy of the task list.
 	 */
 	public ArrayList<String> getTaskList() {
 		return new ArrayList<String>(this.taskList);

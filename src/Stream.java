@@ -33,7 +33,6 @@ import fileio.StreamIO;
 public class Stream {
 
 	private StreamObject stobj;
-	private StreamIO stio;
 	private StreamParser parser;
 
 	private String filename;
@@ -45,7 +44,7 @@ public class Stream {
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
 	public Stream(String file) {
-		stio = new StreamIO(String.format(StreamUtil.PARAM_SAVEFILE, file));
+		StreamIO.setSaveLocation(String.format(StreamUtil.PARAM_SAVEFILE, file));
 		parser = new StreamParser();
 
 		filename = file;
@@ -78,7 +77,7 @@ public class Stream {
 	private String save() {
 		String result = null;
 		try {
-			HashMap<String, StreamTask> allTasks = stobj.getAllTasks();
+			HashMap<String, StreamTask> allTasks = stobj.getTaskMap();
 			ArrayList<String> taskList = stobj.getTaskList();
 			StreamIO.save(allTasks, taskList);
 			result = "File saved to " + StreamIO.getSaveLocation();
@@ -381,8 +380,11 @@ public class Stream {
 	 * 
 	 * @author John Kevin Tjahjadi
 	 * @deprecated by A0093874N. Can be un-deprecated if we find a use for it.
+	 * 
+	 * TODO unused.
 	 */
 
+	@SuppressWarnings("unused")
 	private void changeDescription(String task, int index, String newDescription) {
 		try {
 			setDescription(task, index, newDescription);
@@ -465,7 +467,7 @@ public class Stream {
 		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
 		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, filename,
 				day, mth, yr.toString().substring(2), hr, min, sec);
-		stio.saveLogFile(logMessages, logFileName);
+		StreamIO.saveLogFile(logMessages, logFileName);
 	}
 
 	// TODO who's the author?

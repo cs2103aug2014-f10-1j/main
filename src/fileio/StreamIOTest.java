@@ -35,6 +35,7 @@ public class StreamIOTest {
 			+ "- %1$s\nDelete the file if already present.";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;
@@ -152,11 +153,14 @@ public class StreamIOTest {
 	}
 
 	@Test 
-	public void taskToJsonTest() {
+	public void taskToJsonTest1() {
 		testOneTaskToJson("Task to JSON conversion - Code Jarvis", 
 				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
 						+ "\"taskName\":\"Code Jarvis\","
 						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}", task1);
+	}
+	@Test 
+	public void taskToJsonTest2() {
 		testOneTaskToJson("Task to JSON conversion - Build IoT", 
 				"{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 						+ "\"taskName\":\"Build IoT\","
@@ -171,19 +175,24 @@ public class StreamIOTest {
 	}
 
 	@Test
-	public void formatDateTest() throws ParseException {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
+	public void formatDateTest1() throws ParseException {
 		testOneFormatDate("Format date 11:22:33 30/05/1980", "19800530112233", simpleDateFormat.parse("19800530112233"));
+	}
+	@Test
+	public void formatDateTest2() throws ParseException {
 		testOneFormatDate("Format date 23:00:33 30/12/2055", "20551230230033", simpleDateFormat.parse("20551230230033"));
-		testOneFormatDate("Format date 17:09:00 02/10/2014", "21041002170900", simpleDateFormat.parse("21041002170900"));
-
+	}
+	@Test
+	public void formatDateTest3() throws ParseException {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2014, 11, 24, 23, 59, 59);
+		testOneFormatCalendar("Format calendar 23:59:59 24/12/2014", "20141224235959", calendar);
+	}
+	@Test
+	public void formatDateTest4() throws ParseException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(1965, 7, 9, 0, 0, 0);
 		testOneFormatCalendar("Format calendar 00:00:00 09/08/1965", "19650809000000", calendar);
-		calendar.set(2000, 0, 1, 12, 34, 56);
-		testOneFormatCalendar("Format calendar 12:34:56 01/01/2000", "20000101123456", calendar);
-		calendar.set(2014, 11, 24, 23, 59, 59);
-		testOneFormatCalendar("Format calendar 23:59:59 24/12/2014", "20141224235959", calendar);
 	}
 	private void testOneFormatDate(String testMessage, String expected, Date date) {
 		assertEquals(testMessage, expected, StreamIO.formatDate(date));

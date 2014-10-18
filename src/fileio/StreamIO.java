@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 import exception.StreamIOException;
 
-//@author A0096529N
+// @author A0096529N
 /**
  * <h1>StreamIO - Stream file IO component</h1>
  * 
@@ -57,12 +57,9 @@ public class StreamIO {
 
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
-	static String SAVE_LOCATION;
+	static String SAVE_LOCATION = "default.json";
 
-	public StreamIO(String saveLocation) {
-		SAVE_LOCATION = saveLocation;
-	}
-
+	// @author A0096529N
 	/**
 	 * <p>
 	 * Reads and inflate the contents of serialized storage file into
@@ -76,14 +73,15 @@ public class StreamIO {
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
 	 */
-	public static void load(Map<String, StreamTask> allTasks, List<String> taskList) throws StreamIOException {
+	public static void load(Map<String, StreamTask> taskMap, List<String> taskList) throws StreamIOException {
 		JSONObject tasksJson = loadFromFile(new File(SAVE_LOCATION));
 		if (tasksJson != null) {
-			loadMap(allTasks, tasksJson);
+			loadMap(taskMap, tasksJson);
 			loadTaskList(taskList, tasksJson);
 		}
 	}
 
+	// @author A0096529N
 	/**
 	 * <p>
 	 * Serializes and write the contents of StreamObject into
@@ -96,13 +94,13 @@ public class StreamIO {
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
 	 */
-	public static void save(Map<String, StreamTask> allTasks, List<String> taskList)
+	public static void save(Map<String, StreamTask> taskMap, List<String> taskList)
 			throws StreamIOException {
 		try {
-			JSONArray tasksMapJson = mapToJson(allTasks);
+			JSONArray taskMapJson = mapToJson(taskMap);
 			JSONObject orderListJson = taskListToJson(taskList);
 			JSONObject tasksJson = new JSONObject();
-			tasksJson.put(TaskKey.TASKMAP, tasksMapJson);
+			tasksJson.put(TaskKey.TASKMAP, taskMapJson);
 			tasksJson.put(TaskKey.TASKLIST, orderListJson);
 			writeToFile(new File(SAVE_LOCATION), tasksJson);
 		} catch (JSONException e) {
@@ -111,10 +109,23 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
+	/**
+	 * @param saveLocation file path of storage file to save.
+	 */
+	public static void setSaveLocation(String saveLocation) {
+		SAVE_LOCATION = new File(saveLocation).getAbsolutePath();
+	}
+
+	// @author A0093874N
+	/**
+	 * @return file path of the save location.
+	 */
 	public static String getSaveLocation() {
 		return SAVE_LOCATION;
 	}
-	
+
+	// @author A0096529N
 	static void loadTaskList(List<String> taskList, JSONObject tasksJson) throws StreamIOException {
 		try {
 			JSONObject orderListJson = tasksJson.getJSONObject(TaskKey.TASKLIST);
@@ -126,11 +137,13 @@ public class StreamIO {
 							+ e.getMessage(), e);
 		}
 	}
-	static void loadMap(Map<String, StreamTask> allTasks, JSONObject tasksJson) throws StreamIOException {
+
+	// @author A0096529N
+	static void loadMap(Map<String, StreamTask> taskMap, JSONObject tasksJson) throws StreamIOException {
 		try {
-			JSONArray tasksMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
-			HashMap<String, StreamTask> storedTasks = jsonToMap(tasksMapJson);
-			allTasks.putAll(storedTasks);
+			JSONArray taskMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
+			HashMap<String, StreamTask> storedTasks = jsonToMap(taskMapJson);
+			taskMap.putAll(storedTasks);
 		} catch (JSONException e) {
 			throw new StreamIOException(
 					"File corrupted, could not parse file contents - "
@@ -138,6 +151,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static JSONObject taskListToJson(List<String> taskList) throws StreamIOException {
 		try {
 			JSONObject orderListJson = new JSONObject();
@@ -151,6 +165,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static List<String> jsonToTaskList(JSONObject orderListJson) throws StreamIOException {
 		try {
 			List<String> taskList = new ArrayList<String>();
@@ -165,6 +180,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static void writeToFile(File destin, JSONObject tasksJson)
 			throws StreamIOException {
 		try (FileOutputStream fos = new FileOutputStream(destin)) {
@@ -178,6 +194,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static JSONObject loadFromFile(File file) throws StreamIOException {
 		StringBuilder stringBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -201,6 +218,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static JSONArray mapToJson(Map<String, StreamTask> map)
 			throws StreamIOException {
 		JSONArray mapJson = new JSONArray();
@@ -211,6 +229,7 @@ public class StreamIO {
 		return mapJson;
 	}
 
+	// @author A0096529N
 	static HashMap<String, StreamTask> jsonToMap(JSONArray tasksJson)
 			throws StreamIOException {
 		try {
@@ -226,6 +245,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static JSONObject taskToJson(StreamTask task) throws StreamIOException {
 		try {
 			JSONObject taskJson = new JSONObject();
@@ -240,6 +260,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static StreamTask jsonToTask(JSONObject taskJson) throws StreamIOException {
 		try {
 			String taskName = taskJson.getString(TaskKey.NAME);
@@ -269,6 +290,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static String formatDate(Calendar calendar) {
 		if (calendar == null) {
 			return null;
@@ -277,6 +299,7 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0096529N
 	static String formatDate(Date date) {
 		if (date == null) {
 			return null;
@@ -293,7 +316,7 @@ public class StreamIO {
 	 * @author Wilson Kurniawan
 	 */
 
-	public void saveLogFile(List<String> logMessages, String logFileName)
+	public static void saveLogFile(List<String> logMessages, String logFileName)
 			throws IOException {
 		File fout = new File(logFileName);
 		FileOutputStream fos = new FileOutputStream(fout);

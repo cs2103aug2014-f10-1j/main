@@ -35,7 +35,7 @@ public class StreamModificationTest {
 		task1.addTag("find");
 		task1.addTag("math");
 		task1.addTag("simple");
-		streamObject.allTasks.put(task1.getTaskName().toLowerCase(), task1);
+		streamObject.taskMap.put(task1.getTaskName().toLowerCase(), task1);
 		streamObject.taskList.add(task1.getTaskName());
 
 		Calendar task2Deadline = Calendar.getInstance();
@@ -46,14 +46,14 @@ public class StreamModificationTest {
 		task2.setDeadline(task2Deadline);
 		task2.addTag("panda");
 		task2.addTag("nolink");
-		streamObject.allTasks.put(task2.getTaskName().toLowerCase(), task2);
+		streamObject.taskMap.put(task2.getTaskName().toLowerCase(), task2);
 		streamObject.taskList.add(task2.getTaskName());
 		
 		task3 = new StreamTask(TASK_NAME_3);
 		task3.setDescription("Code the unit tests for StreamObject");
 		task3.addTag("boringtask");
 		task3.addTag("procrastinate");
-		streamObject.allTasks.put(task3.getTaskName().toLowerCase(), task3);
+		streamObject.taskMap.put(task3.getTaskName().toLowerCase(), task3);
 		streamObject.taskList.add(task3.getTaskName());
 	}
 
