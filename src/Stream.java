@@ -32,7 +32,7 @@ import fileio.StreamIO;
 
 public class Stream {
 
-	private StreamObject stobj;
+	StreamObject stobj;
 	private StreamParser parser;
 
 	private String filename;
@@ -44,10 +44,9 @@ public class Stream {
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
 	public Stream(String file) {
-		StreamIO.setSaveLocation(String.format(StreamUtil.PARAM_SAVEFILE, file));
+		initStreamIO(file);
 		parser = new StreamParser();
 
-		filename = file;
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<StreamTask>();
 		orderingStack = new Stack<ArrayList<String>>();
@@ -57,7 +56,17 @@ public class Stream {
 	}
 
 	//@author A0096529N
-	private void load() {
+	private void initStreamIO(String file) {
+		if (!file.endsWith(".json")) {
+			filename = String.format(StreamUtil.PARAM_SAVEFILE, file);
+		} else {
+			filename = file;
+		}
+		StreamIO.setSaveLocation(filename);
+	}
+
+	//@author A0096529N
+	void load() {
 		try {
 			HashMap<String, StreamTask> allTasks = new HashMap<String, StreamTask>();
 			ArrayList<String> taskList = new ArrayList<String>();
@@ -74,7 +83,7 @@ public class Stream {
 	}
 
 	//@author A0096529N
-	private String save() {
+	String save() {
 		String result = null;
 		try {
 			HashMap<String, StreamTask> allTasks = stobj.getTaskMap();
@@ -130,7 +139,7 @@ public class Stream {
 	 *             present.
 	 * @return <strong>String</strong> - the log message
 	 */
-	private String addTask(String taskName) throws StreamModificationException {
+	String addTask(String taskName) throws StreamModificationException {
 		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
 		stobj.addTask(taskName);
 		assert (stobj.hasTask(taskName)) : StreamUtil.FAIL_NOT_ADDED;
@@ -285,7 +294,7 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private String setDescription(String task, int index, String description)
+	String setDescription(String task, int index, String description)
 			throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(task);
 		String oldDescription = currentTask.getDescription();
