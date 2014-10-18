@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -281,13 +281,15 @@ public class StreamIO {
 		}
 	}
 
+	// @author A0093874N
+	
 	/**
 	 * Saves the log file upon exiting.
 	 * 
 	 * @author Wilson Kurniawan
 	 */
 
-	public void saveLogFile(ArrayList<String> logMessages, String logFileName)
+	public void saveLogFile(List<String> logMessages, String logFileName)
 			throws IOException {
 		File fout = new File(logFileName);
 		FileOutputStream fos = new FileOutputStream(fout);

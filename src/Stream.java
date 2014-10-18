@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -11,174 +12,310 @@ import parser.StreamParser;
 import parser.StreamParser.CommandType;
 import model.StreamTask;
 import model.StreamObject;
+import util.StreamUtil;
+
+/**
+ * <b>Stream</b> is the main product of the project. It is the amalgamation of
+ * all different components from different packages, namely <b>StreamUI</b>,
+ * <b>StreamObject</b>, <b>StreamIO</b>, and <b>StreamParser</b>.
+ * 
+ * @version v0.2
+ * @author Wilson Kurniawan, John Kevin Tjahjadi, Steven Khong Wai How, Jiang
+ *         Shenhao
+ */
+
+// TODO all the null assertions shouldn't be there. Rather, StreamParser should
+// check for null input before passing the commands to the logic to process.
+// Looking forward to the parser being able to do it!
 
 public class Stream {
 
-	private StreamObject st;
+	private StreamObject stobj;
 	private StreamIO stio;
 	private StreamParser parser;
 
 	private String filename;
 	private Stack<String> inputStack;
 	private Stack<StreamTask> dumpedTasks;
-	private ArrayList<String> logMessages;
+	private Stack<ArrayList<String>> orderingStack;
+	private List<String> logMessages;
 
-	private static Scanner inputScanner = new Scanner(System.in);
-
-	private static final int POS_YEAR_SUBSTRING = 2;
-
-	private static final String FILENAME_TO_USE = "stream";
-
-	private static final String VERSION = "v0.2";
-	private static final String MESSAGE_WELCOME = "Welcome to Stream "
-			+ VERSION + "!";
-	private static final String MESSAGE_THANK_YOU = "Thank you for using this internal release of Stream[BETA]!";
-	private static final String SAVE_LOCATION = "%1$s.json";
-	private static final String LOGFILE_LOCATION = "%1$s %2$s%3$s%4$s %5$s%6$s%7$s.txt";
-
-	private static final String ERROR_NULL_INPUT = "Null input value detected";
-
-	private static final String LOG_MESSAGE_ADD = "Added %1$s";
-	private static final String LOG_MESSAGE_DELETE = "Deleted %1$s";
-	private static final String LOG_MESSAGE_VIEW = "Viewed the details for %1$s";
-	private static final String LOG_MESSAGE_DESC = "Changed description for %1$s to %2$s";
-	private static final String LOG_MESSAGE_CLEAR = "Cleared all tasks";
-	private static final String LOG_MESSAGE_RECOVER = "Recovered %1$s";
-	private static final String LOG_MESSAGE_MODIFY = "Changed name for %1$s to %2$s";
-	private static final String LOG_MESSAGE_MARK = "%1$s marked as %2$s";
-	private static final String LOG_MESSAGE_ERRORS = "%1$s: %2$s";
-	private static final String LOG_MESSAGE_UNDO_FAIL = "Nothing to undo";
-	private static final String LOG_MESSAGE_UNDO_SUCCESS = "Undoing the previous action";
-	private static final String LOG_MESSAGE_DUE_NEVER = "Due date for %1$s is removed";
-	private static final String LOG_MESSAGE_DUE = "Due date for %1$s set to %2$s";
-	private static final String LOG_MESSAGE_CMD_UNKNOWN = "Unknown command entered";
-	private static final String LOG_MESSAGE_TAGS_ADDED = "Tags added to %1$s: %2$s";
-	private static final String LOG_MESSAGE_TAGS_NOT_ADDED = "Tags not added to %1$s: %2$s";
-	private static final String LOG_MESSAGE_TAGS_REMOVED = "Tags removed from %1$s: %2$s";
-	private static final String LOG_MESSAGE_TAGS_NOT_REMOVED = "Tags not removed %1$s: %2$s";
-	private static final String LOG_MESSAGE_SEARCH = "Searching for %1$s, %2$s queries found";
+	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
 	public Stream(String file) {
-		st = new StreamObject();
-		stio = new StreamIO(String.format(SAVE_LOCATION, file));
+		stobj = new StreamObject();
+		stio = new StreamIO(String.format(StreamUtil.PARAM_SAVEFILE, file));
 		parser = new StreamParser();
 
 		filename = file;
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<StreamTask>();
+		orderingStack = new Stack<ArrayList<String>>();
 		logMessages = new ArrayList<String>();
 
-		st.load();
+		stobj.load();
 	}
 
-	// deprecated by A0093874N; unless we want to implement commands to allow
-	// user to re-load last saved file explicitly, this is unnecessary
-	/*
-	 * public void load() { st.load(); }
+	// TODO for both load and save: see the issue I open in GitHub
+
+	/**
+	 * @deprecated by A0093874N; replaced by directly loading during
+	 *             initialization process.
 	 */
 
-	public void save() {
-		st.save();
+	// TODO who's the author of load()?
+
+	private void load() {
+		stobj.load();
+	}
+
+	// TODO who's the author of save()?
+
+	private void save() {
+		stobj.save();
 	}
 
 	// @author A0093874N
 
 	/**
 	 * <p>
-	 * Adds a new task named <i>newTaskName</i> to the task list.
+	 * Checks whether a specific task is already included in the tasks list.
+	 * Only for testing.
 	 * </p>
 	 * <p>
-	 * Precondition: <i>newTaskName</i> is not null
+	 * Pre-condition: <i>taskName</i> is not null
 	 * </p>
 	 * 
+	 * @author Wilson Kurniawan
+	 * @param taskName
+	 *            - the task name
+	 * @return <strong>Boolean</strong> - true if the
+	 *         <strong>StreamTask</strong> <i>taskName</i> exists, false
+	 *         otherwise.
+	 */
+	Boolean hasTask(String taskName) {
+		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		return stobj.hasTask(taskName);
+	}
+
+	// @author A0093874N
+
+	/**
+	 * <p>
+	 * Adds a new task to the tasks list.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            - the task name
 	 * @author Wilson Kurniawan
 	 * @throws StreamModificationException
-	 *             if task named <i>newTaskName</i> is already present.
-	 * @return <strong>String</strong> - the message to be logged
+	 *             - if a <b>StreamTask<b> named <i>taskName</i> is already
+	 *             present.
+	 * @return <strong>String</strong> - the log message
 	 */
-	public String addTask(String newTaskName)
-			throws StreamModificationException {
-		assert (newTaskName == null) : ERROR_NULL_INPUT;
-		st.addTask(newTaskName);
-		int currentNoOfTasks = st.getTaskNames().size();
-		inputStack.push("dismiss " + currentNoOfTasks);
-		return String.format(LOG_MESSAGE_ADD, newTaskName);
+	private String addTask(String taskName) throws StreamModificationException {
+		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		stobj.addTask(taskName);
+		assert (stobj.hasTask(taskName)) : StreamUtil.FAIL_NOT_ADDED;
+		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
+				stobj.getNumberOfTasks()));
+		return String.format(StreamUtil.LOG_ADD, taskName);
 	}
 
 	// @author A0093874N
 
 	/**
-	 * Checks whether a specific task is included in the task list. Mainly for
-	 * testing purpose.
+	 * <p>
+	 * Deletes a task from the tasks list permanently.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null.
+	 * </p>
 	 * 
 	 * @author Wilson Kurniawan
-	 * @return <strong>Boolean</strong> - true if the <strong>Task</strong>
-	 *         <i>taskName</i> exists, false otherwise.
+	 * @param taskName
+	 *            - the task name
+	 * @throws StreamModificationException
 	 */
-	public Boolean hasTask(String taskName) {
-		return st.hasTask(taskName);
+
+	private void dismissTask(String taskName)
+			throws StreamModificationException {
+		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		stobj.deleteTask(taskName);
+		assert (!stobj.hasTask(taskName)) : StreamUtil.FAIL_NOT_DELETED;
 	}
 
 	// @author A0118007R
 
 	/**
-	 * Prints the task details
+	 * <p>
+	 * Deletes a task from the tasks list and then archives it so it can be
+	 * recovered by undo process.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null.
+	 * </p>
 	 * 
 	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the message to be logged
+	 * @return <strong>String</strong> - the log message
 	 */
 
-	public String printDetails(String task) throws StreamModificationException {
-		StreamTask currentTask = st.getTask(task);
+	private String deleteTask(String taskName)
+			throws StreamModificationException {
+		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		StreamTask deletedTask = stobj.getTask(taskName);
+		ArrayList<String> order = stobj.getOrdering();
+		orderingStack.push(order);
+		dismissTask(taskName);
+
+		// This section is contributed by A0093874N
+		dumpedTasks.push(deletedTask);
+		inputStack.push(String.format(StreamUtil.CMD_RECOVER, 1));
+		return String.format(StreamUtil.LOG_DELETE, taskName);
+		//
+	}
+
+	// @author A0093874N
+
+	/**
+	 * Clears all tasks upon receiving the command "clear".
+	 * 
+	 * @author Wilson Kurniawan
+	 * @throws StreamModificationException
+	 */
+	private void clearAllTasks() throws StreamModificationException {
+		int noOfTasks = stobj.getNumberOfTasks();
+		orderingStack.push(stobj.getOrdering());
+		for (int i = 0; i < noOfTasks; i++) {
+			deleteTask(stobj.getTaskNames().get(0));
+			/*
+			 * This is because we don't want the "recover 1". Rather, we'll
+			 * replace with "recover noOfTasks" at the end of the process.
+			 */
+			inputStack.pop();
+			orderingStack.pop();
+		}
+		assert (stobj.getNumberOfTasks() == 0) : StreamUtil.FAIL_NOT_CLEARED;
+		inputStack.push(String.format(StreamUtil.CMD_RECOVER, noOfTasks));
+	}
+
+	// @author A0118007R
+
+	/**
+	 * <p>
+	 * Prints the task details.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null
+	 * </p>
+	 * 
+	 * @author John Kevin Tjahjadi
+	 * @param taskName
+	 *            - the task name
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+
+	private String printDetails(String taskName)
+			throws StreamModificationException {
+		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		StreamTask currentTask = stobj.getTask(taskName);
 		currentTask.printTaskDetails();
 
 		// This section is contributed by A0093874N
-		return String.format(LOG_MESSAGE_VIEW, currentTask.getTaskName());
+		return String.format(StreamUtil.LOG_VIEW, taskName);
 		//
 	}
 
 	// @author A0118007R
 
 	/**
-	 * Changes the task name
+	 * <p>
+	 * Changes a task's name.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>oldName, newName, index</i> not null
+	 * </p>
 	 * 
 	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the message to be logged
+	 * @return <strong>String</strong> - the log message
 	 */
 
-	public String changeName(String oldName, String newName, int index)
+	private String setName(String oldName, String newName, Integer index)
 			throws StreamModificationException {
-		st.updateTaskName(oldName, newName);
+		assert (oldName != null && newName != null && index != null) : StreamUtil.FAIL_NULL_INPUT;
+		stobj.updateTaskName(oldName, newName);
 
 		// This section is contributed by A0093874N
-		inputStack.push("modify " + index + " " + oldName);
-		return String.format(LOG_MESSAGE_MODIFY, oldName, newName);
+		inputStack.push(String.format(StreamUtil.CMD_MODIFY, index, oldName));
+		return String.format(StreamUtil.LOG_MODIFY, oldName, newName);
 		//
 	}
 
 	// @author A0118007R
 
 	/**
-	 * Adds a description to the task
+	 * <p>
+	 * Adds a description to a task.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>task, index, description</i> not null
+	 * </p>
 	 * 
 	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the message to be logged
+	 * @return <strong>String</strong> - the log message
 	 */
-	public String setDescription(String task, int index, String description)
+	private String setDescription(String task, int index, String description)
 			throws StreamModificationException {
-		StreamTask currentTask = st.getTask(task);
+		StreamTask currentTask = stobj.getTask(task);
 		String oldDescription = currentTask.getDescription();
 		currentTask.setDescription(description);
 
 		// This section is contributed by A0093874N
-		inputStack.push("desc " + index + " " + oldDescription);
-		return String.format(LOG_MESSAGE_DESC, currentTask.getTaskName(),
+		inputStack.push(String.format(StreamUtil.CMD_DESC, index,
+				oldDescription));
+		return String.format(StreamUtil.LOG_DESC, currentTask.getTaskName(),
 				description);
 		//
+	}
 
+	// @author A0119401U
+
+	/**
+	 * Set the due date of the selected task
+	 * 
+	 * @author Jiang Shenhao
+	 * @throws StreamModificationException
+	 */
+	private void setDueDate(String taskName, int taskIndex, Calendar calendar)
+			throws StreamModificationException {
+		String parsedCalendar = calendar.get(Calendar.DAY_OF_MONTH) + "/"
+				+ (calendar.get(Calendar.MONTH) + 1) + "/"
+				+ calendar.get(Calendar.YEAR);
+		StreamTask currentTask = stobj.getTask(taskName);
+		Calendar currentDeadline = currentTask.getDeadline();
+		stobj.setDueTime(taskName, calendar);
+		if (currentDeadline == null) {
+			inputStack.push(String
+					.format(StreamUtil.CMD_DUE, taskIndex, "null"));
+		} else {
+			inputStack.push(String.format(
+					StreamUtil.CMD_DUE,
+					taskIndex,
+					currentDeadline.get(Calendar.DATE) + "/"
+							+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
+							+ currentDeadline.get(Calendar.YEAR)));
+		}
+		// This section is contributed by A0093874N
+		showAndLogResult(String.format(StreamUtil.LOG_DUE, taskName,
+				parsedCalendar));
+		//
 	}
 
 	// @author A0119401U
@@ -188,16 +325,16 @@ public class Stream {
 	 * 
 	 * @author Jiang Shenhao
 	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the message to be logged
+	 * @return <strong>String</strong> - the log message
 	 */
-	public String markAsDone(String task, int index)
+	private String markAsDone(String task, int index)
 			throws StreamModificationException {
-		st.markTaskAsDone(task);
+		stobj.markTaskAsDone(task);
 		// This section is contributed by A0118007R
-		inputStack.push("mark " + index + " " + "ongoing");
+		inputStack.push(String.format(StreamUtil.CMD_MARK, index, "ongoing"));
 		//
 		// This section is contributed by A0093874N
-		return String.format(LOG_MESSAGE_MARK, task, "done");
+		return String.format(StreamUtil.LOG_MARK, task, "done");
 		//
 	}
 
@@ -208,88 +345,35 @@ public class Stream {
 	 * 
 	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the message to be logged
+	 * @return <strong>String</strong> - the log message
 	 */
-	public String markAsOngoing(String task, int index)
+	private String markAsOngoing(String task, int index)
 			throws StreamModificationException {
-		st.markTaskAsOngoing(task);
+		stobj.markTaskAsOngoing(task);
 		//
-		inputStack.push("mark " + index + " " + "done");
+		inputStack.push(String.format(StreamUtil.CMD_MARK, index, "done"));
 		//
 		// This section is contributed by A0093874N
-		return String.format(LOG_MESSAGE_MARK, task, "ongoing");
+		return String.format(StreamUtil.LOG_MARK, task, "ongoing");
 		//
-	}
-
-	// @author A0119401U
-	/**
-	 * Set the due date of the selected task
-	 * 
-	 * @author Jiang Shenhao
-	 * @throws StreamModificationException
-	 */
-	public void setDueDate(String taskName, int taskIndex, Calendar calendar)
-			throws StreamModificationException {
-		String parsedCalendar = calendar.get(Calendar.DAY_OF_MONTH) + "/"
-				+ (calendar.get(Calendar.MONTH) + 1) + "/"
-				+ calendar.get(Calendar.YEAR);
-		StreamTask currentTask = st.getTask(taskName);
-		Calendar currentDeadline = currentTask.getDeadline();
-		st.setDueTime(taskName, calendar);
-		if (currentDeadline == null) {
-			inputStack.push("due " + taskIndex + " " + "null");
-		} else {
-			inputStack.push("due " + taskIndex + " "
-					+ currentDeadline.get(Calendar.DATE) + "/"
-					+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
-					+ currentDeadline.get(Calendar.YEAR));
-		}
-		// This section is contributed by A0093874N
-		showAndLog(String.format(LOG_MESSAGE_DUE, taskName, parsedCalendar));
-		//
-	}
-
-	/**
-	 * Modify a task's description This method is just to differentiate the set
-	 * new description and modify description part
-	 * 
-	 * @author A0118007R
-	 */
-
-	public void changeDescription(String task, int index, String newDescription) {
-		try {
-			setDescription(task, index, newDescription);
-		} catch (Exception e) {
-
-		}
-	}
-
-	// @author A0093874N
-
-	public void dismissTask(String task) {
-		try {
-			st.deleteTask(task);
-		} catch (Exception e) {
-
-		}
 	}
 
 	// @author A0118007R
 
 	/**
-	 * Deletes a specific task
+	 * Modify a task's description This method is just to differentiate the set
+	 * new description and modify description part
 	 * 
-	 * @author A0118007R improved by A0093874N
-	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the message to be logged
+	 * @author John Kevin Tjahjadi
+	 * @deprecated by A0093874N. Can be un-deprecated if we find a use for it.
 	 */
 
-	public String deleteTask(String task) throws StreamModificationException {
-		StreamTask deletedTask = st.getTask(task);
-		dismissTask(task);
-		dumpedTasks.push(deletedTask);
-		inputStack.push("recover 1");
-		return String.format(LOG_MESSAGE_DELETE, deletedTask.getTaskName());
+	private void changeDescription(String task, int index, String newDescription) {
+		try {
+			setDescription(task, index, newDescription);
+		} catch (Exception e) {
+
+		}
 	}
 
 	// @author A0096529N
@@ -309,53 +393,17 @@ public class Stream {
 	 * @return tasks - a list of tasks containing the key phrase.
 	 * @author Steven Khong
 	 */
-	public List<StreamTask> search(String keyphrase) {
-		return st.findTasks(keyphrase);
+	private List<StreamTask> search(String keyphrase) {
+		assert (keyphrase != null) : StreamUtil.FAIL_NULL_INPUT;
+		return stobj.findTasks(keyphrase);
 	}
 
-	// @author A0093874N
+	// TODO who's the author of printTasks()?
 
-	/**
-	 * Clears all tasks upon receiving the command "clear".
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	public void clearAllTasks() throws StreamModificationException {
-		int noOfTasks = st.getTaskNames().size();
-		for (int i = noOfTasks - 1; i >= 0; i--) {
-			deleteTask(st.getTaskNames().get(i));
-			/*
-			 * This is because we don't want the "recover 1". Rather, we'll
-			 * replace with "recover noOfTasks" at the end of the process.
-			 */
-			inputStack.pop();
-		}
-		inputStack.push("recover " + noOfTasks);
-	}
-
-	// @author A0118007R
-
-	public static void printReceivedCommand(String command) {
-		System.out.println("Command received [" + command + "]");
-	}
-
-	// @author A0093874N
-
-	public static String addZeroToTime(Integer time) {
-		String convertedTime = time.toString();
-		if (time < 10) {
-			convertedTime = "0" + convertedTime;
-		}
-		if (time < 1) {
-			convertedTime = "0" + convertedTime;
-		}
-		return convertedTime;
-	}
-
-	void printTasks() {
+	private void printTasks() {
 		System.out.println(" ");
 		System.out.println("Your current tasks: ");
-		ArrayList<String> myTasks = st.getTaskNames();
+		ArrayList<String> myTasks = stobj.getTaskNames();
 		int numberOfTasks = myTasks.size();
 
 		for (int i = 1; i <= numberOfTasks; i++) {
@@ -363,291 +411,318 @@ public class Stream {
 		}
 	}
 
+	// @author A0118007R
+
+	/**
+	 * 
+	 */
+	private void showAndLogCommand(String command) {
+		String commandReceived = String.format(StreamUtil.LOG_CMD_RECEIVED,
+				command);
+		System.out.println(commandReceived);
+		logMessages.add(StreamUtil.showAsTerminalResponse(commandReceived));
+	}
+
 	// @author A0093874N
 
-	void showAndLog(String logMessage) {
+	/**
+	 * 
+	 */
+	private void showAndLogResult(String logMessage) {
 		System.out.println(logMessage);
-		logMessages.add(logMessage);
+		logMessages.add(StreamUtil.showAsTerminalResponse(logMessage));
 	}
 
-	static String stringify(ArrayList<String> array, String connector) {
-		String result = "";
-		for (String str : array) {
-			result += connector + str;
-		}
-		return result.substring(connector.length());
+	// @author A0093874N
+
+	private void saveLogFile() throws IOException {
+		Calendar now = Calendar.getInstance();
+		String day = StreamUtil.addZeroToTime(now.get(Calendar.DAY_OF_MONTH));
+		String mth = StreamUtil.addZeroToTime(now.get(Calendar.MONTH));
+		Integer yr = now.get(Calendar.YEAR);
+		String hr = StreamUtil.addZeroToTime(now.get(Calendar.HOUR_OF_DAY));
+		String min = StreamUtil.addZeroToTime(now.get(Calendar.MINUTE));
+		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
+		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, filename,
+				day, mth, yr.toString().substring(2), hr, min, sec);
+		stio.saveLogFile(logMessages, logFileName);
 	}
 
-	void processAndExecute(String input) {
+	// TODO who's the author?
 
-		// updated by A0119401U
-		/*
-		 * ParserContent parsedContent = Parser.interpretCommand(input);
-		 * CommandType command = parsedContent.getCommandKey(); String content =
-		 * parsedContent.getCommandContent();
-		 */
+	private void executeInput(CommandType command, String content)
+			throws StreamModificationException, IOException {
 
-		parser.interpretCommand(input);
-		CommandType command = parser.getCommandType();
-		String content = parser.getCommandContent();
 		String[] contents;
 		String[] tags;
 		String taskName;
 		String logMessage;
 		int taskIndex;
 
+		switch (command) {
+			case ADD:
+				showAndLogCommand("ADD");
+				logMessage = addTask(content);
+				showAndLogResult(logMessage);
+				break;
+
+			case DEL:
+				showAndLogCommand("DELETE");
+				taskIndex = Integer.parseInt(content);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				logMessage = deleteTask(taskName);
+				showAndLogResult(logMessage);
+				break;
+
+			case DESC:
+				showAndLogCommand("DESCRIBE");
+				contents = content.split(" ", 2);
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				String description = contents[1];
+				logMessage = setDescription(taskName, taskIndex, description);
+				showAndLogResult(logMessage);
+				break;
+
+			case DUE:
+				showAndLogCommand("DUE");
+				contents = content.split(" ", 2);
+
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+
+				if (contents[1].trim().equals("null")) {
+					stobj.setNullDeadline(taskName);
+					showAndLogResult(String.format(StreamUtil.LOG_DUE_NEVER,
+							taskName));
+				} else {
+					String[] dueDate = contents[1].split("/");
+					int year;
+					if (dueDate.length == 2) {
+						year = Calendar.getInstance().get(Calendar.YEAR);
+					} else {
+						year = Integer.parseInt(dueDate[2]);
+					}
+					int day = Integer.parseInt(dueDate[0]);
+					int month = Integer.parseInt(dueDate[1]);
+					Calendar calendar = new GregorianCalendar(year, month - 1,
+							day);
+					setDueDate(taskName, taskIndex, calendar);
+				}
+				break;
+
+			case MODIFY:
+				showAndLogCommand("MODIFY");
+				contents = content.split(" ", 2);
+				taskIndex = Integer.parseInt(contents[0]);
+				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
+				String newTaskName = contents[1];
+				logMessage = setName(oldTaskName, newTaskName, taskIndex);
+				showAndLogResult(logMessage);
+				break;
+
+			case MARK:
+				showAndLogCommand("MARK");
+				contents = content.split(" ", 2);
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				String markType = contents[1].trim();
+				/*
+				 * TODO make the markType more flexible. maybe "finished",
+				 * "not done", "not finished", ...
+				 */
+				if (markType.equals("done")) {
+					logMessage = markAsDone(taskName, taskIndex);
+				} else if (markType.equals("ongoing")) {
+					logMessage = markAsOngoing(taskName, taskIndex);
+				} else {
+					logMessage = "Unknown marking type: " + markType;
+				}
+				showAndLogResult(logMessage);
+				break;
+
+			case TAG:
+				showAndLogCommand("TAG");
+				tags = content.split(" ");
+				ArrayList<String> tagsAdded = new ArrayList<String>();
+				ArrayList<String> tagsNotAdded = new ArrayList<String>();
+				taskIndex = Integer.parseInt(tags[0]);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				for (int i = 1; i < tags.length; i++) {
+					if (stobj.addTag(taskName, tags[i])) {
+						tagsAdded.add(tags[i]);
+					} else {
+						tagsNotAdded.add(tags[i]);
+					}
+				}
+				inputStack.push("untag " + taskIndex + " "
+						+ StreamUtil.listDownArrayContent(tagsAdded, " "));
+				if (!tagsAdded.isEmpty()) {
+					showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED,
+							taskName,
+							StreamUtil.listDownArrayContent(tagsAdded, ", ")));
+				}
+				if (!tagsNotAdded.isEmpty()) {
+					showAndLogResult(String
+							.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
+									StreamUtil.listDownArrayContent(
+											tagsNotAdded, ", ")));
+				}
+				break;
+
+			case UNTAG:
+				showAndLogCommand("UNTAG");
+				tags = content.split(" ");
+				ArrayList<String> tagsRemoved = new ArrayList<String>();
+				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+				taskIndex = Integer.parseInt(tags[0]);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				for (int i = 1; i < tags.length; i++) {
+					if (stobj.removeTag(taskName, tags[i])) {
+						tagsRemoved.add(tags[i]);
+					} else {
+						tagsNotRemoved.add(tags[i]);
+					}
+				}
+				inputStack.push("tag " + taskIndex + " "
+						+ StreamUtil.listDownArrayContent(tagsRemoved, " "));
+				if (!tagsRemoved.isEmpty()) {
+					showAndLogResult(String.format(StreamUtil.LOG_TAGS_REMOVED,
+							taskName,
+							StreamUtil.listDownArrayContent(tagsRemoved, ", ")));
+				}
+				if (!tagsNotRemoved.isEmpty()) {
+					showAndLogResult(String.format(
+							StreamUtil.LOG_TAGS_NOT_REMOVED, taskName,
+							StreamUtil.listDownArrayContent(tagsNotRemoved,
+									", ")));
+				}
+				break;
+
+			case SEARCH:
+				showAndLogCommand("SEARCH");
+				List<StreamTask> searchResult = search(content);
+				System.out.println("Search result for " + content);
+				for (int i = 1; i <= searchResult.size(); i++) {
+					System.out.println(i + ". "
+							+ searchResult.get(i - 1).getTaskName());
+				}
+				showAndLogResult(String.format(StreamUtil.LOG_SEARCH, content,
+						searchResult.size()));
+				break;
+
+			case VIEW:
+				showAndLogCommand("VIEW");
+				taskIndex = Integer.parseInt(content);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				logMessage = printDetails(taskName);
+				showAndLogResult(logMessage);
+				break;
+
+			case CLEAR:
+				showAndLogCommand("CLEAR");
+				clearAllTasks();
+				showAndLogResult(StreamUtil.LOG_CLEAR);
+				break;
+
+			case UNDO:
+				showAndLogCommand("UNDO");
+				if (inputStack.isEmpty()) {
+					showAndLogResult(StreamUtil.LOG_UNDO_FAIL);
+				} else {
+					String undoneInput = inputStack.pop();
+					showAndLogResult(StreamUtil.LOG_UNDO_SUCCESS);
+					processInput(undoneInput);
+
+					/*
+					 * VERY IMPORTANT because almost all inputs will add its
+					 * counterpart to the inputStack. If not popped, the undo
+					 * process will be trapped between just two processes.
+					 */
+					inputStack.pop();
+				}
+				break;
+
+			case RECOVER:
+				showAndLogCommand("RECOVER");
+				int noOfTasksToRecover = Integer.parseInt(content);
+				for (int i = 0; i < noOfTasksToRecover; i++) {
+					StreamTask task = dumpedTasks.pop();
+					stobj.recoverTask(task);
+					showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
+							task.getTaskName()));
+				}
+				stobj.setOrdering(orderingStack.pop());
+				inputStack.push("some fake input to be popped");
+				break;
+
+			case DISMISS:
+				showAndLogCommand("DISMISS");
+				taskIndex = Integer.parseInt(content);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				dismissTask(taskName);
+				showAndLogResult(String.format(StreamUtil.LOG_DELETE, taskName));
+				inputStack.push("some fake input to be popped");
+				break;
+
+			case EXIT:
+				showAndLogCommand("EXIT");
+				System.out.println(StreamUtil.MSG_THANK_YOU);
+				saveLogFile();
+				System.exit(0);
+
+			default:
+				showAndLogResult(StreamUtil.LOG_CMD_UNKNOWN);
+		}
+	}
+
+	// @author A0093874N
+
+	public void processInput(String input) {
+		parser.interpretCommand(input);
+		CommandType command = parser.getCommandType();
+		String content = parser.getCommandContent();
 		try {
-			assert (command == null) : ERROR_NULL_INPUT;
-			assert (content == null) : ERROR_NULL_INPUT;
-			switch (command) {
-				case ADD:
-					printReceivedCommand("ADD");
-					logMessage = addTask(content);
-					showAndLog(logMessage);
-					break;
-
-				case DEL:
-					printReceivedCommand("DELETE");
-					taskIndex = Integer.parseInt(content);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					logMessage = deleteTask(taskName);
-					showAndLog(logMessage);
-					break;
-
-				case DESC:
-					printReceivedCommand("DESCRIBE");
-					contents = content.split(" ", 2);
-					taskIndex = Integer.parseInt(contents[0]);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					String description = contents[1];
-					logMessage = setDescription(taskName, taskIndex,
-							description);
-					showAndLog(logMessage);
-					break;
-
-				case DUE:
-					printReceivedCommand("DUE");
-					contents = content.split(" ", 2);
-
-					taskIndex = Integer.parseInt(contents[0]);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-
-					if (contents[1].trim().equals("null")) {
-						st.setNullDeadline(taskName);
-						showAndLog(String.format(LOG_MESSAGE_DUE_NEVER,
-								taskName));
-					} else {
-						String[] dueDate = contents[1].split("/");
-						int year;
-						if (dueDate.length == 2) {
-							year = Calendar.getInstance().get(Calendar.YEAR);
-						} else {
-							year = Integer.parseInt(dueDate[2]);
-						}
-						int day = Integer.parseInt(dueDate[0]);
-						int month = Integer.parseInt(dueDate[1]);
-						Calendar calendar = new GregorianCalendar(year,
-								month - 1, day);
-						setDueDate(taskName, taskIndex, calendar);
-					}
-					break;
-
-				case MODIFY:
-					printReceivedCommand("MODIFY");
-					contents = content.split(" ", 2);
-					taskIndex = Integer.parseInt(contents[0]);
-					String oldTaskName = st.getTaskNames().get(taskIndex - 1);
-					String newTaskName = contents[1];
-					logMessage = changeName(oldTaskName, newTaskName, taskIndex);
-					showAndLog(logMessage);
-					break;
-
-				case MARK:
-					printReceivedCommand("MARK");
-					contents = content.split(" ", 2);
-					taskIndex = Integer.parseInt(contents[0]);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					if (contents[1].trim().equals("done")) {
-						logMessage = markAsDone(taskName, taskIndex);
-					} else {
-						logMessage = markAsOngoing(taskName, taskIndex);
-					}
-					showAndLog(logMessage);
-					break;
-
-				case TAG:
-					printReceivedCommand("TAG");
-					tags = content.split(" ");
-					ArrayList<String> tagsAdded = new ArrayList<String>();
-					ArrayList<String> tagsNotAdded = new ArrayList<String>();
-					taskIndex = Integer.parseInt(tags[0]);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					for (int i = 1; i < tags.length; i++) {
-						if (st.addTag(taskName, tags[i])) {
-							tagsAdded.add(tags[i]);
-						} else {
-							tagsNotAdded.add(tags[i]);
-						}
-					}
-					inputStack.push("untag " + taskIndex + " "
-							+ stringify(tagsAdded, " "));
-					if (!tagsAdded.isEmpty()) {
-						showAndLog(String.format(LOG_MESSAGE_TAGS_ADDED,
-								taskName, stringify(tagsAdded, ", ")));
-					}
-					if (!tagsNotAdded.isEmpty()) {
-						showAndLog(String.format(LOG_MESSAGE_TAGS_NOT_ADDED,
-								taskName, stringify(tagsNotAdded, ", ")));
-					}
-					break;
-
-				case UNTAG:
-					printReceivedCommand("UNTAG");
-					tags = content.split(" ");
-					ArrayList<String> tagsRemoved = new ArrayList<String>();
-					ArrayList<String> tagsNotRemoved = new ArrayList<String>();
-					taskIndex = Integer.parseInt(tags[0]);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					for (int i = 1; i < tags.length; i++) {
-						if (st.removeTag(taskName, tags[i])) {
-							tagsRemoved.add(tags[i]);
-						} else {
-							tagsNotRemoved.add(tags[i]);
-						}
-					}
-					inputStack.push("tag " + taskIndex + " "
-							+ stringify(tagsRemoved, " "));
-					if (!tagsRemoved.isEmpty()) {
-						showAndLog(String.format(LOG_MESSAGE_TAGS_REMOVED,
-								taskName, stringify(tagsRemoved, ", ")));
-					}
-					if (!tagsNotRemoved.isEmpty()) {
-						showAndLog(String.format(LOG_MESSAGE_TAGS_NOT_REMOVED,
-								taskName, stringify(tagsNotRemoved, ", ")));
-					}
-					break;
-
-				case SEARCH:
-					printReceivedCommand("SEARCH");
-					List<StreamTask> searchResult = st.findTasks(content);
-					System.out.println("Search result for " + content);
-					for (int i = 1; i <= searchResult.size(); i++) {
-						System.out.println(i + ". "
-								+ searchResult.get(i - 1).getTaskName());
-					}
-					showAndLog(String.format(LOG_MESSAGE_SEARCH, content,
-							searchResult.size()));
-					break;
-
-				case VIEW:
-					printReceivedCommand("VIEW");
-					taskIndex = Integer.parseInt(content);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					logMessage = printDetails(taskName);
-					showAndLog(logMessage);
-					break;
-
-				case CLEAR:
-					printReceivedCommand("CLEAR");
-					clearAllTasks();
-					showAndLog(LOG_MESSAGE_CLEAR);
-					break;
-
-				case UNDO:
-					printReceivedCommand("UNDO");
-					if (inputStack.isEmpty()) {
-						showAndLog(LOG_MESSAGE_UNDO_FAIL);
-					} else {
-						String undoneInput = inputStack.pop();
-						showAndLog(LOG_MESSAGE_UNDO_SUCCESS);
-						processAndExecute(undoneInput);
-
-						/*
-						 * VERY IMPORTANT because almost all inputs will add its
-						 * counterpart to the inputStack. If not popped, the
-						 * undo process will be trapped between just two
-						 * processes.
-						 */
-						inputStack.pop();
-					}
-					break;
-
-				case RECOVER:
-					printReceivedCommand("RECOVER");
-					int noOfTasksToRecover = Integer.parseInt(content);
-					for (int i = 0; i < noOfTasksToRecover; i++) {
-						StreamTask task = dumpedTasks.pop();
-						st.recoverTask(task);
-						showAndLog(String.format(LOG_MESSAGE_RECOVER,
-								task.getTaskName()));
-					}
-					inputStack.push("some fake input to be popped");
-					break;
-
-				case DISMISS:
-					printReceivedCommand("DISMISS");
-					taskIndex = Integer.parseInt(content);
-					taskName = st.getTaskNames().get(taskIndex - 1);
-					dismissTask(taskName);
-					showAndLog(String.format(LOG_MESSAGE_DELETE, taskName));
-					inputStack.push("some fake input to be popped");
-					break;
-
-				case EXIT:
-					printReceivedCommand("EXIT");
-					System.out.println(MESSAGE_THANK_YOU);
-
-					Calendar now = Calendar.getInstance();
-					String day = addZeroToTime(now.get(Calendar.DAY_OF_MONTH));
-					String mth = addZeroToTime(now.get(Calendar.MONTH));
-					Integer yr = now.get(Calendar.YEAR);
-					String hr = addZeroToTime(now.get(Calendar.HOUR_OF_DAY));
-					String min = addZeroToTime(now.get(Calendar.MINUTE));
-					String sec = addZeroToTime(now.get(Calendar.SECOND));
-					String logFileName = String.format(LOGFILE_LOCATION,
-							filename, day, mth,
-							yr.toString().substring(POS_YEAR_SUBSTRING), hr,
-							min, sec);
-					stio.saveLogFile(logMessages, logFileName);
-
-					System.exit(0);
-
-				default:
-					showAndLog(LOG_MESSAGE_CMD_UNKNOWN);
-			}
+			executeInput(command, content);
 		} catch (AssertionError e) {
-			showAndLog(String.format(LOG_MESSAGE_ERRORS, "AssertionError",
-					e.getMessage()));
+			showAndLogResult(String.format(StreamUtil.LOG_ERRORS,
+					"AssertionError", e.getMessage()));
 		} catch (Exception e) {
-			showAndLog(String.format(LOG_MESSAGE_ERRORS, e.getClass()
+			showAndLogResult(String.format(StreamUtil.LOG_ERRORS, e.getClass()
 					.getSimpleName(), e.getMessage()));
 		}
 	}
 
+	// @author A0093874N
+
+	private void doRoutineProcess() {
+		printTasks();
+		System.out
+				.println("========================================================");
+		System.out.print("Enter Command: ");
+		String input = INPUT_SCANNER.nextLine();
+		logMessages.add(input);
+		if (input.length() >= 7
+				&& (input.substring(0, 7).equals("recover") || input.substring(
+						0, 7).equals("dismiss"))) {
+			/*
+			 * input commands "recover" and "dismiss" is for the undo process
+			 * and cannot be accessed directly by user
+			 */
+			showAndLogResult(StreamUtil.LOG_CMD_UNKNOWN);
+		} else {
+			processInput(input);
+		}
+
+		save();
+	}
+
 	public static void main(String[] args) {
-		System.out.println(MESSAGE_WELCOME);
-		Stream stream = new Stream(FILENAME_TO_USE);
+		Stream stream = new Stream(StreamUtil.PARAM_FILENAME);
+		System.out.println(StreamUtil.MSG_WELCOME);
 
 		while (true) {
-			stream.printTasks();
-			System.out
-					.println("========================================================");
-			System.out.print("Enter Command: ");
-			String input = inputScanner.nextLine();
-			// TODO restrict "recover" and "dismiss" from user somehow
-			/*
-			 * workaround for now: if we spot "recover" or "dismiss", halt
-			 * immediately. any better idea?
-			 */
-			if (input.length() >= 7
-					&& (input.substring(0, 7).equals("recover") || input
-							.substring(0, 7).equals("dismiss"))) {
-				System.out.println("Unknown command with contents : ");
-			} else {
-				stream.processAndExecute(input);
-			}
-
-			stream.save();
+			stream.doRoutineProcess();
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StreamUtil;
 import exception.StreamIOException;
 import exception.StreamModificationException;
 import fileio.StreamIO;
@@ -30,6 +31,23 @@ public class StreamObject {
 
 	public ArrayList<String> getTaskNames() {
 		return taskList;
+	}
+	
+	// @author A0093874N
+	
+	public ArrayList<String> getOrdering() {
+		ArrayList<String> order = new ArrayList<String>();
+		for (String task: taskList) {
+			order.add(task);
+		}
+		return order;
+	}
+
+	// @author A0093874N
+
+	public void setOrdering(ArrayList<String> anotherTaskList) {
+		assert (StreamUtil.listEqual(taskList, anotherTaskList)) : StreamUtil.FAIL_NOT_EQUAL;
+		taskList = anotherTaskList;
 	}
 
 	/**
@@ -379,5 +397,17 @@ public class StreamObject {
 		}
 
 		return tasks;
+	}
+
+	// @author A0093874N
+
+	/**
+	 * Gets the number of tasks added.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
+
+	public int getNumberOfTasks() {
+		return taskList.size();
 	}
 }
