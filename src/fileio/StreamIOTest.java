@@ -35,23 +35,26 @@ public class StreamIOTest {
 			+ "- %1$s\nDelete the file if already present.";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
-	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+			"yyyyMMddHHmmss", Locale.ENGLISH);
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;
 
-	@Before 
+	@Before
 	public void setUp() throws Exception {
 		StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		File saveFile = new File(StreamIO.SAVE_LOCATION);
 		if (!saveFile.createNewFile()) {
-			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE, saveFile.getAbsolutePath()));
+			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE,
+					saveFile.getAbsolutePath()));
 		}
 
 		task1 = new StreamTask("Code Jarvis");
 		Calendar calendar = Calendar.getInstance();
 		Date date = StreamIO.dateFormat.parse("20410719000000");
-		calendar.setTime(date);		// instead of Calendar.set(), for loadTest, serialized calendar.
+		calendar.setTime(date); // instead of Calendar.set(), for loadTest,
+								// serialized calendar.
 		task1.setDeadline(calendar);
 		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
 		task1.addTag("epic");
@@ -60,7 +63,8 @@ public class StreamIOTest {
 		task2 = new StreamTask("Build IoT");
 		Calendar calendar2 = Calendar.getInstance();
 		Date date2 = StreamIO.dateFormat.parse("20180101123456");
-		calendar2.setTime(date2);	// instead of Calendar.set(), for loadTest, serialized calendar.
+		calendar2.setTime(date2); // instead of Calendar.set(), for loadTest,
+									// serialized calendar.
 		task2.setDeadline(calendar2);
 		task2.setDescription("Internet of Things");
 		task2.addTag("epic");
@@ -70,11 +74,10 @@ public class StreamIOTest {
 		map = new HashMap<String, StreamTask>();
 		map.put(task1.getTaskName().toLowerCase(), task1);
 		map.put(task2.getTaskName().toLowerCase(), task2);
-		
+
 		taskList = new ArrayList<String>();
 		taskList.add(task1.getTaskName());
 		taskList.add(task2.getTaskName());
-
 
 		String fileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
 				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
@@ -83,15 +86,17 @@ public class StreamIOTest {
 				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]}";
-		
+
 		File checkFile = new File(CHECK_FILE);
 		try {
 			stringToFile(checkFile, fileContent);
 		} catch (IOException e) {
-			throw new IOException(String.format(CHECKFILE_EXCEPTION_MESSAGE, e.getMessage()), e);
+			throw new IOException(String.format(CHECKFILE_EXCEPTION_MESSAGE,
+					e.getMessage()), e);
 		}
 	}
-	@After 
+
+	@After
 	public void tearDown() throws Exception {
 		new File(StreamIO.SAVE_LOCATION).delete();
 		new File(CHECK_FILE).delete();
@@ -101,103 +106,129 @@ public class StreamIOTest {
 	public void saveTest() {
 		String testMessage = "Write map to file";
 		String expectedFileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
-				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
-				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		try {
 			File saveFile = new File(StreamIO.SAVE_LOCATION);
 			StreamIO.save(map, taskList);
-			assertEquals(testMessage, expectedFileContent, fileToString(saveFile));
+			assertEquals(testMessage, expectedFileContent,
+					fileToString(saveFile));
 		} catch (StreamIOException e) {
-			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
 		} catch (IOException e) {
-			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "IOException", e.getMessage()));
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"IOException", e.getMessage()));
 		}
 	}
+
 	@Test
 	public void loadTest() {
 		String testMessage = "Load map from file";
 		StreamIO.SAVE_LOCATION = CHECK_FILE;
 		try {
 			StreamIO.load(map, taskList);
-			
+
 			String expectedMap = serializeTaskMap(map);
 			String actualMap = serializeTaskMap(map);
 			System.out.println(expectedMap);
 			System.out.println(actualMap);
 			assertEquals(testMessage, expectedMap, actualMap);
 		} catch (StreamIOException e) {
-			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
 		} finally {
 			StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
 		}
 	}
 
-	@Test 
+	@Test
 	public void mapToJsonTest() {
 		String testMessage = "Map to JSON conversion";
-		String expectedJsonString = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+		String expectedJsonString = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
-				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
 		try {
-			assertEquals(testMessage, expectedJsonString, StreamIO.mapToJson(map).toString());
+			assertEquals(testMessage, expectedJsonString,
+					StreamIO.mapToJson(map).toString());
 		} catch (StreamIOException e) {
-			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
 		}
 	}
 
-	@Test 
+	@Test
 	public void taskToJsonTest1() {
-		testOneTaskToJson("Task to JSON conversion - Code Jarvis", 
-				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+		testOneTaskToJson(
+				"Task to JSON conversion - Code Jarvis",
+				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
 						+ "\"taskName\":\"Code Jarvis\","
-						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}", task1);
+						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}",
+				task1);
 	}
-	@Test 
+
+	@Test
 	public void taskToJsonTest2() {
-		testOneTaskToJson("Task to JSON conversion - Build IoT", 
-				"{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
+		testOneTaskToJson(
+				"Task to JSON conversion - Build IoT",
+				"{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
 						+ "\"taskName\":\"Build IoT\","
 						+ "\"taskDescription\":\"Internet of Things\"}", task2);
 	}
-	private void testOneTaskToJson(String testMessage, String expected, StreamTask task) {
+
+	private void testOneTaskToJson(String testMessage, String expected,
+			StreamTask task) {
 		try {
-			assertEquals(testMessage, expected, StreamIO.taskToJson(task).toString());
+			assertEquals(testMessage, expected, StreamIO.taskToJson(task)
+					.toString());
 		} catch (StreamIOException e) {
-			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage, "StreamIOException", e.getMessage()));
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
 		}
 	}
 
 	@Test
 	public void formatDateTest1() throws ParseException {
-		testOneFormatDate("Format date 11:22:33 30/05/1980", "19800530112233", simpleDateFormat.parse("19800530112233"));
+		testOneFormatDate("Format date 11:22:33 30/05/1980", "19800530112233",
+				simpleDateFormat.parse("19800530112233"));
 	}
+
 	@Test
 	public void formatDateTest2() throws ParseException {
-		testOneFormatDate("Format date 23:00:33 30/12/2055", "20551230230033", simpleDateFormat.parse("20551230230033"));
+		testOneFormatDate("Format date 23:00:33 30/12/2055", "20551230230033",
+				simpleDateFormat.parse("20551230230033"));
 	}
+
 	@Test
 	public void formatDateTest3() throws ParseException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, 11, 24, 23, 59, 59);
-		testOneFormatCalendar("Format calendar 23:59:59 24/12/2014", "20141224235959", calendar);
+		testOneFormatCalendar("Format calendar 23:59:59 24/12/2014",
+				"20141224235959", calendar);
 	}
+
 	@Test
 	public void formatDateTest4() throws ParseException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(1965, 7, 9, 0, 0, 0);
-		testOneFormatCalendar("Format calendar 00:00:00 09/08/1965", "19650809000000", calendar);
+		testOneFormatCalendar("Format calendar 00:00:00 09/08/1965",
+				"19650809000000", calendar);
 	}
-	private void testOneFormatDate(String testMessage, String expected, Date date) {
+
+	private void testOneFormatDate(String testMessage, String expected,
+			Date date) {
 		assertEquals(testMessage, expected, StreamIO.formatDate(date));
 	}
-	private void testOneFormatCalendar(String testMessage, String expected, Calendar calendar) {
+
+	private void testOneFormatCalendar(String testMessage, String expected,
+			Calendar calendar) {
 		assertEquals(testMessage, expected, StreamIO.formatDate(calendar));
 	}
 
@@ -211,6 +242,7 @@ public class StreamIOTest {
 			return stringBuilder.toString().trim();
 		}
 	}
+
 	private void stringToFile(File destin, String content) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(destin)) {
 			if (destin.exists()) {
@@ -219,6 +251,7 @@ public class StreamIOTest {
 			fos.write(content.getBytes());
 		}
 	}
+
 	private String serializeTaskMap(HashMap<String, StreamTask> taskMap) {
 		JSONObject taskMapJson = new JSONObject(taskMap);
 		return taskMapJson.toString();

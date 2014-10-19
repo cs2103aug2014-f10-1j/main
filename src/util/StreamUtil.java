@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class StreamUtil {
 
-	public static final String PARAM_VERSION = "v0.2";
+	public static final String PARAM_VERSION = "V0.2";
 	public static final String PARAM_FILENAME = "stream";
 	public static final String PARAM_SAVEFILE = "%1$s.json";
 	public static final String PARAM_LOGFILE = "%1$s %2$s%3$s%4$s %5$s%6$s%7$s.txt";
@@ -44,6 +44,7 @@ public class StreamUtil {
 	public static final String LOG_SAVE_FAILED = "Save to file failed, %1$s";
 
 	// Exception messages
+	public static final String ERR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
 
 	// Reverse commands (for undo)
 	public static final String CMD_DISMISS = "dismiss %1$s";
@@ -60,10 +61,16 @@ public class StreamUtil {
 	public static final String FAIL_NOT_DELETED = "Task deletion failed";
 	public static final String FAIL_NOT_EQUAL = "The two lists are not equal";
 
+	public static final String[] MONTHS = { "January", "February", "March", "April",
+			"May", "June", "July", "August", "September", "October",
+			"November", "December" };
+
 	// Messages to be shown to user
 	public static final String MSG_WELCOME = "Welcome to Stream "
 			+ PARAM_VERSION + "!";
 	public static final String MSG_THANK_YOU = "Thank you for using this internal release of Stream[BETA]!";
+
+	// @author A0093874N
 
 	public static String listDownArrayContent(ArrayList<String> array,
 			String connector) {

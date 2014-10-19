@@ -21,13 +21,14 @@ public class StreamSaveTest {
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;
 
-	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss",
-			Locale.ENGLISH);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+			"yyyyMMddHHmmss", Locale.ENGLISH);
 	private File testFile = new File("test.json");
 	private Stream stream;
 
 	// @author A0096529N
-	@Before public void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		if (testFile.exists()) {
 			testFile.delete();
 		}
@@ -66,15 +67,17 @@ public class StreamSaveTest {
 	}
 
 	// @author A0096529N
-	@Test public void testSave() throws IOException {
+	@Test
+	public void testSave() throws IOException {
 		stream.save();
 
 		String expectedContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
-				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
-				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
-				+ "\"taskName\":\"Build IoT\"," + "\"taskDescription\":\"Internet of Things\"}]}";
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
+				+ "\"taskName\":\"Build IoT\","
+				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		assertEquals("Saved state", expectedContent, fileToString(testFile));
 	}
 

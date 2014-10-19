@@ -252,7 +252,9 @@ public class StreamIO {
 			taskJson.put(TaskKey.NAME, task.getTaskName());
 			taskJson.put(TaskKey.DESCRIPTION, task.getDescription());
 			taskJson.put(TaskKey.TAGS, task.getTags());
+			taskJson.put(TaskKey.STARTTIME, formatDate(task.getStartTime()));
 			taskJson.put(TaskKey.DEADLINE, formatDate(task.getDeadline()));
+			taskJson.put(TaskKey.DONE, task.isDone());
 			return taskJson;
 		} catch (JSONException e) {
 			throw new StreamIOException("JSON conversion failed - "
@@ -269,6 +271,14 @@ public class StreamIO {
 				task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));				
 			}
 
+			if (taskJson.has(TaskKey.STARTTIME)) {
+				Calendar startTime = Calendar.getInstance();
+				Date startTimeDate = dateFormat.parse(taskJson
+						.getString(TaskKey.STARTTIME));
+				startTime.setTime(startTimeDate);
+				task.setDeadline(startTime);
+			}
+
 			if (taskJson.has(TaskKey.DEADLINE)) {
 				Calendar deadline = Calendar.getInstance();
 				Date deadlineDate = dateFormat.parse(taskJson
@@ -281,6 +291,13 @@ public class StreamIO {
 				JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
 				for (int i = 0; i < tagsJson.length(); i++) {
 					task.addTag(tagsJson.getString(i));
+				}
+			}
+			
+			if (taskJson.has(TaskKey.DONE)) {
+				Boolean isDone = taskJson.getBoolean(TaskKey.DONE);
+				if (isDone) {
+					task.markAsDone();
 				}
 			}
 			return task;
@@ -330,11 +347,12 @@ public class StreamIO {
 
 	private class TaskKey {
 		static final String TASKMAP = "allTasks";
-		static final String TASKLIST = "taskList";
-		
+		static final String TASKLIST = "taskList";		
+		static final String STARTTIME = "startTime";
 		static final String DEADLINE = "deadline";
 		static final String NAME = "taskName";
 		static final String DESCRIPTION = "taskDescription";
 		static final String TAGS = "tags";
+		static final String DONE = "done";
 	}
 }
