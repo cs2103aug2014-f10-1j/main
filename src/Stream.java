@@ -14,6 +14,7 @@ import parser.StreamParser.CommandType;
 import util.StreamUtil;
 import exception.StreamIOException;
 import exception.StreamModificationException;
+import exception.StreamParserException;
 import fileio.StreamIO;
 
 /**
@@ -710,7 +711,12 @@ public class Stream {
 	// @author A0093874N
 
 	public void processInput(String input) {
-		parser.interpretCommand(input);
+		
+		try{
+			parser.interpretCommand(input);
+		}catch (StreamParserException e){
+			e.getMessage();
+		}
 		CommandType command = parser.getCommandType();
 		String content = parser.getCommandContent();
 		try {
