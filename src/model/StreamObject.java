@@ -30,9 +30,9 @@ public class StreamObject {
 	public ArrayList<String> getTaskNames() {
 		return taskList;
 	}
-	
+
 	// @author A0093874N
-	
+
 	public ArrayList<String> getOrdering() {
 		ArrayList<String> order = new ArrayList<String>();
 		for (String task: taskList) {
@@ -351,7 +351,7 @@ public class StreamObject {
 			// check if task description contains key phrase
 			if (task.getDescription() != null
 					&& task.getDescription().toLowerCase()
-							.contains(keyphrase.toLowerCase())) {
+					.contains(keyphrase.toLowerCase())) {
 				tasks.add(task);
 				continue;
 			}
@@ -375,19 +375,53 @@ public class StreamObject {
 	public int getNumberOfTasks() {
 		return taskList.size();
 	}
-	
+
 	//@author A0096529N
 	/**
 	 * @return taskMap a copy of the task map. 
 	 */
 	public HashMap<String, StreamTask> getTaskMap() {
 		return new HashMap<String, StreamTask>(this.taskMap);
-	}	
+	}
+	
 	//@author A0096529N
 	/**
 	 * @return taskList a copy of the task list.
 	 */
 	public ArrayList<String> getTaskList() {
 		return new ArrayList<String>(this.taskList);
+	}
+
+	//@author A0096529N
+	public ArrayList<String> getTimedTaskList() {
+		ArrayList<String> timedTaskList = new ArrayList<String>();
+		for (String taskName:this.taskMap.keySet()) {
+			if (this.taskMap.get(taskName).isTimedTask()) {
+				timedTaskList.add(taskName);
+			}
+		}
+		return timedTaskList;
+	}
+
+	//@author A0096529N
+	public ArrayList<String> getDeadlineTaskList() {
+		ArrayList<String> timedTaskList = new ArrayList<String>();
+		for (String taskName:this.taskMap.keySet()) {
+			if (this.taskMap.get(taskName).isDeadlineTask()) {
+				timedTaskList.add(taskName);
+			}
+		}
+		return timedTaskList;
+	}
+
+	//@author A0096529N
+	public ArrayList<String> getFloatingTaskList() {
+		ArrayList<String> timedTaskList = new ArrayList<String>();
+		for (String taskName:this.taskMap.keySet()) {
+			if (this.taskMap.get(taskName).isFloatingTask()) {
+				timedTaskList.add(taskName);
+			}
+		}
+		return timedTaskList;
 	}
 }

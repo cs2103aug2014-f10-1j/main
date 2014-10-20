@@ -108,6 +108,21 @@ public class StreamTask {
 		}
 	}
 
+	// @author A0096529N
+	public boolean isTimedTask() {
+		return startTime != null;
+	}
+	
+	// @author A0096529N
+	public boolean isDeadlineTask() {
+		return deadline != null;
+	}
+	
+	// @author A0096529N
+	public boolean isFloatingTask() {
+		return startTime == null && deadline == null;
+	}
+	
 	// TODO @author?
 
 	/**
