@@ -162,7 +162,6 @@ public class Stream {
 	 */
 	String addTask(String taskName) throws StreamModificationException {
 		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
-
 		// from here, section is modified by A0118007R
 		String content = taskName;
 		String[] splittedContent = content.split(" ");
@@ -442,9 +441,7 @@ public class Stream {
 			stobj.setNullDeadline(taskName);
 			return String.format(StreamUtil.LOG_DUE_NEVER, taskName);
 		} else {
-			String parsedCalendar = calendar.get(Calendar.DAY_OF_MONTH) + "/"
-					+ (calendar.get(Calendar.MONTH) + 1) + "/"
-					+ calendar.get(Calendar.YEAR);
+			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
 			stobj.setDueTime(taskName, calendar);
 			return String.format(StreamUtil.LOG_DUE, taskName, parsedCalendar);
 		}
@@ -649,14 +646,13 @@ public class Stream {
 
 				if (contents[1].trim().equals("null")) {
 					logMessage = setDueDate(taskName, taskIndex, null);
-					// stobj.setNullDeadline(taskName);
-					// showAndLogResult(String.format(StreamUtil.LOG_DUE_NEVER,
-					// taskName));
 				} else {
 					String due = contents[1];
 					Calendar calendar = parseCalendar(due);
 					logMessage = setDueDate(taskName, taskIndex, calendar);
 				}
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				showAndLogResult(logMessage);
 				break;
 

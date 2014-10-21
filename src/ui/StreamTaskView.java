@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -37,8 +38,8 @@ public class StreamTaskView extends JPanel {
 
 	// @author A0093874N
 
-	public StreamTaskView(Integer ind, String task, String startTime,
-			String endTime, Stream stream) {
+	public StreamTaskView(Integer ind, String task, Calendar startTime,
+			Calendar endTime, Stream stream) {
 		super();
 		setLayout(new GridBagLayout());
 		st = stream;
@@ -103,7 +104,7 @@ public class StreamTaskView extends JPanel {
 	void updateView(Integer ind, StreamTask task) {
 		index.setText(ind.toString());
 		taskName.setText(task.getTaskName());
-		// TODO timing-related stuff
+		timing.setText(StreamUtil.getWrittenTime(task.getStartTime(), task.getDeadline()));
 		if (task.isDone()) {
 			markButtonNotDone();
 		} else {

@@ -1,6 +1,7 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
@@ -89,8 +90,11 @@ public class StreamUtil {
 	public static final String TEXT_HEADER = "<html>S<font color=\"#ed7d31\">T</font>RE<font color=\"#ed7d31\">A</font>M</html>";
 	public static final String TEXT_FOOTER = "Copyright \u00a9 2014 CS2013AUG2014-F10-01J. All rights reserved.";
 	public static final String TEXT_INDEX = "#%1$s";
+
 	public static final Color COLOR_HEADER = Color.getHSBColor(
 			(float) 208.52 / 360, (float) 0.5728, (float) 0.8353);
+	public static final Color COLOR_LOG_MSG = Color.BLACK;
+	public static final Color COLOR_ERR_MSG = Color.RED;
 
 	public static final Font FONT_TITLE = new Font("Awesome Java", Font.PLAIN,
 			100);
@@ -209,17 +213,26 @@ public class StreamUtil {
 
 	// @author A0093874N
 
-	public static String getWrittenTime(String startTime, String endTime) {
+	public static String getWrittenTime(Calendar startTime, Calendar endTime) {
 		if (startTime == null && endTime == null) {
 			return "No timing specified";
 		} else if (startTime == null) {
-			return "By " + endTime;
+			return "By " + getCalendarWriteUp(endTime);
 		} else if (endTime == null) {
 			// is there a task like this?
-			return "From " + startTime;
+			return "From " + getCalendarWriteUp(startTime);
 		} else {
-			return "From " + startTime + " to " + endTime;
+			return "From " + getCalendarWriteUp(startTime) + " to "
+					+ getCalendarWriteUp(endTime);
 		}
+	}
+
+	// @author A0093874N
+
+	public static String getCalendarWriteUp(Calendar calendar) {
+		return calendar.get(Calendar.DAY_OF_MONTH) + "/"
+				+ (calendar.get(Calendar.MONTH) + 1) + "/"
+				+ calendar.get(Calendar.YEAR);
 	}
 
 }
