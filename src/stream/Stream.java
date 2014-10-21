@@ -1,3 +1,5 @@
+package stream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,10 +13,10 @@ import model.StreamObject;
 import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
+import ui.StreamUI;
 import util.StreamUtil;
 import exception.StreamIOException;
 import exception.StreamModificationException;
-import exception.StreamParserException;
 import fileio.StreamIO;
 
 /**
@@ -34,6 +36,7 @@ import fileio.StreamIO;
 public class Stream {
 
 	StreamObject stobj;
+	private StreamUI stui;
 	private StreamParser parser;
 
 	private String filename;
@@ -46,6 +49,7 @@ public class Stream {
 
 	public Stream(String file) {
 		initStreamIO(file);
+		stui = new StreamUI(this);
 		parser = new StreamParser();
 
 		inputStack = new Stack<String>();
@@ -54,9 +58,11 @@ public class Stream {
 		logMessages = new ArrayList<String>();
 
 		load();
+		stui.resetAvailableTasks(stobj.getCounter(), stobj.getStreamTaskList(),
+				true);
 	}
 
-	//@author A0096529N
+	// @author A0096529N
 	private void initStreamIO(String file) {
 		if (!file.endsWith(".json")) {
 			filename = String.format(StreamUtil.PARAM_SAVEFILE, file);
@@ -66,25 +72,25 @@ public class Stream {
 		StreamIO.setSaveLocation(filename);
 	}
 
-	//@author A0096529N
+	// @author A0096529N
 	void load() {
 		try {
 			HashMap<String, StreamTask> allTasks = new HashMap<String, StreamTask>();
 			ArrayList<String> taskList = new ArrayList<String>();
 			StreamIO.load(allTasks, taskList);
-			
+
 			stobj = new StreamObject(allTasks, taskList);
-			
+
 		} catch (StreamIOException e) {
 			log(String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage()));
-			
+
 			stobj = new StreamObject();
 		}
-		
+
 	}
 
-	//@author A0096529N
-	String save() {
+	// @author A0096529N
+	public String save() {
 		String result = null;
 		try {
 			HashMap<String, StreamTask> allTasks = stobj.getTaskMap();
@@ -95,7 +101,7 @@ public class Stream {
 			result = String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage());
 			log(result);
 		}
-		
+
 		return result;
 	}
 
@@ -355,7 +361,7 @@ public class Stream {
 			throws StreamModificationException {
 		stobj.markTaskAsDone(task);
 		// This section is contributed by A0118007R
-		inputStack.push(String.format(StreamUtil.CMD_MARK, index, "ongoing"));
+		inputStack.push(String.format(StreamUtil.CMD_MARK_NOT_DONE, index));
 		//
 		// This section is contributed by A0093874N
 		return String.format(StreamUtil.LOG_MARK, task, "done");
@@ -375,7 +381,7 @@ public class Stream {
 			throws StreamModificationException {
 		stobj.markTaskAsOngoing(task);
 		//
-		inputStack.push(String.format(StreamUtil.CMD_MARK, index, "done"));
+		inputStack.push(String.format(StreamUtil.CMD_MARK_DONE, index));
 		//
 		// This section is contributed by A0093874N
 		return String.format(StreamUtil.LOG_MARK, task, "ongoing");
@@ -391,7 +397,7 @@ public class Stream {
 	 * @author John Kevin Tjahjadi
 	 * @deprecated by A0093874N. Can be un-deprecated if we find a use for it.
 	 * 
-	 * TODO unused.
+	 *             TODO unused.
 	 */
 
 	@SuppressWarnings("unused")
@@ -441,7 +447,7 @@ public class Stream {
 	// @author A0118007R
 
 	/**
-	 * 
+	 * @deprecated for now
 	 */
 	private void showAndLogCommand(String command) {
 		String commandReceived = String.format(StreamUtil.LOG_CMD_RECEIVED,
@@ -456,13 +462,24 @@ public class Stream {
 	 * 
 	 */
 	private void showAndLogResult(String logMessage) {
-		System.out.println(logMessage);
+		stui.log(logMessage, false);
 		log(StreamUtil.showAsTerminalResponse(logMessage));
 	}
-	
+
+	private void showAndLogError(String errorMessage) {
+		stui.log(errorMessage, true);
+		log(StreamUtil.showAsTerminalResponse(errorMessage));
+	}
+
 	// @author A0096529N
 	private void log(String message) {
 		logMessages.add(message);
+	}
+
+	// @author A0093874N
+	private void logCommand(String cmd) {
+		log(StreamUtil.showAsTerminalResponse(String.format(
+				StreamUtil.LOG_CMD_RECEIVED, cmd)));
 	}
 
 	// @author A0093874N
@@ -493,21 +510,25 @@ public class Stream {
 
 		switch (command) {
 			case ADD:
-				showAndLogCommand("ADD");
+				logCommand("ADD");
 				logMessage = addTask(content);
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				showAndLogResult(logMessage);
 				break;
 
 			case DEL:
-				showAndLogCommand("DELETE");
+				logCommand("DELETE");
 				taskIndex = Integer.parseInt(content);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				logMessage = deleteTask(taskName);
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				showAndLogResult(logMessage);
 				break;
 
 			case DESC:
-				showAndLogCommand("DESCRIBE");
+				logCommand("DESCRIBE");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
@@ -517,7 +538,7 @@ public class Stream {
 				break;
 
 			case DUE:
-				showAndLogCommand("DUE");
+				logCommand("DUE");
 				contents = content.split(" ", 2);
 
 				taskIndex = Integer.parseInt(contents[0]);
@@ -544,7 +565,7 @@ public class Stream {
 				break;
 
 			case MODIFY:
-				showAndLogCommand("MODIFY");
+				logCommand("MODIFY");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
 				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
@@ -554,7 +575,7 @@ public class Stream {
 				break;
 
 			case MARK:
-				showAndLogCommand("MARK");
+				logCommand("MARK");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
@@ -565,16 +586,20 @@ public class Stream {
 				 */
 				if (markType.equals("done")) {
 					logMessage = markAsDone(taskName, taskIndex);
+					showAndLogResult(logMessage);
 				} else if (markType.equals("ongoing")) {
 					logMessage = markAsOngoing(taskName, taskIndex);
+					showAndLogResult(logMessage);
 				} else {
 					logMessage = "Unknown marking type: " + markType;
+					showAndLogError(logMessage);
 				}
-				showAndLogResult(logMessage);
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				break;
 
 			case TAG:
-				showAndLogCommand("TAG");
+				logCommand("TAG");
 				tags = content.split(" ");
 				ArrayList<String> tagsAdded = new ArrayList<String>();
 				ArrayList<String> tagsNotAdded = new ArrayList<String>();
@@ -587,15 +612,17 @@ public class Stream {
 						tagsNotAdded.add(tags[i]);
 					}
 				}
-				inputStack.push("untag " + taskIndex + " "
-						+ StreamUtil.listDownArrayContent(tagsAdded, " "));
+				inputStack.push(String.format(StreamUtil.CMD_UNTAG, taskIndex,
+						StreamUtil.listDownArrayContent(tagsAdded, " ")));
 				if (!tagsAdded.isEmpty()) {
 					showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED,
 							taskName,
 							StreamUtil.listDownArrayContent(tagsAdded, ", ")));
+				} else {
+					showAndLogResult(StreamUtil.LOG_NO_TAGS_ADDED);
 				}
 				if (!tagsNotAdded.isEmpty()) {
-					showAndLogResult(String
+					log(String
 							.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
 									StreamUtil.listDownArrayContent(
 											tagsNotAdded, ", ")));
@@ -603,7 +630,7 @@ public class Stream {
 				break;
 
 			case UNTAG:
-				showAndLogCommand("UNTAG");
+				logCommand("UNTAG");
 				tags = content.split(" ");
 				ArrayList<String> tagsRemoved = new ArrayList<String>();
 				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
@@ -616,23 +643,24 @@ public class Stream {
 						tagsNotRemoved.add(tags[i]);
 					}
 				}
-				inputStack.push("tag " + taskIndex + " "
-						+ StreamUtil.listDownArrayContent(tagsRemoved, " "));
+				inputStack.push(String.format(StreamUtil.CMD_TAG, taskIndex,
+						StreamUtil.listDownArrayContent(tagsRemoved, " ")));
 				if (!tagsRemoved.isEmpty()) {
 					showAndLogResult(String.format(StreamUtil.LOG_TAGS_REMOVED,
 							taskName,
 							StreamUtil.listDownArrayContent(tagsRemoved, ", ")));
+				} else {
+					showAndLogResult(StreamUtil.LOG_NO_TAGS_REMOVED);
 				}
 				if (!tagsNotRemoved.isEmpty()) {
-					showAndLogResult(String.format(
-							StreamUtil.LOG_TAGS_NOT_REMOVED, taskName,
-							StreamUtil.listDownArrayContent(tagsNotRemoved,
-									", ")));
+					log(String.format(StreamUtil.LOG_TAGS_NOT_REMOVED,
+							taskName, StreamUtil.listDownArrayContent(
+									tagsNotRemoved, ", ")));
 				}
 				break;
 
 			case SEARCH:
-				showAndLogCommand("SEARCH");
+				logCommand("SEARCH");
 				List<StreamTask> searchResult = search(content);
 				System.out.println("Search result for " + content);
 				for (int i = 1; i <= searchResult.size(); i++) {
@@ -644,7 +672,7 @@ public class Stream {
 				break;
 
 			case VIEW:
-				showAndLogCommand("VIEW");
+				logCommand("VIEW");
 				taskIndex = Integer.parseInt(content);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				logMessage = printDetails(taskName);
@@ -652,13 +680,15 @@ public class Stream {
 				break;
 
 			case CLEAR:
-				showAndLogCommand("CLEAR");
+				logCommand("CLEAR");
 				clearAllTasks();
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				showAndLogResult(StreamUtil.LOG_CLEAR);
 				break;
 
 			case UNDO:
-				showAndLogCommand("UNDO");
+				logCommand("UNDO");
 				if (inputStack.isEmpty()) {
 					showAndLogResult(StreamUtil.LOG_UNDO_FAIL);
 				} else {
@@ -676,62 +706,78 @@ public class Stream {
 				break;
 
 			case RECOVER:
-				showAndLogCommand("RECOVER");
+				logCommand("RECOVER");
 				int noOfTasksToRecover = Integer.parseInt(content);
 				for (int i = 0; i < noOfTasksToRecover; i++) {
 					StreamTask task = dumpedTasks.pop();
 					stobj.recoverTask(task);
-					showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
-							task.getTaskName()));
 				}
+				showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
+						noOfTasksToRecover));
 				stobj.setOrdering(orderingStack.pop());
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				inputStack.push("some fake input to be popped");
 				break;
 
 			case DISMISS:
-				showAndLogCommand("DISMISS");
+				logCommand("DISMISS");
 				taskIndex = Integer.parseInt(content);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				dismissTask(taskName);
 				showAndLogResult(String.format(StreamUtil.LOG_DELETE, taskName));
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(), false);
 				inputStack.push("some fake input to be popped");
 				break;
 
 			case EXIT:
-				showAndLogCommand("EXIT");
+				logCommand("EXIT");
 				System.out.println(StreamUtil.MSG_THANK_YOU);
 				saveLogFile();
 				System.exit(0);
 
 			default:
-				showAndLogResult(StreamUtil.LOG_CMD_UNKNOWN);
+				showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
 		}
 	}
 
 	// @author A0093874N
 
 	public void processInput(String input) {
-		
-		try{
-			parser.interpretCommand(input);
-		}catch (StreamParserException e){
-			e.getMessage();
-		}
-		CommandType command = parser.getCommandType();
-		String content = parser.getCommandContent();
 		try {
+			parser.interpretCommand(input);
+			CommandType command = parser.getCommandType();
+			String content = parser.getCommandContent();
 			executeInput(command, content);
 		} catch (AssertionError e) {
-			showAndLogResult(String.format(StreamUtil.LOG_ERRORS,
+			showAndLogError(String.format(StreamUtil.LOG_ERRORS,
 					"AssertionError", e.getMessage()));
 		} catch (Exception e) {
-			showAndLogResult(String.format(StreamUtil.LOG_ERRORS, e.getClass()
+			showAndLogError(String.format(StreamUtil.LOG_ERRORS, e.getClass()
 					.getSimpleName(), e.getMessage()));
 		}
 	}
 
 	// @author A0093874N
 
+	public void filterAndProcessInput(String input) {
+		log(input);
+		if (input.length() >= 7
+				&& (input.substring(0, 7).equals("recover") || input.substring(
+						0, 7).equals("dismiss"))) {
+			showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
+		} else {
+			processInput(input);
+			save();
+		}
+	}
+
+	// @author A0093874N
+
+	/**
+	 * @deprecated now using the GUI console to receive input
+	 */
 	private void doRoutineProcess() {
 		printTasks();
 		System.out
@@ -750,17 +796,11 @@ public class Stream {
 		} else {
 			processInput(input);
 		}
-
 		save();
 	}
 
 	public static void main(String[] args) {
-		Stream stream = new Stream(StreamUtil.PARAM_FILENAME);
-		System.out.println(StreamUtil.MSG_WELCOME);
-
-		while (true) {
-			stream.doRoutineProcess();
-		}
+		new Stream(StreamUtil.PARAM_FILENAME);
 	}
 
 }
