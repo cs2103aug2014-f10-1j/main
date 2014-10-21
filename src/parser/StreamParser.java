@@ -2,7 +2,6 @@ package parser;
 
 import exception.StreamParserException;
 
-
 /*
  * Parser is used to interpret the user input to a pack of 
  * information and later on pass it to the Logic part
@@ -32,39 +31,40 @@ public class StreamParser {
 		String key = contents[0].toLowerCase();
 		switch (key) {
 			case "add":
-				
-				if(contents.length<2){
+
+				if (contents.length < 2) {
 					throw new StreamParserException("Nothing to add!");
 				}
-				
+
 				this.commandKey = CommandType.ADD;
 				break;
 			case "del":
 			case "delete":
-				
-				if(contents.length!=2 || !isInteger(contents[1])){
+
+				if (contents.length != 2 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+
 				this.commandKey = CommandType.DEL;
 				break;
 			case "desc":
 			case "describe":
-				
-				if(contents.length!=3 || !isInteger(contents[1])){
+				contents = input.trim().split(" ", 3);
+				if (contents.length != 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+				contents = input.trim().split(" ", 2);
+
 				this.commandKey = CommandType.DESC;
 				break;
 			case "due":
 			case "by":
-				
+
 				/*
-				 * The exception for this one will be implemented 
-				 * after the 'multiple-commands-in-one-line' feature.
-				*/
-				
+				 * The exception for this one will be implemented after the
+				 * 'multiple-commands-in-one-line' feature.
+				 */
+
 				this.commandKey = CommandType.DUE;
 				break;
 			case "view":
@@ -72,42 +72,50 @@ public class StreamParser {
 				break;
 			case "mod":
 			case "modify":
-				
-				if(contents.length!=3 || !isInteger(contents[1])){
+				contents = input.trim().split(" ", 3);
+				if (contents.length != 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+				contents = input.trim().split(" ", 2);
+
 				this.commandKey = CommandType.MODIFY;
 				break;
 			case "mark":
 			case "done":
 			case "finished":
-				
-				if(!isInteger(contents[1])){
+				contents = input.trim().split(" ", 3);
+				if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+				contents = input.trim().split(" ", 2);
+
 				this.commandKey = CommandType.MARK;
 				break;
 			case "tag":
-				
-				if(contents.length<3 || !isInteger(contents[1])){
+				contents = input.trim().split(" ", 3);
+				if (contents.length < 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+				contents = input.trim().split(" ", 2);
+
 				this.commandKey = CommandType.TAG;
 				break;
 			case "untag":
-				
-				if(contents.length<3 || !isInteger(contents[1])){
+				contents = input.trim().split(" ", 3);
+				if (contents.length < 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+
 				this.commandKey = CommandType.UNTAG;
 				break;
 			case "search":
 			case "find":
 			case "filter":
+
+				if (contents.length < 2) {
+					throw new StreamParserException("Nothing to search!");
+				}
+
 				this.commandKey = CommandType.SEARCH;
 				break;
 			case "clear":
@@ -121,19 +129,18 @@ public class StreamParser {
 				this.commandKey = CommandType.RECOVER;
 				break;
 			case "dismiss":
-				
-				if(contents.length!=2 || !isInteger(contents[1])){
+
+				if (contents.length != 2 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
+
 				this.commandKey = CommandType.DISMISS;
 				break;
 			case "exit":
 				this.commandKey = CommandType.EXIT;
 				break;
 			default:
-				this.commandKey = CommandType.ERROR;
-				break;
+				throw new StreamParserException("Unknown command type");
 		}
 		this.commandContent = executeCommand(contents);
 	}
