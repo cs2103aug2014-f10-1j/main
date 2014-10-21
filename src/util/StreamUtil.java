@@ -5,7 +5,10 @@ import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.border.Border;
 
 /**
@@ -193,6 +196,30 @@ public class StreamUtil {
 			}
 		}
 		return true;
+	}
+
+	// @author A0093874N
+
+	public static void clearAllActionListeners(JButton button,
+			ActionListener[] actions) {
+		for (ActionListener action : actions) {
+			button.removeActionListener(action);
+		}
+	}
+
+	// @author A0093874N
+
+	public static String getWrittenTime(String startTime, String endTime) {
+		if (startTime == null && endTime == null) {
+			return "No timing specified";
+		} else if (startTime == null) {
+			return "By " + endTime;
+		} else if (endTime == null) {
+			// is there a task like this?
+			return "From " + startTime;
+		} else {
+			return "From " + startTime + " to " + endTime;
+		}
 	}
 
 }
