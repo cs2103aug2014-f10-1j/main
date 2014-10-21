@@ -192,8 +192,8 @@ public class Stream {
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
 				stobj.getNumberOfTasks()));
-		if (splittedContent.length > 1){
-		executeModifyParameters(nameOfTask, modifyParams);
+		if (nameFound){
+			executeModifyParameters(nameOfTask, modifyParams);
 		}
 		return String.format(StreamUtil.LOG_ADD, nameOfTask);
 	}

@@ -1,0 +1,19 @@
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+add a task
+>> Command received [ADD]
+>> Added "a task "
+modify 1 desc some description here due 10/10/2015 tag important urgent school cs2103
+>> Command received [MODIFY]
+>> Tags added to "a task ": important, urgent, school, cs2103
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "a task "
+undo
+>> Command received [UNDO]
+>> Undoing the previous action
+>> Command received [DISMISS]
+>> Deleted "a task "
+exit
+>> Command received [EXIT]
