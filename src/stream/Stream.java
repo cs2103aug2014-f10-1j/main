@@ -187,6 +187,7 @@ public class Stream {
 				break;
 			}
 		}
+		nameOfTask = nameOfTask.trim(); // this is the solution to the bug
 		stobj.addTask(nameOfTask);
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
