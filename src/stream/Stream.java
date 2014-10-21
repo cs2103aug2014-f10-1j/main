@@ -205,14 +205,12 @@ public class Stream {
 
 		// method for splitting the input to add to the specified param
 		// TODO: refactor
-		System.out.println("SIZE = " + modifyParams.size());
 			String command = modifyParams.get(0);
 			String contents = "";
 			for (int i = 1; i < modifyParams.size(); i++) {
 				String s = modifyParams.get(i);
 				if (isValidParameter(s)) { // first content is guaranteed to be
 											// a valid parameter
-					System.out.println(command + " " + contents);
 					processParameterModification(command, contents.trim(),
 							currentTask);
 					command = s;
@@ -222,7 +220,6 @@ public class Stream {
 					contents = contents + s + " ";
 				}
 			}
-			System.out.println(command + " " + contents);
 			processParameterModification(command, contents, currentTask);
 
 		
@@ -665,8 +662,6 @@ public class Stream {
 				taskName = stobj.getTaskNames().get(taskIndex-1);
 				ArrayList<String> modifyParams = new ArrayList<String>();
 				
-				
-				System.out.println("AAA" + content);
 				for (int i = 1; i < contents.length; i++){
 					modifyParams.add(contents[i]);
 				}
@@ -873,7 +868,6 @@ public class Stream {
 		if (dueDate.length == 2) {
 			year = Calendar.getInstance().get(Calendar.YEAR);
 		} else {
-			System.out.println("ZZZ");
 			year = Integer.parseInt(dueDate[2].trim());
 		}
 		int day = Integer.parseInt(dueDate[0].trim());
