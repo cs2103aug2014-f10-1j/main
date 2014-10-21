@@ -826,7 +826,7 @@ public class Stream {
 	
 	public boolean isInteger(String x){
 		try {
-			int a = Integer.parseInt(x);
+			Integer.parseInt(x);
 			return true;
 		} catch (Exception e){
 			
