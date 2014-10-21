@@ -1,0 +1,11 @@
+add ssss desc okokokok
+>> Command received [ADD]
+>> Added "ssss "
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "ssss "
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+exit
+>> Command received [EXIT]

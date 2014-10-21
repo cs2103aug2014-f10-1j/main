@@ -1,0 +1,15 @@
+Added something
+Added another task
+Changed description for another task to some dummy task that is not that important
+Tags added to another task: notimportant, WEIRD
+Viewed the details for something
+Viewed the details for another task
+Undoing the previous action
+Tags removed from another task: notimportant, WEIRD
+Undoing the previous action
+Changed description for another task to null
+Undoing the previous action
+Deleted another task
+Undoing the previous action
+Deleted something
+Nothing to undo

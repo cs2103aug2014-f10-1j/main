@@ -1,0 +1,15 @@
+Added something
+Viewed the details for something
+Tags added to something: IMPORTANT, DUMMY
+Viewed the details for something
+Searching for something, 1 queries found
+Searching for important, 1 queries found
+Undoing the previous action
+Tags removed from something: IMPORTANT, DUMMY
+Viewed the details for something
+Undoing the previous action
+Deleted something
+Nothing to undo
+Added 111111
+Viewed the details for 111111
+Deleted 111111

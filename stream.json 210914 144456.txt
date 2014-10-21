@@ -1,0 +1,46 @@
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+add aaaa desc asdf
+>> Command received [ADD]
+>> Added "aaaa "
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "aaaa "
+delete 1
+>> Command received [DELETE]
+>> Deleted "aaaa "
+add something desc zzz by 10/10/2015
+>> Command received [ADD]
+>> ArrayIndexOutOfBoundsException: 2
+undo
+>> Command received [UNDO]
+>> Undoing the previous action
+>> Command received [DISMISS]
+>> Deleted "something "
+undo
+>> Command received [UNDO]
+>> Undoing the previous action
+>> Command received [RECOVER]
+>> Recovered 1 task(s)
+undo
+>> Command received [UNDO]
+>> Undoing the previous action
+>> Command received [DISMISS]
+>> Deleted "aaaa "
+undo
+>> Command received [UNDO]
+>> Undoing the previous action
+>> Command received [RECOVER]
+>> Recovered 1 task(s)
+undo
+>> Command received [UNDO]
+>> Nothing to undo
+undo
+>> Command received [UNDO]
+>> Nothing to undo
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+exit
+>> Command received [EXIT]

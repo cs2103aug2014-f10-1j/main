@@ -1,0 +1,17 @@
+add something by 10/10/2015
+>> Command received [ADD]
+>> Added "something "
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "something "
+add aaaaa desc zzzzz
+>> Command received [ADD]
+>> Added "aaaaa "
+view 2
+>> Command received [VIEW]
+>> Viewed the details for "aaaaa "
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+exit
+>> Command received [EXIT]

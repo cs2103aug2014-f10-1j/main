@@ -1,0 +1,11 @@
+add something desc a task
+>> Command received [ADD]
+>> Added "something "
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "something "
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+exit
+>> Command received [EXIT]

@@ -2,6 +2,7 @@ package stream;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -46,6 +47,8 @@ public class Stream {
 	private List<String> logMessages;
 
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
+
+	private final String[] validParameters = { "desc", "due", "by", "tag" };
 
 	public Stream(String file) {
 		initStreamIO(file);
@@ -128,6 +131,17 @@ public class Stream {
 		return stobj.hasTask(taskName);
 	}
 
+	// @author A0118007R
+	boolean isValidParameter(String param) {
+		for (String s : validParameters) {
+			if (s.equals(param)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	// @author A0093874N
 
 	/**
@@ -148,11 +162,92 @@ public class Stream {
 	 */
 	String addTask(String taskName) throws StreamModificationException {
 		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
-		stobj.addTask(taskName);
-		assert (stobj.hasTask(taskName)) : StreamUtil.FAIL_NOT_ADDED;
+		// from here, section is modified by A0118007R
+		String content = taskName;
+		String[] splittedContent = content.split(" ");
+
+		String nameOfTask = "";
+		// scans until next valid parameter and officially add the task
+		// TODO: refactor
+		boolean nameFound = false;
+		ArrayList<String> modifyParams = new ArrayList<String>();
+
+		for (int i = 0; i < splittedContent.length; i++) {
+			String s = splittedContent[i];
+			if (!nameFound) {
+				if (isValidParameter(s)) {
+					nameFound = true;
+				} else {
+					nameOfTask = nameOfTask + s + " ";
+				}
+			} else {
+				for (int k = i - 1; k < splittedContent.length; k++) {
+					modifyParams.add(splittedContent[k]);
+				}
+				break;
+			}
+		}
+
+		stobj.addTask(nameOfTask);
+		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
 				stobj.getNumberOfTasks()));
-		return String.format(StreamUtil.LOG_ADD, taskName);
+
+		StreamTask currentTask = stobj.getTask(nameOfTask);
+
+		// method for splitting the input to add to the specified param
+		// TODO: refactor
+		if (splittedContent.length > 1) {
+			String command = modifyParams.get(0);
+			String contents = "";
+			for (int i = 1; i < modifyParams.size(); i++) {
+				String s = modifyParams.get(i);
+				if (isValidParameter(s)) { // first content is guaranteed to be
+											// a valid parameter
+					
+					processParameterModification(command, contents.trim(),
+							currentTask);
+					command = s;
+					contents = "";
+
+				} else {
+					contents = contents + s + " ";
+				}
+			}
+			processParameterModification(command, contents, currentTask);
+
+		}
+		return String.format(StreamUtil.LOG_ADD, nameOfTask);
+	}
+
+	void processParameterModification(String command, String contents,
+			StreamTask task) {
+		String taskName = task.getTaskName();
+		switch (command) {
+			case "desc":
+				task.setDescription(contents);
+				break;
+			case "due":
+			case "by":
+				Calendar due = parseCalendar(contents);
+				task.setDeadline(due);
+				break;
+			case "tag":
+				String[] newTags = contents.split(" ");
+				ArrayList<String> tagsAdded = new ArrayList<String>();
+				ArrayList<String> tagsNotAdded = new ArrayList<String>();
+
+				try {
+					addTags(newTags, taskName, tagsAdded, tagsNotAdded);
+				} catch (StreamModificationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				logTags(taskName, tagsAdded, tagsNotAdded);
+				break;
+
+		}
 	}
 
 	// @author A0093874N
@@ -497,7 +592,7 @@ public class Stream {
 		StreamIO.saveLogFile(logMessages, logFileName);
 	}
 
-	// TODO who's the author?
+	// @author A0118007R
 
 	private void executeInput(CommandType command, String content)
 			throws StreamModificationException, IOException {
@@ -549,17 +644,8 @@ public class Stream {
 					showAndLogResult(String.format(StreamUtil.LOG_DUE_NEVER,
 							taskName));
 				} else {
-					String[] dueDate = contents[1].split("/");
-					int year;
-					if (dueDate.length == 2) {
-						year = Calendar.getInstance().get(Calendar.YEAR);
-					} else {
-						year = Integer.parseInt(dueDate[2]);
-					}
-					int day = Integer.parseInt(dueDate[0]);
-					int month = Integer.parseInt(dueDate[1]);
-					Calendar calendar = new GregorianCalendar(year, month - 1,
-							day);
+					String due = contents[1];
+					Calendar calendar = parseCalendar(due);
 					setDueDate(taskName, taskIndex, calendar);
 				}
 				break;
@@ -605,28 +691,10 @@ public class Stream {
 				ArrayList<String> tagsNotAdded = new ArrayList<String>();
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				for (int i = 1; i < tags.length; i++) {
-					if (stobj.addTag(taskName, tags[i])) {
-						tagsAdded.add(tags[i]);
-					} else {
-						tagsNotAdded.add(tags[i]);
-					}
-				}
+				addTags(tags, taskName, tagsAdded, tagsNotAdded);
 				inputStack.push(String.format(StreamUtil.CMD_UNTAG, taskIndex,
 						StreamUtil.listDownArrayContent(tagsAdded, " ")));
-				if (!tagsAdded.isEmpty()) {
-					showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED,
-							taskName,
-							StreamUtil.listDownArrayContent(tagsAdded, ", ")));
-				} else {
-					showAndLogResult(StreamUtil.LOG_NO_TAGS_ADDED);
-				}
-				if (!tagsNotAdded.isEmpty()) {
-					log(String
-							.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
-									StreamUtil.listDownArrayContent(
-											tagsNotAdded, ", ")));
-				}
+				logTags(taskName, tagsAdded, tagsNotAdded);
 				break;
 
 			case UNTAG:
@@ -742,6 +810,61 @@ public class Stream {
 		}
 	}
 
+	private void logTags(String taskName, ArrayList<String> tagsAdded,
+			ArrayList<String> tagsNotAdded) {
+		if (!tagsAdded.isEmpty()) {
+			showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED, taskName,
+					StreamUtil.listDownArrayContent(tagsAdded, ", ")));
+		} else {
+			showAndLogResult(StreamUtil.LOG_NO_TAGS_ADDED);
+		}
+		if (!tagsNotAdded.isEmpty()) {
+			log(String.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
+					StreamUtil.listDownArrayContent(tagsNotAdded, ", ")));
+		}
+	}
+	
+	public boolean isInteger(String x){
+		try {
+			int a = Integer.parseInt(x);
+			return true;
+		} catch (Exception e){
+			
+		}
+		return false;
+	}
+
+	private void addTags(String[] tags, String taskName,
+			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded)
+			throws StreamModificationException {
+		int start = 0;
+		if (isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (stobj.addTag(taskName, tags[i])) {
+				tagsAdded.add(tags[i]);
+			} else {
+				tagsNotAdded.add(tags[i]);
+			}
+		}
+	}
+
+	private Calendar parseCalendar(String contents) {
+		String[] dueDate = contents.split("/");
+		int year;
+		if (dueDate.length == 2) {
+			year = Calendar.getInstance().get(Calendar.YEAR);
+		} else {
+			System.out.println("ZZZ");
+			year = Integer.parseInt(dueDate[2].trim());
+		}
+		int day = Integer.parseInt(dueDate[0].trim());
+		int month = Integer.parseInt(dueDate[1].trim());
+		Calendar calendar = new GregorianCalendar(year, month - 1, day);
+		return calendar;
+	}
+
 	// @author A0093874N
 
 	public void processInput(String input) {
@@ -801,6 +924,7 @@ public class Stream {
 
 	public static void main(String[] args) {
 		new Stream(StreamUtil.PARAM_FILENAME);
+
 	}
 
 }

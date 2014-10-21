@@ -1,0 +1,20 @@
+add aaaaaaaaaa tag unimportant
+>> Command received [ADD]
+>> Added "aaaaaaaaaa "
+add zzz
+>> Command received [ADD]
+>> Added "zzz "
+desc 2 aaaa
+>> Command received [DESCRIBE]
+>> Changed description for "zzz " to "aaaa"
+view 2
+>> Command received [VIEW]
+>> Viewed the details for "zzz "
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "aaaaaaaaaa "
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+exit
+>> Command received [EXIT]

@@ -1,0 +1,12 @@
+clear
+>> Command received [CLEAR]
+>> Cleared all tasks
+add something tag aaa
+>> Command received [ADD]
+>> No new tags added
+>> Added "something "
+view 1
+>> Command received [VIEW]
+>> Viewed the details for "something "
+exit
+>> Command received [EXIT]
