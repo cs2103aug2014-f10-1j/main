@@ -377,7 +377,7 @@ public class StreamUI {
 	 * @param action
 	 *            - the enter action
 	 */
-	public void empowerConsole(Action action) {
+	private void empowerConsole(Action action) {
 		console.getInputMap().put(KeyStroke.getKeyStroke("ENTER"),
 				"processInput");
 		console.getActionMap().put("processInput", action);
@@ -431,7 +431,7 @@ public class StreamUI {
 	 * @param page
 	 *            - the page number to be shown
 	 */
-	public void repopulateTaskView(int page) {
+	private void repopulateTaskView(int page) {
 		pageShown = page;
 		int startPoint = (pageShown - 1) * StreamUtil.MAX_VIEWABLE_TASK;
 		for (int i = 0; i < StreamUtil.MAX_VIEWABLE_TASK; i++) {
@@ -455,7 +455,7 @@ public class StreamUI {
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-	public void determineClickableNavigators() {
+	private void determineClickableNavigators() {
 		firstPageButton.setEnabled(true);
 		prevPageButton.setEnabled(true);
 		nextPageButton.setEnabled(true);

@@ -110,7 +110,8 @@ public class StreamUtil {
 	public static final Insets MARGIN_HEADER = new Insets(0, 0, 0, 0);
 	public static final Insets MARGIN_FOOTER = new Insets(10, 10, 0, 10);
 	public static final Insets MARGIN_ELEM = new Insets(10, 10, 0, 10);
-
+	public static final Insets MARGIN_TASKVIEW = new Insets(0, 0, 0, 0);
+	
 	public static final int HEIGHT_MAINFRAME = 750;
 	public static final int WIDTH_MAINFRAME = 750;
 
@@ -123,6 +124,12 @@ public class StreamUtil {
 	public static final int GRIDWIDTH_LOGGER = GRIDWIDTH_BUTTON * 3;
 	public static final int GRIDWIDTH_FOOTER = GRIDWIDTH_BUTTON * 3;
 	public static final int GRIDWIDTH_TASK = GRIDWIDTH_BUTTON * 3;
+	
+	public static final int GRIDHEIGHT_INDEX = 2;
+	public static final int GRIDHEIGHT_TASKNAME = 1;
+	public static final int GRIDHEIGHT_TIMING = 1;
+	public static final int GRIDHEIGHT_DELETE_BTN = 1;
+	public static final int GRIDHEIGHT_MARK_BTN = 1;
 
 	public static final int GRIDX_HEADER = 0;
 	public static final int GRIDX_UNDO = 0;
@@ -135,12 +142,22 @@ public class StreamUtil {
 	public static final int GRIDX_LOGGER = 0;
 	public static final int GRIDX_FOOTER = 0;
 	public static final int GRIDX_TASK = 0;
+	public static final int GRIDX_INDEX = 0;
+	public static final int GRIDX_TASKNAME = 1;
+	public static final int GRIDX_TIMING = 1;
+	public static final int GRIDX_DELETE_BTN = 2;
+	public static final int GRIDX_MARK_BTN = 2;
 
 	public static final int GRIDY_HEADER = 0;
 	public static final int GRIDY_BUTTON = MAX_VIEWABLE_TASK + 1;
 	public static final int GRIDY_CONSOLE = GRIDY_BUTTON + 1;
 	public static final int GRIDY_LOGGER = GRIDY_CONSOLE + 1;
 	public static final int GRIDY_FOOTER = GRIDY_LOGGER + 1;
+	public static final int GRIDY_INDEX = 0;
+	public static final int GRIDY_TASKNAME = 0;
+	public static final int GRIDY_TIMING = 1;
+	public static final int GRIDY_DELETE_BTN = 0;
+	public static final int GRIDY_MARK_BTN = 1;
 
 	public static final int IPADY_HEADER = 0;
 	public static final int IPADY_BUTTON = 5;
@@ -148,6 +165,12 @@ public class StreamUtil {
 	public static final int IPADY_LOGGER = 10;
 	public static final int IPADY_FOOTER = 0;
 	public static final int IPADY_TASK = 0;
+	
+	public static final float WEIGHTX_INDEX = (float) 1.0/9;
+	public static final float WEIGHTX_TASKNAME = (float) 7.0/9;
+	public static final float WEIGHTX_TIMING = (float) 7.0/9;
+	public static final float WEIGHTX_DELETE_BTN = (float) 1.0/9;
+	public static final float WEIGHTX_MARK_BTN = (float) 1.0/9;
 
 	public static final String BTN_FIRST = "<<";
 	public static final String BTN_PREV = "<";

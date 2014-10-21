@@ -19,9 +19,9 @@ import util.StreamUtil;
 
 /**
  * The task graphical view as viewed by the user. Immediately see-able fields
- * including task name and dates (not implemented yet). In addition, two buttons
- * for immediate task deletion or task marking (both done and not done) are
- * available for user's convenience.
+ * including task name and dates. In addition, two buttons for immediate task
+ * deletion or task marking (both done and not done) are available for user's
+ * convenience.
  * 
  * @version V0.2
  * @author Wilson Kurniawan
@@ -43,24 +43,76 @@ public class StreamTaskView extends JPanel {
 		super();
 		setLayout(new GridBagLayout());
 		st = stream;
+		addIndexNumber(ind);
+		addTaskNameLabel(task);
+		addTimingLabel(startTime, endTime);
+		addDeleteButton();
+		addMarkButton();
+	}
 
+	// @author A0093874N
+
+	/**
+	 * Adds the index number label to the task view.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @param ind
+	 *            - the index number
+	 */
+	private void addIndexNumber(Integer ind) {
 		index = new JLabel(String.format(StreamUtil.TEXT_INDEX, ind));
 		index.setHorizontalAlignment(SwingConstants.CENTER);
 		index.setFont(StreamUtil.FONT_INDEX);
-		addComponent(index, new Insets(0, 0, 0, 0), 0, 0, 2, 1, 0,
-				(float) 1.0 / 9);
+		addComponent(index, StreamUtil.MARGIN_TASKVIEW, StreamUtil.GRIDX_INDEX,
+				StreamUtil.GRIDY_INDEX, StreamUtil.GRIDHEIGHT_INDEX,
+				StreamUtil.WEIGHTX_INDEX);
+	}
 
+	// @author A0093874N
+
+	/**
+	 * Adds the task name label to the task view.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @param task
+	 *            - the task name
+	 */
+	private void addTaskNameLabel(String task) {
 		taskName = new JLabel(task);
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamUtil.FONT_TASK);
-		addComponent(taskName, new Insets(0, 0, 0, 0), 1, 0, 1, 1, 0,
-				(float) 7.0 / 9);
+		addComponent(taskName, StreamUtil.MARGIN_TASKVIEW,
+				StreamUtil.GRIDX_TASKNAME, StreamUtil.GRIDY_TASKNAME,
+				StreamUtil.GRIDHEIGHT_TASKNAME, StreamUtil.WEIGHTX_TASKNAME);
+	}
 
+	// @author A0093874N
+
+	/**
+	 * Adds the timing label to the task view.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @param startTime
+	 *            - the task's starting time
+	 * @param endTime
+	 *            - the task's ending time/deadline
+	 */
+	private void addTimingLabel(Calendar startTime, Calendar endTime) {
 		timing = new JLabel(StreamUtil.getWrittenTime(startTime, endTime));
 		timing.setFont(StreamUtil.FONT_TASK);
-		addComponent(timing, new Insets(0, 0, 0, 0), 1, 1, 1, 1, 0,
-				(float) 7.0 / 9);
+		addComponent(timing, StreamUtil.MARGIN_TASKVIEW,
+				StreamUtil.GRIDX_TIMING, StreamUtil.GRIDY_TIMING,
+				StreamUtil.GRIDHEIGHT_TIMING, StreamUtil.WEIGHTX_TIMING);
+	}
 
+	// @author A0093874N
+
+	/**
+	 * Constructs the delete button.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
+	private void addDeleteButton() {
 		delButton = new JButton(StreamUtil.BTN_DELETE);
 		delButton.addActionListener(new ActionListener() {
 			@Override
@@ -69,12 +121,23 @@ public class StreamTaskView extends JPanel {
 						index.getText()));
 			}
 		});
-		addComponent(delButton, new Insets(0, 0, 0, 0), 2, 0, 1, 1, 0,
-				(float) 1.0 / 9);
+		addComponent(delButton, StreamUtil.MARGIN_TASKVIEW,
+				StreamUtil.GRIDX_DELETE_BTN, StreamUtil.GRIDY_DELETE_BTN,
+				StreamUtil.GRIDHEIGHT_DELETE_BTN, StreamUtil.WEIGHTX_DELETE_BTN);
+	}
 
+	// @author A0093874N
+
+	/**
+	 * Constructs the mark button.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
+	private void addMarkButton() {
 		markButton = new JButton();
-		addComponent(markButton, new Insets(0, 0, 0, 0), 2, 1, 1, 1, 0,
-				(float) 1.0 / 9);
+		addComponent(markButton, StreamUtil.MARGIN_TASKVIEW,
+				StreamUtil.GRIDX_MARK_BTN, StreamUtil.GRIDY_MARK_BTN,
+				StreamUtil.GRIDHEIGHT_MARK_BTN, StreamUtil.WEIGHTX_MARK_BTN);
 	}
 
 	// @author A0093874N
@@ -104,7 +167,8 @@ public class StreamTaskView extends JPanel {
 	void updateView(Integer ind, StreamTask task) {
 		index.setText(ind.toString());
 		taskName.setText(task.getTaskName());
-		timing.setText(StreamUtil.getWrittenTime(task.getStartTime(), task.getDeadline()));
+		timing.setText(StreamUtil.getWrittenTime(task.getStartTime(),
+				task.getDeadline()));
 		if (task.isDone()) {
 			markButtonNotDone();
 		} else {
@@ -122,7 +186,8 @@ public class StreamTaskView extends JPanel {
 	 */
 	private void markButtonDone() {
 		markButton.setText(StreamUtil.BTN_MARK_DONE);
-		StreamUtil.clearAllActionListeners(markButton, markButton.getActionListeners());
+		StreamUtil.clearAllActionListeners(markButton,
+				markButton.getActionListeners());
 		markButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -141,7 +206,8 @@ public class StreamTaskView extends JPanel {
 	 */
 	private void markButtonNotDone() {
 		markButton.setText(StreamUtil.BTN_MARK_NOT_DONE);
-		StreamUtil.clearAllActionListeners(markButton, markButton.getActionListeners());
+		StreamUtil.clearAllActionListeners(markButton,
+				markButton.getActionListeners());
 		markButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -168,15 +234,11 @@ public class StreamTaskView extends JPanel {
 	 *            - the grid-wise vertical position
 	 * @param gridheight
 	 *            - the grid-wise vertical length
-	 * @param gridwidth
-	 *            - the grid-wise horizontal length
-	 * @param ipady
-	 *            - the height of the component
 	 * @param weightx
 	 *            - the weight of white-space distribution horizontally
 	 */
 	private void addComponent(Component comp, Insets inset, int gridx,
-			int gridy, int gridheight, int gridwidth, int ipady, float weightx) {
+			int gridy, int gridheight, float weightx) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = inset;
@@ -184,8 +246,6 @@ public class StreamTaskView extends JPanel {
 		gbc.gridx = gridx;
 		gbc.gridy = gridy;
 		gbc.gridheight = gridheight;
-		gbc.gridwidth = gridwidth;
-		gbc.ipady = ipady;
 		add(comp, gbc);
 	}
 
