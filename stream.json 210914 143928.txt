@@ -1,8 +1,0 @@
-add assdadasdawd desc zzzzz
->> Command received [ADD]
->> Added "assdadasdawd "
-clear
->> Command received [CLEAR]
->> Cleared all tasks
-exit
->> Command received [EXIT]

@@ -1,8 +1,0 @@
-clear
->> Command received [CLEAR]
->> Cleared all tasks
-add a task
->> Command received [ADD]
->> IndexOutOfBoundsException: Index: 0, Size: 0
-exit
->> Command received [EXIT]
