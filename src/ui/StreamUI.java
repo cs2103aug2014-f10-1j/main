@@ -11,6 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -473,6 +474,28 @@ public class StreamUI {
 	// @author A0093874N
 
 	/**
+	 * Displays the detailed information of the task upon clicking the name.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @param task
+	 *            - the <b>StreamTask</b> from which the information is obtained
+	 *            from
+	 */
+	public void displayDetails(StreamTask task) {
+		JOptionPane.showMessageDialog(mainFrame, String.format(
+				StreamUtil.DETAILS_CONTENT,
+				task.getTaskName(),
+				StreamUtil.getWrittenTime(task.getStartTime(),
+						task.getDeadline()),
+				StreamUtil.displayDescription(task.getDescription()),
+				StreamUtil.displayTags(task.getTags())), String.format(
+				StreamUtil.DETAILS_HEADER, task.getTaskName()),
+				JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	// @author A0093874N
+
+	/**
 	 * <p>
 	 * The action invoked upon pressing "enter" in console. It fires the text in
 	 * console to the input parser and subsequently processor.
@@ -493,4 +516,5 @@ public class StreamUI {
 			console.setText("");
 		}
 	}
+
 }

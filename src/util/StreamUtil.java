@@ -7,9 +7,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.border.Border;
 
 /**
@@ -68,6 +70,7 @@ public class StreamUtil {
 	public static final String CMD_TAG = "tag %1$s %2$s";
 	public static final String CMD_UNTAG = "untag %1$s %2$s";
 	public static final String CMD_MODIFY = "modify %1$s desc %2$s tag %3$s due %4$s";
+	public static final String CMD_VIEW = "view %1$s";
 
 	// Assertion failure messages
 	public static final String FAIL_NULL_INPUT = "Null input value detected";
@@ -75,6 +78,9 @@ public class StreamUtil {
 	public static final String FAIL_NOT_ADDED = "Task addition failed";
 	public static final String FAIL_NOT_DELETED = "Task deletion failed";
 	public static final String FAIL_NOT_EQUAL = "The two lists are not equal";
+
+	public static final String DETAILS_HEADER = "Details for %1$s";
+	public static final String DETAILS_CONTENT = "Task name: %1$s \nDue date: %2$s\nDescription: %3$s \nTags: %4$s";
 
 	public static final String[] MONTHS = { "January", "February", "March",
 			"April", "May", "June", "July", "August", "September", "October",
@@ -111,7 +117,7 @@ public class StreamUtil {
 	public static final Insets MARGIN_FOOTER = new Insets(10, 10, 0, 10);
 	public static final Insets MARGIN_ELEM = new Insets(10, 10, 0, 10);
 	public static final Insets MARGIN_TASKVIEW = new Insets(0, 0, 0, 0);
-	
+
 	public static final int HEIGHT_MAINFRAME = 750;
 	public static final int WIDTH_MAINFRAME = 750;
 
@@ -124,7 +130,7 @@ public class StreamUtil {
 	public static final int GRIDWIDTH_LOGGER = GRIDWIDTH_BUTTON * 3;
 	public static final int GRIDWIDTH_FOOTER = GRIDWIDTH_BUTTON * 3;
 	public static final int GRIDWIDTH_TASK = GRIDWIDTH_BUTTON * 3;
-	
+
 	public static final int GRIDHEIGHT_INDEX = 2;
 	public static final int GRIDHEIGHT_TASKNAME = 1;
 	public static final int GRIDHEIGHT_TIMING = 1;
@@ -165,12 +171,12 @@ public class StreamUtil {
 	public static final int IPADY_LOGGER = 10;
 	public static final int IPADY_FOOTER = 0;
 	public static final int IPADY_TASK = 0;
-	
-	public static final float WEIGHTX_INDEX = (float) 1.0/9;
-	public static final float WEIGHTX_TASKNAME = (float) 7.0/9;
-	public static final float WEIGHTX_TIMING = (float) 7.0/9;
-	public static final float WEIGHTX_DELETE_BTN = (float) 1.0/9;
-	public static final float WEIGHTX_MARK_BTN = (float) 1.0/9;
+
+	public static final float WEIGHTX_INDEX = (float) 1.0 / 9;
+	public static final float WEIGHTX_TASKNAME = (float) 7.0 / 9;
+	public static final float WEIGHTX_TIMING = (float) 7.0 / 9;
+	public static final float WEIGHTX_DELETE_BTN = (float) 1.0 / 9;
+	public static final float WEIGHTX_MARK_BTN = (float) 1.0 / 9;
 
 	public static final String BTN_FIRST = "<<";
 	public static final String BTN_PREV = "<";
@@ -191,6 +197,22 @@ public class StreamUtil {
 			result += connector + str;
 		}
 		return result.substring(connector.length());
+	}
+
+	public static String displayDescription(String desc) {
+		if (desc == null) {
+			return "No description provided";
+		} else {
+			return desc;
+		}
+	}
+
+	public static String displayTags(ArrayList<String> tags) {
+		if (tags.size() == 0) {
+			return "No tags added";
+		} else {
+			return listDownArrayContent(tags, ", ");
+		}
 	}
 
 	// @author A0093874N
@@ -231,6 +253,15 @@ public class StreamUtil {
 			ActionListener[] actions) {
 		for (ActionListener action : actions) {
 			button.removeActionListener(action);
+		}
+	}
+
+	// @author A0093874N
+
+	public static void clearAllMouseListeners(JLabel label,
+			MouseListener[] actions) {
+		for (MouseListener action : actions) {
+			label.removeMouseListener(action);
 		}
 	}
 

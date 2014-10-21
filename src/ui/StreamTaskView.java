@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Calendar;
 
 import javax.swing.JButton;
@@ -164,9 +166,36 @@ public class StreamTaskView extends JPanel {
 	 * @param task
 	 *            - the <b>StreamTask</b> where the information is obtained from
 	 */
-	void updateView(Integer ind, StreamTask task) {
+	void updateView(final Integer ind, StreamTask task) {
 		index.setText(ind.toString());
 		taskName.setText(task.getTaskName());
+		StreamUtil.clearAllMouseListeners(taskName,
+				taskName.getMouseListeners());
+		taskName.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// display details on mouse click
+				st.processInput(String.format(StreamUtil.CMD_VIEW, ind));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+		});
 		timing.setText(StreamUtil.getWrittenTime(task.getStartTime(),
 				task.getDeadline()));
 		if (task.isDone()) {

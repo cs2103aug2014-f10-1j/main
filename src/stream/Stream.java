@@ -352,7 +352,7 @@ public class Stream {
 			throws StreamModificationException {
 		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
 		StreamTask currentTask = stobj.getTask(taskName);
-		currentTask.printTaskDetails();
+		stui.displayDetails(currentTask);
 
 		// This section is contributed by A0093874N
 		return String.format(StreamUtil.LOG_VIEW, taskName);
