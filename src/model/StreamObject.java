@@ -430,7 +430,7 @@ public class StreamObject {
 	public ArrayList<StreamTask> getStreamTaskList() {
 		ArrayList<StreamTask> tasks = new ArrayList<StreamTask>();
 		for (String task : this.taskList) {
-			tasks.add(this.taskMap.get(task));
+			tasks.add(this.taskMap.get(task.toLowerCase()));
 		}
 		return tasks;
 	}

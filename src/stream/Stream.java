@@ -162,6 +162,7 @@ public class Stream {
 	 */
 	String addTask(String taskName) throws StreamModificationException {
 		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+
 		// from here, section is modified by A0118007R
 		String content = taskName;
 		String[] splittedContent = content.split(" ");
@@ -192,37 +193,35 @@ public class Stream {
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
 				stobj.getNumberOfTasks()));
-		if (nameFound){
+		if (nameFound) {
 			executeModifyParameters(nameOfTask, modifyParams);
 		}
 		return String.format(StreamUtil.LOG_ADD, nameOfTask);
 	}
 
-	private void executeModifyParameters(
-			String nameOfTask, ArrayList<String> modifyParams)
-			throws StreamModificationException {
+	private void executeModifyParameters(String nameOfTask,
+			ArrayList<String> modifyParams) throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(nameOfTask);
 
 		// method for splitting the input to add to the specified param
 		// TODO: refactor
-			String command = modifyParams.get(0);
-			String contents = "";
-			for (int i = 1; i < modifyParams.size(); i++) {
-				String s = modifyParams.get(i);
-				if (isValidParameter(s)) { // first content is guaranteed to be
-											// a valid parameter
-					processParameterModification(command, contents.trim(),
-							currentTask);
-					command = s;
-					contents = "";
+		String command = modifyParams.get(0);
+		String contents = "";
+		for (int i = 1; i < modifyParams.size(); i++) {
+			String s = modifyParams.get(i);
+			if (isValidParameter(s)) { // first content is guaranteed to be
+										// a valid parameter
+				processParameterModification(command, contents.trim(),
+						currentTask);
+				command = s;
+				contents = "";
 
-				} else {
-					contents = contents + s + " ";
-				}
+			} else {
+				contents = contents + s + " ";
 			}
-			processParameterModification(command, contents, currentTask);
+		}
+		processParameterModification(command, contents, currentTask);
 
-		
 	}
 
 	void processParameterModification(String command, String contents,
@@ -423,14 +422,10 @@ public class Stream {
 	 * @author Jiang Shenhao
 	 * @throws StreamModificationException
 	 */
-	private void setDueDate(String taskName, int taskIndex, Calendar calendar)
+	private String setDueDate(String taskName, int taskIndex, Calendar calendar)
 			throws StreamModificationException {
-		String parsedCalendar = calendar.get(Calendar.DAY_OF_MONTH) + "/"
-				+ (calendar.get(Calendar.MONTH) + 1) + "/"
-				+ calendar.get(Calendar.YEAR);
 		StreamTask currentTask = stobj.getTask(taskName);
 		Calendar currentDeadline = currentTask.getDeadline();
-		stobj.setDueTime(taskName, calendar);
 		if (currentDeadline == null) {
 			inputStack.push(String
 					.format(StreamUtil.CMD_DUE, taskIndex, "null"));
@@ -443,8 +438,16 @@ public class Stream {
 							+ currentDeadline.get(Calendar.YEAR)));
 		}
 		// This section is contributed by A0093874N
-		showAndLogResult(String.format(StreamUtil.LOG_DUE, taskName,
-				parsedCalendar));
+		if (calendar == null) {
+			stobj.setNullDeadline(taskName);
+			return String.format(StreamUtil.LOG_DUE_NEVER, taskName);
+		} else {
+			String parsedCalendar = calendar.get(Calendar.DAY_OF_MONTH) + "/"
+					+ (calendar.get(Calendar.MONTH) + 1) + "/"
+					+ calendar.get(Calendar.YEAR);
+			stobj.setDueTime(taskName, calendar);
+			return String.format(StreamUtil.LOG_DUE, taskName, parsedCalendar);
+		}
 		//
 	}
 
@@ -645,38 +648,39 @@ public class Stream {
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 
 				if (contents[1].trim().equals("null")) {
-					stobj.setNullDeadline(taskName);
-					showAndLogResult(String.format(StreamUtil.LOG_DUE_NEVER,
-							taskName));
+					logMessage = setDueDate(taskName, taskIndex, null);
+					// stobj.setNullDeadline(taskName);
+					// showAndLogResult(String.format(StreamUtil.LOG_DUE_NEVER,
+					// taskName));
 				} else {
 					String due = contents[1];
 					Calendar calendar = parseCalendar(due);
-					setDueDate(taskName, taskIndex, calendar);
+					logMessage = setDueDate(taskName, taskIndex, calendar);
 				}
+				showAndLogResult(logMessage);
 				break;
 
 			case MODIFY:
 				logCommand("MODIFY");
 				contents = content.split(" ");
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex-1);
+				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				ArrayList<String> modifyParams = new ArrayList<String>();
-				
-				//get old state and push to undo
-				//TODO REFACTOR
-				
+
+				// get old state and push to undo
+				// TODO REFACTOR
+
 				String oldDesc = stobj.getTaskDescription(taskName);
 				Calendar oldDue = stobj.getTaskDeadline(taskName);
-				
-			
-				for (int i = 1; i < contents.length; i++){
+
+				for (int i = 1; i < contents.length; i++) {
 					modifyParams.add(contents[i]);
 				}
-				
+
 				executeModifyParameters(taskName, modifyParams);
-				
-			//	logMessage = setName(oldTaskName, newTaskName, taskIndex);
-				//showAndLogResult(logMessage);
+
+				// logMessage = setName(oldTaskName, newTaskName, taskIndex);
+				// showAndLogResult(logMessage);
 				break;
 
 			case MARK:
@@ -842,13 +846,13 @@ public class Stream {
 					StreamUtil.listDownArrayContent(tagsNotAdded, ", ")));
 		}
 	}
-	
-	public boolean isInteger(String x){
+
+	public boolean isInteger(String x) {
 		try {
 			Integer.parseInt(x);
 			return true;
-		} catch (Exception e){
-			
+		} catch (Exception e) {
+
 		}
 		return false;
 	}
