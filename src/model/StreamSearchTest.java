@@ -41,15 +41,15 @@ public class StreamSearchTest {
 
 	@Test 
 	public void testSearch1() {
-		testOneSearch("Search for nothing", streamObject.findTasks("nothing"));
+		testOneSearch("Search for nothing", streamObject.getStreamTaskList(streamObject.findTasks("nothing")));
 	}
 	@Test 
 	public void testSearch2() {
-		testOneSearch("Search for x", streamObject.findTasks("x"), task1, task2);
+		testOneSearch("Search for x", streamObject.getStreamTaskList(streamObject.findTasks("x")), task1, task2);
 	}
 	@Test 
 	public void testSearch3() {
-		testOneSearch("Search for panda", streamObject.findTasks("im looking for a panda"), task2);
+		testOneSearch("Search for panda", streamObject.getStreamTaskList(streamObject.findTasks("im looking for a panda")), task2);
 	}
 
 	private void testOneSearch(String testMessage, List<StreamTask> actualTasks, StreamTask...tasks) {

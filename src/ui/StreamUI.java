@@ -45,6 +45,7 @@ public class StreamUI {
 	private JButton nextPageButton;
 	private JButton lastPageButton;
 
+	private boolean isSearch;
 	private int pageShown;
 	private int totalPage;
 	private StreamTaskView[] shownTasks;
@@ -261,7 +262,7 @@ public class StreamUI {
 		clearSearchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO add action
+				stream.filterAndProcessInput("clrsrc");
 			}
 		});
 		addComponent(clearSearchButton, StreamUtil.MARGIN_ELEM,
@@ -398,7 +399,7 @@ public class StreamUI {
 	 *        page
 	 */
 	public void resetAvailableTasks(ArrayList<Integer> indices,
-			ArrayList<StreamTask> tasks, Boolean isReset) {
+			ArrayList<StreamTask> tasks, Boolean isReset, Boolean isSearching) {
 		// error: length not the same
 		assert (indices.size() == tasks.size()) : "";
 		availIndices = indices;
@@ -410,8 +411,12 @@ public class StreamUI {
 			totalPage = (int) Math.ceil(1.0 * tasks.size()
 					/ StreamUtil.MAX_VIEWABLE_TASK);
 		}
-		if (isReset || tasks.size() == 0) {
+		if (isReset || tasks.size() == 0 || isSearch) {
 			repopulateTaskView(1);
+			isSearch = false;
+			if (isSearching) {
+				isSearch = true;
+			}
 		} else {
 			if ((int) Math.ceil(1.0 * tasks.size()
 					/ StreamUtil.MAX_VIEWABLE_TASK) < pageShown) {
@@ -485,6 +490,7 @@ public class StreamUI {
 		JOptionPane.showMessageDialog(mainFrame, String.format(
 				StreamUtil.DETAILS_CONTENT,
 				task.getTaskName(),
+				StreamUtil.displayStatus(task.isDone()),
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
 				StreamUtil.displayDescription(task.getDescription()),

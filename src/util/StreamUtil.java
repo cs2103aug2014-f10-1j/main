@@ -80,7 +80,7 @@ public class StreamUtil {
 	public static final String FAIL_NOT_EQUAL = "The two lists are not equal";
 
 	public static final String DETAILS_HEADER = "Details for %1$s";
-	public static final String DETAILS_CONTENT = "Task name: %1$s \nDue date: %2$s\nDescription: %3$s \nTags: %4$s";
+	public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s";
 
 	public static final String[] MONTHS = { "January", "February", "March",
 			"April", "May", "June", "July", "August", "September", "October",
@@ -199,6 +199,8 @@ public class StreamUtil {
 		return result.substring(connector.length());
 	}
 
+	// @author A0093874N
+
 	public static String displayDescription(String desc) {
 		if (desc == null) {
 			return "No description provided";
@@ -207,11 +209,23 @@ public class StreamUtil {
 		}
 	}
 
+	// @author A0093874N
+
 	public static String displayTags(ArrayList<String> tags) {
 		if (tags.size() == 0) {
 			return "No tags added";
 		} else {
 			return listDownArrayContent(tags, ", ");
+		}
+	}
+	
+	// @author A0093874N
+
+	public static String displayStatus(Boolean isDone) {
+		if (isDone) {
+			return "Done";
+		} else {
+			return "Ongoing";
 		}
 	}
 

@@ -15,7 +15,7 @@ import exception.StreamParserException;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, MARK, TAG, UNTAG, SEARCH, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, MARK, TAG, UNTAG, SEARCH, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -118,6 +118,9 @@ public class StreamParser {
 				}
 
 				this.commandKey = CommandType.SEARCH;
+				break;
+			case "clrsrc":
+				this.commandKey = CommandType.CLRSRC;
 				break;
 			case "clear":
 			case "clr":

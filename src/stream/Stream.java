@@ -61,8 +61,8 @@ public class Stream {
 		logMessages = new ArrayList<String>();
 
 		load();
-		stui.resetAvailableTasks(stobj.getCounter(), stobj.getStreamTaskList(),
-				true);
+		stui.resetAvailableTasks(stobj.getCounter(),
+				stobj.getStreamTaskList(stobj.getCounter()), true, false);
 	}
 
 	// @author A0096529N
@@ -187,7 +187,6 @@ public class Stream {
 				break;
 			}
 		}
-
 		stobj.addTask(nameOfTask);
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
@@ -526,8 +525,9 @@ public class Stream {
 	 * @return tasks - a list of tasks containing the key phrase.
 	 * @author Steven Khong
 	 */
-	private List<StreamTask> search(String keyphrase) {
+	private ArrayList<Integer> search(String keyphrase) {
 		assert (keyphrase != null) : StreamUtil.FAIL_NULL_INPUT;
+		// modified by A0093874N
 		return stobj.findTasks(keyphrase);
 	}
 
@@ -613,7 +613,8 @@ public class Stream {
 				logCommand("ADD");
 				logMessage = addTask(content);
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				showAndLogResult(logMessage);
 				break;
 
@@ -623,7 +624,8 @@ public class Stream {
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				logMessage = deleteTask(taskName);
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				showAndLogResult(logMessage);
 				break;
 
@@ -652,7 +654,8 @@ public class Stream {
 					logMessage = setDueDate(taskName, taskIndex, calendar);
 				}
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				showAndLogResult(logMessage);
 				break;
 
@@ -700,7 +703,8 @@ public class Stream {
 					showAndLogError(logMessage);
 				}
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				break;
 
 			case TAG:
@@ -746,14 +750,18 @@ public class Stream {
 				}
 				break;
 
+			case CLRSRC:
+
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(stobj.getCounter()), true,
+						false);
+				break;
+
 			case SEARCH:
 				logCommand("SEARCH");
-				List<StreamTask> searchResult = search(content);
-				System.out.println("Search result for " + content);
-				for (int i = 1; i <= searchResult.size(); i++) {
-					System.out.println(i + ". "
-							+ searchResult.get(i - 1).getTaskName());
-				}
+				ArrayList<Integer> searchResult = search(content);
+				stui.resetAvailableTasks(searchResult,
+						stobj.getStreamTaskList(searchResult), true, true);
 				showAndLogResult(String.format(StreamUtil.LOG_SEARCH, content,
 						searchResult.size()));
 				break;
@@ -770,7 +778,8 @@ public class Stream {
 				logCommand("CLEAR");
 				clearAllTasks();
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				showAndLogResult(StreamUtil.LOG_CLEAR);
 				break;
 
@@ -803,7 +812,8 @@ public class Stream {
 						noOfTasksToRecover));
 				stobj.setOrdering(orderingStack.pop());
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				inputStack.push("some fake input to be popped");
 				break;
 
@@ -814,7 +824,8 @@ public class Stream {
 				dismissTask(taskName);
 				showAndLogResult(String.format(StreamUtil.LOG_DELETE, taskName));
 				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(), false);
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
 				inputStack.push("some fake input to be popped");
 				break;
 

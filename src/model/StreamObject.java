@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 import util.StreamUtil;
 import exception.StreamModificationException;
@@ -124,28 +123,32 @@ public class StreamObject {
 		}
 	}
 
-	//@author A0118007R
+	// @author A0118007R
 	/**
 	 * get task description
-	 * @throws StreamModificationException 
+	 * 
+	 * @throws StreamModificationException
 	 * 
 	 */
-	
-	public String getTaskDescription(String taskName) throws StreamModificationException {
+
+	public String getTaskDescription(String taskName)
+			throws StreamModificationException {
 		StreamTask myTask = getTask(taskName);
 		return myTask.getDescription();
 	}
-	
+
 	/**
 	 * get task deadline
 	 * 
 	 * 
 	 */
-	
-	public Calendar getTaskDeadline(String taskName) throws StreamModificationException {
+
+	public Calendar getTaskDeadline(String taskName)
+			throws StreamModificationException {
 		StreamTask myTask = getTask(taskName);
 		return myTask.getDeadline();
 	}
+
 	// @author A0118007R
 	/**
 	 * Deletes a specific task
@@ -362,7 +365,8 @@ public class StreamObject {
 	 *         nothing matches
 	 * @author Steven Khong
 	 */
-	public List<StreamTask> findTasks(String keyphrase) {
+	// modified by A0093874N
+	public ArrayList<Integer> findTasks(String keyphrase) {
 		// Split key phrase into keywords
 		String[] keywords = null;
 		if (keyphrase.contains(" ")) {
@@ -371,27 +375,27 @@ public class StreamObject {
 			keywords = new String[] { keyphrase };
 		}
 
-		List<StreamTask> tasks = new ArrayList<StreamTask>();
-		for (String key : taskMap.keySet()) {
-			StreamTask task = taskMap.get(key);
+		ArrayList<Integer> tasks = new ArrayList<Integer>();
+		for (int i = 0; i < taskList.size(); i++) {
+			StreamTask task = taskMap.get(taskList.get(i).toLowerCase());
 
 			// check for matches between keywords and tags
 			if (task.hasTag(keywords)) {
-				tasks.add(task);
+				tasks.add(i + 1);
 				continue;
 			}
 			// improved by A0093874N: case-insensitive search
 			// check if task description contains key phrase
 			if (task.getDescription() != null
 					&& task.getDescription().toLowerCase()
-					.contains(keyphrase.toLowerCase())) {
-				tasks.add(task);
+							.contains(keyphrase.toLowerCase())) {
+				tasks.add(i + 1);
 				continue;
 			}
 			// check if task name contains key phrase
 			if (task.getTaskName().toLowerCase()
 					.contains(keyphrase.toLowerCase())) {
-				tasks.add(task);
+				tasks.add(i + 1);
 				continue;
 			}
 		}
@@ -427,10 +431,11 @@ public class StreamObject {
 
 	// @author A0093874N
 
-	public ArrayList<StreamTask> getStreamTaskList() {
+	public ArrayList<StreamTask> getStreamTaskList(ArrayList<Integer> indices) {
 		ArrayList<StreamTask> tasks = new ArrayList<StreamTask>();
-		for (String task : this.taskList) {
-			tasks.add(this.taskMap.get(task.toLowerCase()));
+		for (Integer index : indices) {
+			tasks.add(this.taskMap.get(this.taskList.get(index - 1)
+					.toLowerCase()));
 		}
 		return tasks;
 	}

@@ -112,17 +112,17 @@ public class StreamTask {
 	public boolean isTimedTask() {
 		return startTime != null;
 	}
-	
+
 	// @author A0096529N
 	public boolean isDeadlineTask() {
 		return deadline != null;
 	}
-	
+
 	// @author A0096529N
 	public boolean isFloatingTask() {
 		return startTime == null && deadline == null;
 	}
-	
+
 	// TODO @author?
 
 	/**
@@ -214,7 +214,10 @@ public class StreamTask {
 
 	// @author A0118007R
 	// updated by A0119401U
-
+	/**
+	 * @deprecated by A0093874N, since we're implementing UI-based task details
+	 *             viewer. thanks for all the hard work though!
+	 */
 	public void printTaskDetails() {
 		System.out.println("Task name = " + taskName);
 		String strDesc;
