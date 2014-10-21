@@ -192,19 +192,27 @@ public class Stream {
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
 				stobj.getNumberOfTasks()));
+		if (splittedContent.length > 1){
+		executeModifyParameters(nameOfTask, modifyParams);
+		}
+		return String.format(StreamUtil.LOG_ADD, nameOfTask);
+	}
 
+	private void executeModifyParameters(
+			String nameOfTask, ArrayList<String> modifyParams)
+			throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(nameOfTask);
 
 		// method for splitting the input to add to the specified param
 		// TODO: refactor
-		if (splittedContent.length > 1) {
+		System.out.println("SIZE = " + modifyParams.size());
 			String command = modifyParams.get(0);
 			String contents = "";
 			for (int i = 1; i < modifyParams.size(); i++) {
 				String s = modifyParams.get(i);
 				if (isValidParameter(s)) { // first content is guaranteed to be
 											// a valid parameter
-					
+					System.out.println(command + " " + contents);
 					processParameterModification(command, contents.trim(),
 							currentTask);
 					command = s;
@@ -214,10 +222,10 @@ public class Stream {
 					contents = contents + s + " ";
 				}
 			}
+			System.out.println(command + " " + contents);
 			processParameterModification(command, contents, currentTask);
 
-		}
-		return String.format(StreamUtil.LOG_ADD, nameOfTask);
+		
 	}
 
 	void processParameterModification(String command, String contents,
@@ -652,12 +660,21 @@ public class Stream {
 
 			case MODIFY:
 				logCommand("MODIFY");
-				contents = content.split(" ", 2);
+				contents = content.split(" ");
 				taskIndex = Integer.parseInt(contents[0]);
-				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
-				String newTaskName = contents[1];
-				logMessage = setName(oldTaskName, newTaskName, taskIndex);
-				showAndLogResult(logMessage);
+				taskName = stobj.getTaskNames().get(taskIndex-1);
+				ArrayList<String> modifyParams = new ArrayList<String>();
+				
+				
+				System.out.println("AAA" + content);
+				for (int i = 1; i < contents.length; i++){
+					modifyParams.add(contents[i]);
+				}
+				
+				executeModifyParameters(taskName, modifyParams);
+				
+			//	logMessage = setName(oldTaskName, newTaskName, taskIndex);
+				//showAndLogResult(logMessage);
 				break;
 
 			case MARK:
