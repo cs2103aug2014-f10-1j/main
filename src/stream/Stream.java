@@ -662,6 +662,13 @@ public class Stream {
 				taskName = stobj.getTaskNames().get(taskIndex-1);
 				ArrayList<String> modifyParams = new ArrayList<String>();
 				
+				//get old state and push to undo
+				//TODO REFACTOR
+				
+				String oldDesc = stobj.getTaskDescription(taskName);
+				Calendar oldDue = stobj.getTaskDeadline(taskName);
+				
+			
 				for (int i = 1; i < contents.length; i++){
 					modifyParams.add(contents[i]);
 				}

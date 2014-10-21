@@ -56,7 +56,6 @@ public class StreamUtil {
 	// Reverse commands (for undo)
 	public static final String CMD_DISMISS = "dismiss %1$s";
 	public static final String CMD_RECOVER = "recover %1$s";
-	public static final String CMD_MODIFY = "modify %1$s %2$s";
 	public static final String CMD_DESC = "desc %1$s %2$s";
 	public static final String CMD_DUE = "due %1$s %2$s";
 	public static final String CMD_MARK_DONE = "mark %1$s done";
@@ -64,6 +63,7 @@ public class StreamUtil {
 	public static final String CMD_DELETE = "delete %1$s";
 	public static final String CMD_TAG = "tag %1$s %2$s";
 	public static final String CMD_UNTAG = "untag %1$s %2$s";
+	public static final String CMD_MODIFY = "modify %1$s desc %2$s tag %3$s due %4$s";
 
 	// Assertion failure messages
 	public static final String FAIL_NULL_INPUT = "Null input value detected";

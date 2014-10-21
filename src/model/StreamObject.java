@@ -124,6 +124,28 @@ public class StreamObject {
 		}
 	}
 
+	//@author A0118007R
+	/**
+	 * get task description
+	 * @throws StreamModificationException 
+	 * 
+	 */
+	
+	public String getTaskDescription(String taskName) throws StreamModificationException {
+		StreamTask myTask = getTask(taskName);
+		return myTask.getDescription();
+	}
+	
+	/**
+	 * get task deadline
+	 * 
+	 * 
+	 */
+	
+	public Calendar getTaskDeadline(String taskName) throws StreamModificationException {
+		StreamTask myTask = getTask(taskName);
+		return myTask.getDeadline();
+	}
 	// @author A0118007R
 	/**
 	 * Deletes a specific task
