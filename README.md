@@ -12,7 +12,8 @@ Currently, STREAM is capable of basic CRUD (Create, Read, Update, Delete) operat
 * **add** *taskName*: adds a new task
 * **delete** *indexNo*: deletes a task
 * **clear**: clears all tasks
-* **modify** *indexNo* *newName*: renames a task
+* **name** *indexNo* *newName*: renames a task
+* **modify** *indexNo* *properties and contents*: modifies multiple properties of a task in one go
 * **desc** *indexNo* *description*: updates the task's description
 * **due**  *indexNo* *dueDate*: updates the task's due date
 * **mark** *indexNo* *done/ongoing*: marks a task as either done or ongoing (not done)

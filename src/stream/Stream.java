@@ -47,7 +47,8 @@ public class Stream {
 
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
-	private final String[] validParameters = { "desc", "due", "by", "tag" };
+	private final String[] validParameters = { "name", "desc", "due", "by",
+			"tag", "untag" };
 
 	public Stream(String file) {
 		initStreamIO(file);
@@ -92,7 +93,7 @@ public class Stream {
 	}
 
 	// @author A0096529N
-	public String save() {
+	String save() {
 		String result = null;
 		try {
 			HashMap<String, StreamTask> allTasks = stobj.getTaskMap();
@@ -197,6 +198,8 @@ public class Stream {
 		return String.format(StreamUtil.LOG_ADD, nameOfTask);
 	}
 
+	// @author A0118007R
+
 	private void executeModifyParameters(String nameOfTask,
 			ArrayList<String> modifyParams) throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(nameOfTask);
@@ -222,10 +225,15 @@ public class Stream {
 
 	}
 
-	void processParameterModification(String command, String contents,
-			StreamTask task) {
+	// @author A0118007R
+
+	private void processParameterModification(String command, String contents,
+			StreamTask task) throws StreamModificationException {
 		String taskName = task.getTaskName();
 		switch (command) {
+			case "name":
+				setName(taskName, contents);
+				break;
 			case "desc":
 				task.setDescription(contents);
 				break;
@@ -238,17 +246,15 @@ public class Stream {
 				String[] newTags = contents.split(" ");
 				ArrayList<String> tagsAdded = new ArrayList<String>();
 				ArrayList<String> tagsNotAdded = new ArrayList<String>();
-
-				try {
-					addTags(newTags, taskName, tagsAdded, tagsNotAdded);
-				} catch (StreamModificationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				logTags(taskName, tagsAdded, tagsNotAdded);
+				addTags(newTags, taskName, tagsAdded, tagsNotAdded);
 				break;
-
+			case "untag":
+				String[] tagsToRemove = contents.split(" ");
+				ArrayList<String> tagsRemoved = new ArrayList<String>();
+				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+				removeTags(tagsToRemove, taskName, tagsRemoved, tagsNotRemoved);
+				break;
+		// TODO include marking also, if possible
 		}
 	}
 
@@ -373,14 +379,13 @@ public class Stream {
 	 * @return <strong>String</strong> - the log message
 	 */
 
-	private String setName(String oldName, String newName, Integer index)
+	private String setName(String oldName, String newName)
 			throws StreamModificationException {
-		assert (oldName != null && newName != null && index != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (oldName != null && newName != null) : StreamUtil.FAIL_NULL_INPUT;
 		stobj.updateTaskName(oldName, newName);
 
 		// This section is contributed by A0093874N
-		inputStack.push(String.format(StreamUtil.CMD_MODIFY, index, oldName));
-		return String.format(StreamUtil.LOG_MODIFY, oldName, newName);
+		return String.format(StreamUtil.LOG_NAME, oldName, newName);
 		//
 	}
 
@@ -532,7 +537,9 @@ public class Stream {
 	}
 
 	// TODO who's the author of printTasks()?
-
+	/**
+	 * @deprecated
+	 */
 	private void printTasks() {
 		System.out.println(" ");
 		System.out.println("Your current tasks: ");
@@ -565,6 +572,8 @@ public class Stream {
 		stui.log(logMessage, false);
 		log(StreamUtil.showAsTerminalResponse(logMessage));
 	}
+
+	// @author A0118007R
 
 	private void showAndLogError(String errorMessage) {
 		stui.log(errorMessage, true);
@@ -663,86 +672,72 @@ public class Stream {
 				logCommand("MODIFY");
 				contents = content.split(" ");
 				taskIndex = Integer.parseInt(contents[0]);
-
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 
 				ArrayList<String> modifyParams = new ArrayList<String>();
 				StreamTask currTask = stobj.getTask(taskName);
 
-				System.out.println(taskIndex);
 				// get old state and push to undo
 				// TODO REFACTOR
 
-				String oldDesc = stobj.getTaskDescription(taskName);
+				/*
+				 * changed or not, invoking name change is guaranteed to never
+				 * go wrong
+				 */
+				String inverseCommand = "modify " + taskIndex + " name "
+						+ taskName;
 
-				Calendar oldDue = stobj.getTaskDeadline(taskName);
-
-				ArrayList<String> oldTags = currTask.getTags();
-
-				String dueString;
-				if (oldDue != null) {
-					dueString = StreamUtil.getCalendarWriteUp(oldDue);
-				} else {
-					dueString = null;
-				}
-
-				String inverseCommand = "remodify " + taskIndex + " ";
-
-				String oldTagsAsString = "";
-				for (String s : oldTags) {
-					oldTagsAsString = oldTagsAsString + s + " ";
-				}
-
-				if (oldTags.size() != 0) {
-					inverseCommand = inverseCommand + "tag "
-							+ oldTagsAsString.trim() + " ";
-				}
-
-				if (oldDue != null) {
-					inverseCommand = inverseCommand + "due " + dueString + " ";
-				}
-
+				String oldDesc = currTask.getDescription();
 				if (oldDesc != null) {
 					inverseCommand = inverseCommand + "desc " + oldDesc + " ";
 				}
 
-				inverseCommand = inverseCommand.trim();
+				Calendar oldDue = currTask.getDeadline();
+				if (oldDue != null) {
+					String dueString = StreamUtil.getCalendarWriteUp(oldDue);
+					inverseCommand = inverseCommand + "due " + dueString + " ";
+				}
 
-				System.out.println(inverseCommand);
-				inputStack.push(inverseCommand);
+				ArrayList<String> oldTags = new ArrayList<String>(
+						currTask.getTags());
 
 				for (int i = 1; i < contents.length; i++) {
 					modifyParams.add(contents[i]);
 				}
 
 				executeModifyParameters(taskName, modifyParams);
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
+				ArrayList<String> newTags = currTask.getTags();
+				String inverseTag = compareTagged(oldTags, newTags);
+				String inverseUntag = compareUntagged(oldTags, newTags);
+				if (inverseTag != "tag ") {
+					inverseCommand += inverseTag;
+				}
+				if (inverseUntag != "untag ") {
+					inverseCommand += inverseUntag;
+				}
 
-				// logMessage = setName(oldTaskName, newTaskName, taskIndex);
-				// showAndLogResult(logMessage);
+				inputStack.push(inverseCommand.trim());
+
+				showAndLogResult(String.format(StreamUtil.LOG_MODIFY, taskName));
 				break;
 
-			case REMODIFY:
-				logCommand("REMODIFY");
-				contents = content.split(" ");
+			case NAME:
+				logCommand("NAME");
+				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
-
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				StreamTask myTask = stobj.getTask(taskName);
-
-				myTask.resetParams();
-				ArrayList<String> modifyParamsUndo = new ArrayList<String>();
-
-				if (contents.length > 1) {
-					for (int i = 1; i < contents.length; i++) {
-						modifyParamsUndo.add(contents[i]);
-					}
-
-					executeModifyParameters(taskName, modifyParamsUndo);
-				}
-				
-				inputStack.push("Dummy");
-				// logMessage = setName(oldTaskName, newTaskName, taskIndex);
-				// showAndLogResult(logMessage);
+				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
+				String newTaskName = contents[1];
+				logMessage = setName(oldTaskName, newTaskName);
+				inputStack.push(String.format(StreamUtil.CMD_NAME, taskIndex,
+						oldTaskName));
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
+				showAndLogResult(String.format(StreamUtil.LOG_NAME,
+						oldTaskName, newTaskName));
 				break;
 
 			case MARK:
@@ -778,9 +773,12 @@ public class Stream {
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				addTags(tags, taskName, tagsAdded, tagsNotAdded);
-				inputStack.push(String.format(StreamUtil.CMD_UNTAG, taskIndex,
-						StreamUtil.listDownArrayContent(tagsAdded, " ")));
-				logTags(taskName, tagsAdded, tagsNotAdded);
+				if (tagsAdded.size() != 0) {
+					inputStack.push(String.format(StreamUtil.CMD_UNTAG,
+							taskIndex,
+							StreamUtil.listDownArrayContent(tagsAdded, " ")));
+				}
+				logTagsAdded(taskName, tagsAdded, tagsNotAdded);
 				break;
 
 			case UNTAG:
@@ -790,27 +788,13 @@ public class Stream {
 				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				for (int i = 1; i < tags.length; i++) {
-					if (stobj.removeTag(taskName, tags[i])) {
-						tagsRemoved.add(tags[i]);
-					} else {
-						tagsNotRemoved.add(tags[i]);
-					}
+				removeTags(tags, taskName, tagsRemoved, tagsNotRemoved);
+				if (tagsRemoved.size() != 0) {
+					inputStack.push(String.format(StreamUtil.CMD_TAG,
+							taskIndex,
+							StreamUtil.listDownArrayContent(tagsRemoved, " ")));
 				}
-				inputStack.push(String.format(StreamUtil.CMD_TAG, taskIndex,
-						StreamUtil.listDownArrayContent(tagsRemoved, " ")));
-				if (!tagsRemoved.isEmpty()) {
-					showAndLogResult(String.format(StreamUtil.LOG_TAGS_REMOVED,
-							taskName,
-							StreamUtil.listDownArrayContent(tagsRemoved, ", ")));
-				} else {
-					showAndLogResult(StreamUtil.LOG_NO_TAGS_REMOVED);
-				}
-				if (!tagsNotRemoved.isEmpty()) {
-					log(String.format(StreamUtil.LOG_TAGS_NOT_REMOVED,
-							taskName, StreamUtil.listDownArrayContent(
-									tagsNotRemoved, ", ")));
-				}
+				logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
 				break;
 
 			case CLRSRC:
@@ -903,7 +887,35 @@ public class Stream {
 		}
 	}
 
-	private void logTags(String taskName, ArrayList<String> tagsAdded,
+	// @author A0093874N
+
+	private String compareTagged(ArrayList<String> oldTags,
+			ArrayList<String> newTags) {
+		String inverseTag = "tag ";
+		for (String old : oldTags) {
+			if (!newTags.contains(old)) {
+				inverseTag = inverseTag + old + " ";
+			}
+		}
+		return inverseTag;
+	}
+
+	// @author A0093874N
+
+	private String compareUntagged(ArrayList<String> oldTags,
+			ArrayList<String> newTags) {
+		String inverseUntag = "untag ";
+		for (String newer : newTags) {
+			if (!oldTags.contains(newer)) {
+				inverseUntag += inverseUntag + newer + " ";
+			}
+		}
+		return inverseUntag;
+	}
+
+	// @author A0093874N
+
+	private void logTagsAdded(String taskName, ArrayList<String> tagsAdded,
 			ArrayList<String> tagsNotAdded) {
 		if (!tagsAdded.isEmpty()) {
 			showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED, taskName,
@@ -917,6 +929,26 @@ public class Stream {
 		}
 	}
 
+	// @author A0093874N
+
+	private void logTagsRemoved(String taskName, ArrayList<String> tagsRemoved,
+			ArrayList<String> tagsNotRemoved) {
+		if (!tagsRemoved.isEmpty()) {
+			showAndLogResult(String.format(StreamUtil.LOG_TAGS_REMOVED,
+					taskName,
+					StreamUtil.listDownArrayContent(tagsRemoved, ", ")));
+		} else {
+			showAndLogResult(StreamUtil.LOG_NO_TAGS_REMOVED);
+		}
+		if (!tagsNotRemoved.isEmpty()) {
+			log(String.format(StreamUtil.LOG_TAGS_NOT_REMOVED, taskName,
+					StreamUtil.listDownArrayContent(tagsNotRemoved, ", ")));
+		}
+	}
+
+	// TODO @author ?
+	// TODO may want to move this to Util
+
 	public boolean isInteger(String x) {
 		try {
 			Integer.parseInt(x);
@@ -926,6 +958,8 @@ public class Stream {
 		}
 		return false;
 	}
+
+	// @author A0093874N
 
 	private void addTags(String[] tags, String taskName,
 			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded)
@@ -942,6 +976,26 @@ public class Stream {
 			}
 		}
 	}
+
+	// @author A0093874N
+
+	private void removeTags(String[] tags, String taskName,
+			ArrayList<String> tagsRemoved, ArrayList<String> tagsNotRemoved)
+			throws StreamModificationException {
+		int start = 0;
+		if (isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (stobj.removeTag(taskName, tags[i])) {
+				tagsRemoved.add(tags[i]);
+			} else {
+				tagsNotRemoved.add(tags[i]);
+			}
+		}
+	}
+
+	// TODO @author ?
 
 	private Calendar parseCalendar(String contents) {
 		String[] dueDate = contents.split("/");

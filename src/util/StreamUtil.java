@@ -38,7 +38,7 @@ public class StreamUtil {
 	public static final String LOG_DESC = "Changed description for \"%1$s\" to \"%2$s\"";
 	public static final String LOG_CLEAR = "Cleared all tasks";
 	public static final String LOG_RECOVER = "Recovered %1$s task(s)";
-	public static final String LOG_MODIFY = "Changed name for \"%1$s\" to \"%2$s\"";
+	public static final String LOG_NAME = "Changed name for \"%1$s\" to \"%2$s\"";
 	public static final String LOG_MARK = "\"%1$s\" marked as %2$s";
 	public static final String LOG_ERRORS = "%1$s: %2$s";
 	public static final String LOG_UNDO_FAIL = "Nothing to undo";
@@ -55,6 +55,7 @@ public class StreamUtil {
 	public static final String LOG_SEARCH = "Searching for \"%1$s\", %2$s queries found";
 	public static final String LOG_LOAD_FAILED = "Load from file failed, %1$s";
 	public static final String LOG_SAVE_FAILED = "Save to file failed, %1$s";
+	public static final String LOG_MODIFY = "Modified %1$s";
 
 	// Exception messages
 	public static final String ERR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
@@ -69,10 +70,11 @@ public class StreamUtil {
 	public static final String CMD_DELETE = "delete %1$s";
 	public static final String CMD_TAG = "tag %1$s %2$s";
 	public static final String CMD_UNTAG = "untag %1$s %2$s";
-	public static final String CMD_MODIFY = "remodify %1$s desc %2$s tag %3$s due %4$s";
+	public static final String CMD_MODIFY = "modify %1$s desc %2$s tag %3$s due %4$s";
 	public static final String CMD_VIEW = "view %1$s";
 	public static final String CMD_UNDO = "undo";
 	public static final String CMD_CLRSRC = "clrsrc";
+	public static final String CMD_NAME = "name %1$s %2$s";
 
 	// Assertion failure messages
 	public static final String FAIL_NULL_INPUT = "Null input value detected";
@@ -223,6 +225,14 @@ public class StreamUtil {
 		} else {
 			return listDownArrayContent(tags, ", ");
 		}
+	}
+	
+	public static String displayTagsAsCommand(ArrayList<String> tags) {
+		if (tags.size() == 0) {
+			return null;
+		} else {
+			return listDownArrayContent(tags, " ");
+		}		
 	}
 
 	// @author A0093874N

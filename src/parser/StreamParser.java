@@ -15,7 +15,7 @@ import exception.StreamParserException;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, REMODIFY, MARK, TAG, UNTAG, SEARCH, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -81,11 +81,14 @@ public class StreamParser {
 
 				this.commandKey = CommandType.MODIFY;
 				break;
-			case "remodify":
-				
+			case "name":
+				contents = input.trim().split(" ", 3);
+				if (contents.length != 3 || !isInteger(contents[1])) {
+					throw new StreamParserException("Invalid index!");
+				}
 				contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.REMODIFY;
+				this.commandKey = CommandType.NAME;
 				break;
 			case "mark":
 			case "done":
@@ -112,6 +115,7 @@ public class StreamParser {
 				if (contents.length < 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
+				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.UNTAG;
 				break;
