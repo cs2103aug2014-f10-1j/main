@@ -664,57 +664,51 @@ public class Stream {
 				logCommand("MODIFY");
 				contents = content.split(" ");
 				taskIndex = Integer.parseInt(contents[0]);
-			
+
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				
-				
+
 				ArrayList<String> modifyParams = new ArrayList<String>();
 				StreamTask currTask = stobj.getTask(taskName);
-				
+
 				System.out.println(taskIndex);
 				// get old state and push to undo
 				// TODO REFACTOR
 
 				String oldDesc = stobj.getTaskDescription(taskName);
-				
+
 				Calendar oldDue = stobj.getTaskDeadline(taskName);
-				
+
 				ArrayList<String> oldTags = currTask.getTags();
-				
+
 				String dueString;
 				if (oldDue != null) {
-				 dueString = StreamUtil.getCalendarWriteUp(oldDue);
+					dueString = StreamUtil.getCalendarWriteUp(oldDue);
 				} else {
 					dueString = null;
 				}
-				
+
 				String inverseCommand = "remodify " + taskIndex + " ";
-				
-			
-				
+
 				String oldTagsAsString = "";
-				for (String s : oldTags){
+				for (String s : oldTags) {
 					oldTagsAsString = oldTagsAsString + s + " ";
 				}
-				
-				if (oldTags != null){
-					inverseCommand = inverseCommand + "tag " + oldTagsAsString.trim() + " ";
+
+				if (oldTags.size() != 0) {
+					inverseCommand = inverseCommand + "tag "
+							+ oldTagsAsString.trim() + " ";
 				}
-				
-				if (oldDue != null){
+
+				if (oldDue != null) {
 					inverseCommand = inverseCommand + "due " + dueString + " ";
-				} else {
-					inverseCommand = inverseCommand + "due null";
 				}
-				
-				if (oldDesc != null){
+
+				if (oldDesc != null) {
 					inverseCommand = inverseCommand + "desc " + oldDesc + " ";
-				} else {
-					inverseCommand = inverseCommand + "desc null";
 				}
-				
+
 				inverseCommand = inverseCommand.trim();
-				
+
 				System.out.println(inverseCommand);
 				inputStack.push(inverseCommand);
 
@@ -727,32 +721,30 @@ public class Stream {
 				// logMessage = setName(oldTaskName, newTaskName, taskIndex);
 				// showAndLogResult(logMessage);
 				break;
-			
+
 			case REMODIFY:
-				logCommand("MODIFY");
+				logCommand("REMODIFY");
 				contents = content.split(" ");
 				taskIndex = Integer.parseInt(contents[0]);
-			
+
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				StreamTask myTask = stobj.getTask(taskName);
-				
-				myTask.resetTags();
-				
+
+				myTask.resetParams();
 				ArrayList<String> modifyParamsUndo = new ArrayList<String>();
-				
-				for (int i = 1; i < contents.length; i++) {
-					modifyParamsUndo.add(contents[i]);
+
+				if (contents.length > 1) {
+					for (int i = 1; i < contents.length; i++) {
+						modifyParamsUndo.add(contents[i]);
+					}
+
+					executeModifyParameters(taskName, modifyParamsUndo);
 				}
-
-				executeModifyParameters(taskName, modifyParamsUndo);
-
+				
+				inputStack.push("Dummy");
 				// logMessage = setName(oldTaskName, newTaskName, taskIndex);
 				// showAndLogResult(logMessage);
 				break;
-				
-				
-				
-				
 
 			case MARK:
 				logCommand("MARK");

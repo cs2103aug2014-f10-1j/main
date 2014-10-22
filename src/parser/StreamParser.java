@@ -82,10 +82,7 @@ public class StreamParser {
 				this.commandKey = CommandType.MODIFY;
 				break;
 			case "remodify":
-				contents = input.trim().split(" ", 3);
-				if (contents.length != 3 || !isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.REMODIFY;

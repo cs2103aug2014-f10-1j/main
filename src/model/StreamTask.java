@@ -44,6 +44,12 @@ public class StreamTask {
 	public String getDescription() {
 		return this.taskDescription;
 	}
+	
+	public void resetParams(){
+		this.taskDescription = null;
+		this.deadline = null;
+		this.tags = new ArrayList<String>();
+	}
 
 	// @author A0118007R
 	/**
