@@ -71,6 +71,8 @@ public class StreamUtil {
 	public static final String CMD_UNTAG = "untag %1$s %2$s";
 	public static final String CMD_MODIFY = "remodify %1$s desc %2$s tag %3$s due %4$s";
 	public static final String CMD_VIEW = "view %1$s";
+	public static final String CMD_UNDO = "undo";
+	public static final String CMD_CLRSRC = "clrsrc";
 
 	// Assertion failure messages
 	public static final String FAIL_NULL_INPUT = "Null input value detected";
@@ -78,6 +80,10 @@ public class StreamUtil {
 	public static final String FAIL_NOT_ADDED = "Task addition failed";
 	public static final String FAIL_NOT_DELETED = "Task deletion failed";
 	public static final String FAIL_NOT_EQUAL = "The two lists are not equal";
+	public static final String FAIL_NO_PREV_PAGE = "Cannot navigate backward from first page";
+	public static final String FAIL_NO_NEXT_PAGE = "Cannot navigate forward from last page";
+	public static final String FAIL_SIZE_DIFFERENT = "The size of the indices and tasks arrays are different";
+	public static final String FAIL_TOO_MANY_PAGES = "The requested page exceeds the total number of pages";
 
 	public static final String DETAILS_HEADER = "Details for %1$s";
 	public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s";
@@ -218,7 +224,7 @@ public class StreamUtil {
 			return listDownArrayContent(tags, ", ");
 		}
 	}
-	
+
 	// @author A0093874N
 
 	public static String displayStatus(Boolean isDone) {

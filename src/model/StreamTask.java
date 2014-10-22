@@ -44,8 +44,10 @@ public class StreamTask {
 	public String getDescription() {
 		return this.taskDescription;
 	}
-	
-	public void resetParams(){
+
+	// @author A0118007R
+
+	public void resetParams() {
 		this.taskDescription = null;
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
@@ -148,8 +150,9 @@ public class StreamTask {
 	public ArrayList<String> getTags() {
 		return tags;
 	}
-	
-	//@author A0118007R
+
+	// @author A0118007R
+
 	public void resetTags() {
 		this.tags = new ArrayList<String>();
 	}

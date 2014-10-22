@@ -2,7 +2,6 @@ package stream;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -960,7 +959,7 @@ public class Stream {
 
 	// @author A0093874N
 
-	public void processInput(String input) {
+	private void processInput(String input) {
 		try {
 			parser.interpretCommand(input);
 			CommandType command = parser.getCommandType();
@@ -1017,7 +1016,6 @@ public class Stream {
 
 	public static void main(String[] args) {
 		new Stream(StreamUtil.PARAM_FILENAME);
-
 	}
 
 }

@@ -1,7 +1,5 @@
 package ui;
 
-import java.awt.Color;
-
 import javax.swing.JTextField;
 
 import util.StreamUtil;
@@ -19,7 +17,7 @@ public class StreamUILogger extends JTextField {
 
 	// @author A0093874N
 
-	public StreamUILogger() {
+	StreamUILogger() {
 		super();
 		setEditable(false);
 	}

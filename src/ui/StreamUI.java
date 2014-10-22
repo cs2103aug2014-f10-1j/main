@@ -58,19 +58,15 @@ public class StreamUI {
 
 		stream = str;
 
-		mainFrame = new JFrame(StreamUtil.TEXT_TITLE);
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setSize(StreamUtil.WIDTH_MAINFRAME,
-				StreamUtil.HEIGHT_MAINFRAME);
-		mainFrame.setLocationRelativeTo(null);
-
-		contentPanel = new JPanel();
-		contentPanel.setBorder(StreamUtil.MARGIN_MAINFRAME);
-		contentPanel.setLayout(new GridBagLayout());
-		mainFrame.setContentPane(contentPanel);
-
-		addMainComponents();
+		addMainFrame();
+		addContentPanel();
+		addHeader();
+		setUpView();
+		addButtons();
+		addConsole();
 		empowerConsole(this.new EnterAction());
+		addLogger();
+		addFooter();
 		log(StreamUtil.MSG_WELCOME, false);
 		pageShown = 1;
 		totalPage = 1;
@@ -83,17 +79,30 @@ public class StreamUI {
 	// @author A0093874N
 
 	/**
-	 * Constructs the main components of Stream's User Interface.
+	 * Constructs the main frame for Stream's User Interface.
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-	private void addMainComponents() {
-		addHeader();
-		setUpView();
-		addButtons();
-		addConsole();
-		addLogger();
-		addFooter();
+	private void addMainFrame() {
+		mainFrame = new JFrame(StreamUtil.TEXT_TITLE);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setSize(StreamUtil.WIDTH_MAINFRAME,
+				StreamUtil.HEIGHT_MAINFRAME);
+		mainFrame.setLocationRelativeTo(null);
+	}
+
+	// @author A0093874N
+
+	/**
+	 * Constructs the content panel for Stream's User Interface.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
+	private void addContentPanel() {
+		contentPanel = new JPanel();
+		contentPanel.setBorder(StreamUtil.MARGIN_MAINFRAME);
+		contentPanel.setLayout(new GridBagLayout());
+		mainFrame.setContentPane(contentPanel);
 	}
 
 	// @author A0093874N
@@ -106,8 +115,7 @@ public class StreamUI {
 	private void setUpView() {
 		shownTasks = new StreamTaskView[StreamUtil.MAX_VIEWABLE_TASK];
 		for (int i = 0; i < StreamUtil.MAX_VIEWABLE_TASK; i++) {
-			StreamTaskView taskPanel = new StreamTaskView(null, null, null,
-					null, stream);
+			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			addComponent(taskPanel, StreamUtil.MARGIN_ELEM,
 					StreamUtil.GRIDX_TASK, i + 1, StreamUtil.GRIDWIDTH_TASK,
@@ -162,7 +170,7 @@ public class StreamUI {
 		undoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("undo");
+				stream.filterAndProcessInput(StreamUtil.CMD_UNDO);
 			}
 		});
 		addComponent(undoButton, StreamUtil.MARGIN_ELEM, StreamUtil.GRIDX_UNDO,
@@ -202,6 +210,7 @@ public class StreamUI {
 		prevPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				assert (pageShown != 1) : StreamUtil.FAIL_NO_PREV_PAGE;
 				repopulateTaskView(pageShown - 1);
 			}
 		});
@@ -222,6 +231,7 @@ public class StreamUI {
 		nextPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				assert (pageShown != totalPage) : StreamUtil.FAIL_NO_NEXT_PAGE;
 				repopulateTaskView(pageShown + 1);
 			}
 		});
@@ -262,7 +272,7 @@ public class StreamUI {
 		clearSearchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("clrsrc");
+				stream.filterAndProcessInput(StreamUtil.CMD_CLRSRC);
 			}
 		});
 		addComponent(clearSearchButton, StreamUtil.MARGIN_ELEM,
@@ -388,20 +398,22 @@ public class StreamUI {
 	// @author A0093874N
 
 	/**
-	 * Resets the viewable task to the chosen indices and <b>StreamTask</b>s.
+	 * Resets the viewable tasks to the chosen indices and <b>StreamTask</b>s.
 	 * 
 	 * @author Wilson Kurniawan
 	 * @param indices
 	 *            - the list of indices to be displayed
 	 * @param tasks
 	 *            - the list of <b>StreamTask</b>s to be displayed
-	 * @Param isReset - indicating if the view needs to be reset to the first
-	 *        page
+	 * @param isReset
+	 *            - indicating if the view needs to be reset to the first page
+	 * @param isSearching
+	 *            - indicating if this is a search result
 	 */
 	public void resetAvailableTasks(ArrayList<Integer> indices,
 			ArrayList<StreamTask> tasks, Boolean isReset, Boolean isSearching) {
 		// error: length not the same
-		assert (indices.size() == tasks.size()) : "";
+		assert (indices.size() == tasks.size()) : StreamUtil.FAIL_SIZE_DIFFERENT;
 		availIndices = indices;
 		availTasks = tasks;
 		if (tasks.size() == 0) {
@@ -412,15 +424,17 @@ public class StreamUI {
 					/ StreamUtil.MAX_VIEWABLE_TASK);
 		}
 		if (isReset || tasks.size() == 0 || isSearch) {
+			/*
+			 * resetting or clearing search result automatically resets the view
+			 * back to first page
+			 */
 			repopulateTaskView(1);
-			isSearch = false;
-			if (isSearching) {
-				isSearch = true;
-			}
+			isSearch = isSearching;
 		} else {
 			if ((int) Math.ceil(1.0 * tasks.size()
 					/ StreamUtil.MAX_VIEWABLE_TASK) < pageShown) {
 				// last task in the last page deleted: move back one page
+				assert (pageShown != 1) : StreamUtil.FAIL_NO_PREV_PAGE;
 				repopulateTaskView(pageShown - 1);
 			} else {
 				repopulateTaskView(pageShown);
@@ -438,6 +452,7 @@ public class StreamUI {
 	 *            - the page number to be shown
 	 */
 	private void repopulateTaskView(int page) {
+		assert (page <= totalPage) : StreamUtil.FAIL_TOO_MANY_PAGES;
 		pageShown = page;
 		int startPoint = (pageShown - 1) * StreamUtil.MAX_VIEWABLE_TASK;
 		for (int i = 0; i < StreamUtil.MAX_VIEWABLE_TASK; i++) {
@@ -479,7 +494,8 @@ public class StreamUI {
 	// @author A0093874N
 
 	/**
-	 * Displays the detailed information of the task upon clicking the name.
+	 * Displays the detailed information of a task in a dialog window upon
+	 * clicking the name.
 	 * 
 	 * @author Wilson Kurniawan
 	 * @param task

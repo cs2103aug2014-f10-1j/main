@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -40,14 +39,13 @@ public class StreamTaskView extends JPanel {
 
 	// @author A0093874N
 
-	public StreamTaskView(Integer ind, String task, Calendar startTime,
-			Calendar endTime, Stream stream) {
+	StreamTaskView(Stream stream) {
 		super();
 		setLayout(new GridBagLayout());
 		st = stream;
-		addIndexNumber(ind);
-		addTaskNameLabel(task);
-		addTimingLabel(startTime, endTime);
+		addIndexNumber();
+		addTaskNameLabel();
+		addTimingLabel();
 		addDeleteButton();
 		addMarkButton();
 	}
@@ -58,11 +56,9 @@ public class StreamTaskView extends JPanel {
 	 * Adds the index number label to the task view.
 	 * 
 	 * @author Wilson Kurniawan
-	 * @param ind
-	 *            - the index number
 	 */
-	private void addIndexNumber(Integer ind) {
-		index = new JLabel(String.format(StreamUtil.TEXT_INDEX, ind));
+	private void addIndexNumber() {
+		index = new JLabel();
 		index.setHorizontalAlignment(SwingConstants.CENTER);
 		index.setFont(StreamUtil.FONT_INDEX);
 		addComponent(index, StreamUtil.MARGIN_TASKVIEW, StreamUtil.GRIDX_INDEX,
@@ -76,11 +72,9 @@ public class StreamTaskView extends JPanel {
 	 * Adds the task name label to the task view.
 	 * 
 	 * @author Wilson Kurniawan
-	 * @param task
-	 *            - the task name
 	 */
-	private void addTaskNameLabel(String task) {
-		taskName = new JLabel(task);
+	private void addTaskNameLabel() {
+		taskName = new JLabel();
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamUtil.FONT_TASK);
 		addComponent(taskName, StreamUtil.MARGIN_TASKVIEW,
@@ -94,13 +88,9 @@ public class StreamTaskView extends JPanel {
 	 * Adds the timing label to the task view.
 	 * 
 	 * @author Wilson Kurniawan
-	 * @param startTime
-	 *            - the task's starting time
-	 * @param endTime
-	 *            - the task's ending time/deadline
 	 */
-	private void addTimingLabel(Calendar startTime, Calendar endTime) {
-		timing = new JLabel(StreamUtil.getWrittenTime(startTime, endTime));
+	private void addTimingLabel() {
+		timing = new JLabel();
 		timing.setFont(StreamUtil.FONT_TASK);
 		addComponent(timing, StreamUtil.MARGIN_TASKVIEW,
 				StreamUtil.GRIDX_TIMING, StreamUtil.GRIDY_TIMING,
@@ -120,7 +110,7 @@ public class StreamTaskView extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				st.filterAndProcessInput(String.format(StreamUtil.CMD_DELETE,
-						index.getText()));
+						index.getText().substring(1)));
 			}
 		});
 		addComponent(delButton, StreamUtil.MARGIN_TASKVIEW,
@@ -162,12 +152,13 @@ public class StreamTaskView extends JPanel {
 	 * 
 	 * @author Wilson Kurniawan
 	 * @param ind
-	 *            - the index number
+	 *            - the index number assigned
 	 * @param task
-	 *            - the <b>StreamTask</b> where the information is obtained from
+	 *            - the <b>StreamTask</b> from which the information is obtained
+	 *            from
 	 */
 	void updateView(final Integer ind, StreamTask task) {
-		index.setText(ind.toString());
+		index.setText(String.format(StreamUtil.TEXT_INDEX, ind.toString()));
 		taskName.setText(task.getTaskName());
 		StreamUtil.clearAllMouseListeners(taskName,
 				taskName.getMouseListeners());
@@ -176,7 +167,8 @@ public class StreamTaskView extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// display details on mouse click
-				st.processInput(String.format(StreamUtil.CMD_VIEW, ind));
+				st.filterAndProcessInput(String
+						.format(StreamUtil.CMD_VIEW, ind));
 			}
 
 			@Override
@@ -221,7 +213,7 @@ public class StreamTaskView extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				st.filterAndProcessInput(String.format(
-						StreamUtil.CMD_MARK_DONE, index.getText()));
+						StreamUtil.CMD_MARK_DONE, index.getText().substring(1)));
 			}
 		});
 	}
@@ -241,7 +233,8 @@ public class StreamTaskView extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				st.filterAndProcessInput(String.format(
-						StreamUtil.CMD_MARK_NOT_DONE, index.getText()));
+						StreamUtil.CMD_MARK_NOT_DONE, index.getText()
+								.substring(1)));
 			}
 		});
 	}
