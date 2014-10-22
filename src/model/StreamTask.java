@@ -142,6 +142,11 @@ public class StreamTask {
 	public ArrayList<String> getTags() {
 		return tags;
 	}
+	
+	//@author A0118007R
+	public void resetTags() {
+		this.tags = new ArrayList<String>();
+	}
 
 	// TODO @author?
 

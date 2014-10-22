@@ -69,7 +69,7 @@ public class StreamUtil {
 	public static final String CMD_DELETE = "delete %1$s";
 	public static final String CMD_TAG = "tag %1$s %2$s";
 	public static final String CMD_UNTAG = "untag %1$s %2$s";
-	public static final String CMD_MODIFY = "modify %1$s desc %2$s tag %3$s due %4$s";
+	public static final String CMD_MODIFY = "remodify %1$s desc %2$s tag %3$s due %4$s";
 	public static final String CMD_VIEW = "view %1$s";
 
 	// Assertion failure messages
