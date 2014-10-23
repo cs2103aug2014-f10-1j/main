@@ -685,17 +685,21 @@ public class Stream {
 				 * go wrong
 				 */
 				String inverseCommand = "modify " + taskIndex + " name "
-						+ taskName;
+						+ taskName + " ";
 
 				String oldDesc = currTask.getDescription();
 				if (oldDesc != null) {
 					inverseCommand = inverseCommand + "desc " + oldDesc + " ";
+				} else {
+					inverseCommand = inverseCommand + "desc null ";
 				}
 
 				Calendar oldDue = currTask.getDeadline();
 				if (oldDue != null) {
 					String dueString = StreamUtil.getCalendarWriteUp(oldDue);
 					inverseCommand = inverseCommand + "due " + dueString + " ";
+				} else {
+					inverseCommand = inverseCommand + "due null ";
 				}
 
 				ArrayList<String> oldTags = new ArrayList<String>(
@@ -718,6 +722,8 @@ public class Stream {
 				if (inverseUntag != "untag ") {
 					inverseCommand += inverseUntag;
 				}
+				
+				System.out.println("IC = " + inverseCommand);
 
 				inputStack.push(inverseCommand.trim());
 

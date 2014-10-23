@@ -275,9 +275,11 @@ public class StreamObject {
 	public void updateTaskName(String taskName, String newTaskName)
 			throws StreamModificationException {
 		StreamTask task = getTask(taskName.toLowerCase());
-		if (taskMap.containsKey(newTaskName.toLowerCase())) {
-			throw new StreamModificationException(String.format(
-					ERROR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
+		if (!taskName.equals(newTaskName)) {
+			if (taskMap.containsKey(newTaskName.toLowerCase())) {
+				throw new StreamModificationException(String.format(
+						ERROR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
+			}
 		}
 
 		taskMap.remove(task.getTaskName().toLowerCase());
