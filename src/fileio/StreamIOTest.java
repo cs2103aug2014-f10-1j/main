@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 import model.StreamTask;
 
@@ -35,8 +34,7 @@ public class StreamIOTest {
 			+ "- %1$s\nDelete the file if already present.";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
 	private static final String TEST_SAVE_LOCATION = "streamtest.json";
-	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-			"yyyyMMddHHmmss", Locale.ENGLISH);
+	private SimpleDateFormat simpleDateFormat = StreamIO.dateFormat;
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;

@@ -46,4 +46,6 @@ public class StreamAddTaskTest {
 		streamObject.deleteTask("Submit CE2");
 		assertEquals(streamObject.hasTask("Submit CE2"), false);
 	}
+	
+	
 }

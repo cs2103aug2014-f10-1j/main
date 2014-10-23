@@ -195,6 +195,23 @@ public class StreamUtil {
 	public static final String BTN_DELETE = "Delete";
 	public static final String BTN_MARK_DONE = "Mark as done";
 	public static final String BTN_MARK_NOT_DONE = "Mark as ongoing";
+	
+	//Date-Validity Checking methods
+	// @author A0118007R
+	
+	public static boolean isValidMonth(int month){
+		return (month >= 1) && (month <= 12);
+	}
+	
+	public static boolean isValidDate(int day){
+		return (day >= 1) && (day <= 31);
+	}
+	
+	public static boolean isValidYear(int year){
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		return year >= currentYear;
+	}
+	
 
 	// @author A0093874N
 
