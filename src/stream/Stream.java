@@ -239,8 +239,12 @@ public class Stream {
 				break;
 			case "due":
 			case "by":
-				Calendar due = parseCalendar(contents);
-				task.setDeadline(due);
+				if (contents.trim().equals("null")) {
+					task.setDeadline(null);
+				} else {
+					Calendar due = parseCalendar(contents);
+					task.setDeadline(due);
+				}
 				break;
 			case "tag":
 				String[] newTags = contents.split(" ");
@@ -722,8 +726,6 @@ public class Stream {
 				if (inverseUntag != "untag ") {
 					inverseCommand += inverseUntag;
 				}
-				
-				System.out.println("IC = " + inverseCommand);
 
 				inputStack.push(inverseCommand.trim());
 
