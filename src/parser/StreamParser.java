@@ -1,6 +1,7 @@
 package parser;
 
 import exception.StreamParserException;
+import model.StreamObject;
 
 /*
  * Parser is used to interpret the user input to a pack of 
@@ -26,14 +27,15 @@ public class StreamParser {
 		this.commandContent = null;
 	}
 
-	public void interpretCommand(String input) throws StreamParserException {
+	public void interpretCommand(String input, StreamObject stobj) throws StreamParserException {
 		String[] contents = input.trim().split(" ", 2);
 		String key = contents[0].toLowerCase();
+		int numOfTasks=stobj.getNumberOfTasks();
 		switch (key) {
 			case "add":
 
 				if (contents.length < 2) {
-					throw new StreamParserException("Nothing to add!");
+					throw new StreamParserException("Nothing to add here!");
 				}
 
 				this.commandKey = CommandType.ADD;
@@ -49,6 +51,10 @@ public class StreamParser {
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
+				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
+				}
 
 				this.commandKey = CommandType.DEL;
 				break;
@@ -62,6 +68,10 @@ public class StreamParser {
 				
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
+				}
+				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
 				}
 				contents = input.trim().split(" ", 2);
 
@@ -92,6 +102,10 @@ public class StreamParser {
 					throw new StreamParserException("Invalid index!");
 				}
 				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
+				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.MODIFY;
@@ -107,6 +121,10 @@ public class StreamParser {
 					throw new StreamParserException("Invalid index!");
 				}
 				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
+				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.NAME;
@@ -117,6 +135,10 @@ public class StreamParser {
 				contents = input.trim().split(" ");
 				if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
+				}
+				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
 				}
 				contents = input.trim().split(" ", 2);
 
@@ -133,6 +155,10 @@ public class StreamParser {
 					throw new StreamParserException("Invalid index!");
 				}
 				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
+				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.TAG;
@@ -141,6 +167,10 @@ public class StreamParser {
 				contents = input.trim().split(" ", 3);
 				if (contents.length < 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
+				}
+				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
 				}
 				contents = input.trim().split(" ", 2);
 
@@ -213,6 +243,13 @@ public class StreamParser {
 			}
 		}
 		return size > 0;
+	}
+	
+	private boolean withinRange(int index,int numOfTasks){
+		if (index>=1 && index<=numOfTasks)
+			return true;
+		else
+			return false;
 	}
 
 }

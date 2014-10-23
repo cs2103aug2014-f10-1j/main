@@ -49,7 +49,6 @@ public class StreamParserTest {
 		
 		try{
 			st.filterAndProcessInput(("add "));
-			//fail();
 		}catch (Exception e) {
 			final String expectedMessage = "Nothing to add!";
 			assertEquals(expectedMessage, e.getMessage());
@@ -107,6 +106,7 @@ public class StreamParserTest {
 		
 		try{
 			st.filterAndProcessInput("done tutorial");
+			//st.filterAndProcessInput(null);
 		}catch (Exception e) {
 			final String expectedMessage = "Invalid index!";
 			assertEquals(expectedMessage, e.getMessage());
