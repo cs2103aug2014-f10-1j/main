@@ -42,12 +42,12 @@ public class StreamParser {
 			case "del":
 			case "delete":
 
-				if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
+				if(contents.length !=2){
+					throw new StreamParserException("Invalid input!");
 				}
 				
-				else if(contents.length !=2){
-					throw new StreamParserException("Invalid input!");
+				else if (!isInteger(contents[1])) {
+					throw new StreamParserException("Invalid index!");
 				}
 
 				this.commandKey = CommandType.DEL;
@@ -55,7 +55,12 @@ public class StreamParser {
 			case "desc":
 			case "describe":
 				contents = input.trim().split(" ", 3);
-				if (!isInteger(contents[1])) {
+				
+				if(contents.length<3) {
+					throw new StreamParserException("Not enough information!");
+				}
+				
+				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
 				contents = input.trim().split(" ", 2);
@@ -78,25 +83,38 @@ public class StreamParser {
 			case "mod":
 			case "modify":
 				contents = input.trim().split(" ", 3);
-				if (contents.length<3 || !isInteger(contents[1])) {
+				
+				if(contents.length<3) {
+					throw new StreamParserException("Not enough information!");
+				}
+				
+				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.MODIFY;
 				break;
 			case "name":
 				contents = input.trim().split(" ", 3);
-				if (contents.length < 3 || !isInteger(contents[1])) {
+				
+				if(contents.length<3) {
+					throw new StreamParserException("Not enough information!");
+				}
+				
+				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.NAME;
 				break;
 			case "mark":
+			case "done":
 			case "finished":
-				contents = input.trim().split(" ", 3);
+				contents = input.trim().split(" ");
 				if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
@@ -106,9 +124,15 @@ public class StreamParser {
 				break;
 			case "tag":
 				contents = input.trim().split(" ", 3);
-				if (contents.length < 3 || !isInteger(contents[1])) {
+
+				if(contents.length<3) {
+					throw new StreamParserException("Not enough information!");
+				}
+				
+				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
+				
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.TAG;
