@@ -54,7 +54,7 @@ public class StreamIOTest {
 		Calendar calendar = Calendar.getInstance();
 		Date date = StreamIO.dateFormat.parse("20410719000000");
 		calendar.setTime(date); // instead of Calendar.set(), for loadTest,
-								// serialized calendar.
+		// serialized calendar.
 		task1.setDeadline(calendar);
 		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
 		task1.addTag("epic");
@@ -64,7 +64,7 @@ public class StreamIOTest {
 		Calendar calendar2 = Calendar.getInstance();
 		Date date2 = StreamIO.dateFormat.parse("20180101123456");
 		calendar2.setTime(date2); // instead of Calendar.set(), for loadTest,
-									// serialized calendar.
+		// serialized calendar.
 		task2.setDeadline(calendar2);
 		task2.setDescription("Internet of Things");
 		task2.addTag("epic");
@@ -102,6 +102,10 @@ public class StreamIOTest {
 		new File(CHECK_FILE).delete();
 	}
 
+	/*
+	 * Use case testing - applies the save case and 
+	 * tests the entire component for this purpose
+	 */
 	@Test
 	public void saveTest() {
 		String testMessage = "Write map to file";
@@ -126,6 +130,10 @@ public class StreamIOTest {
 		}
 	}
 
+	/*
+	 * Use case testing - applies the load case and 
+	 * tests the entire component for this purpose
+	 */
 	@Test
 	public void loadTest() {
 		String testMessage = "Load map from file";
@@ -166,12 +174,15 @@ public class StreamIOTest {
 
 	@Test
 	public void taskToJsonTest1() {
+		/*
+		 * Tests multiple inputs - Date, tags, descriptions, etc.
+		 */
 		testOneTaskToJson(
 				"Task to JSON conversion - Code Jarvis",
 				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
 						+ "\"taskName\":\"Code Jarvis\","
 						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}",
-				task1);
+						task1);
 	}
 
 	@Test
