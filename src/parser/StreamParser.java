@@ -16,7 +16,7 @@ import model.StreamObject;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -89,6 +89,29 @@ public class StreamParser {
 				break;
 			case "view":
 				this.commandKey = CommandType.VIEW;
+				break;
+			case "rank":
+				
+				contents = input.trim().split(" ", 3);
+				
+				if(contents.length!=3) {
+					throw new StreamParserException("Not enough information!");
+				}
+				
+				else if (!isInteger(contents[1])) {
+					throw new StreamParserException("Invalid index!");
+				}
+				
+				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+					throw new StreamParserException("Out of range!");
+				}
+				
+				else if(!checkRanking(contents[2])) {
+					throw new StreamParserException("Invalid input rank!");
+				}
+				contents = input.trim().split(" ", 2);
+				
+				this.commandKey = CommandType.RANK;
 				break;
 			case "mod":
 			case "modify":
@@ -250,6 +273,16 @@ public class StreamParser {
 			return true;
 		else
 			return false;
+	}
+	
+	private boolean checkRanking(String rankInput) {
+		String stdRank = rankInput.toLowerCase();
+		if(!stdRank.equals("high") && !stdRank.equals("medium") && !stdRank.equals("low")){
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 
 }
