@@ -49,20 +49,30 @@ public class Stream {
 
 	private final String[] validParameters = { "name", "desc", "due", "by",
 			"tag", "untag" };
+	
+	//author ??? refactored by A0118007R
 
 	public Stream(String file) {
 		initStreamIO(file);
+		initializeStream();
+		load();
+		resetTasks();
+	}
+
+	private void resetTasks() {
+		stui.resetAvailableTasks(stobj.getCounter(),
+				stobj.getStreamTaskList(stobj.getCounter()), true, false);
+	}
+	
+	
+
+	private void initializeStream() {
 		stui = new StreamUI(this);
 		parser = new StreamParser();
-
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<StreamTask>();
 		orderingStack = new Stack<ArrayList<String>>();
 		logMessages = new ArrayList<String>();
-
-		load();
-		stui.resetAvailableTasks(stobj.getCounter(),
-				stobj.getStreamTaskList(stobj.getCounter()), true, false);
 	}
 
 	// @author A0096529N
@@ -80,13 +90,12 @@ public class Stream {
 		try {
 			HashMap<String, StreamTask> allTasks = new HashMap<String, StreamTask>();
 			ArrayList<String> taskList = new ArrayList<String>();
+			
 			StreamIO.load(allTasks, taskList);
-
 			stobj = new StreamObject(allTasks, taskList);
-
+			
 		} catch (StreamIOException e) {
 			log(String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage()));
-
 			stobj = new StreamObject();
 		}
 
@@ -142,7 +151,7 @@ public class Stream {
 		return false;
 	}
 
-	// @author A0093874N
+	// @author A0093874N modified by A0118007R
 
 	/**
 	 * <p>
@@ -169,6 +178,8 @@ public class Stream {
 		String nameOfTask = "";
 		// scans until next valid parameter and officially add the task
 		// TODO: refactor
+		
+		//this section onwards is contributed by A0118007R
 		boolean nameFound = false;
 		ArrayList<String> modifyParams = new ArrayList<String>();
 
@@ -187,15 +198,30 @@ public class Stream {
 				break;
 			}
 		}
+		
 		nameOfTask = nameOfTask.trim(); // this is the solution to the bug
+		addTaskAndProcessParameters(nameOfTask, nameFound, modifyParams);
+		//
+		
+		return String.format(StreamUtil.LOG_ADD, nameOfTask);
+		
+	}
+
+	//@author A0118007R
+	
+	private void addTaskAndProcessParameters(String nameOfTask,
+			boolean nameFound, ArrayList<String> modifyParams)
+			throws StreamModificationException {
+		
 		stobj.addTask(nameOfTask);
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
+		
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
 				stobj.getNumberOfTasks()));
+		
 		if (nameFound) {
 			executeModifyParameters(nameOfTask, modifyParams);
 		}
-		return String.format(StreamUtil.LOG_ADD, nameOfTask);
 	}
 
 	// @author A0118007R
@@ -210,8 +236,8 @@ public class Stream {
 		String contents = "";
 		for (int i = 1; i < modifyParams.size(); i++) {
 			String s = modifyParams.get(i);
-			if (isValidParameter(s)) { // first content is guaranteed to be
-										// a valid parameter
+			if (isValidParameter(s)) { 
+				// first content is guaranteed to be a valid parameter
 				processParameterModification(command, contents.trim(),
 						currentTask);
 				command = s;
@@ -327,6 +353,12 @@ public class Stream {
 	private void clearAllTasks() throws StreamModificationException {
 		int noOfTasks = stobj.getNumberOfTasks();
 		orderingStack.push(stobj.getOrdering());
+		clear(noOfTasks);
+		assert (stobj.getNumberOfTasks() == 0) : StreamUtil.FAIL_NOT_CLEARED;
+		inputStack.push(String.format(StreamUtil.CMD_RECOVER, noOfTasks));
+	}
+
+	private void clear(int noOfTasks) throws StreamModificationException {
 		for (int i = 0; i < noOfTasks; i++) {
 			deleteTask(stobj.getTaskNames().get(0));
 			/*
@@ -336,8 +368,6 @@ public class Stream {
 			inputStack.pop();
 			orderingStack.pop();
 		}
-		assert (stobj.getNumberOfTasks() == 0) : StreamUtil.FAIL_NOT_CLEARED;
-		inputStack.push(String.format(StreamUtil.CMD_RECOVER, noOfTasks));
 	}
 
 	// @author A0118007R
@@ -433,6 +463,26 @@ public class Stream {
 			throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(taskName);
 		Calendar currentDeadline = currentTask.getDeadline();
+		pushInverseDueCommand(taskIndex, currentDeadline);
+		// This section is contributed by A0093874N
+		return setDeadline(taskName, calendar);
+		//
+	}
+	
+	//@author A0093874N
+	private String setDeadline(String taskName, Calendar calendar)
+			throws StreamModificationException {
+		if (calendar == null) {
+			stobj.setNullDeadline(taskName);
+			return String.format(StreamUtil.LOG_DUE_NEVER, taskName);
+		} else {
+			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
+			stobj.setDueTime(taskName, calendar);
+			return String.format(StreamUtil.LOG_DUE, taskName, parsedCalendar);
+		}
+	}
+
+	private void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
 		if (currentDeadline == null) {
 			inputStack.push(String
 					.format(StreamUtil.CMD_DUE, taskIndex, "null"));
@@ -444,16 +494,6 @@ public class Stream {
 							+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
 							+ currentDeadline.get(Calendar.YEAR)));
 		}
-		// This section is contributed by A0093874N
-		if (calendar == null) {
-			stobj.setNullDeadline(taskName);
-			return String.format(StreamUtil.LOG_DUE_NEVER, taskName);
-		} else {
-			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
-			stobj.setDueTime(taskName, calendar);
-			return String.format(StreamUtil.LOG_DUE, taskName, parsedCalendar);
-		}
-		//
 	}
 
 	// @author A0119401U
@@ -540,7 +580,7 @@ public class Stream {
 		return stobj.findTasks(keyphrase);
 	}
 
-	// TODO who's the author of printTasks()?
+	// @author A0118007R
 	/**
 	 * @deprecated
 	 */
@@ -659,13 +699,8 @@ public class Stream {
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 
-				if (contents[1].trim().equals("null")) {
-					logMessage = setDueDate(taskName, taskIndex, null);
-				} else {
-					String due = contents[1];
-					Calendar calendar = parseCalendar(due);
-					logMessage = setDueDate(taskName, taskIndex, calendar);
-				}
+				logMessage = checkForNullAndProcessInput(contents, taskName,
+						taskIndex);
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
@@ -682,50 +717,22 @@ public class Stream {
 				StreamTask currTask = stobj.getTask(taskName);
 
 				// get old state and push to undo
-				// TODO REFACTOR
 
-				/*
-				 * changed or not, invoking name change is guaranteed to never
-				 * go wrong
-				 */
-				String inverseCommand = "modify " + taskIndex + " name "
-						+ taskName + " ";
-
-				String oldDesc = currTask.getDescription();
-				if (oldDesc != null) {
-					inverseCommand = inverseCommand + "desc " + oldDesc + " ";
-				} else {
-					inverseCommand = inverseCommand + "desc null ";
-				}
-
-				Calendar oldDue = currTask.getDeadline();
-				if (oldDue != null) {
-					String dueString = StreamUtil.getCalendarWriteUp(oldDue);
-					inverseCommand = inverseCommand + "due " + dueString + " ";
-				} else {
-					inverseCommand = inverseCommand + "due null ";
-				}
+				String inverseCommand = buildInverseCommand(taskName,
+						taskIndex, currTask);
 
 				ArrayList<String> oldTags = new ArrayList<String>(
 						currTask.getTags());
 
-				for (int i = 1; i < contents.length; i++) {
-					modifyParams.add(contents[i]);
-				}
+				addModificationParameters(contents, modifyParams);
 
 				executeModifyParameters(taskName, modifyParams);
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
 				ArrayList<String> newTags = currTask.getTags();
-				String inverseTag = compareTagged(oldTags, newTags);
-				String inverseUntag = compareUntagged(oldTags, newTags);
-				if (inverseTag != "tag ") {
-					inverseCommand += inverseTag;
-				}
-				if (inverseUntag != "untag ") {
-					inverseCommand += inverseUntag;
-				}
+				inverseCommand = processTagModification(inverseCommand,
+						oldTags, newTags);
 
 				inputStack.push(inverseCommand.trim());
 
@@ -754,20 +761,7 @@ public class Stream {
 				taskIndex = Integer.parseInt(contents[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				String markType = contents[1].trim();
-				/*
-				 * TODO make the markType more flexible. maybe "finished",
-				 * "not done", "not finished", ...
-				 */
-				if (markType.equals("done")) {
-					logMessage = markAsDone(taskName, taskIndex);
-					showAndLogResult(logMessage);
-				} else if (markType.equals("ongoing")) {
-					logMessage = markAsOngoing(taskName, taskIndex);
-					showAndLogResult(logMessage);
-				} else {
-					logMessage = "Unknown marking type: " + markType;
-					showAndLogError(logMessage);
-				}
+				mark(taskName, taskIndex, markType);
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
@@ -781,11 +775,7 @@ public class Stream {
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				addTags(tags, taskName, tagsAdded, tagsNotAdded);
-				if (tagsAdded.size() != 0) {
-					inputStack.push(String.format(StreamUtil.CMD_UNTAG,
-							taskIndex,
-							StreamUtil.listDownArrayContent(tagsAdded, " ")));
-				}
+				pushTaggingIntoInputStack(taskIndex, tagsAdded);
 				logTagsAdded(taskName, tagsAdded, tagsNotAdded);
 				break;
 
@@ -797,19 +787,13 @@ public class Stream {
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				removeTags(tags, taskName, tagsRemoved, tagsNotRemoved);
-				if (tagsRemoved.size() != 0) {
-					inputStack.push(String.format(StreamUtil.CMD_TAG,
-							taskIndex,
-							StreamUtil.listDownArrayContent(tagsRemoved, " ")));
-				}
+				pushUntaggingIntoInputStack(taskIndex, tagsRemoved);
 				logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
 				break;
 
 			case CLRSRC:
 
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), true,
-						false);
+				resetTasks();
 				break;
 
 			case SEARCH:
@@ -840,29 +824,13 @@ public class Stream {
 
 			case UNDO:
 				logCommand("UNDO");
-				if (inputStack.isEmpty()) {
-					showAndLogResult(StreamUtil.LOG_UNDO_FAIL);
-				} else {
-					String undoneInput = inputStack.pop();
-					showAndLogResult(StreamUtil.LOG_UNDO_SUCCESS);
-					processInput(undoneInput);
-
-					/*
-					 * VERY IMPORTANT because almost all inputs will add its
-					 * counterpart to the inputStack. If not popped, the undo
-					 * process will be trapped between just two processes.
-					 */
-					inputStack.pop();
-				}
+				processUndo();
 				break;
 
 			case RECOVER:
 				logCommand("RECOVER");
 				int noOfTasksToRecover = Integer.parseInt(content);
-				for (int i = 0; i < noOfTasksToRecover; i++) {
-					StreamTask task = dumpedTasks.pop();
-					stobj.recoverTask(task);
-				}
+				recover(noOfTasksToRecover);
 				showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
 						noOfTasksToRecover));
 				stobj.setOrdering(orderingStack.pop());
@@ -895,11 +863,146 @@ public class Stream {
 		}
 	}
 
+	private void recover(int noOfTasksToRecover) {
+		for (int i = 0; i < noOfTasksToRecover; i++) {
+			StreamTask task = dumpedTasks.pop();
+			stobj.recoverTask(task);
+		}
+	}
+
+	private void processUndo() {
+		if (inputStack.isEmpty()) {
+			showAndLogResult(StreamUtil.LOG_UNDO_FAIL);
+		} else {
+			String undoneInput = inputStack.pop();
+			showAndLogResult(StreamUtil.LOG_UNDO_SUCCESS);
+			processInput(undoneInput);
+
+			/*
+			 * VERY IMPORTANT because almost all inputs will add its
+			 * counterpart to the inputStack. If not popped, the undo
+			 * process will be trapped between just two processes.
+			 */
+			inputStack.pop();
+		}
+	}
+
+	private void pushUntaggingIntoInputStack(int taskIndex,
+			ArrayList<String> tagsRemoved) {
+		if (tagsRemoved.size() != 0) {
+			inputStack.push(String.format(StreamUtil.CMD_TAG,
+					taskIndex,
+					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
+		}
+	}
+
+	private void pushTaggingIntoInputStack(int taskIndex,
+			ArrayList<String> tagsAdded) {
+		if (tagsAdded.size() != 0) {
+			inputStack.push(String.format(StreamUtil.CMD_UNTAG,
+					taskIndex,
+					StreamUtil.listDownArrayContent(tagsAdded, " ")));
+		}
+	}
+
+	private void mark(String taskName, int taskIndex, String markType)
+			throws StreamModificationException {
+		String logMessage;
+		/*
+		 * TODO make the markType more flexible. maybe "finished",
+		 * "not done", "not finished", ...
+		 */
+		if (markType.equals("done")) {
+			logMessage = markAsDone(taskName, taskIndex);
+			showAndLogResult(logMessage);
+		} else if (markType.equals("ongoing")) {
+			logMessage = markAsOngoing(taskName, taskIndex);
+			showAndLogResult(logMessage);
+		} else {
+			logMessage = "Unknown marking type: " + markType;
+			showAndLogError(logMessage);
+		}
+	}
+
+	private String processTagModification(String inverseCommand,
+			ArrayList<String> oldTags, ArrayList<String> newTags) {
+		String inverseTag = compareTagged(oldTags, newTags);
+		String inverseUntag = compareUntagged(oldTags, newTags);
+		if (inverseTag != "tag ") {
+			inverseCommand += inverseTag;
+		}
+		if (inverseUntag != "untag ") {
+			inverseCommand += inverseUntag;
+		}
+		return inverseCommand;
+	}
+
+	private void addModificationParameters(String[] contents,
+			ArrayList<String> modifyParams) {
+		for (int i = 1; i < contents.length; i++) {
+			modifyParams.add(contents[i]);
+		}
+	}
+
+	private String buildInverseCommand(String taskName, int taskIndex,
+			StreamTask currTask) {
+		String inverseCommand = "modify " + taskIndex + " name "
+				+ taskName + " ";
+
+		inverseCommand = buildModifyDescription(currTask, inverseCommand);
+		inverseCommand = buildModifyDeadline(currTask, inverseCommand);
+		return inverseCommand;
+	}
+
+	private String buildModifyDeadline(StreamTask currTask,
+			String inverseCommand) {
+		Calendar oldDue = currTask.getDeadline();
+		if (oldDue != null) {
+			String dueString = StreamUtil.getCalendarWriteUp(oldDue);
+			inverseCommand = inverseCommand + "due " + dueString + " ";
+		} else {
+			inverseCommand = inverseCommand + "due null ";
+		}
+		return inverseCommand;
+	}
+
+	private String buildModifyDescription(StreamTask currTask,
+			String inverseCommand) {
+		String oldDesc = currTask.getDescription();
+		if (oldDesc != null) {
+			inverseCommand = inverseCommand + "desc " + oldDesc + " ";
+		} else {
+			inverseCommand = inverseCommand + "desc null ";
+		}
+		return inverseCommand;
+	}
+
+	private String checkForNullAndProcessInput(String[] contents,
+			String taskName, int taskIndex) throws StreamModificationException {
+		String logMessage;
+		if (contents[1].trim().equals("null")) {
+			logMessage = setDueDate(taskName, taskIndex, null);
+		} else {
+			String due = contents[1];
+			Calendar calendar = parseCalendar(due);
+			logMessage = setDueDate(taskName, taskIndex, calendar);
+		}
+		return logMessage;
+	}
+
+	//all methods from the previous tag until are refactored by A0118007R
+	
 	// @author A0093874N
 
 	private String compareTagged(ArrayList<String> oldTags,
 			ArrayList<String> newTags) {
 		String inverseTag = "tag ";
+		inverseTag = buildInverseTag(oldTags, newTags, inverseTag);
+		return inverseTag;
+	}
+
+	private String buildInverseTag(ArrayList<String> oldTags,
+			ArrayList<String> newTags, String inverseTag) {
 		for (String old : oldTags) {
 			if (!newTags.contains(old)) {
 				inverseTag = inverseTag + old + " ";
@@ -913,6 +1016,12 @@ public class Stream {
 	private String compareUntagged(ArrayList<String> oldTags,
 			ArrayList<String> newTags) {
 		String inverseUntag = "untag ";
+		inverseUntag = buildInverseUntag(oldTags, newTags, inverseUntag);
+		return inverseUntag;
+	}
+
+	private String buildInverseUntag(ArrayList<String> oldTags,
+			ArrayList<String> newTags, String inverseUntag) {
 		for (String newer : newTags) {
 			if (!oldTags.contains(newer)) {
 				inverseUntag += inverseUntag + newer + " ";
@@ -925,15 +1034,23 @@ public class Stream {
 
 	private void logTagsAdded(String taskName, ArrayList<String> tagsAdded,
 			ArrayList<String> tagsNotAdded) {
+		logAddedTags(taskName, tagsAdded);
+		logUnaddedTags(taskName, tagsNotAdded);
+	}
+
+	private void logUnaddedTags(String taskName, ArrayList<String> tagsNotAdded) {
+		if (!tagsNotAdded.isEmpty()) {
+			log(String.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
+					StreamUtil.listDownArrayContent(tagsNotAdded, ", ")));
+		}
+	}
+
+	private void logAddedTags(String taskName, ArrayList<String> tagsAdded) {
 		if (!tagsAdded.isEmpty()) {
 			showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED, taskName,
 					StreamUtil.listDownArrayContent(tagsAdded, ", ")));
 		} else {
 			showAndLogResult(StreamUtil.LOG_NO_TAGS_ADDED);
-		}
-		if (!tagsNotAdded.isEmpty()) {
-			log(String.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
-					StreamUtil.listDownArrayContent(tagsNotAdded, ", ")));
 		}
 	}
 
@@ -941,6 +1058,19 @@ public class Stream {
 
 	private void logTagsRemoved(String taskName, ArrayList<String> tagsRemoved,
 			ArrayList<String> tagsNotRemoved) {
+		logRemovedTags(taskName, tagsRemoved);
+		logUnremovedTags(taskName, tagsNotRemoved);
+	}
+
+	private void logUnremovedTags(String taskName,
+			ArrayList<String> tagsNotRemoved) {
+		if (!tagsNotRemoved.isEmpty()) {
+			log(String.format(StreamUtil.LOG_TAGS_NOT_REMOVED, taskName,
+					StreamUtil.listDownArrayContent(tagsNotRemoved, ", ")));
+		}
+	}
+
+	private void logRemovedTags(String taskName, ArrayList<String> tagsRemoved) {
 		if (!tagsRemoved.isEmpty()) {
 			showAndLogResult(String.format(StreamUtil.LOG_TAGS_REMOVED,
 					taskName,
@@ -948,14 +1078,10 @@ public class Stream {
 		} else {
 			showAndLogResult(StreamUtil.LOG_NO_TAGS_REMOVED);
 		}
-		if (!tagsNotRemoved.isEmpty()) {
-			log(String.format(StreamUtil.LOG_TAGS_NOT_REMOVED, taskName,
-					StreamUtil.listDownArrayContent(tagsNotRemoved, ", ")));
-		}
 	}
 
-	// TODO @author ?
-	// TODO may want to move this to Util
+	// @author A0118007R
+	// TODO may want to move this to Util <later>
 
 	public boolean isInteger(String x) {
 		try {
@@ -973,6 +1099,12 @@ public class Stream {
 			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded)
 			throws StreamModificationException {
 		int start = 0;
+		processAddingTags(tags, taskName, tagsAdded, tagsNotAdded, start);
+	}
+
+	private void processAddingTags(String[] tags, String taskName,
+			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded,
+			int start) throws StreamModificationException {
 		if (isInteger(tags[0])) {
 			start = 1;
 		}
@@ -994,6 +1126,12 @@ public class Stream {
 		if (isInteger(tags[0])) {
 			start = 1;
 		}
+		processRemoveTags(tags, taskName, tagsRemoved, tagsNotRemoved, start);
+	}
+
+	private void processRemoveTags(String[] tags, String taskName,
+			ArrayList<String> tagsRemoved, ArrayList<String> tagsNotRemoved,
+			int start) throws StreamModificationException {
 		for (int i = start; i < tags.length; i++) {
 			if (stobj.removeTag(taskName, tags[i])) {
 				tagsRemoved.add(tags[i]);
@@ -1007,16 +1145,21 @@ public class Stream {
 
 	private Calendar parseCalendar(String contents) {
 		String[] dueDate = contents.split("/");
+		int year = parseYear(dueDate);
+		int day = Integer.parseInt(dueDate[0].trim());
+		int month = Integer.parseInt(dueDate[1].trim());
+		Calendar calendar = new GregorianCalendar(year, month - 1, day);
+		return calendar;
+	}
+
+	private int parseYear(String[] dueDate) {
 		int year;
 		if (dueDate.length == 2) {
 			year = Calendar.getInstance().get(Calendar.YEAR);
 		} else {
 			year = Integer.parseInt(dueDate[2].trim());
 		}
-		int day = Integer.parseInt(dueDate[0].trim());
-		int month = Integer.parseInt(dueDate[1].trim());
-		Calendar calendar = new GregorianCalendar(year, month - 1, day);
-		return calendar;
+		return year;
 	}
 
 	// @author A0093874N
