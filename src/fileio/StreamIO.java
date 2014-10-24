@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import util.StreamLogger;
+import util.StreamLogger.LogLevel;
 import exception.StreamIOException;
 
 // @author A0096529N
@@ -78,6 +80,8 @@ public class StreamIO {
 		if (tasksJson != null) {
 			loadMap(taskMap, tasksJson);
 			loadTaskList(taskList, tasksJson);
+			StreamLogger logger = StreamLogger.init("StreamIO");
+			logger.log(LogLevel.DEBUG, "Saved file to " + SAVE_LOCATION);
 		}
 	}
 
