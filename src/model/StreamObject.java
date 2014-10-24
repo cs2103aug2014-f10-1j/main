@@ -349,6 +349,31 @@ public class StreamObject {
 		StreamTask currentTask = this.getTask(taskName.toLowerCase());
 		currentTask.setNullDeadline();
 	}
+	
+	// @author A0119401U
+	/**
+	 * Set the rank of the selected task
+	 * <p>
+	 * Key info is the newly entered rank of the selected task
+	 * </p>
+	 * 
+	 * <p>
+	 * Preconditions: new rank is one of the followings: high, medium, low
+	 * </p>
+	 * 
+	 * @param taskName, newRank
+	 * 
+	 * @throws StreamModificationException
+	 * 
+	 */
+	public void setNewRank(String taskName, String newRank)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		taskMap.remove(taskName.toLowerCase());
+		task.setRank(newRank);
+		taskMap.put(taskName.toLowerCase(), task);
+		
+	}
 
 	// @author A0096529N
 	/**

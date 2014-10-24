@@ -33,6 +33,9 @@ import fileio.StreamIO;
 // check for null input before passing the commands to the logic to process.
 // Looking forward to the parser being able to do it!
 
+// TODO Now the there are exception handling in the StreamParser.java and entering commands like
+//"add " and "del " will throw exceptions, telling the user that the input is invalid. Does this solve the above to-do note? --Shenhao
+
 public class Stream {
 
 	StreamObject stobj;
@@ -135,7 +138,7 @@ public class Stream {
 	 *         <strong>StreamTask</strong> <i>taskName</i> exists, false
 	 *         otherwise.
 	 */
-	Boolean hasTask(String taskName) {
+	public Boolean hasTask(String taskName) {
 		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
 		return stobj.hasTask(taskName);
 	}
@@ -450,6 +453,21 @@ public class Stream {
 				description);
 		//
 	}
+	
+	// @author A0119401U
+	
+	private String setRanking(String task, int index, String taskRank)
+			throws StreamModificationException {
+		stobj.setNewRank(task,taskRank);
+		StreamTask currentTask = stobj.getTask(task);
+		String oldRank = currentTask.getRank();
+		currentTask.setRank(taskRank);
+		//public static final String CMD_RANK = "rank %1$s %2$s";
+		
+		inputStack.push(String.format(StreamUtil.CMD_RANK, index, oldRank));
+		return String.format(StreamUtil.LOG_RANK, currentTask.getTaskName(), taskRank);
+	}
+
 
 	// @author A0119401U
 
@@ -515,7 +533,8 @@ public class Stream {
 		return String.format(StreamUtil.LOG_MARK, task, "done");
 		//
 	}
-
+	
+	
 	// @author A0118007R
 
 	/**
@@ -753,6 +772,16 @@ public class Stream {
 						false);
 				showAndLogResult(String.format(StreamUtil.LOG_NAME,
 						oldTaskName, newTaskName));
+				break;
+				
+			case RANK:
+				logCommand("RANK");
+				contents = content.split(" ",2);
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = stobj.getTaskNames().get(taskIndex-1);
+				String taskRank = contents[1];
+				logMessage = setRanking(taskName, taskIndex, taskRank);
+				showAndLogResult(logMessage);
 				break;
 
 			case MARK:
@@ -1166,7 +1195,7 @@ public class Stream {
 
 	private void processInput(String input) {
 		try {
-			parser.interpretCommand(input);
+			parser.interpretCommand(input,stobj);
 			CommandType command = parser.getCommandType();
 			String content = parser.getCommandContent();
 			executeInput(command, content);

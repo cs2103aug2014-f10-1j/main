@@ -36,6 +36,7 @@ public class StreamUtil {
 	public static final String LOG_DELETE = "Deleted \"%1$s\"";
 	public static final String LOG_VIEW = "Viewed the details for \"%1$s\"";
 	public static final String LOG_DESC = "Changed description for \"%1$s\" to \"%2$s\"";
+	public static final String LOG_RANK = "Changed ranking for \"%1$s\" to \"%2$s\"";
 	public static final String LOG_CLEAR = "Cleared all tasks";
 	public static final String LOG_RECOVER = "Recovered %1$s task(s)";
 	public static final String LOG_NAME = "Changed name for \"%1$s\" to \"%2$s\"";
@@ -65,6 +66,7 @@ public class StreamUtil {
 	public static final String CMD_RECOVER = "recover %1$s";
 	public static final String CMD_DESC = "desc %1$s %2$s";
 	public static final String CMD_DUE = "due %1$s %2$s";
+	public static final String CMD_RANK = "rank %1$s %2$s";
 	public static final String CMD_MARK_DONE = "mark %1$s done";
 	public static final String CMD_MARK_NOT_DONE = "mark %1$s ongoing";
 	public static final String CMD_DELETE = "delete %1$s";

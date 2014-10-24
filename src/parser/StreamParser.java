@@ -35,7 +35,7 @@ public class StreamParser {
 			case "add":
 
 				if (contents.length < 2) {
-					throw new StreamParserException("Nothing to add here!");
+					throw new StreamParserException("Nothing to add!");
 				}
 
 				this.commandKey = CommandType.ADD;

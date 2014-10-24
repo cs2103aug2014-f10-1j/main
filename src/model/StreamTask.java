@@ -15,6 +15,7 @@ public class StreamTask {
 	private Calendar deadline;
 	private ArrayList<String> tags;
 	private boolean done;
+	private String rank;
 
 	// Constructor
 
@@ -25,6 +26,7 @@ public class StreamTask {
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
 		this.done = false;
+		this.rank = null;
 	}
 
 	// TODO @author?
@@ -85,6 +87,12 @@ public class StreamTask {
 	public void setStartTime(Calendar startTime) {
 		this.startTime = startTime;
 	}
+	
+	// @author A0119401U
+	
+	public String getRank() {
+		return this.rank;
+	}
 
 	// @author A0119401U
 
@@ -114,6 +122,12 @@ public class StreamTask {
 		} else {
 			return false;
 		}
+	}
+	
+	// @author A0119401U
+	
+	public void setRank(String newRank) {
+		this.rank = newRank;
 	}
 
 	// @author A0096529N
@@ -145,7 +159,7 @@ public class StreamTask {
 		}
 	}
 
-	// TODO @author?
+	// @author A0119401U
 
 	public ArrayList<String> getTags() {
 		return tags;
@@ -214,7 +228,7 @@ public class StreamTask {
 		return this.done;
 	}
 
-	// TODO @author?
+	// @author A0119401U
 
 	public void markAsDone() {
 		this.done = true;
