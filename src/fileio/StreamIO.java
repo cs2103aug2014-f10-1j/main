@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
+import util.StreamUtil;
 import exception.StreamIOException;
 
 // @author A0096529N
@@ -60,6 +61,7 @@ public class StreamIO {
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
 	static String SAVE_LOCATION = "default.json";
+	private static final StreamLogger logger = StreamLogger.init(StreamUtil.COMPONENT_STREAMIO);
 
 	// @author A0096529N
 	/**
@@ -80,8 +82,9 @@ public class StreamIO {
 		if (tasksJson != null) {
 			loadMap(taskMap, tasksJson);
 			loadTaskList(taskList, tasksJson);
-			StreamLogger logger = StreamLogger.init("StreamIO");
-			logger.log(LogLevel.DEBUG, "Saved file to " + SAVE_LOCATION);
+			logger.log(LogLevel.DEBUG, "Loaded file: " + SAVE_LOCATION);
+		} else {
+			logger.log(LogLevel.DEBUG, "File not found: " + SAVE_LOCATION);
 		}
 	}
 
@@ -107,7 +110,9 @@ public class StreamIO {
 			tasksJson.put(TaskKey.TASKMAP, taskMapJson);
 			tasksJson.put(TaskKey.TASKLIST, orderListJson);
 			writeToFile(new File(SAVE_LOCATION), tasksJson);
+			logger.log(LogLevel.DEBUG, "Saved to file: " + SAVE_LOCATION);
 		} catch (JSONException e) {
+			logger.log(LogLevel.DEBUG, "JSON conversion failed during save - " + e.getMessage());
 			throw new StreamIOException("JSON conversion failed - "
 					+ e.getMessage(), e);
 		}

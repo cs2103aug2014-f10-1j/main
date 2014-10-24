@@ -58,9 +58,7 @@ public class StreamLogger {
 	}
 	
 	public static List<String> getLogStack() {
-		List<String> output = new ArrayList<String>(logStack);
-		Collections.reverse(output);
-		return output;
+		return new ArrayList<String>(logStack);
 	}
 
 	//@author A0096529N
