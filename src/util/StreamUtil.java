@@ -30,6 +30,13 @@ public class StreamUtil {
 	public static final String PARAM_SAVEFILE = "%1$s.json";
 	public static final String PARAM_LOGFILE = "%1$s %2$s%3$s%4$s %5$s%6$s%7$s.txt";
 
+	// Log component tags
+	public static final String COMPONENT_STREAM = "stream";
+	public static final String COMPONENT_UI = "ui";
+	public static final String COMPONENT_STREAMOBJECT = "model";
+	public static final String COMPONENT_STREAMIO = "io";
+	public static final String COMPONENT_STREAMPARSER = "parser";
+	
 	// Log messages
 	public static final String LOG_CMD_RECEIVED = "Command received [%1$s]";
 	public static final String LOG_ADD = "Added \"%1$s\"";

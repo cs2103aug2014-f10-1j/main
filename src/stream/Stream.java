@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -14,6 +13,8 @@ import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
 import ui.StreamUI;
+import util.StreamLogger;
+import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 import exception.StreamIOException;
 import exception.StreamModificationException;
@@ -38,12 +39,12 @@ public class Stream {
 	StreamObject stobj;
 	private StreamUI stui;
 	private StreamParser parser;
+	private StreamLogger logger;
 
 	private String filename;
 	private Stack<String> inputStack;
 	private Stack<StreamTask> dumpedTasks;
 	private Stack<ArrayList<String>> orderingStack;
-	private List<String> logMessages;
 
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
@@ -53,6 +54,7 @@ public class Stream {
 	// author ??? refactored by A0118007R
 
 	public Stream(String file) {
+		initStreamLogger();
 		initStreamIO(file);
 		initializeStream();
 		load();
@@ -70,7 +72,6 @@ public class Stream {
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<StreamTask>();
 		orderingStack = new Stack<ArrayList<String>>();
-		logMessages = new ArrayList<String>();
 	}
 
 	// @author A0096529N
@@ -81,6 +82,11 @@ public class Stream {
 			filename = file;
 		}
 		StreamIO.setSaveLocation(filename);
+	}
+
+	// @author A0096529N
+	private void initStreamLogger() {
+		logger = StreamLogger.init(StreamUtil.COMPONENT_STREAM);
 	}
 
 	// @author A0096529N
@@ -209,7 +215,7 @@ public class Stream {
 
 	private void addTaskAndProcessParameters(String nameOfTask,
 			boolean nameFound, ArrayList<String> modifyParams)
-			throws StreamModificationException {
+					throws StreamModificationException {
 
 		stobj.addTask(nameOfTask);
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
@@ -256,34 +262,34 @@ public class Stream {
 		contents = contents.trim();
 		String taskName = task.getTaskName();
 		switch (command) {
-			case "name":
-				setName(taskName, contents);
-				break;
-			case "desc":
-				task.setDescription(contents);
-				break;
-			case "due":
-			case "by":
-				if (contents.equals("null")) {
-					task.setDeadline(null);
-				} else {
-					Calendar due = parseCalendar(contents);
-					task.setDeadline(due);
-				}
-				break;
-			case "tag":
-				String[] newTags = contents.split(" ");
-				ArrayList<String> tagsAdded = new ArrayList<String>();
-				ArrayList<String> tagsNotAdded = new ArrayList<String>();
-				addTags(newTags, taskName, tagsAdded, tagsNotAdded);
-				break;
-			case "untag":
-				String[] tagsToRemove = contents.split(" ");
-				ArrayList<String> tagsRemoved = new ArrayList<String>();
-				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
-				removeTags(tagsToRemove, taskName, tagsRemoved, tagsNotRemoved);
-				break;
-		// TODO include marking also, if possible
+		case "name":
+			setName(taskName, contents);
+			break;
+		case "desc":
+			task.setDescription(contents);
+			break;
+		case "due":
+		case "by":
+			if (contents.equals("null")) {
+				task.setDeadline(null);
+			} else {
+				Calendar due = parseCalendar(contents);
+				task.setDeadline(due);
+			}
+			break;
+		case "tag":
+			String[] newTags = contents.split(" ");
+			ArrayList<String> tagsAdded = new ArrayList<String>();
+			ArrayList<String> tagsNotAdded = new ArrayList<String>();
+			addTags(newTags, taskName, tagsAdded, tagsNotAdded);
+			break;
+		case "untag":
+			String[] tagsToRemove = contents.split(" ");
+			ArrayList<String> tagsRemoved = new ArrayList<String>();
+			ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+			removeTags(tagsToRemove, taskName, tagsRemoved, tagsNotRemoved);
+			break;
+			// TODO include marking also, if possible
 		}
 	}
 
@@ -625,7 +631,7 @@ public class Stream {
 
 	// @author A0096529N
 	private void log(String message) {
-		logMessages.add(message);
+		logger.log(LogLevel.DEBUG, message);
 	}
 
 	// @author A0093874N
@@ -646,7 +652,7 @@ public class Stream {
 		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
 		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, filename,
 				day, mth, yr.toString().substring(2), hr, min, sec);
-		StreamIO.saveLogFile(logMessages, logFileName);
+		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
 
 	// @author A0118007R
@@ -661,204 +667,204 @@ public class Stream {
 		int taskIndex;
 
 		switch (command) {
-			case ADD:
-				logCommand("ADD");
-				logMessage = addTask(content);
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				showAndLogResult(logMessage);
-				break;
+		case ADD:
+			logCommand("ADD");
+			logMessage = addTask(content);
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			showAndLogResult(logMessage);
+			break;
 
-			case DEL:
-				logCommand("DELETE");
-				taskIndex = Integer.parseInt(content);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				logMessage = deleteTask(taskName);
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				showAndLogResult(logMessage);
-				break;
+		case DEL:
+			logCommand("DELETE");
+			taskIndex = Integer.parseInt(content);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			logMessage = deleteTask(taskName);
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			showAndLogResult(logMessage);
+			break;
 
-			case DESC:
-				logCommand("DESCRIBE");
-				contents = content.split(" ", 2);
-				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				String description = contents[1];
-				logMessage = setDescription(taskName, taskIndex, description);
-				showAndLogResult(logMessage);
-				break;
+		case DESC:
+			logCommand("DESCRIBE");
+			contents = content.split(" ", 2);
+			taskIndex = Integer.parseInt(contents[0]);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			String description = contents[1];
+			logMessage = setDescription(taskName, taskIndex, description);
+			showAndLogResult(logMessage);
+			break;
 
-			case DUE:
-				logCommand("DUE");
-				contents = content.split(" ", 2);
+		case DUE:
+			logCommand("DUE");
+			contents = content.split(" ", 2);
 
-				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+			taskIndex = Integer.parseInt(contents[0]);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
 
-				logMessage = checkForNullAndProcessInput(contents, taskName,
-						taskIndex);
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				showAndLogResult(logMessage);
-				break;
+			logMessage = checkForNullAndProcessInput(contents, taskName,
+					taskIndex);
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			showAndLogResult(logMessage);
+			break;
 
-			case MODIFY:
-				logCommand("MODIFY");
-				contents = content.split(" ");
-				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+		case MODIFY:
+			logCommand("MODIFY");
+			contents = content.split(" ");
+			taskIndex = Integer.parseInt(contents[0]);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
 
-				ArrayList<String> modifyParams = new ArrayList<String>();
-				StreamTask currTask = stobj.getTask(taskName);
+			ArrayList<String> modifyParams = new ArrayList<String>();
+			StreamTask currTask = stobj.getTask(taskName);
 
-				// get old state and push to undo
+			// get old state and push to undo
 
-				String inverseCommand = buildInverseCommand(taskName,
-						taskIndex, currTask);
+			String inverseCommand = buildInverseCommand(taskName,
+					taskIndex, currTask);
 
-				ArrayList<String> oldTags = new ArrayList<String>(
-						currTask.getTags());
+			ArrayList<String> oldTags = new ArrayList<String>(
+					currTask.getTags());
 
-				addModificationParameters(contents, modifyParams);
+			addModificationParameters(contents, modifyParams);
 
-				executeModifyParameters(taskName, modifyParams);
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				ArrayList<String> newTags = currTask.getTags();
-				inverseCommand = processTagModification(inverseCommand,
-						oldTags, newTags);
+			executeModifyParameters(taskName, modifyParams);
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			ArrayList<String> newTags = currTask.getTags();
+			inverseCommand = processTagModification(inverseCommand,
+					oldTags, newTags);
 
-				inputStack.push(inverseCommand.trim());
+			inputStack.push(inverseCommand.trim());
 
-				showAndLogResult(String.format(StreamUtil.LOG_MODIFY, taskName));
-				break;
+			showAndLogResult(String.format(StreamUtil.LOG_MODIFY, taskName));
+			break;
 
-			case NAME:
-				logCommand("NAME");
-				contents = content.split(" ", 2);
-				taskIndex = Integer.parseInt(contents[0]);
-				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
-				String newTaskName = contents[1];
-				logMessage = setName(oldTaskName, newTaskName);
-				inputStack.push(String.format(StreamUtil.CMD_NAME, taskIndex,
-						oldTaskName));
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				showAndLogResult(String.format(StreamUtil.LOG_NAME,
-						oldTaskName, newTaskName));
-				break;
+		case NAME:
+			logCommand("NAME");
+			contents = content.split(" ", 2);
+			taskIndex = Integer.parseInt(contents[0]);
+			String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
+			String newTaskName = contents[1];
+			logMessage = setName(oldTaskName, newTaskName);
+			inputStack.push(String.format(StreamUtil.CMD_NAME, taskIndex,
+					oldTaskName));
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			showAndLogResult(String.format(StreamUtil.LOG_NAME,
+					oldTaskName, newTaskName));
+			break;
 
-			case MARK:
-				logCommand("MARK");
-				contents = content.split(" ", 2);
-				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				String markType = contents[1].trim();
-				mark(taskName, taskIndex, markType);
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				break;
+		case MARK:
+			logCommand("MARK");
+			contents = content.split(" ", 2);
+			taskIndex = Integer.parseInt(contents[0]);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			String markType = contents[1].trim();
+			mark(taskName, taskIndex, markType);
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			break;
 
-			case TAG:
-				logCommand("TAG");
-				tags = content.split(" ");
-				ArrayList<String> tagsAdded = new ArrayList<String>();
-				ArrayList<String> tagsNotAdded = new ArrayList<String>();
-				taskIndex = Integer.parseInt(tags[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				addTags(tags, taskName, tagsAdded, tagsNotAdded);
-				pushTaggingIntoInputStack(taskIndex, tagsAdded);
-				logTagsAdded(taskName, tagsAdded, tagsNotAdded);
-				break;
+		case TAG:
+			logCommand("TAG");
+			tags = content.split(" ");
+			ArrayList<String> tagsAdded = new ArrayList<String>();
+			ArrayList<String> tagsNotAdded = new ArrayList<String>();
+			taskIndex = Integer.parseInt(tags[0]);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			addTags(tags, taskName, tagsAdded, tagsNotAdded);
+			pushTaggingIntoInputStack(taskIndex, tagsAdded);
+			logTagsAdded(taskName, tagsAdded, tagsNotAdded);
+			break;
 
-			case UNTAG:
-				logCommand("UNTAG");
-				tags = content.split(" ");
-				ArrayList<String> tagsRemoved = new ArrayList<String>();
-				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
-				taskIndex = Integer.parseInt(tags[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				removeTags(tags, taskName, tagsRemoved, tagsNotRemoved);
-				pushUntaggingIntoInputStack(taskIndex, tagsRemoved);
-				logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
-				break;
+		case UNTAG:
+			logCommand("UNTAG");
+			tags = content.split(" ");
+			ArrayList<String> tagsRemoved = new ArrayList<String>();
+			ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+			taskIndex = Integer.parseInt(tags[0]);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			removeTags(tags, taskName, tagsRemoved, tagsNotRemoved);
+			pushUntaggingIntoInputStack(taskIndex, tagsRemoved);
+			logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
+			break;
 
-			case CLRSRC:
+		case CLRSRC:
 
-				resetTasks();
-				break;
+			resetTasks();
+			break;
 
-			case SEARCH:
-				logCommand("SEARCH");
-				ArrayList<Integer> searchResult = search(content);
-				stui.resetAvailableTasks(searchResult,
-						stobj.getStreamTaskList(searchResult), true, true);
-				showAndLogResult(String.format(StreamUtil.LOG_SEARCH, content,
-						searchResult.size()));
-				break;
+		case SEARCH:
+			logCommand("SEARCH");
+			ArrayList<Integer> searchResult = search(content);
+			stui.resetAvailableTasks(searchResult,
+					stobj.getStreamTaskList(searchResult), true, true);
+			showAndLogResult(String.format(StreamUtil.LOG_SEARCH, content,
+					searchResult.size()));
+			break;
 
-			case VIEW:
-				logCommand("VIEW");
-				taskIndex = Integer.parseInt(content);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				logMessage = printDetails(taskName);
-				showAndLogResult(logMessage);
-				break;
+		case VIEW:
+			logCommand("VIEW");
+			taskIndex = Integer.parseInt(content);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			logMessage = printDetails(taskName);
+			showAndLogResult(logMessage);
+			break;
 
-			case CLEAR:
-				logCommand("CLEAR");
-				clearAllTasks();
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				showAndLogResult(StreamUtil.LOG_CLEAR);
-				break;
+		case CLEAR:
+			logCommand("CLEAR");
+			clearAllTasks();
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			showAndLogResult(StreamUtil.LOG_CLEAR);
+			break;
 
-			case UNDO:
-				logCommand("UNDO");
-				processUndo();
-				break;
+		case UNDO:
+			logCommand("UNDO");
+			processUndo();
+			break;
 
-			case RECOVER:
-				logCommand("RECOVER");
-				int noOfTasksToRecover = Integer.parseInt(content);
-				recover(noOfTasksToRecover);
-				showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
-						noOfTasksToRecover));
-				stobj.setOrdering(orderingStack.pop());
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				inputStack.push("some fake input to be popped");
-				break;
+		case RECOVER:
+			logCommand("RECOVER");
+			int noOfTasksToRecover = Integer.parseInt(content);
+			recover(noOfTasksToRecover);
+			showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
+					noOfTasksToRecover));
+			stobj.setOrdering(orderingStack.pop());
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			inputStack.push("some fake input to be popped");
+			break;
 
-			case DISMISS:
-				logCommand("DISMISS");
-				taskIndex = Integer.parseInt(content);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				dismissTask(taskName);
-				showAndLogResult(String.format(StreamUtil.LOG_DELETE, taskName));
-				stui.resetAvailableTasks(stobj.getCounter(),
-						stobj.getStreamTaskList(stobj.getCounter()), false,
-						false);
-				inputStack.push("some fake input to be popped");
-				break;
+		case DISMISS:
+			logCommand("DISMISS");
+			taskIndex = Integer.parseInt(content);
+			taskName = stobj.getTaskNames().get(taskIndex - 1);
+			dismissTask(taskName);
+			showAndLogResult(String.format(StreamUtil.LOG_DELETE, taskName));
+			stui.resetAvailableTasks(stobj.getCounter(),
+					stobj.getStreamTaskList(stobj.getCounter()), false,
+					false);
+			inputStack.push("some fake input to be popped");
+			break;
 
-			case EXIT:
-				logCommand("EXIT");
-				System.out.println(StreamUtil.MSG_THANK_YOU);
-				saveLogFile();
-				System.exit(0);
+		case EXIT:
+			logCommand("EXIT");
+			System.out.println(StreamUtil.MSG_THANK_YOU);
+			saveLogFile();
+			System.exit(0);
 
-			default:
-				showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
+		default:
+			showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
 		}
 	}
 
@@ -1094,7 +1100,7 @@ public class Stream {
 
 	private void addTags(String[] tags, String taskName,
 			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded)
-			throws StreamModificationException {
+					throws StreamModificationException {
 		int start = 0;
 		processAddingTags(tags, taskName, tagsAdded, tagsNotAdded, start);
 	}
@@ -1118,7 +1124,7 @@ public class Stream {
 
 	private void removeTags(String[] tags, String taskName,
 			ArrayList<String> tagsRemoved, ArrayList<String> tagsNotRemoved)
-			throws StreamModificationException {
+					throws StreamModificationException {
 		int start = 0;
 		if (isInteger(tags[0])) {
 			start = 1;
@@ -1203,7 +1209,7 @@ public class Stream {
 	private void doRoutineProcess() {
 		printTasks();
 		System.out
-				.println("========================================================");
+		.println("========================================================");
 		System.out.print("Enter Command: ");
 		String input = INPUT_SCANNER.nextLine();
 		log(input);

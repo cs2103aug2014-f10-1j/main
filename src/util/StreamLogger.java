@@ -1,6 +1,8 @@
 package util;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -11,8 +13,8 @@ import java.util.Locale;
 public class StreamLogger {
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 	private String componentName;
-	private static List<String> logStack;
-	private static final String LOG_FORMAT = "%$1s %$2s [%$3s] %$4s";
+	private static final List<String> logStack = new ArrayList<String>();
+	private static final String LOG_FORMAT = "%1$s %2$s [%3$s] %4$s";
 	
 	public enum LogLevel {
 		DEBUG, INFO, WARNING, ERROR, FATAL;
@@ -50,8 +52,15 @@ public class StreamLogger {
 	 */
 	public void log(LogLevel logLevel, String message) {
 		synchronized (logStack) {
-			logStack.add(String.format(LOG_FORMAT, getDate(), getLevel(logLevel), componentName, message));	
+			logStack.add(String.format(LOG_FORMAT, getDate(), 
+					getLevel(logLevel), componentName.toUpperCase(), message));	
 		}
+	}
+	
+	public static List<String> getLogStack() {
+		List<String> output = new ArrayList<String>(logStack);
+		Collections.reverse(output);
+		return output;
 	}
 
 	//@author A0096529N
