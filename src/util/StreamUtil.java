@@ -2,6 +2,7 @@ package util;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
@@ -36,7 +37,7 @@ public class StreamUtil {
 	public static final String COMPONENT_STREAMOBJECT = "model";
 	public static final String COMPONENT_STREAMIO = "io";
 	public static final String COMPONENT_STREAMPARSER = "parser";
-	
+
 	// Log messages
 	public static final String LOG_CMD_RECEIVED = "Command received [%1$s]";
 	public static final String LOG_ADD = "Added \"%1$s\"";
@@ -60,6 +61,7 @@ public class StreamUtil {
 	public static final String LOG_TAGS_NOT_REMOVED = "Tags not removed \"%1$s\": %2$s";
 	public static final String LOG_NO_TAGS_REMOVED = "No tags removed";
 	public static final String LOG_SEARCH = "Searching for \"%1$s\", %2$s queries found";
+	public static final String LOG_FILTER = "Filtering for tasks \"%1$s\", %2$s queries found";
 	public static final String LOG_LOAD_FAILED = "Load from file failed, %1$s";
 	public static final String LOG_SAVE_FAILED = "Save to file failed, %1$s";
 	public static final String LOG_MODIFY = "Modified %1$s";
@@ -202,23 +204,22 @@ public class StreamUtil {
 	public static final String BTN_DELETE = "Delete";
 	public static final String BTN_MARK_DONE = "Mark as done";
 	public static final String BTN_MARK_NOT_DONE = "Mark as ongoing";
-	
-	//Date-Validity Checking methods
+
+	// Date-Validity Checking methods
 	// @author A0118007R
-	
-	public static boolean isValidMonth(int month){
+
+	public static boolean isValidMonth(int month) {
 		return (month >= 1) && (month <= 12);
 	}
-	
-	public static boolean isValidDate(int day){
+
+	public static boolean isValidDate(int day) {
 		return (day >= 1) && (day <= 31);
 	}
-	
-	public static boolean isValidYear(int year){
+
+	public static boolean isValidYear(int year) {
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		return year >= currentYear;
 	}
-	
 
 	// @author A0093874N
 
@@ -250,13 +251,13 @@ public class StreamUtil {
 			return listDownArrayContent(tags, ", ");
 		}
 	}
-	
+
 	public static String displayTagsAsCommand(ArrayList<String> tags) {
 		if (tags.size() == 0) {
 			return null;
 		} else {
 			return listDownArrayContent(tags, " ");
-		}		
+		}
 	}
 
 	// @author A0093874N
@@ -341,6 +342,29 @@ public class StreamUtil {
 		return calendar.get(Calendar.DAY_OF_MONTH) + "/"
 				+ (calendar.get(Calendar.MONTH) + 1) + "/"
 				+ calendar.get(Calendar.YEAR);
+	}
+
+	// TODO @author?
+
+	public static Calendar parseCalendar(String contents) {
+		String[] dueDate = contents.split("/");
+		int year = parseYear(dueDate);
+		int day = Integer.parseInt(dueDate[0].trim());
+		int month = Integer.parseInt(dueDate[1].trim());
+		Calendar calendar = new GregorianCalendar(year, month - 1, day);
+		return calendar;
+	}
+
+	// TODO @author ?
+
+	public static int parseYear(String[] dueDate) {
+		int year;
+		if (dueDate.length == 2) {
+			year = Calendar.getInstance().get(Calendar.YEAR);
+		} else {
+			year = Integer.parseInt(dueDate[2].trim());
+		}
+		return year;
 	}
 
 }

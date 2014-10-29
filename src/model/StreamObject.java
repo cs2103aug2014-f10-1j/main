@@ -406,6 +406,52 @@ public class StreamObject {
 	}
 
 	// @author A0093874N
+
+	public ArrayList<Integer> filterTasks(String criteria) {
+		ArrayList<Integer> tasks = new ArrayList<Integer>();
+		String[] type = criteria.split(" ");
+		Calendar dueDate;
+		for (int i = 1; i <= taskList.size(); i++) {
+			StreamTask task = taskMap.get(taskList.get(i - 1).toLowerCase());
+			switch (type[0]) {
+				case "done":
+					if (task.isDone()) {
+						tasks.add(i);
+					}
+					break;
+				case "ongoing":
+					if (!task.isDone()) {
+						tasks.add(i);
+					}
+					break;
+				case "notime":
+					if (task.isFloatingTask()) {
+						tasks.add(i);
+					}
+					break;
+				case "before":
+					dueDate = StreamUtil.parseCalendar(type[1]);
+					if (task.getDeadline() != null
+							&& task.getDeadline().before(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case "after":
+					dueDate = StreamUtil.parseCalendar(type[1]);
+					if (task.getDeadline() != null
+							&& task.getDeadline().after(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				default:
+					// shouldn't happen as input is filtered in parser
+					break;
+			}
+		}
+		return tasks;
+	}
+
+	// @author A0093874N
 	/**
 	 * Gets the number of tasks added.
 	 * 
