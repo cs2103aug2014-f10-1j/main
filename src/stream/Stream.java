@@ -37,7 +37,7 @@ import fileio.StreamIO;
 public class Stream {
 
 	StreamObject stobj;
-	private StreamUI stui;
+	StreamUI stui;
 	private StreamParser parser;
 	private StreamLogger logger;
 

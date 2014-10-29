@@ -29,10 +29,10 @@ public class StreamUndoTest {
 	@Test
 	public void undoAddTest() throws Exception {
 		st.filterAndProcessInput("add do CS2103");
-		st.filterAndProcessInput("add do CS2105");
-		st.filterAndProcessInput("add do CS2106");
 		assertEquals("do CS2103 is included", true, st.hasTask("do CS2103"));
+		st.filterAndProcessInput("add do CS2105");
 		assertEquals("do CS2105 is included", true, st.hasTask("do CS2105"));
+		st.filterAndProcessInput("add do CS2106");
 		assertEquals("do CS2106 is included", true, st.hasTask("do CS2106"));
 		st.filterAndProcessInput("undo");
 		assertEquals("do CS2106 is not included", false,
@@ -119,6 +119,36 @@ public class StreamUndoTest {
 				.getDeadline());
 		assertEquals("has description", null, st.stobj.getTask(taskNameForTest)
 				.getDescription());
+	}
+	
+	@Test
+	public void undoSearchTest() throws Exception {
+		// undoing search is done by invoking clrsrc - short form of clear search
+		st.filterAndProcessInput("add a task");
+		st.filterAndProcessInput("add some task");
+		st.filterAndProcessInput("add another task");
+		st.filterAndProcessInput("add new task");
+		assertEquals("4 tasks viewable", 4, st.stui.getNumberOfTasksStored());
+		st.filterAndProcessInput("search new");
+		assertEquals("1 task viewable", 1, st.stui.getNumberOfTasksStored());		
+		st.filterAndProcessInput("clrsrc");
+		assertEquals("4 tasks viewable", 4, st.stui.getNumberOfTasksStored());
+	}
+	
+	@Test
+	public void undoFilterTest() throws Exception {
+		st.filterAndProcessInput("add a task");
+		st.filterAndProcessInput("add some task");
+		st.filterAndProcessInput("add another task");
+		st.filterAndProcessInput("add new task");
+		st.filterAndProcessInput("mark 1 done");
+		assertEquals("4 tasks viewable", 4, st.stui.getNumberOfTasksStored());
+		st.filterAndProcessInput("filter done");
+		assertEquals("1 task viewable", 1, st.stui.getNumberOfTasksStored());		
+		st.filterAndProcessInput("filter ongoing");
+		assertEquals("3 tasks viewable", 3, st.stui.getNumberOfTasksStored());
+		st.filterAndProcessInput("clrsrc");
+		assertEquals("4 tasks viewable", 4, st.stui.getNumberOfTasksStored());		
 	}
 
 }

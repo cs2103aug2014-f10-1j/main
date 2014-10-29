@@ -525,6 +525,18 @@ public class StreamUI {
 	// @author A0093874N
 
 	/**
+	 * Gets the number of tasks stored in the task viewer after
+	 * search/filter/add/remove/...
+	 * 
+	 * @return <b>int</b> - the number of tasks stored in task viewer
+	 */
+	public int getNumberOfTasksStored() {
+		return availTasks.size();
+	}
+
+	// @author A0093874N
+
+	/**
 	 * <p>
 	 * The action invoked upon pressing "enter" in console. It fires the text in
 	 * console to the input parser and subsequently processor.
