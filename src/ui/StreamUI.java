@@ -19,6 +19,7 @@ import javax.swing.SwingConstants;
 
 import model.StreamTask;
 import stream.Stream;
+import util.StreamLogger;
 import util.StreamUtil;
 
 /**
@@ -37,6 +38,8 @@ public class StreamUI {
 	private JPanel contentPanel;
 	private JTextField console;
 	private StreamUILogger logger;
+	private static final StreamLogger loggerDoc = StreamLogger
+			.init(StreamUtil.COMPONENT_UI);
 
 	private JButton undoButton;
 	private JButton clearSearchButton;
@@ -440,6 +443,8 @@ public class StreamUI {
 				repopulateTaskView(pageShown);
 			}
 		}
+		loggerDoc.log(StreamLogger.LogLevel.DEBUG,
+				"Task viewer refreshed with " + indices.size() + " new tasks");
 	}
 
 	// @author A0093874N
@@ -513,6 +518,8 @@ public class StreamUI {
 				StreamUtil.displayTags(task.getTags())), String.format(
 				StreamUtil.DETAILS_HEADER, task.getTaskName()),
 				JOptionPane.INFORMATION_MESSAGE);
+		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
+				+ task.getTaskName());
 	}
 
 	// @author A0093874N
