@@ -180,7 +180,7 @@ public class StreamUtil {
 	public static final int GRIDY_HEADER = 0;
 	public static final int GRIDY_MENU = GRIDY_HEADER + 1;
 	public static final int GRIDY_TASK_START = GRIDY_MENU + 1;
-	public static final int GRIDY_BUTTON = MAX_VIEWABLE_TASK + 1;
+	public static final int GRIDY_BUTTON = GRIDY_TASK_START + MAX_VIEWABLE_TASK + 1;
 	public static final int GRIDY_CONSOLE = GRIDY_BUTTON + 1;
 	public static final int GRIDY_LOGGER = GRIDY_CONSOLE + 1;
 	public static final int GRIDY_FOOTER = GRIDY_LOGGER + 1;
