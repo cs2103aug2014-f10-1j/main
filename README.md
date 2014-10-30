@@ -17,11 +17,12 @@ Currently, STREAM is capable of basic CRUD (Create, Read, Update, Delete) operat
 * **desc** *indexNo* *description*: updates the task's description
 * **rank** *indexNo* *newRank*: update the task's rank
 * **due**  *indexNo* *dueDate*: updates the task's due date
-* **mark** *indexNo* *done/ongoing*: marks a task as either done or ongoing (not done)
+* **mark** *indexNo* *(done|ongoing)*: marks a task as either done or ongoing (not done)
 * **view** *indexNo*: view the details of a task
 * **tag** *indexNo* *tags*: adds tags to a task
 * **untag** *indexNo* *tags*: removes tags from a task
 * **search** *keyphrase*: searches tasks that match the keyphrase
+* **sort** *(alphabetical|deadline)* *[ascending/descending]*: sorts tasks according to the category
 * **clrsrc**: clears search result
 * **undo**: undoes the last operation
 * **exit**: exits **STREAM**
