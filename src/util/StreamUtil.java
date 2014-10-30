@@ -228,15 +228,30 @@ public class StreamUtil {
 		return (month >= 1) && (month <= 12);
 	}
 
-	public static boolean isValidDate(int day, int month) {
+	public static boolean isValidDate(int day, int month, int year) {
 		if (isMonthWith31Days(month)) {
 			return (day >= 1) && (day <= 31);
 		} else if (month == 2) {
-			return (day >= 1) && (day <= 28);
+			if (isLeapYear(year)) {
+				return (day >= 1) && (day <= 29);
+			} else {
+				return (day >= 1) && (day <= 28);
+			}
+			
 		} else {
 			return (day >= 1) && (day <= 30);
 		}
 		
+	}
+	
+	public static boolean isLeapYear(int year) {
+		if (year % 400 == 0) {
+			return true;
+		} else if (year % 100 == 0) {
+			return false;
+		} else {
+			return year % 4 == 0;
+		}
 	}
 
 	private static boolean isMonthWith31Days(int month) {

@@ -53,35 +53,35 @@ public class StreamUtilTest {
 	// this is an input in the middle of the valid input range
 	public void testIsValidDateOne() throws Exception {
 		int input = 20;
-		assertTrue(StreamUtil.isValidDate(input, 1));
+		assertTrue(StreamUtil.isValidDate(input, 1, 2100));
 	}
 
 	@Test
 	// this is an input that is the lower boundary
 	public void testIsValidDateTwo() throws Exception {
 		int input = 1;
-		assertTrue(StreamUtil.isValidDate(input, 1));
+		assertTrue(StreamUtil.isValidDate(input, 1, 2100));
 	}
 
 	@Test
 	// this is an input that is the upper boundary
 	public void testIsValidDateThree() throws Exception {
 		int input = 31;
-		assertTrue(StreamUtil.isValidDate(input, 1));
+		assertTrue(StreamUtil.isValidDate(input, 1, 2100));
 	}
 
 	@Test
 	// this is an input that is above / larger than the upper bound
 	public void testIsValidDateFour() throws Exception {
 		int input = 50;
-		assertFalse(StreamUtil.isValidDate(input, 1));
+		assertFalse(StreamUtil.isValidDate(input, 1, 2100));
 	}
 
 	@Test
 	// this is an input that is smaller than the lower bound
 	public void testIsValidDateFive() throws Exception {
 		int input = -4;
-		assertFalse(StreamUtil.isValidDate(input, 1));
+		assertFalse(StreamUtil.isValidDate(input, 1, 2100));
 	}
 	
 	//Test for is valid year
