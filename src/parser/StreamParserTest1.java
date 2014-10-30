@@ -39,10 +39,26 @@ public class StreamParserTest1 {
 	public void parserDescTest() {
 		
 		try{
-			stparser.interpretCommand("desc huu okk",stobj);
+			stparser.interpretCommand("desc -1 ok",stobj);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = "Invalid index!";
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		try{
+			stparser.interpretCommand("desc newcq ok",stobj);
+			fail();
+		}catch (Exception e) {
+			final String expectedMessage = "Invalid index!";
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		try{
+			stparser.interpretCommand("desc 300 ok",stobj);
+			fail();
+		}catch (Exception e) {
+			final String expectedMessage = "Out of range!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
