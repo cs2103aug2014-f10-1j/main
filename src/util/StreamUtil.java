@@ -29,7 +29,7 @@ public class StreamUtil {
 	public static final String PARAM_VERSION = "V0.2";
 	public static final String PARAM_FILENAME = "stream";
 	public static final String PARAM_SAVEFILE = "%1$s.json";
-	public static final String PARAM_LOGFILE = "%1$s %2$s%3$s%4$s %5$s%6$s%7$s.txt";
+	public static final String PARAM_LOGFILE = "%1$s%2$s%3$s %4$s%5$s%6$s.txt";
 
 	// Log component tags
 	public static final String COMPONENT_STREAM = "stream";
@@ -66,6 +66,7 @@ public class StreamUtil {
 	public static final String LOG_LOAD_FAILED = "Load from file failed, %1$s";
 	public static final String LOG_SAVE_FAILED = "Save to file failed, %1$s";
 	public static final String LOG_MODIFY = "Modified %1$s";
+	public static final String LOG_UI_LOOKANDFEEL_FAIL = "Could not set look and feel";
 
 	// Exception messages
 	public static final String ERR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";

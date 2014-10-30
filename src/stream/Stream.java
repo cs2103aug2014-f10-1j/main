@@ -676,7 +676,7 @@ public class Stream {
 		String hr = StreamUtil.addZeroToTime(now.get(Calendar.HOUR_OF_DAY));
 		String min = StreamUtil.addZeroToTime(now.get(Calendar.MINUTE));
 		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
-		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, filename,
+		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, 
 				day, mth, yr.toString().substring(2), hr, min, sec);
 		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
