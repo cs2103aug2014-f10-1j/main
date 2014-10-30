@@ -87,7 +87,7 @@ public class StreamUtil {
 	public static final String CMD_CLRSRC = "clrsrc";
 	public static final String CMD_NAME = "name %1$s %2$s";
 	public static final String CMD_SORT_ALPHA = "sort a a";
-	public static final String CMD_SORT_DEADLINE = "sort t a";
+	public static final String CMD_SORT_DEADLINE = "sort t d";
 
 	// Assertion failure messages
 	public static final String FAIL_NULL_INPUT = "Null input value detected";

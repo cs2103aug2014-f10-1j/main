@@ -133,9 +133,9 @@ public class StreamObject {
 					if (o1.getDeadline() == null && o2.getDeadline() == null) {
 						return 0;
 					} else if (o1.getDeadline() == null) {
-						return -1;
-					} else if (o2.getDeadline() == null) {
 						return 1;
+					} else if (o2.getDeadline() == null) {
+						return -1;
 					} else {
 						return o1.getDeadline().compareTo(o2.getDeadline());
 					}
@@ -147,9 +147,9 @@ public class StreamObject {
 					if (o1.getDeadline() == null && o2.getDeadline() == null) {
 						return 0;
 					} else if (o1.getDeadline() == null) {
-						return -1;
-					} else if (o2.getDeadline() == null) {
 						return 1;
+					} else if (o2.getDeadline() == null) {
+						return -1;
 					} else {
 						return o2.getDeadline().compareTo(o1.getDeadline());
 					}
