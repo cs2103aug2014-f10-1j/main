@@ -3,7 +3,6 @@ package stream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
@@ -856,6 +855,15 @@ public class Stream {
 						searchResult.size()));
 				break;
 
+			case SORT:
+				logCommand("SORT");
+				logMessage = sort(content);
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
+				showAndLogResult(logMessage);
+				break;
+
 			case VIEW:
 				logCommand("VIEW");
 				taskIndex = Integer.parseInt(content);
@@ -1041,6 +1049,40 @@ public class Stream {
 
 	// all methods from the previous tag until are refactored by A0118007R
 
+	// @author A0096529N
+	private String sort(String content) {
+		String sortBy = null;
+		String order = null;
+		boolean descending = false;
+		if (content.contains(" ")) {
+			sortBy = content.split(" ")[0];
+			order = content.split(" ")[1];
+		} else {
+			sortBy = content;
+			order = "asc";
+		}
+		
+		if (order.equalsIgnoreCase("desc") || order.equalsIgnoreCase("descending") || order.equalsIgnoreCase("d")) {
+			descending = true;
+		}
+		
+		switch (sortBy.toLowerCase()) {
+		case "alpha":
+		case "a":
+		case "alphabetical":
+		case "alphabetically":
+			stobj.sortAlpha(descending);
+			return "Sort by alphabetical order, " + (descending ? "descending." : "ascending.");
+		case "t":
+		case "deadline":
+		case "due":
+			stobj.sortDeadline(descending);
+			return "Sort by deadline, ascending." + (descending ? "descending." : "ascending.");
+		default:
+			return "Unknown sort category \"" + sortBy + "\"";
+		}
+	}
+	
 	// @author A0093874N
 
 	private String compareTagged(ArrayList<String> oldTags,

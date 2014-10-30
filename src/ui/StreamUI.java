@@ -47,6 +47,8 @@ public class StreamUI {
 	private JButton prevPageButton;
 	private JButton nextPageButton;
 	private JButton lastPageButton;
+	private JButton sortAlphaButton;
+	private JButton sortDeadlineButton;
 
 	private boolean isSearch;
 	private int pageShown;
@@ -121,7 +123,7 @@ public class StreamUI {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			addComponent(taskPanel, StreamUtil.MARGIN_ELEM,
-					StreamUtil.GRIDX_TASK, i + 1, StreamUtil.GRIDWIDTH_TASK,
+					StreamUtil.GRIDX_TASK, i + StreamUtil.GRIDY_TASK_START, StreamUtil.GRIDWIDTH_TASK,
 					StreamUtil.IPADY_TASK);
 			shownTasks[i] = taskPanel;
 			taskPanel.setVisible(false);
@@ -153,6 +155,9 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addButtons() {
+		addSortAlphaButton();
+		addSortDeadlineButton();
+
 		addUndoButton();
 		addFirstPageButton();
 		addPrevPageButton();
@@ -281,6 +286,36 @@ public class StreamUI {
 		addComponent(clearSearchButton, StreamUtil.MARGIN_ELEM,
 				StreamUtil.GRIDX_CLEAR, StreamUtil.GRIDY_BUTTON,
 				StreamUtil.GRIDWIDTH_BUTTON, StreamUtil.IPADY_BUTTON);
+	}
+
+	// @author A0096529N
+
+	private void addSortAlphaButton() {
+		sortAlphaButton = new JButton(StreamUtil.BTN_SORT_ALPHA);
+		sortAlphaButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput(StreamUtil.CMD_SORT_ALPHA);
+			}
+		});
+		addComponent(sortAlphaButton, StreamUtil.MARGIN_ELEM,
+				StreamUtil.GRIDX_SORT_ALPHA, StreamUtil.GRIDY_MENU,
+				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+	}
+
+	// @author A0096529N
+
+	private void addSortDeadlineButton() {
+		sortDeadlineButton = new JButton(StreamUtil.BTN_SORT_DEADLINE);
+		sortDeadlineButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput(StreamUtil.CMD_SORT_DEADLINE);
+			}
+		});
+		addComponent(sortDeadlineButton, StreamUtil.MARGIN_ELEM,
+				StreamUtil.GRIDX_SORT_DEADLINE, StreamUtil.GRIDY_MENU,
+				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -514,10 +549,10 @@ public class StreamUI {
 				StreamUtil.displayStatus(task.isDone()),
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
-				StreamUtil.displayDescription(task.getDescription()),
-				StreamUtil.displayTags(task.getTags())), String.format(
-				StreamUtil.DETAILS_HEADER, task.getTaskName()),
-				JOptionPane.INFORMATION_MESSAGE);
+						StreamUtil.displayDescription(task.getDescription()),
+						StreamUtil.displayTags(task.getTags())), String.format(
+								StreamUtil.DETAILS_HEADER, task.getTaskName()),
+								JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
 	}
