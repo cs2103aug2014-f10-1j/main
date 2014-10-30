@@ -2,6 +2,9 @@ package parser;
 
 import exception.StreamParserException;
 import model.StreamObject;
+import util.StreamLogger;
+import util.StreamLogger.LogLevel;
+import util.StreamUtil;
 
 /*
  * Parser is used to interpret the user input to a pack of 
@@ -21,6 +24,8 @@ public class StreamParser {
 
 	private CommandType commandKey;
 	private String commandContent;
+	
+	private static final StreamLogger logger = StreamLogger.init(StreamUtil.COMPONENT_STREAMPARSER);
 
 	public StreamParser() {
 		this.commandKey = CommandType.INIT;
@@ -244,6 +249,7 @@ public class StreamParser {
 				this.commandKey = CommandType.EXIT;
 				break;
 			default:
+				logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
 				throw new StreamParserException("Unknown command type");
 		}
 		this.commandContent = executeCommand(contents);
@@ -253,8 +259,10 @@ public class StreamParser {
 		String content = null;
 		if (contents.length > 1) {
 			content = contents[1];
+			logger.log(LogLevel.DEBUG, "Command consists of multiple words.");
 		} else {
 			content = "";
+			logger.log(LogLevel.DEBUG, "No content for the command.");
 		}
 
 		return content;
