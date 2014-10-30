@@ -52,8 +52,8 @@ public class Stream {
 
 	private final String[] validParameters = { "name", "desc", "due", "by",
 			"tag", "untag" };
-	
-	//author ??? refactored by A0118007R
+
+	// author ??? refactored by A0118007R
 
 	public Stream(String file) {
 		initStreamIO(file);
@@ -66,8 +66,6 @@ public class Stream {
 		stui.resetAvailableTasks(stobj.getCounter(),
 				stobj.getStreamTaskList(stobj.getCounter()), true, false);
 	}
-	
-	
 
 	private void initializeStream() {
 		stui = new StreamUI(this);
@@ -93,10 +91,10 @@ public class Stream {
 		try {
 			HashMap<String, StreamTask> allTasks = new HashMap<String, StreamTask>();
 			ArrayList<String> taskList = new ArrayList<String>();
-			
+
 			StreamIO.load(allTasks, taskList);
 			stobj = new StreamObject(allTasks, taskList);
-			
+
 		} catch (StreamIOException e) {
 			log(String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage()));
 			stobj = new StreamObject();
@@ -181,8 +179,8 @@ public class Stream {
 		String nameOfTask = "";
 		// scans until next valid parameter and officially add the task
 		// TODO: refactor
-		
-		//this section onwards is contributed by A0118007R
+
+		// this section onwards is contributed by A0118007R
 		boolean nameFound = false;
 		ArrayList<String> modifyParams = new ArrayList<String>();
 
@@ -201,27 +199,27 @@ public class Stream {
 				break;
 			}
 		}
-		
+
 		nameOfTask = nameOfTask.trim(); // this is the solution to the bug
 		addTaskAndProcessParameters(nameOfTask, nameFound, modifyParams);
 		//
-		
+
 		return String.format(StreamUtil.LOG_ADD, nameOfTask);
-		
+
 	}
 
-	//@author A0118007R
-	
+	// @author A0118007R
+
 	private void addTaskAndProcessParameters(String nameOfTask,
 			boolean nameFound, ArrayList<String> modifyParams)
 			throws StreamModificationException {
-		
+
 		stobj.addTask(nameOfTask);
 		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
-		
+
 		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
 				stobj.getNumberOfTasks()));
-		
+
 		if (nameFound) {
 			executeModifyParameters(nameOfTask, modifyParams);
 		}
@@ -239,7 +237,7 @@ public class Stream {
 		String contents = "";
 		for (int i = 1; i < modifyParams.size(); i++) {
 			String s = modifyParams.get(i);
-			if (isValidParameter(s)) { 
+			if (isValidParameter(s)) {
 				// first content is guaranteed to be a valid parameter
 				processParameterModification(command, contents.trim(),
 						currentTask);
@@ -258,6 +256,7 @@ public class Stream {
 
 	private void processParameterModification(String command, String contents,
 			StreamTask task) throws StreamModificationException {
+		contents = contents.trim();
 		String taskName = task.getTaskName();
 		switch (command) {
 			case "name":
@@ -268,7 +267,7 @@ public class Stream {
 				break;
 			case "due":
 			case "by":
-				if (contents.trim().equals("null")) {
+				if (contents.equals("null")) {
 					task.setDeadline(null);
 				} else {
 					Calendar due = parseCalendar(contents);
@@ -486,8 +485,8 @@ public class Stream {
 		return setDeadline(taskName, calendar);
 		//
 	}
-	
-	//@author A0093874N
+
+	// @author A0093874N
 	private String setDeadline(String taskName, Calendar calendar)
 			throws StreamModificationException {
 		if (calendar == null) {
@@ -908,9 +907,9 @@ public class Stream {
 			processInput(undoneInput);
 
 			/*
-			 * VERY IMPORTANT because almost all inputs will add its
-			 * counterpart to the inputStack. If not popped, the undo
-			 * process will be trapped between just two processes.
+			 * VERY IMPORTANT because almost all inputs will add its counterpart
+			 * to the inputStack. If not popped, the undo process will be
+			 * trapped between just two processes.
 			 */
 			inputStack.pop();
 		}
@@ -919,8 +918,7 @@ public class Stream {
 	private void pushUntaggingIntoInputStack(int taskIndex,
 			ArrayList<String> tagsRemoved) {
 		if (tagsRemoved.size() != 0) {
-			inputStack.push(String.format(StreamUtil.CMD_TAG,
-					taskIndex,
+			inputStack.push(String.format(StreamUtil.CMD_TAG, taskIndex,
 					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
 		}
 	}
@@ -928,8 +926,7 @@ public class Stream {
 	private void pushTaggingIntoInputStack(int taskIndex,
 			ArrayList<String> tagsAdded) {
 		if (tagsAdded.size() != 0) {
-			inputStack.push(String.format(StreamUtil.CMD_UNTAG,
-					taskIndex,
+			inputStack.push(String.format(StreamUtil.CMD_UNTAG, taskIndex,
 					StreamUtil.listDownArrayContent(tagsAdded, " ")));
 		}
 	}
@@ -938,8 +935,8 @@ public class Stream {
 			throws StreamModificationException {
 		String logMessage;
 		/*
-		 * TODO make the markType more flexible. maybe "finished",
-		 * "not done", "not finished", ...
+		 * TODO make the markType more flexible. maybe "finished", "not done",
+		 * "not finished", ...
 		 */
 		if (markType.equals("done")) {
 			logMessage = markAsDone(taskName, taskIndex);
@@ -975,8 +972,8 @@ public class Stream {
 
 	private String buildInverseCommand(String taskName, int taskIndex,
 			StreamTask currTask) {
-		String inverseCommand = "modify " + taskIndex + " name "
-				+ taskName + " ";
+		String inverseCommand = "modify " + taskIndex + " name " + taskName
+				+ " ";
 
 		inverseCommand = buildModifyDescription(currTask, inverseCommand);
 		inverseCommand = buildModifyDeadline(currTask, inverseCommand);
@@ -1019,8 +1016,8 @@ public class Stream {
 		return logMessage;
 	}
 
-	//all methods from the previous tag until are refactored by A0118007R
-	
+	// all methods from the previous tag until are refactored by A0118007R
+
 	// @author A0093874N
 
 	private String compareTagged(ArrayList<String> oldTags,
@@ -1195,7 +1192,11 @@ public class Stream {
 
 	private void processInput(String input) {
 		try {
+<<<<<<< HEAD
 			parser.interpretCommand(input,stobj);
+=======
+			parser.interpretCommand(input, stobj);
+>>>>>>> 18d265002396c4fab9d4bcde650f0f674be47e7d
 			CommandType command = parser.getCommandType();
 			String content = parser.getCommandContent();
 			executeInput(command, content);
@@ -1211,14 +1212,19 @@ public class Stream {
 	// @author A0093874N
 
 	public void filterAndProcessInput(String input) {
-		log(input);
-		if (input.length() >= 7
-				&& (input.substring(0, 7).equals("recover") || input.substring(
-						0, 7).equals("dismiss"))) {
-			showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
+		if (input == null) {
+			showAndLogError(String.format(StreamUtil.LOG_ERRORS,
+					"AssertionError", StreamUtil.FAIL_NULL_INPUT));
 		} else {
-			processInput(input);
-			save();
+			log(input);
+			if (input.length() >= 7
+					&& (input.substring(0, 7).equals("recover") || input
+							.substring(0, 7).equals("dismiss"))) {
+				showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
+			} else {
+				processInput(input);
+				save();
+			}
 		}
 	}
 
