@@ -40,9 +40,7 @@ public class StreamParser {
 		switch (key) {
 			case "add":
 
-				if (contents.length < 2) {
-					throw new StreamParserException("Nothing to add!");
-				}
+				checkAddValidity(contents);
 
 				this.commandKey = CommandType.ADD;
 				break;
@@ -50,17 +48,7 @@ public class StreamParser {
 			case "del":
 			case "delete":
 
-				if (contents.length != 2) {
-					throw new StreamParserException("Invalid input!");
-				}
-
-				else if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkDeleteValidity(contents, numOfTasks);
 
 				this.commandKey = CommandType.DEL;
 				break;
@@ -68,17 +56,7 @@ public class StreamParser {
 			case "describe":
 				contents = input.trim().split(" ", 3);
 
-				if (contents.length < 3) {
-					throw new StreamParserException("Not enough information!");
-				}
-
-				else if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkMultiValidity(contents, numOfTasks);
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.DESC;
@@ -100,21 +78,7 @@ public class StreamParser {
 
 				contents = input.trim().split(" ", 3);
 
-				if (contents.length != 3) {
-					throw new StreamParserException("Not enough information!");
-				}
-
-				else if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
-
-				else if (!checkRanking(contents[2])) {
-					throw new StreamParserException("Invalid input rank!");
-				}
+				checkRankValidity(contents, numOfTasks);
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.RANK;
@@ -123,17 +87,7 @@ public class StreamParser {
 			case "modify":
 				contents = input.trim().split(" ", 3);
 
-				if (contents.length < 3) {
-					throw new StreamParserException("Not enough information!");
-				}
-
-				else if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkMultiValidity(contents, numOfTasks);
 
 				contents = input.trim().split(" ", 2);
 
@@ -142,17 +96,7 @@ public class StreamParser {
 			case "name":
 				contents = input.trim().split(" ", 3);
 
-				if (contents.length < 3) {
-					throw new StreamParserException("Not enough information!");
-				}
-
-				else if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkMultiValidity(contents, numOfTasks);
 
 				contents = input.trim().split(" ", 2);
 
@@ -162,13 +106,7 @@ public class StreamParser {
 			case "done":
 			case "finished":
 				contents = input.trim().split(" ");
-				if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkFinishedValidity(contents, numOfTasks);
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.MARK;
@@ -176,17 +114,7 @@ public class StreamParser {
 			case "tag":
 				contents = input.trim().split(" ", 3);
 
-				if (contents.length < 3) {
-					throw new StreamParserException("Not enough information!");
-				}
-
-				else if (!isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkMultiValidity(contents, numOfTasks);
 
 				contents = input.trim().split(" ", 2);
 
@@ -194,33 +122,19 @@ public class StreamParser {
 				break;
 			case "untag":
 				contents = input.trim().split(" ", 3);
-				if (contents.length < 3 || !isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
-
-				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-					throw new StreamParserException("Out of range!");
-				}
+				checkUntaggingValidity(contents, numOfTasks);
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.UNTAG;
 				break;
 			case "search":
 			case "find":
-				if (contents.length < 2) {
-					throw new StreamParserException("Nothing to search!");
-				}
+				validateLength(contents);
 
 				this.commandKey = CommandType.SEARCH;
 				break;
 			case "filter":
-				if (contents.length < 2) {
-					throw new StreamParserException(
-							"Please specify filter criteria!");
-				}
-				if (!isValidFilterType(contents[1].trim())) {
-					throw new StreamParserException("Invalid filter type!");
-				}
+				checkFilterValidity(contents);
 
 				this.commandKey = CommandType.FILTER;
 				break;
@@ -239,9 +153,7 @@ public class StreamParser {
 				break;
 			case "dismiss":
 
-				if (contents.length != 2 || !isInteger(contents[1])) {
-					throw new StreamParserException("Invalid index!");
-				}
+				checkDismissValidity(contents);
 
 				this.commandKey = CommandType.DISMISS;
 				break;
@@ -254,6 +166,94 @@ public class StreamParser {
 
 		}
 		this.commandContent = executeCommand(contents);
+	}
+
+	private void checkDismissValidity(String[] contents)
+			throws StreamParserException {
+		if (contents.length != 2 || !isInteger(contents[1])) {
+			throw new StreamParserException("Invalid index!");
+		}
+	}
+
+	private void checkFilterValidity(String[] contents)
+			throws StreamParserException {
+		if (contents.length < 2) {
+			throw new StreamParserException(
+					"Please specify filter criteria!");
+		}
+		if (!isValidFilterType(contents[1].trim())) {
+			throw new StreamParserException("Invalid filter type!");
+		}
+	}
+
+	private void validateLength(String[] contents) throws StreamParserException {
+		if (contents.length < 2) {
+			throw new StreamParserException("Nothing to search!");
+		}
+	}
+
+	private void checkUntaggingValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (contents.length < 3 || !isInteger(contents[1])) {
+			throw new StreamParserException("Invalid index!");
+		}
+
+		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
+			throw new StreamParserException("Out of range!");
+		}
+	}
+
+	private void checkFinishedValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (!isInteger(contents[1])) {
+			throw new StreamParserException("Invalid index!");
+		}
+
+		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
+			throw new StreamParserException("Out of range!");
+		}
+	}
+
+	private void checkRankValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (contents.length != 3) {
+			throw new StreamParserException("Not enough information!");
+		}
+
+		else if (!isInteger(contents[1])) {
+			throw new StreamParserException("Invalid index!");
+		}
+
+		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
+			throw new StreamParserException("Out of range!");
+		}
+
+		else if (!checkRanking(contents[2])) {
+			throw new StreamParserException("Invalid input rank!");
+		}
+	}
+
+	private void checkMultiValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (contents.length < 3) {
+			throw new StreamParserException("Not enough information!");
+		} else
+			checkFinishedValidity(contents, numOfTasks);
+	}
+
+	private void checkDeleteValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (contents.length != 2) {
+			throw new StreamParserException("Invalid input!");
+		} else
+			checkFinishedValidity(contents, numOfTasks);
+	}
+
+	private void checkAddValidity(String[] contents)
+			throws StreamParserException {
+		if (contents.length < 2) {
+			throw new StreamParserException("Nothing to add!");
+		}
 	}
 
 	private static String executeCommand(String[] contents) {
