@@ -19,7 +19,7 @@ import util.StreamUtil;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -251,6 +251,7 @@ public class StreamParser {
 			default:
 				logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
 				throw new StreamParserException("Unknown command type");
+
 		}
 		this.commandContent = executeCommand(contents);
 	}

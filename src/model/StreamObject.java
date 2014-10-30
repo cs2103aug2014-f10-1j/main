@@ -2,7 +2,10 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import util.StreamUtil;
 import exception.StreamModificationException;
@@ -58,6 +61,77 @@ public class StreamObject {
 		taskList = anotherTaskList;
 	}
 
+	// @author A0096529N
+
+	public void setOrderingWithTasks(List<StreamTask> anotherTaskList) {
+
+		ArrayList<String> orderList = new ArrayList<String>();
+		for (StreamTask task:anotherTaskList) {
+			orderList.add(task.getTaskName());
+		}
+		setOrdering(orderList);
+	}
+
+	// @author A0096529N
+	
+	public void sortAlpha(boolean descending) {
+		if (descending) {
+			sort(new Comparator<StreamTask>() {
+				@Override public int compare(StreamTask o1, StreamTask o2) {
+					return o2.getTaskName().compareTo(o1.getTaskName());
+				}
+			});
+		} else {
+			sort(new Comparator<StreamTask>() {
+				@Override public int compare(StreamTask o1, StreamTask o2) {
+					return o1.getTaskName().compareTo(o2.getTaskName());
+				}
+			});
+		}
+	}
+	
+	// @author A0096529N
+	
+	public void sortStartTime(boolean descending) {
+		if (descending) {
+			sort(new Comparator<StreamTask>() {
+				@Override public int compare(StreamTask o1, StreamTask o2) {
+					return o1.getStartTime().compareTo(o2.getStartTime());
+				}
+			});
+		} else {
+			sort(new Comparator<StreamTask>() {
+				@Override public int compare(StreamTask o1, StreamTask o2) {
+					return o2.getStartTime().compareTo(o1.getStartTime());
+				}
+			});
+		}
+	}
+	
+	// @author A0096529N
+	
+	public void sortDeadline(boolean descending) {
+		if (descending) {
+			sort(new Comparator<StreamTask>() {
+				@Override public int compare(StreamTask o1, StreamTask o2) {
+					return o2.getDeadline().compareTo(o1.getDeadline());
+				}
+			});
+		} else {
+			sort(new Comparator<StreamTask>() {
+				@Override public int compare(StreamTask o1, StreamTask o2) {
+					return o1.getDeadline().compareTo(o2.getDeadline());
+				}
+			});
+		}
+	}
+	
+	private void sort(Comparator<StreamTask> comparator) {
+		List<StreamTask> tempList = getStreamTaskList();
+		Collections.sort(tempList, comparator);
+		setOrderingWithTasks(tempList);
+	}
+	
 	/**
 	 * Adds a new task to StreamObject
 	 * 
@@ -500,6 +574,18 @@ public class StreamObject {
 	 */
 	public ArrayList<String> getTaskList() {
 		return new ArrayList<String>(this.taskList);
+	}
+
+	// @author A0096529N
+	/**
+	 * @return taskList a copy of the task list.
+	 */
+	public ArrayList<StreamTask> getStreamTaskList() {
+		ArrayList<StreamTask> taskList = new ArrayList<StreamTask>();
+		for (String key:taskMap.keySet()) {
+			taskList.add(taskMap.get(key));
+		}
+		return taskList;
 	}
 
 	// @author A0093874N

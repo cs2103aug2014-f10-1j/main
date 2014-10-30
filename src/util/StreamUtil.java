@@ -86,6 +86,8 @@ public class StreamUtil {
 	public static final String CMD_UNDO = "undo";
 	public static final String CMD_CLRSRC = "clrsrc";
 	public static final String CMD_NAME = "name %1$s %2$s";
+	public static final String CMD_SORT_ALPHA = "sort a a";
+	public static final String CMD_SORT_DEADLINE = "sort t a";
 
 	// Assertion failure messages
 	public static final String FAIL_NULL_INPUT = "Null input value detected";
@@ -163,6 +165,8 @@ public class StreamUtil {
 	public static final int GRIDX_NEXT = GRIDX_PREV + GRIDWIDTH_NAVIG;
 	public static final int GRIDX_LAST = GRIDX_NEXT + GRIDWIDTH_NAVIG;
 	public static final int GRIDX_CLEAR = GRIDX_LAST + GRIDWIDTH_NAVIG;
+	public static final int GRIDX_SORT_ALPHA = 0;
+	public static final int GRIDX_SORT_DEADLINE = GRIDX_SORT_ALPHA + GRIDWIDTH_NAVIG;
 	public static final int GRIDX_CONSOLE = 0;
 	public static final int GRIDX_LOGGER = 0;
 	public static final int GRIDX_FOOTER = 0;
@@ -174,6 +178,8 @@ public class StreamUtil {
 	public static final int GRIDX_MARK_BTN = 2;
 
 	public static final int GRIDY_HEADER = 0;
+	public static final int GRIDY_MENU = GRIDY_HEADER + 1;
+	public static final int GRIDY_TASK_START = GRIDY_MENU + 1;
 	public static final int GRIDY_BUTTON = MAX_VIEWABLE_TASK + 1;
 	public static final int GRIDY_CONSOLE = GRIDY_BUTTON + 1;
 	public static final int GRIDY_LOGGER = GRIDY_CONSOLE + 1;
@@ -201,6 +207,8 @@ public class StreamUtil {
 	public static final String BTN_PREV = "<";
 	public static final String BTN_NEXT = ">";
 	public static final String BTN_LAST = ">>";
+	public static final String BTN_SORT_ALPHA = "A";
+	public static final String BTN_SORT_DEADLINE = "T";
 	public static final String BTN_CLEAR = "Clear search result";
 	public static final String BTN_UNDO = "Undo last action";
 	public static final String BTN_DELETE = "Delete";
