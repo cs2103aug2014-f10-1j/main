@@ -56,6 +56,13 @@ public class StreamParser {
 		case "describe":
 			contents = input.trim().split(" ", 3);
 
+			/*
+			 * Check Multi Validity is a method 
+			 * which can be used to check
+			 * the validity of a user input
+			 * 
+			 * Supported commands can be seen below
+			 */
 			checkMultiValidity(contents, numOfTasks);
 			contents = input.trim().split(" ", 2);
 
@@ -235,6 +242,15 @@ public class StreamParser {
 			throw new StreamParserException("Invalid input rank!");
 		}
 	}
+	
+	/*
+	 * This multi validity checking is able to validate 
+	 * the following input commands:
+	 * 1. Describe
+	 * 2. Modify
+	 * 3. Renaming
+	 * 4. Tagging
+	 */
 
 	private void checkMultiValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
