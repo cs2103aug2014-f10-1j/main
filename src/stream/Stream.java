@@ -1194,11 +1194,7 @@ public class Stream {
 
 	private void processInput(String input) {
 		try {
-<<<<<<< HEAD
 			parser.interpretCommand(input,stobj);
-=======
-			parser.interpretCommand(input, stobj);
->>>>>>> 18d265002396c4fab9d4bcde650f0f674be47e7d
 			CommandType command = parser.getCommandType();
 			String content = parser.getCommandContent();
 			executeInput(command, content);
