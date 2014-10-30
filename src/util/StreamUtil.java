@@ -142,7 +142,7 @@ public class StreamUtil {
 	public static final int HEIGHT_MAINFRAME = 750;
 	public static final int WIDTH_MAINFRAME = 750;
 
-	public static final int MAX_VIEWABLE_TASK = 7;
+	public static final int MAX_VIEWABLE_TASK = 5;
 
 	public static final int GRIDWIDTH_NAVIG = 1;
 	public static final int GRIDWIDTH_BUTTON = GRIDWIDTH_NAVIG * 4;

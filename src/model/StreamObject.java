@@ -96,13 +96,29 @@ public class StreamObject {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
 				@Override public int compare(StreamTask o1, StreamTask o2) {
-					return o1.getStartTime().compareTo(o2.getStartTime());
+					if (o1.getStartTime() == null && o2.getStartTime() == null) {
+						return 0;
+					} else if (o1.getStartTime() == null) {
+						return -1;
+					} else if (o2.getStartTime() == null) {
+						return 1;
+					} else {
+						return o1.getStartTime().compareTo(o2.getStartTime());
+					}
 				}
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
 				@Override public int compare(StreamTask o1, StreamTask o2) {
-					return o2.getStartTime().compareTo(o1.getStartTime());
+					if (o1.getStartTime() == null && o2.getStartTime() == null) {
+						return 0;
+					} else if (o1.getStartTime() == null) {
+						return 1;
+					} else if (o2.getStartTime() == null) {
+						return -1;
+					} else {
+						return o2.getStartTime().compareTo(o1.getStartTime());
+					}
 				}
 			});
 		}
@@ -114,13 +130,29 @@ public class StreamObject {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
 				@Override public int compare(StreamTask o1, StreamTask o2) {
-					return o2.getDeadline().compareTo(o1.getDeadline());
+					if (o1.getDeadline() == null && o2.getDeadline() == null) {
+						return 0;
+					} else if (o1.getDeadline() == null) {
+						return -1;
+					} else if (o2.getDeadline() == null) {
+						return 1;
+					} else {
+						return o1.getDeadline().compareTo(o2.getDeadline());
+					}
 				}
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
 				@Override public int compare(StreamTask o1, StreamTask o2) {
-					return o1.getDeadline().compareTo(o2.getDeadline());
+					if (o1.getDeadline() == null && o2.getDeadline() == null) {
+						return 0;
+					} else if (o1.getDeadline() == null) {
+						return -1;
+					} else if (o2.getDeadline() == null) {
+						return 1;
+					} else {
+						return o2.getDeadline().compareTo(o1.getDeadline());
+					}
 				}
 			});
 		}

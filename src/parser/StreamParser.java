@@ -24,7 +24,7 @@ public class StreamParser {
 
 	private CommandType commandKey;
 	private String commandContent;
-	
+
 	private static final StreamLogger logger = StreamLogger.init(StreamUtil.COMPONENT_STREAMPARSER);
 
 	public StreamParser() {
@@ -38,131 +38,134 @@ public class StreamParser {
 		String key = contents[0].toLowerCase();
 		int numOfTasks = stobj.getNumberOfTasks();
 		switch (key) {
-			case "add":
+		case "add":
 
-				checkAddValidity(contents);
+			checkAddValidity(contents);
 
-				this.commandKey = CommandType.ADD;
-				break;
+			this.commandKey = CommandType.ADD;
+			break;
 
-			case "del":
-			case "delete":
+		case "del":
+		case "delete":
 
-				checkDeleteValidity(contents, numOfTasks);
+			checkDeleteValidity(contents, numOfTasks);
 
-				this.commandKey = CommandType.DEL;
-				break;
-			case "desc":
-			case "describe":
-				contents = input.trim().split(" ", 3);
+			this.commandKey = CommandType.DEL;
+			break;
+		case "desc":
+		case "describe":
+			contents = input.trim().split(" ", 3);
 
-				checkMultiValidity(contents, numOfTasks);
-				contents = input.trim().split(" ", 2);
+			checkMultiValidity(contents, numOfTasks);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.DESC;
-				break;
-			case "due":
-			case "by":
+			this.commandKey = CommandType.DESC;
+			break;
+		case "due":
+		case "by":
 
-				/*
-				 * The exception for this one will be implemented after the
-				 * 'multiple-commands-in-one-line' feature.
-				 */
+			/*
+			 * The exception for this one will be implemented after the
+			 * 'multiple-commands-in-one-line' feature.
+			 */
 
-				this.commandKey = CommandType.DUE;
-				break;
-			case "view":
-				this.commandKey = CommandType.VIEW;
-				break;
-			case "rank":
+			this.commandKey = CommandType.DUE;
+			break;
+		case "view":
+			this.commandKey = CommandType.VIEW;
+			break;
+		case "rank":
 
-				contents = input.trim().split(" ", 3);
+			contents = input.trim().split(" ", 3);
 
-				checkRankValidity(contents, numOfTasks);
-				contents = input.trim().split(" ", 2);
+			checkRankValidity(contents, numOfTasks);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.RANK;
-				break;
-			case "mod":
-			case "modify":
-				contents = input.trim().split(" ", 3);
+			this.commandKey = CommandType.RANK;
+			break;
+		case "mod":
+		case "modify":
+			contents = input.trim().split(" ", 3);
 
-				checkMultiValidity(contents, numOfTasks);
+			checkMultiValidity(contents, numOfTasks);
 
-				contents = input.trim().split(" ", 2);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.MODIFY;
-				break;
-			case "name":
-				contents = input.trim().split(" ", 3);
+			this.commandKey = CommandType.MODIFY;
+			break;
+		case "name":
+			contents = input.trim().split(" ", 3);
 
-				checkMultiValidity(contents, numOfTasks);
+			checkMultiValidity(contents, numOfTasks);
 
-				contents = input.trim().split(" ", 2);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.NAME;
-				break;
-			case "mark":
-			case "done":
-			case "finished":
-				contents = input.trim().split(" ");
-				checkFinishedValidity(contents, numOfTasks);
-				contents = input.trim().split(" ", 2);
+			this.commandKey = CommandType.NAME;
+			break;
+		case "mark":
+		case "done":
+		case "finished":
+			contents = input.trim().split(" ");
+			checkFinishedValidity(contents, numOfTasks);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.MARK;
-				break;
-			case "tag":
-				contents = input.trim().split(" ", 3);
+			this.commandKey = CommandType.MARK;
+			break;
+		case "tag":
+			contents = input.trim().split(" ", 3);
 
-				checkMultiValidity(contents, numOfTasks);
+			checkMultiValidity(contents, numOfTasks);
 
-				contents = input.trim().split(" ", 2);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.TAG;
-				break;
-			case "untag":
-				contents = input.trim().split(" ", 3);
-				checkUntaggingValidity(contents, numOfTasks);
-				contents = input.trim().split(" ", 2);
+			this.commandKey = CommandType.TAG;
+			break;
+		case "untag":
+			contents = input.trim().split(" ", 3);
+			checkUntaggingValidity(contents, numOfTasks);
+			contents = input.trim().split(" ", 2);
 
-				this.commandKey = CommandType.UNTAG;
-				break;
-			case "search":
-			case "find":
-				validateLength(contents);
+			this.commandKey = CommandType.UNTAG;
+			break;
+		case "search":
+		case "find":
+			validateLength(contents);
 
-				this.commandKey = CommandType.SEARCH;
-				break;
-			case "filter":
-				checkFilterValidity(contents);
+			this.commandKey = CommandType.SEARCH;
+			break;
+		case "sort":
+			this.commandKey = CommandType.SORT;
+			break;
+		case "filter":
+			checkFilterValidity(contents);
 
-				this.commandKey = CommandType.FILTER;
-				break;
-			case "clrsrc":
-				this.commandKey = CommandType.CLRSRC;
-				break;
-			case "clear":
-			case "clr":
-				this.commandKey = CommandType.CLEAR;
-				break;
-			case "undo":
-				this.commandKey = CommandType.UNDO;
-				break;
-			case "recover":
-				this.commandKey = CommandType.RECOVER;
-				break;
-			case "dismiss":
+			this.commandKey = CommandType.FILTER;
+			break;
+		case "clrsrc":
+			this.commandKey = CommandType.CLRSRC;
+			break;
+		case "clear":
+		case "clr":
+			this.commandKey = CommandType.CLEAR;
+			break;
+		case "undo":
+			this.commandKey = CommandType.UNDO;
+			break;
+		case "recover":
+			this.commandKey = CommandType.RECOVER;
+			break;
+		case "dismiss":
 
-				checkDismissValidity(contents);
+			checkDismissValidity(contents);
 
-				this.commandKey = CommandType.DISMISS;
-				break;
-			case "exit":
-				this.commandKey = CommandType.EXIT;
-				break;
-			default:
-				logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
-				throw new StreamParserException("Unknown command type");
+			this.commandKey = CommandType.DISMISS;
+			break;
+		case "exit":
+			this.commandKey = CommandType.EXIT;
+			break;
+		default:
+			logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
+			throw new StreamParserException("Unknown command type");
 
 		}
 		this.commandContent = executeCommand(contents);
