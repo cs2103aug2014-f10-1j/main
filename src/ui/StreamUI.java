@@ -16,10 +16,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import model.StreamTask;
 import stream.Stream;
 import util.StreamLogger;
+import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 
 /**
@@ -37,6 +40,7 @@ public class StreamUI {
 	private JFrame mainFrame;
 	private JPanel contentPanel;
 	private JTextField console;
+	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private static final StreamLogger loggerDoc = StreamLogger
 			.init(StreamUtil.COMPONENT_UI);
@@ -49,6 +53,7 @@ public class StreamUI {
 	private JButton lastPageButton;
 	private JButton sortAlphaButton;
 	private JButton sortDeadlineButton;
+	private JButton addTaskButton;
 
 	private boolean isSearch;
 	private int pageShown;
@@ -63,9 +68,11 @@ public class StreamUI {
 
 		stream = str;
 
+		setupLookAndFeel();
 		addMainFrame();
 		addContentPanel();
 		addHeader();
+		addMenu();
 		setUpView();
 		addButtons();
 		addConsole();
@@ -79,6 +86,16 @@ public class StreamUI {
 		availIndices = new ArrayList<Integer>();
 
 		mainFrame.setVisible(true);
+	}
+
+	// @author A0096529N
+	
+	private void setupLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+			loggerDoc.log(LogLevel.ERROR, StreamUtil.LOG_UI_LOOKANDFEEL_FAIL);
+		}
 	}
 
 	// @author A0093874N
@@ -106,6 +123,7 @@ public class StreamUI {
 	private void addContentPanel() {
 		contentPanel = new JPanel();
 		contentPanel.setBorder(StreamUtil.MARGIN_MAINFRAME);
+		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setLayout(new GridBagLayout());
 		mainFrame.setContentPane(contentPanel);
 	}
@@ -147,6 +165,32 @@ public class StreamUI {
 				StreamUtil.IPADY_HEADER);
 	}
 
+	// @author A0096529N
+	
+	private void addMenu() {
+		newTaskTextField = new JTextField();
+		newTaskTextField.setFont(StreamUtil.FONT_CONSOLE);
+		addComponent(newTaskTextField, StreamUtil.MARGIN_ELEM,
+				StreamUtil.GRIDX_ADD_TASK_TEXTFIELD, StreamUtil.GRIDY_MENU,
+				StreamUtil.GRIDWIDTH_INPUT, StreamUtil.IPADY_BUTTON);
+		
+		addTaskButton = new JButton(StreamUtil.BTN_ADD_TASK);
+		addTaskButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String params = newTaskTextField.getText();
+				newTaskTextField.setText("");
+				stream.filterAndProcessInput(String.format(StreamUtil.CMD_ADD_TASK, params));
+			}
+		});
+		addComponent(addTaskButton, StreamUtil.MARGIN_ELEM,
+				StreamUtil.GRIDX_ADD_TASK_BTN, StreamUtil.GRIDY_MENU,
+				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		
+		addSortDeadlineButton();
+		addSortAlphaButton();
+	}
+	
 	// @author A0093874N
 
 	/**
@@ -155,9 +199,6 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addButtons() {
-		addSortAlphaButton();
-		addSortDeadlineButton();
-
 		addUndoButton();
 		addFirstPageButton();
 		addPrevPageButton();

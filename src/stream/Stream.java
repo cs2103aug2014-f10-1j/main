@@ -1077,7 +1077,7 @@ public class Stream {
 		case "deadline":
 		case "due":
 			stobj.sortDeadline(descending);
-			return "Sort by deadline, ascending." + (descending ? "descending." : "ascending.");
+			return "Sort by deadline " + (descending ? "descending." : "ascending.");
 		default:
 			return "Unknown sort category \"" + sortBy + "\"";
 		}
