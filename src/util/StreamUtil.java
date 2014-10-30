@@ -236,8 +236,7 @@ public class StreamUtil {
 				return (day >= 1) && (day <= 29);
 			} else {
 				return (day >= 1) && (day <= 28);
-			}
-			
+			}	
 		} else {
 			return (day >= 1) && (day <= 30);
 		}
