@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -14,6 +13,8 @@ import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
 import ui.StreamUI;
+import util.StreamLogger;
+import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 import exception.StreamIOException;
 import exception.StreamModificationException;
@@ -39,14 +40,14 @@ import fileio.StreamIO;
 public class Stream {
 
 	StreamObject stobj;
-	private StreamUI stui;
+	StreamUI stui;
 	private StreamParser parser;
+	private StreamLogger logger;
 
 	private String filename;
 	private Stack<String> inputStack;
 	private Stack<StreamTask> dumpedTasks;
 	private Stack<ArrayList<String>> orderingStack;
-	private List<String> logMessages;
 
 	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
@@ -56,6 +57,7 @@ public class Stream {
 	// author ??? refactored by A0118007R
 
 	public Stream(String file) {
+		initStreamLogger();
 		initStreamIO(file);
 		initializeStream();
 		load();
@@ -73,7 +75,6 @@ public class Stream {
 		inputStack = new Stack<String>();
 		dumpedTasks = new Stack<StreamTask>();
 		orderingStack = new Stack<ArrayList<String>>();
-		logMessages = new ArrayList<String>();
 	}
 
 	// @author A0096529N
@@ -84,6 +85,11 @@ public class Stream {
 			filename = file;
 		}
 		StreamIO.setSaveLocation(filename);
+	}
+
+	// @author A0096529N
+	private void initStreamLogger() {
+		logger = StreamLogger.init(StreamUtil.COMPONENT_STREAM);
 	}
 
 	// @author A0096529N
@@ -270,7 +276,7 @@ public class Stream {
 				if (contents.equals("null")) {
 					task.setDeadline(null);
 				} else {
-					Calendar due = parseCalendar(contents);
+					Calendar due = StreamUtil.parseCalendar(contents);
 					task.setDeadline(due);
 				}
 				break;
@@ -598,6 +604,14 @@ public class Stream {
 		return stobj.findTasks(keyphrase);
 	}
 
+	// @author A0093874N
+
+	private ArrayList<Integer> filter(String criteria) {
+		assert (criteria != null) : StreamUtil.FAIL_NULL_INPUT;
+		// modified by A0093874N
+		return stobj.filterTasks(criteria);
+	}
+
 	// @author A0118007R
 	/**
 	 * @deprecated
@@ -644,7 +658,7 @@ public class Stream {
 
 	// @author A0096529N
 	private void log(String message) {
-		logMessages.add(message);
+		logger.log(LogLevel.DEBUG, message);
 	}
 
 	// @author A0093874N
@@ -665,7 +679,7 @@ public class Stream {
 		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
 		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, filename,
 				day, mth, yr.toString().substring(2), hr, min, sec);
-		StreamIO.saveLogFile(logMessages, logFileName);
+		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
 
 	// @author A0118007R
@@ -817,6 +831,15 @@ public class Stream {
 				removeTags(tags, taskName, tagsRemoved, tagsNotRemoved);
 				pushUntaggingIntoInputStack(taskIndex, tagsRemoved);
 				logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
+				break;
+
+			case FILTER:
+				logCommand("FILTER");
+				ArrayList<Integer> filterResult = filter(content);
+				stui.resetAvailableTasks(filterResult,
+						stobj.getStreamTaskList(filterResult), true, true);
+				showAndLogResult(String.format(StreamUtil.LOG_FILTER, content,
+						filterResult.size()));
 				break;
 
 			case CLRSRC:
@@ -1010,7 +1033,7 @@ public class Stream {
 			logMessage = setDueDate(taskName, taskIndex, null);
 		} else {
 			String due = contents[1];
-			Calendar calendar = parseCalendar(due);
+			Calendar calendar = StreamUtil.parseCalendar(due);
 			logMessage = setDueDate(taskName, taskIndex, calendar);
 		}
 		return logMessage;
@@ -1165,27 +1188,6 @@ public class Stream {
 				tagsNotRemoved.add(tags[i]);
 			}
 		}
-	}
-
-	// TODO @author ?
-
-	private Calendar parseCalendar(String contents) {
-		String[] dueDate = contents.split("/");
-		int year = parseYear(dueDate);
-		int day = Integer.parseInt(dueDate[0].trim());
-		int month = Integer.parseInt(dueDate[1].trim());
-		Calendar calendar = new GregorianCalendar(year, month - 1, day);
-		return calendar;
-	}
-
-	private int parseYear(String[] dueDate) {
-		int year;
-		if (dueDate.length == 2) {
-			year = Calendar.getInstance().get(Calendar.YEAR);
-		} else {
-			year = Integer.parseInt(dueDate[2].trim());
-		}
-		return year;
 	}
 
 	// @author A0093874N

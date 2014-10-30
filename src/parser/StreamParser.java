@@ -16,7 +16,7 @@ import model.StreamObject;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -27,10 +27,11 @@ public class StreamParser {
 		this.commandContent = null;
 	}
 
-	public void interpretCommand(String input, StreamObject stobj) throws StreamParserException {
+	public void interpretCommand(String input, StreamObject stobj)
+			throws StreamParserException {
 		String[] contents = input.trim().split(" ", 2);
 		String key = contents[0].toLowerCase();
-		int numOfTasks=stobj.getNumberOfTasks();
+		int numOfTasks = stobj.getNumberOfTasks();
 		switch (key) {
 			case "add":
 
@@ -44,15 +45,15 @@ public class StreamParser {
 			case "del":
 			case "delete":
 
-				if(contents.length !=2){
+				if (contents.length != 2) {
 					throw new StreamParserException("Invalid input!");
 				}
-				
+
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
 
@@ -61,16 +62,16 @@ public class StreamParser {
 			case "desc":
 			case "describe":
 				contents = input.trim().split(" ", 3);
-				
-				if(contents.length<3) {
+
+				if (contents.length < 3) {
 					throw new StreamParserException("Not enough information!");
 				}
-				
+
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
 				contents = input.trim().split(" ", 2);
@@ -91,63 +92,63 @@ public class StreamParser {
 				this.commandKey = CommandType.VIEW;
 				break;
 			case "rank":
-				
+
 				contents = input.trim().split(" ", 3);
-				
-				if(contents.length!=3) {
+
+				if (contents.length != 3) {
 					throw new StreamParserException("Not enough information!");
 				}
-				
+
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
-				
-				else if(!checkRanking(contents[2])) {
+
+				else if (!checkRanking(contents[2])) {
 					throw new StreamParserException("Invalid input rank!");
 				}
 				contents = input.trim().split(" ", 2);
-				
+
 				this.commandKey = CommandType.RANK;
 				break;
 			case "mod":
 			case "modify":
 				contents = input.trim().split(" ", 3);
-				
-				if(contents.length<3) {
+
+				if (contents.length < 3) {
 					throw new StreamParserException("Not enough information!");
 				}
-				
+
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
-				
+
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.MODIFY;
 				break;
 			case "name":
 				contents = input.trim().split(" ", 3);
-				
-				if(contents.length<3) {
+
+				if (contents.length < 3) {
 					throw new StreamParserException("Not enough information!");
 				}
-				
+
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
-				
+
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.NAME;
@@ -159,8 +160,8 @@ public class StreamParser {
 				if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
 				contents = input.trim().split(" ", 2);
@@ -170,18 +171,18 @@ public class StreamParser {
 			case "tag":
 				contents = input.trim().split(" ", 3);
 
-				if(contents.length<3) {
+				if (contents.length < 3) {
 					throw new StreamParserException("Not enough information!");
 				}
-				
+
 				else if (!isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
-				
+
 				contents = input.trim().split(" ", 2);
 
 				this.commandKey = CommandType.TAG;
@@ -191,8 +192,8 @@ public class StreamParser {
 				if (contents.length < 3 || !isInteger(contents[1])) {
 					throw new StreamParserException("Invalid index!");
 				}
-				
-				else if(!withinRange(Integer.parseInt(contents[1]),numOfTasks)) {
+
+				else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 					throw new StreamParserException("Out of range!");
 				}
 				contents = input.trim().split(" ", 2);
@@ -201,13 +202,22 @@ public class StreamParser {
 				break;
 			case "search":
 			case "find":
-			case "filter":
-
 				if (contents.length < 2) {
 					throw new StreamParserException("Nothing to search!");
 				}
 
 				this.commandKey = CommandType.SEARCH;
+				break;
+			case "filter":
+				if (contents.length < 2) {
+					throw new StreamParserException(
+							"Please specify filter criteria!");
+				}
+				if (!isValidFilterType(contents[1].trim())) {
+					throw new StreamParserException("Invalid filter type!");
+				}
+
+				this.commandKey = CommandType.FILTER;
 				break;
 			case "clrsrc":
 				this.commandKey = CommandType.CLRSRC;
@@ -267,21 +277,29 @@ public class StreamParser {
 		}
 		return size > 0;
 	}
-	
-	private boolean withinRange(int index,int numOfTasks){
-		if (index>=1 && index<=numOfTasks)
-			return true;
-		else
-			return false;
+
+	private boolean withinRange(int index, int numOfTasks) {
+		return index >= 1 && index <= numOfTasks;
 	}
-	
+
 	private boolean checkRanking(String rankInput) {
 		String stdRank = rankInput.toLowerCase();
-		if(!stdRank.equals("high") && !stdRank.equals("medium") && !stdRank.equals("low")){
-			return false;
-		}
-		else {
+		return stdRank.equals("high") || stdRank.equals("medium")
+				|| stdRank.equals("low");
+	}
+
+	// @author A0093874N
+
+	private boolean isValidFilterType(String type) {
+		if ((type.equals("done")) || (type.equals("ongoing")) || (type.equals("notime"))) {
 			return true;
+		} else {
+			String[] types = type.split(" ");
+			if ((types[0].equals("before")) || (types[0].equals("after"))){
+				return types.length > 1;				
+			} else {
+				return false;
+			}
 		}
 	}
 

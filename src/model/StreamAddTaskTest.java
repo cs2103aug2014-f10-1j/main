@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import exception.StreamModificationException;
+
 public class StreamAddTaskTest {
 
 	private StreamObject streamObject;
@@ -46,6 +48,35 @@ public class StreamAddTaskTest {
 		streamObject.deleteTask("Submit CE2");
 		assertEquals(streamObject.hasTask("Submit CE2"), false);
 	}
+	
+	//"Boundary" cases for get task
+	
+
+
+	@Before
+	public void resetup() throws Exception {
+		streamObject = new StreamObject();
+		streamObject.addTask("Submit CE2");
+		streamObject.addTask("Study for midterms");
+	}
+	
+	@Test 
+	public void getTaskTestOne() throws StreamModificationException{
+		StreamTask myTask = streamObject.getTask("Submit CE2");
+		assertTrue(myTask.getTaskName().equals("Submit CE2"));
+	}
+	
+	@Test 
+	public void getTaskTestTwo() {
+		try {
+			StreamTask myTask = streamObject.getTask("AAA");
+			fail("A test message");
+		} catch (StreamModificationException e) {
+			
+		}
+		
+	}
+	
 	
 	
 }
