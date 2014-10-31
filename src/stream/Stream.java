@@ -871,10 +871,13 @@ public class Stream {
 
 			case SORT:
 				logCommand("SORT");
+				ArrayList<String> oldOrdering = stobj.getOrdering();
+				orderingStack.push(oldOrdering);
 				logMessage = sort(content);
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
+				inputStack.push("unsort");
 				showAndLogResult(logMessage);
 				break;
 
@@ -920,6 +923,15 @@ public class Stream {
 				dismissTask(taskName);
 				showAndLogResult(String.format(
 						StreamConstants.LogMessage.DELETE, taskName));
+				stui.resetAvailableTasks(stobj.getCounter(),
+						stobj.getStreamTaskList(stobj.getCounter()), false,
+						false);
+				inputStack.push("some fake input to be popped");
+				break;
+				
+			case UNSORT:
+				logCommand("UNSORT");
+				stobj.setOrdering(orderingStack.pop());
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
@@ -1263,15 +1275,29 @@ public class Stream {
 
 	// @author A0093874N
 
+	static Boolean isBlockedInput(String input) {
+		if (input.length() >= 6) {
+			if (input.substring(0, 6).equals("unsort")) {
+				return true;
+			} else {
+				return input.length() >= 7
+						&& (input.substring(0, 7).equals("recover") || input
+								.substring(0, 7).equals("dismiss"));
+			}
+		} else {
+			return false;
+		}
+	}
+
+	// @author A0093874N
+
 	public void filterAndProcessInput(String input) {
 		if (input == null) {
 			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS,
 					"AssertionError", StreamConstants.Assertion.NULL_INPUT));
 		} else {
 			log(input);
-			if (input.length() >= 7
-					&& (input.substring(0, 7).equals("recover") || input
-							.substring(0, 7).equals("dismiss"))) {
+			if (isBlockedInput(input)) {
 				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
 			} else {
 				processInput(input);

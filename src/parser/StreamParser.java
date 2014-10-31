@@ -19,7 +19,7 @@ import exception.StreamParserException;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
+		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, UNSORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS;
 	}
 
 	private CommandType commandKey;
@@ -142,6 +142,9 @@ public class StreamParser {
 			break;
 		case "sort":
 			this.commandKey = CommandType.SORT;
+			break;
+		case "unsort":
+			this.commandKey = CommandType.UNSORT;
 			break;
 		case "filter":
 			checkFilterValidity(contents);
