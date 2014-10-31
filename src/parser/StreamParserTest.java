@@ -9,7 +9,7 @@ import org.junit.Test;
 import exception.StreamParserException;
 
 
-public class StreamParserTest1 {
+public class StreamParserTest {
 
 	StreamParser stparser;
 	StreamObject stobj;

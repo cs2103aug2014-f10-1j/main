@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.Stack;
 
 import model.StreamObject;
@@ -50,8 +49,6 @@ public class Stream {
 	private Stack<String> inputStack;
 	private Stack<StreamTask> dumpedTasks;
 	private Stack<ArrayList<String>> orderingStack;
-
-	private static final Scanner INPUT_SCANNER = new Scanner(System.in);
 
 	private final String[] validParameters = { "name", "desc", "due", "by",
 			"tag", "untag" };
@@ -146,11 +143,11 @@ public class Stream {
 	 *         <strong>StreamTask</strong> <i>taskName</i> exists, false
 	 *         otherwise.
 	 */
-	public Boolean hasTask(String taskName) {
+	Boolean hasTask(String taskName) {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		return stobj.hasTask(taskName);
 	}
-
+	
 	// @author A0118007R
 	boolean isValidParameter(String param) {
 		for (String s : validParameters) {
@@ -625,7 +622,7 @@ public class Stream {
 	/**
 	 * @deprecated
 	 */
-	private void printTasks() {
+	void printTasks() {
 		System.out.println(" ");
 		System.out.println("Your current tasks: ");
 		ArrayList<String> myTasks = stobj.getTaskNames();
@@ -1275,7 +1272,7 @@ public class Stream {
 
 	// @author A0093874N
 
-	static Boolean isBlockedInput(String input) {
+	private Boolean isBlockedInput(String input) {
 		if (input.length() >= 6) {
 			if (input.substring(0, 6).equals("unsort")) {
 				return true;
@@ -1304,32 +1301,6 @@ public class Stream {
 				save();
 			}
 		}
-	}
-
-	// @author A0093874N
-
-	/**
-	 * @deprecated now using the GUI console to receive input
-	 */
-	void doRoutineProcess() {
-		printTasks();
-		System.out
-				.println("========================================================");
-		System.out.print("Enter Command: ");
-		String input = INPUT_SCANNER.nextLine();
-		log(input);
-		if (input.length() >= 7
-				&& (input.substring(0, 7).equals("recover") || input.substring(
-						0, 7).equals("dismiss"))) {
-			/*
-			 * input commands "recover" and "dismiss" is for the undo process
-			 * and cannot be accessed directly by user
-			 */
-			showAndLogResult(StreamConstants.LogMessage.CMD_UNKNOWN);
-		} else {
-			processInput(input);
-		}
-		save();
 	}
 
 	public static void main(String[] args) {
