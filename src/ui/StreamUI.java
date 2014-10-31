@@ -1,6 +1,10 @@
 package ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import model.StreamTask;
 import stream.Stream;
+import util.StreamConstants;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import util.StreamUtil;
@@ -43,7 +48,7 @@ public class StreamUI {
 	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private static final StreamLogger loggerDoc = StreamLogger
-			.init(StreamUtil.COMPONENT_UI);
+			.init(StreamConstants.ComponentTag.UI);
 
 	private JButton undoButton;
 	private JButton clearSearchButton;
@@ -79,7 +84,7 @@ public class StreamUI {
 		empowerConsole(this.new EnterAction());
 		addLogger();
 		addFooter();
-		log(StreamUtil.MSG_WELCOME, false);
+		log(StreamConstants.Message.WELCOME, false);
 		pageShown = 1;
 		totalPage = 1;
 		availTasks = new ArrayList<StreamTask>();
@@ -94,7 +99,7 @@ public class StreamUI {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-			loggerDoc.log(LogLevel.ERROR, StreamUtil.LOG_UI_LOOKANDFEEL_FAIL);
+			loggerDoc.log(LogLevel.ERROR, StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
 		}
 	}
 
@@ -106,10 +111,10 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addMainFrame() {
-		mainFrame = new JFrame(StreamUtil.TEXT_TITLE);
+		mainFrame = new JFrame(StreamConstants.Message.TEXT_TITLE);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setSize(StreamUtil.WIDTH_MAINFRAME,
-				StreamUtil.HEIGHT_MAINFRAME);
+		mainFrame.setSize(StreamConstants.UI.WIDTH_MAINFRAME,
+				StreamConstants.UI.HEIGHT_MAINFRAME);
 		mainFrame.setLocationRelativeTo(null);
 	}
 
@@ -122,7 +127,7 @@ public class StreamUI {
 	 */
 	private void addContentPanel() {
 		contentPanel = new JPanel();
-		contentPanel.setBorder(StreamUtil.MARGIN_MAINFRAME);
+		contentPanel.setBorder(StreamConstants.UI.MARGIN_MAINFRAME);
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setLayout(new GridBagLayout());
 		mainFrame.setContentPane(contentPanel);
@@ -136,13 +141,13 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void setUpView() {
-		shownTasks = new StreamTaskView[StreamUtil.MAX_VIEWABLE_TASK];
-		for (int i = 0; i < StreamUtil.MAX_VIEWABLE_TASK; i++) {
+		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
+		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			addComponent(taskPanel, StreamUtil.MARGIN_ELEM,
-					StreamUtil.GRIDX_TASK, i + StreamUtil.GRIDY_TASK_START, StreamUtil.GRIDWIDTH_TASK,
-					StreamUtil.IPADY_TASK);
+			addComponent(taskPanel, StreamConstants.UI.MARGIN_ELEM,
+					StreamConstants.UI.GRIDX_TASK, i + StreamConstants.UI.GRIDY_TASK_START, StreamConstants.UI.GRIDWIDTH_TASK,
+					StreamConstants.UI.IPADY_TASK);
 			shownTasks[i] = taskPanel;
 			taskPanel.setVisible(false);
 		}
@@ -156,36 +161,36 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addHeader() {
-		JLabel title = new JLabel(StreamUtil.TEXT_HEADER);
+		JLabel title = new JLabel(StreamConstants.Message.TEXT_HEADER);
 		title.setHorizontalAlignment(SwingConstants.CENTER);
-		title.setFont(StreamUtil.FONT_TITLE);
-		title.setForeground(StreamUtil.COLOR_HEADER);
-		addComponent(title, StreamUtil.MARGIN_HEADER, StreamUtil.GRIDX_HEADER,
-				StreamUtil.GRIDY_HEADER, StreamUtil.GRIDWIDTH_HEADER,
-				StreamUtil.IPADY_HEADER);
+		title.setFont(StreamConstants.UI.FONT_TITLE);
+		title.setForeground(StreamConstants.UI.COLOR_HEADER);
+		addComponent(title, StreamConstants.UI.MARGIN_HEADER, StreamConstants.UI.GRIDX_HEADER,
+				StreamConstants.UI.GRIDY_HEADER, StreamConstants.UI.GRIDWIDTH_HEADER,
+				StreamConstants.UI.IPADY_HEADER);
 	}
 
 	// @author A0096529N
 	
 	private void addMenu() {
 		newTaskTextField = new JTextField();
-		newTaskTextField.setFont(StreamUtil.FONT_CONSOLE);
-		addComponent(newTaskTextField, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_ADD_TASK_TEXTFIELD, StreamUtil.GRIDY_MENU,
-				StreamUtil.GRIDWIDTH_INPUT, StreamUtil.IPADY_BUTTON);
+		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
+		addComponent(newTaskTextField, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_ADD_TASK_TEXTFIELD, StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_INPUT, StreamConstants.UI.IPADY_BUTTON);
 		
-		addTaskButton = new JButton(StreamUtil.BTN_ADD_TASK);
+		addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
 		addTaskButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String params = newTaskTextField.getText();
 				newTaskTextField.setText("");
-				stream.filterAndProcessInput(String.format(StreamUtil.CMD_ADD_TASK, params));
+				stream.filterAndProcessInput(String.format(StreamConstants.Commands.ADD_TASK, params));
 			}
 		});
-		addComponent(addTaskButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_ADD_TASK_BTN, StreamUtil.GRIDY_MENU,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(addTaskButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_ADD_TASK_BTN, StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 		
 		addSortDeadlineButton();
 		addSortAlphaButton();
@@ -215,16 +220,16 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addUndoButton() {
-		undoButton = new JButton(StreamUtil.BTN_UNDO);
+		undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
 		undoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamUtil.CMD_UNDO);
+				stream.filterAndProcessInput(StreamConstants.Commands.UNDO);
 			}
 		});
-		addComponent(undoButton, StreamUtil.MARGIN_ELEM, StreamUtil.GRIDX_UNDO,
-				StreamUtil.GRIDY_BUTTON, StreamUtil.GRIDWIDTH_BUTTON,
-				StreamUtil.IPADY_BUTTON);
+		addComponent(undoButton, StreamConstants.UI.MARGIN_ELEM, StreamConstants.UI.GRIDX_UNDO,
+				StreamConstants.UI.GRIDY_BUTTON, StreamConstants.UI.GRIDWIDTH_BUTTON,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -235,16 +240,16 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addFirstPageButton() {
-		firstPageButton = new JButton(StreamUtil.BTN_FIRST);
+		firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
 		firstPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				repopulateTaskView(1);
 			}
 		});
-		addComponent(firstPageButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_FIRST, StreamUtil.GRIDY_BUTTON,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(firstPageButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_FIRST, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -255,17 +260,17 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addPrevPageButton() {
-		prevPageButton = new JButton(StreamUtil.BTN_PREV);
+		prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
 		prevPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				assert (pageShown != 1) : StreamUtil.FAIL_NO_PREV_PAGE;
+				assert (pageShown != 1) : StreamConstants.Assertion.NO_PREV_PAGE;
 				repopulateTaskView(pageShown - 1);
 			}
 		});
-		addComponent(prevPageButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_PREV, StreamUtil.GRIDY_BUTTON,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(prevPageButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_PREV, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -276,17 +281,17 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addNextPageButton() {
-		nextPageButton = new JButton(StreamUtil.BTN_NEXT);
+		nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
 		nextPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				assert (pageShown != totalPage) : StreamUtil.FAIL_NO_NEXT_PAGE;
+				assert (pageShown != totalPage) : StreamConstants.Assertion.NO_NEXT_PAGE;
 				repopulateTaskView(pageShown + 1);
 			}
 		});
-		addComponent(nextPageButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_NEXT, StreamUtil.GRIDY_BUTTON,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(nextPageButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_NEXT, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -297,16 +302,16 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addLastPageButton() {
-		lastPageButton = new JButton(StreamUtil.BTN_LAST);
+		lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
 		lastPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				repopulateTaskView(totalPage);
 			}
 		});
-		addComponent(lastPageButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_LAST, StreamUtil.GRIDY_BUTTON,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(lastPageButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_LAST, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -317,46 +322,46 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addClearSearchButton() {
-		clearSearchButton = new JButton(StreamUtil.BTN_CLEAR);
+		clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
 		clearSearchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamUtil.CMD_CLRSRC);
+				stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC);
 			}
 		});
-		addComponent(clearSearchButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_CLEAR, StreamUtil.GRIDY_BUTTON,
-				StreamUtil.GRIDWIDTH_BUTTON, StreamUtil.IPADY_BUTTON);
+		addComponent(clearSearchButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_CLEAR, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_BUTTON, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0096529N
 
 	private void addSortAlphaButton() {
-		sortAlphaButton = new JButton(StreamUtil.BTN_SORT_ALPHA);
+		sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
 		sortAlphaButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamUtil.CMD_SORT_ALPHA);
+				stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA);
 			}
 		});
-		addComponent(sortAlphaButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_SORT_ALPHA, StreamUtil.GRIDY_MENU,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(sortAlphaButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_SORT_ALPHA, StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0096529N
 
 	private void addSortDeadlineButton() {
-		sortDeadlineButton = new JButton(StreamUtil.BTN_SORT_DEADLINE);
+		sortDeadlineButton = new JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
 		sortDeadlineButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamUtil.CMD_SORT_DEADLINE);
+				stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
 			}
 		});
-		addComponent(sortDeadlineButton, StreamUtil.MARGIN_ELEM,
-				StreamUtil.GRIDX_SORT_DEADLINE, StreamUtil.GRIDY_MENU,
-				StreamUtil.GRIDWIDTH_NAVIG, StreamUtil.IPADY_BUTTON);
+		addComponent(sortDeadlineButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_SORT_DEADLINE, StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -368,10 +373,10 @@ public class StreamUI {
 	 */
 	private void addConsole() {
 		console = new JTextField();
-		console.setFont(StreamUtil.FONT_CONSOLE);
-		addComponent(console, StreamUtil.MARGIN_ELEM, StreamUtil.GRIDX_CONSOLE,
-				StreamUtil.GRIDY_CONSOLE, StreamUtil.GRIDWIDTH_CONSOLE,
-				StreamUtil.IPADY_CONSOLE);
+		console.setFont(StreamConstants.UI.FONT_CONSOLE);
+		addComponent(console, StreamConstants.UI.MARGIN_ELEM, StreamConstants.UI.GRIDX_CONSOLE,
+				StreamConstants.UI.GRIDY_CONSOLE, StreamConstants.UI.GRIDWIDTH_CONSOLE,
+				StreamConstants.UI.IPADY_CONSOLE);
 	}
 
 	// @author A0093874N
@@ -383,10 +388,10 @@ public class StreamUI {
 	 */
 	private void addLogger() {
 		logger = new StreamUILogger();
-		logger.setFont(StreamUtil.FONT_LOGGER);
-		addComponent(logger, StreamUtil.MARGIN_ELEM, StreamUtil.GRIDX_LOGGER,
-				StreamUtil.GRIDY_LOGGER, StreamUtil.GRIDWIDTH_LOGGER,
-				StreamUtil.IPADY_LOGGER);
+		logger.setFont(StreamConstants.UI.FONT_LOGGER);
+		addComponent(logger, StreamConstants.UI.MARGIN_ELEM, StreamConstants.UI.GRIDX_LOGGER,
+				StreamConstants.UI.GRIDY_LOGGER, StreamConstants.UI.GRIDWIDTH_LOGGER,
+				StreamConstants.UI.IPADY_LOGGER);
 	}
 
 	// @author A0093874N
@@ -397,12 +402,12 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addFooter() {
-		JLabel footer = new JLabel(StreamUtil.TEXT_FOOTER);
-		footer.setFont(StreamUtil.FONT_FOOTER);
+		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
+		footer.setFont(StreamConstants.UI.FONT_FOOTER);
 		footer.setHorizontalAlignment(SwingConstants.RIGHT);
-		addComponent(footer, StreamUtil.MARGIN_FOOTER, StreamUtil.GRIDX_FOOTER,
-				StreamUtil.GRIDY_FOOTER, StreamUtil.GRIDWIDTH_FOOTER,
-				StreamUtil.IPADY_FOOTER);
+		addComponent(footer, StreamConstants.UI.MARGIN_FOOTER, StreamConstants.UI.GRIDX_FOOTER,
+				StreamConstants.UI.GRIDY_FOOTER, StreamConstants.UI.GRIDWIDTH_FOOTER,
+				StreamConstants.UI.IPADY_FOOTER);
 	}
 
 	// @author A0093874N
@@ -492,7 +497,7 @@ public class StreamUI {
 	public void resetAvailableTasks(ArrayList<Integer> indices,
 			ArrayList<StreamTask> tasks, Boolean isReset, Boolean isSearching) {
 		// error: length not the same
-		assert (indices.size() == tasks.size()) : StreamUtil.FAIL_SIZE_DIFFERENT;
+		assert (indices.size() == tasks.size()) : StreamConstants.Assertion.SIZE_DIFFERENT;
 		availIndices = indices;
 		availTasks = tasks;
 		if (tasks.size() == 0) {
@@ -500,7 +505,7 @@ public class StreamUI {
 			totalPage = 1;
 		} else {
 			totalPage = (int) Math.ceil(1.0 * tasks.size()
-					/ StreamUtil.MAX_VIEWABLE_TASK);
+					/ StreamConstants.UI.MAX_VIEWABLE_TASK);
 		}
 		if (isReset || tasks.size() == 0 || isSearch) {
 			/*
@@ -511,9 +516,9 @@ public class StreamUI {
 			isSearch = isSearching;
 		} else {
 			if ((int) Math.ceil(1.0 * tasks.size()
-					/ StreamUtil.MAX_VIEWABLE_TASK) < pageShown) {
+					/ StreamConstants.UI.MAX_VIEWABLE_TASK) < pageShown) {
 				// last task in the last page deleted: move back one page
-				assert (pageShown != 1) : StreamUtil.FAIL_NO_PREV_PAGE;
+				assert (pageShown != 1) : StreamConstants.Assertion.NO_PREV_PAGE;
 				repopulateTaskView(pageShown - 1);
 			} else {
 				repopulateTaskView(pageShown);
@@ -533,10 +538,10 @@ public class StreamUI {
 	 *            - the page number to be shown
 	 */
 	private void repopulateTaskView(int page) {
-		assert (page <= totalPage) : StreamUtil.FAIL_TOO_MANY_PAGES;
+		assert (page <= totalPage) : StreamConstants.Assertion.TOO_MANY_PAGES;
 		pageShown = page;
-		int startPoint = (pageShown - 1) * StreamUtil.MAX_VIEWABLE_TASK;
-		for (int i = 0; i < StreamUtil.MAX_VIEWABLE_TASK; i++) {
+		int startPoint = (pageShown - 1) * StreamConstants.UI.MAX_VIEWABLE_TASK;
+		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = shownTasks[i];
 			try {
 				int index = availIndices.get(startPoint + i);
@@ -585,14 +590,14 @@ public class StreamUI {
 	 */
 	public void displayDetails(StreamTask task) {
 		JOptionPane.showMessageDialog(mainFrame, String.format(
-				StreamUtil.DETAILS_CONTENT,
+				StreamConstants.Message.DETAILS_CONTENT,
 				task.getTaskName(),
 				StreamUtil.displayStatus(task.isDone()),
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
 						StreamUtil.displayDescription(task.getDescription()),
 						StreamUtil.displayTags(task.getTags())), String.format(
-								StreamUtil.DETAILS_HEADER, task.getTaskName()),
+								StreamConstants.Message.DETAILS_HEADER, task.getTaskName()),
 								JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());

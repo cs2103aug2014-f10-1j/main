@@ -23,9 +23,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import util.StreamConstants;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
-import util.StreamUtil;
 import exception.StreamIOException;
 
 // @author A0096529N
@@ -61,7 +61,7 @@ public class StreamIO {
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
 	static String SAVE_LOCATION = "default.json";
-	private static final StreamLogger logger = StreamLogger.init(StreamUtil.COMPONENT_STREAMIO);
+	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMIO);
 
 	// @author A0096529N
 	/**

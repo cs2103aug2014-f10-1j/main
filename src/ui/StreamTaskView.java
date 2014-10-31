@@ -16,6 +16,7 @@ import javax.swing.SwingConstants;
 
 import model.StreamTask;
 import stream.Stream;
+import util.StreamConstants;
 import util.StreamUtil;
 
 /**
@@ -60,10 +61,10 @@ public class StreamTaskView extends JPanel {
 	private void addIndexNumber() {
 		index = new JLabel();
 		index.setHorizontalAlignment(SwingConstants.CENTER);
-		index.setFont(StreamUtil.FONT_INDEX);
-		addComponent(index, StreamUtil.MARGIN_TASKVIEW, StreamUtil.GRIDX_INDEX,
-				StreamUtil.GRIDY_INDEX, StreamUtil.GRIDHEIGHT_INDEX,
-				StreamUtil.WEIGHTX_INDEX);
+		index.setFont(StreamConstants.UI.FONT_INDEX);
+		addComponent(index, StreamConstants.UI.MARGIN_TASKVIEW, StreamConstants.UI.GRIDX_INDEX,
+				StreamConstants.UI.GRIDY_INDEX, StreamConstants.UI.GRIDHEIGHT_INDEX,
+				StreamConstants.UI.WEIGHTX_INDEX);
 	}
 
 	// @author A0093874N
@@ -76,10 +77,10 @@ public class StreamTaskView extends JPanel {
 	private void addTaskNameLabel() {
 		taskName = new JLabel();
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
-		taskName.setFont(StreamUtil.FONT_TASK);
-		addComponent(taskName, StreamUtil.MARGIN_TASKVIEW,
-				StreamUtil.GRIDX_TASKNAME, StreamUtil.GRIDY_TASKNAME,
-				StreamUtil.GRIDHEIGHT_TASKNAME, StreamUtil.WEIGHTX_TASKNAME);
+		taskName.setFont(StreamConstants.UI.FONT_TASK);
+		addComponent(taskName, StreamConstants.UI.MARGIN_TASKVIEW,
+				StreamConstants.UI.GRIDX_TASKNAME, StreamConstants.UI.GRIDY_TASKNAME,
+				StreamConstants.UI.GRIDHEIGHT_TASKNAME, StreamConstants.UI.WEIGHTX_TASKNAME);
 	}
 
 	// @author A0093874N
@@ -91,10 +92,10 @@ public class StreamTaskView extends JPanel {
 	 */
 	private void addTimingLabel() {
 		timing = new JLabel();
-		timing.setFont(StreamUtil.FONT_TASK);
-		addComponent(timing, StreamUtil.MARGIN_TASKVIEW,
-				StreamUtil.GRIDX_TIMING, StreamUtil.GRIDY_TIMING,
-				StreamUtil.GRIDHEIGHT_TIMING, StreamUtil.WEIGHTX_TIMING);
+		timing.setFont(StreamConstants.UI.FONT_TASK);
+		addComponent(timing, StreamConstants.UI.MARGIN_TASKVIEW,
+				StreamConstants.UI.GRIDX_TIMING, StreamConstants.UI.GRIDY_TIMING,
+				StreamConstants.UI.GRIDHEIGHT_TIMING, StreamConstants.UI.WEIGHTX_TIMING);
 	}
 
 	// @author A0093874N
@@ -105,17 +106,17 @@ public class StreamTaskView extends JPanel {
 	 * @author Wilson Kurniawan
 	 */
 	private void addDeleteButton() {
-		delButton = new JButton(StreamUtil.BTN_DELETE);
+		delButton = new JButton(StreamConstants.UI.BTN_DELETE);
 		delButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				st.filterAndProcessInput(String.format(StreamUtil.CMD_DELETE,
+				st.filterAndProcessInput(String.format(StreamConstants.Commands.DELETE,
 						index.getText().substring(1)));
 			}
 		});
-		addComponent(delButton, StreamUtil.MARGIN_TASKVIEW,
-				StreamUtil.GRIDX_DELETE_BTN, StreamUtil.GRIDY_DELETE_BTN,
-				StreamUtil.GRIDHEIGHT_DELETE_BTN, StreamUtil.WEIGHTX_DELETE_BTN);
+		addComponent(delButton, StreamConstants.UI.MARGIN_TASKVIEW,
+				StreamConstants.UI.GRIDX_DELETE_BTN, StreamConstants.UI.GRIDY_DELETE_BTN,
+				StreamConstants.UI.GRIDHEIGHT_DELETE_BTN, StreamConstants.UI.WEIGHTX_DELETE_BTN);
 	}
 
 	// @author A0093874N
@@ -127,9 +128,9 @@ public class StreamTaskView extends JPanel {
 	 */
 	private void addMarkButton() {
 		markButton = new JButton();
-		addComponent(markButton, StreamUtil.MARGIN_TASKVIEW,
-				StreamUtil.GRIDX_MARK_BTN, StreamUtil.GRIDY_MARK_BTN,
-				StreamUtil.GRIDHEIGHT_MARK_BTN, StreamUtil.WEIGHTX_MARK_BTN);
+		addComponent(markButton, StreamConstants.UI.MARGIN_TASKVIEW,
+				StreamConstants.UI.GRIDX_MARK_BTN, StreamConstants.UI.GRIDY_MARK_BTN,
+				StreamConstants.UI.GRIDHEIGHT_MARK_BTN, StreamConstants.UI.WEIGHTX_MARK_BTN);
 	}
 
 	// @author A0093874N
@@ -158,7 +159,7 @@ public class StreamTaskView extends JPanel {
 	 *            from
 	 */
 	void updateView(final Integer ind, StreamTask task) {
-		index.setText(String.format(StreamUtil.TEXT_INDEX, ind.toString()));
+		index.setText(String.format(StreamConstants.Message.TEXT_INDEX, ind.toString()));
 		taskName.setText(task.getTaskName());
 		StreamUtil.clearAllMouseListeners(taskName,
 				taskName.getMouseListeners());
@@ -168,7 +169,7 @@ public class StreamTaskView extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				// display details on mouse click
 				st.filterAndProcessInput(String
-						.format(StreamUtil.CMD_VIEW, ind));
+						.format(StreamConstants.Commands.VIEW, ind));
 			}
 
 			@Override
@@ -206,14 +207,14 @@ public class StreamTaskView extends JPanel {
 	 * @author Wilson Kurniawan
 	 */
 	private void markButtonDone() {
-		markButton.setText(StreamUtil.BTN_MARK_DONE);
+		markButton.setText(StreamConstants.UI.BTN_MARK_DONE);
 		StreamUtil.clearAllActionListeners(markButton,
 				markButton.getActionListeners());
 		markButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				st.filterAndProcessInput(String.format(
-						StreamUtil.CMD_MARK_DONE, index.getText().substring(1)));
+						StreamConstants.Commands.MARK_DONE, index.getText().substring(1)));
 			}
 		});
 	}
@@ -226,14 +227,14 @@ public class StreamTaskView extends JPanel {
 	 * @author Wilson Kurniawan
 	 */
 	private void markButtonNotDone() {
-		markButton.setText(StreamUtil.BTN_MARK_NOT_DONE);
+		markButton.setText(StreamConstants.UI.BTN_MARK_NOT_DONE);
 		StreamUtil.clearAllActionListeners(markButton,
 				markButton.getActionListeners());
 		markButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				st.filterAndProcessInput(String.format(
-						StreamUtil.CMD_MARK_NOT_DONE, index.getText()
+						StreamConstants.Commands.MARK_NOT_DONE, index.getText()
 								.substring(1)));
 			}
 		});

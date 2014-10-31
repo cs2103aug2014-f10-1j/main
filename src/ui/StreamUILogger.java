@@ -2,6 +2,7 @@ package ui;
 
 import javax.swing.JTextField;
 
+import util.StreamConstants;
 import util.StreamUtil;
 
 /**
@@ -32,7 +33,7 @@ public class StreamUILogger extends JTextField {
 	 *            - the message to be logged
 	 */
 	void showLogMessage(String logMsg) {
-		setForeground(StreamUtil.COLOR_LOG_MSG);
+		setForeground(StreamConstants.UI.COLOR_LOG_MSG);
 		setText(StreamUtil.showAsTerminalResponse(logMsg));
 	}
 
@@ -46,7 +47,7 @@ public class StreamUILogger extends JTextField {
 	 *            - the error message to be logged
 	 */
 	void showErrorMessage(String errMsg) {
-		setForeground(StreamUtil.COLOR_ERR_MSG);
+		setForeground(StreamConstants.UI.COLOR_ERR_MSG);
 		setText(StreamUtil.showAsTerminalResponse(errMsg));
 	}
 

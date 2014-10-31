@@ -12,6 +12,7 @@ import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
 import ui.StreamUI;
+import util.StreamConstants;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import util.StreamUtil;
@@ -79,7 +80,7 @@ public class Stream {
 	// @author A0096529N
 	private void initStreamIO(String file) {
 		if (!file.endsWith(".json")) {
-			filename = String.format(StreamUtil.PARAM_SAVEFILE, file);
+			filename = String.format(StreamConstants.SAVEFILE, file);
 		} else {
 			filename = file;
 		}
@@ -88,7 +89,7 @@ public class Stream {
 
 	// @author A0096529N
 	private void initStreamLogger() {
-		logger = StreamLogger.init(StreamUtil.COMPONENT_STREAM);
+		logger = StreamLogger.init(StreamConstants.ComponentTag.STREAM);
 	}
 
 	// @author A0096529N
@@ -101,7 +102,7 @@ public class Stream {
 			stobj = new StreamObject(allTasks, taskList);
 
 		} catch (StreamIOException e) {
-			log(String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage()));
+			log(String.format(StreamConstants.LogMessage.LOAD_FAILED, e.getMessage()));
 			stobj = new StreamObject();
 		}
 
@@ -116,7 +117,7 @@ public class Stream {
 			StreamIO.save(allTasks, taskList);
 			result = "File saved to " + StreamIO.getSaveLocation();
 		} catch (StreamIOException e) {
-			result = String.format(StreamUtil.LOG_LOAD_FAILED, e.getMessage());
+			result = String.format(StreamConstants.LogMessage.LOAD_FAILED, e.getMessage());
 			log(result);
 		}
 
@@ -142,7 +143,7 @@ public class Stream {
 	 *         otherwise.
 	 */
 	public Boolean hasTask(String taskName) {
-		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		return stobj.hasTask(taskName);
 	}
 
@@ -176,7 +177,7 @@ public class Stream {
 	 * @return <strong>String</strong> - the log message
 	 */
 	String addTask(String taskName) throws StreamModificationException {
-		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		// from here, section is modified by A0118007R
 		String content = taskName;
 		String[] splittedContent = content.split(" ");
@@ -209,7 +210,7 @@ public class Stream {
 		addTaskAndProcessParameters(nameOfTask, nameFound, modifyParams);
 		//
 
-		return String.format(StreamUtil.LOG_ADD, nameOfTask);
+		return String.format(StreamConstants.LogMessage.ADD, nameOfTask);
 
 	}
 
@@ -220,9 +221,9 @@ public class Stream {
 			throws StreamModificationException {
 
 		stobj.addTask(nameOfTask);
-		assert (stobj.hasTask(nameOfTask)) : StreamUtil.FAIL_NOT_ADDED;
+		assert (stobj.hasTask(nameOfTask)) : StreamConstants.Assertion.NOT_ADDED;
 
-		inputStack.push(String.format(StreamUtil.CMD_DISMISS,
+		inputStack.push(String.format(StreamConstants.Commands.DISMISS,
 				stobj.getNumberOfTasks()));
 
 		if (nameFound) {
@@ -313,9 +314,9 @@ public class Stream {
 
 	private void dismissTask(String taskName)
 			throws StreamModificationException {
-		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		stobj.deleteTask(taskName);
-		assert (!stobj.hasTask(taskName)) : StreamUtil.FAIL_NOT_DELETED;
+		assert (!stobj.hasTask(taskName)) : StreamConstants.Assertion.NOT_DELETED;
 	}
 
 	// @author A0118007R
@@ -336,7 +337,7 @@ public class Stream {
 
 	private String deleteTask(String taskName)
 			throws StreamModificationException {
-		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		StreamTask deletedTask = stobj.getTask(taskName);
 		ArrayList<String> order = stobj.getOrdering();
 		orderingStack.push(order);
@@ -344,8 +345,8 @@ public class Stream {
 
 		// This section is contributed by A0093874N
 		dumpedTasks.push(deletedTask);
-		inputStack.push(String.format(StreamUtil.CMD_RECOVER, 1));
-		return String.format(StreamUtil.LOG_DELETE, taskName);
+		inputStack.push(String.format(StreamConstants.Commands.RECOVER, 1));
+		return String.format(StreamConstants.LogMessage.DELETE, taskName);
 		//
 	}
 
@@ -361,8 +362,8 @@ public class Stream {
 		int noOfTasks = stobj.getNumberOfTasks();
 		orderingStack.push(stobj.getOrdering());
 		clear(noOfTasks);
-		assert (stobj.getNumberOfTasks() == 0) : StreamUtil.FAIL_NOT_CLEARED;
-		inputStack.push(String.format(StreamUtil.CMD_RECOVER, noOfTasks));
+		assert (stobj.getNumberOfTasks() == 0) : StreamConstants.Assertion.NOT_CLEARED;
+		inputStack.push(String.format(StreamConstants.Commands.RECOVER, noOfTasks));
 	}
 
 	private void clear(int noOfTasks) throws StreamModificationException {
@@ -396,12 +397,12 @@ public class Stream {
 
 	private String printDetails(String taskName)
 			throws StreamModificationException {
-		assert (taskName != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		StreamTask currentTask = stobj.getTask(taskName);
 		stui.displayDetails(currentTask);
 
 		// This section is contributed by A0093874N
-		return String.format(StreamUtil.LOG_VIEW, taskName);
+		return String.format(StreamConstants.LogMessage.VIEW, taskName);
 		//
 	}
 
@@ -422,11 +423,11 @@ public class Stream {
 
 	private String setName(String oldName, String newName)
 			throws StreamModificationException {
-		assert (oldName != null && newName != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (oldName != null && newName != null) : StreamConstants.Assertion.NULL_INPUT;
 		stobj.updateTaskName(oldName, newName);
 
 		// This section is contributed by A0093874N
-		return String.format(StreamUtil.LOG_NAME, oldName, newName);
+		return String.format(StreamConstants.LogMessage.NAME, oldName, newName);
 		//
 	}
 
@@ -451,9 +452,9 @@ public class Stream {
 		currentTask.setDescription(description);
 
 		// This section is contributed by A0093874N
-		inputStack.push(String.format(StreamUtil.CMD_DESC, index,
+		inputStack.push(String.format(StreamConstants.Commands.DESC, index,
 				oldDescription));
-		return String.format(StreamUtil.LOG_DESC, currentTask.getTaskName(),
+		return String.format(StreamConstants.LogMessage.DESC, currentTask.getTaskName(),
 				description);
 		//
 	}
@@ -468,8 +469,8 @@ public class Stream {
 		currentTask.setRank(taskRank);
 		//public static final String CMD_RANK = "rank %1$s %2$s";
 		
-		inputStack.push(String.format(StreamUtil.CMD_RANK, index, oldRank));
-		return String.format(StreamUtil.LOG_RANK, currentTask.getTaskName(), taskRank);
+		inputStack.push(String.format(StreamConstants.Commands.RANK, index, oldRank));
+		return String.format(StreamConstants.LogMessage.RANK, currentTask.getTaskName(), taskRank);
 	}
 
 
@@ -496,21 +497,21 @@ public class Stream {
 			throws StreamModificationException {
 		if (calendar == null) {
 			stobj.setNullDeadline(taskName);
-			return String.format(StreamUtil.LOG_DUE_NEVER, taskName);
+			return String.format(StreamConstants.LogMessage.DUE_NEVER, taskName);
 		} else {
 			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
 			stobj.setDueTime(taskName, calendar);
-			return String.format(StreamUtil.LOG_DUE, taskName, parsedCalendar);
+			return String.format(StreamConstants.LogMessage.DUE, taskName, parsedCalendar);
 		}
 	}
 
 	private void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
 		if (currentDeadline == null) {
 			inputStack.push(String
-					.format(StreamUtil.CMD_DUE, taskIndex, "null"));
+					.format(StreamConstants.Commands.DUE, taskIndex, "null"));
 		} else {
 			inputStack.push(String.format(
-					StreamUtil.CMD_DUE,
+					StreamConstants.Commands.DUE,
 					taskIndex,
 					currentDeadline.get(Calendar.DATE) + "/"
 							+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
@@ -531,10 +532,10 @@ public class Stream {
 			throws StreamModificationException {
 		stobj.markTaskAsDone(task);
 		// This section is contributed by A0118007R
-		inputStack.push(String.format(StreamUtil.CMD_MARK_NOT_DONE, index));
+		inputStack.push(String.format(StreamConstants.Commands.MARK_NOT_DONE, index));
 		//
 		// This section is contributed by A0093874N
-		return String.format(StreamUtil.LOG_MARK, task, "done");
+		return String.format(StreamConstants.LogMessage.MARK, task, "done");
 		//
 	}
 	
@@ -552,10 +553,10 @@ public class Stream {
 			throws StreamModificationException {
 		stobj.markTaskAsOngoing(task);
 		//
-		inputStack.push(String.format(StreamUtil.CMD_MARK_DONE, index));
+		inputStack.push(String.format(StreamConstants.Commands.MARK_DONE, index));
 		//
 		// This section is contributed by A0093874N
-		return String.format(StreamUtil.LOG_MARK, task, "ongoing");
+		return String.format(StreamConstants.LogMessage.MARK, task, "ongoing");
 		//
 	}
 
@@ -598,7 +599,7 @@ public class Stream {
 	 * @author Steven Khong
 	 */
 	private ArrayList<Integer> search(String keyphrase) {
-		assert (keyphrase != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (keyphrase != null) : StreamConstants.Assertion.NULL_INPUT;
 		// modified by A0093874N
 		return stobj.findTasks(keyphrase);
 	}
@@ -606,7 +607,7 @@ public class Stream {
 	// @author A0093874N
 
 	private ArrayList<Integer> filter(String criteria) {
-		assert (criteria != null) : StreamUtil.FAIL_NULL_INPUT;
+		assert (criteria != null) : StreamConstants.Assertion.NULL_INPUT;
 		// modified by A0093874N
 		return stobj.filterTasks(criteria);
 	}
@@ -632,7 +633,7 @@ public class Stream {
 	 * @deprecated for now
 	 */
 	private void showAndLogCommand(String command) {
-		String commandReceived = String.format(StreamUtil.LOG_CMD_RECEIVED,
+		String commandReceived = String.format(StreamConstants.LogMessage.CMD_RECEIVED,
 				command);
 		System.out.println(commandReceived);
 		log(StreamUtil.showAsTerminalResponse(commandReceived));
@@ -663,7 +664,7 @@ public class Stream {
 	// @author A0093874N
 	private void logCommand(String cmd) {
 		log(StreamUtil.showAsTerminalResponse(String.format(
-				StreamUtil.LOG_CMD_RECEIVED, cmd)));
+				StreamConstants.LogMessage.CMD_RECEIVED, cmd)));
 	}
 
 	// @author A0093874N
@@ -676,7 +677,7 @@ public class Stream {
 		String hr = StreamUtil.addZeroToTime(now.get(Calendar.HOUR_OF_DAY));
 		String min = StreamUtil.addZeroToTime(now.get(Calendar.MINUTE));
 		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
-		String logFileName = String.format(StreamUtil.PARAM_LOGFILE, 
+		String logFileName = String.format(StreamConstants.LOGFILE, 
 				day, mth, yr.toString().substring(2), hr, min, sec);
 		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
@@ -767,7 +768,7 @@ public class Stream {
 
 				inputStack.push(inverseCommand.trim());
 
-				showAndLogResult(String.format(StreamUtil.LOG_MODIFY, taskName));
+				showAndLogResult(String.format(StreamConstants.LogMessage.MODIFY, taskName));
 				break;
 
 			case NAME:
@@ -777,12 +778,12 @@ public class Stream {
 				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
 				String newTaskName = contents[1];
 				logMessage = setName(oldTaskName, newTaskName);
-				inputStack.push(String.format(StreamUtil.CMD_NAME, taskIndex,
+				inputStack.push(String.format(StreamConstants.Commands.NAME, taskIndex,
 						oldTaskName));
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
-				showAndLogResult(String.format(StreamUtil.LOG_NAME,
+				showAndLogResult(String.format(StreamConstants.LogMessage.NAME,
 						oldTaskName, newTaskName));
 				break;
 				
@@ -837,7 +838,7 @@ public class Stream {
 				ArrayList<Integer> filterResult = filter(content);
 				stui.resetAvailableTasks(filterResult,
 						stobj.getStreamTaskList(filterResult), true, true);
-				showAndLogResult(String.format(StreamUtil.LOG_FILTER, content,
+				showAndLogResult(String.format(StreamConstants.LogMessage.FILTER, content,
 						filterResult.size()));
 				break;
 
@@ -851,7 +852,7 @@ public class Stream {
 				ArrayList<Integer> searchResult = search(content);
 				stui.resetAvailableTasks(searchResult,
 						stobj.getStreamTaskList(searchResult), true, true);
-				showAndLogResult(String.format(StreamUtil.LOG_SEARCH, content,
+				showAndLogResult(String.format(StreamConstants.LogMessage.SEARCH, content,
 						searchResult.size()));
 				break;
 
@@ -878,7 +879,7 @@ public class Stream {
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
-				showAndLogResult(StreamUtil.LOG_CLEAR);
+				showAndLogResult(StreamConstants.LogMessage.CLEAR);
 				break;
 
 			case UNDO:
@@ -890,7 +891,7 @@ public class Stream {
 				logCommand("RECOVER");
 				int noOfTasksToRecover = Integer.parseInt(content);
 				recover(noOfTasksToRecover);
-				showAndLogResult(String.format(StreamUtil.LOG_RECOVER,
+				showAndLogResult(String.format(StreamConstants.LogMessage.RECOVER,
 						noOfTasksToRecover));
 				stobj.setOrdering(orderingStack.pop());
 				stui.resetAvailableTasks(stobj.getCounter(),
@@ -904,7 +905,7 @@ public class Stream {
 				taskIndex = Integer.parseInt(content);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
 				dismissTask(taskName);
-				showAndLogResult(String.format(StreamUtil.LOG_DELETE, taskName));
+				showAndLogResult(String.format(StreamConstants.LogMessage.DELETE, taskName));
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
@@ -913,12 +914,12 @@ public class Stream {
 
 			case EXIT:
 				logCommand("EXIT");
-				System.out.println(StreamUtil.MSG_THANK_YOU);
+				System.out.println(StreamConstants.Message.THANK_YOU);
 				saveLogFile();
 				System.exit(0);
 
 			default:
-				showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
+				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
 		}
 	}
 
@@ -931,10 +932,10 @@ public class Stream {
 
 	private void processUndo() {
 		if (inputStack.isEmpty()) {
-			showAndLogResult(StreamUtil.LOG_UNDO_FAIL);
+			showAndLogResult(StreamConstants.LogMessage.UNDO_FAIL);
 		} else {
 			String undoneInput = inputStack.pop();
-			showAndLogResult(StreamUtil.LOG_UNDO_SUCCESS);
+			showAndLogResult(StreamConstants.LogMessage.UNDO_SUCCESS);
 			processInput(undoneInput);
 
 			/*
@@ -949,7 +950,7 @@ public class Stream {
 	private void pushUntaggingIntoInputStack(int taskIndex,
 			ArrayList<String> tagsRemoved) {
 		if (tagsRemoved.size() != 0) {
-			inputStack.push(String.format(StreamUtil.CMD_TAG, taskIndex,
+			inputStack.push(String.format(StreamConstants.Commands.TAG, taskIndex,
 					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
 		}
 	}
@@ -957,7 +958,7 @@ public class Stream {
 	private void pushTaggingIntoInputStack(int taskIndex,
 			ArrayList<String> tagsAdded) {
 		if (tagsAdded.size() != 0) {
-			inputStack.push(String.format(StreamUtil.CMD_UNTAG, taskIndex,
+			inputStack.push(String.format(StreamConstants.Commands.UNTAG, taskIndex,
 					StreamUtil.listDownArrayContent(tagsAdded, " ")));
 		}
 	}
@@ -1131,17 +1132,17 @@ public class Stream {
 
 	private void logUnaddedTags(String taskName, ArrayList<String> tagsNotAdded) {
 		if (!tagsNotAdded.isEmpty()) {
-			log(String.format(StreamUtil.LOG_TAGS_NOT_ADDED, taskName,
+			log(String.format(StreamConstants.LogMessage.TAGS_NOT_ADDED, taskName,
 					StreamUtil.listDownArrayContent(tagsNotAdded, ", ")));
 		}
 	}
 
 	private void logAddedTags(String taskName, ArrayList<String> tagsAdded) {
 		if (!tagsAdded.isEmpty()) {
-			showAndLogResult(String.format(StreamUtil.LOG_TAGS_ADDED, taskName,
+			showAndLogResult(String.format(StreamConstants.LogMessage.TAGS_ADDED, taskName,
 					StreamUtil.listDownArrayContent(tagsAdded, ", ")));
 		} else {
-			showAndLogResult(StreamUtil.LOG_NO_TAGS_ADDED);
+			showAndLogResult(StreamConstants.LogMessage.NO_TAGS_ADDED);
 		}
 	}
 
@@ -1156,18 +1157,18 @@ public class Stream {
 	private void logUnremovedTags(String taskName,
 			ArrayList<String> tagsNotRemoved) {
 		if (!tagsNotRemoved.isEmpty()) {
-			log(String.format(StreamUtil.LOG_TAGS_NOT_REMOVED, taskName,
+			log(String.format(StreamConstants.LogMessage.TAGS_NOT_REMOVED, taskName,
 					StreamUtil.listDownArrayContent(tagsNotRemoved, ", ")));
 		}
 	}
 
 	private void logRemovedTags(String taskName, ArrayList<String> tagsRemoved) {
 		if (!tagsRemoved.isEmpty()) {
-			showAndLogResult(String.format(StreamUtil.LOG_TAGS_REMOVED,
+			showAndLogResult(String.format(StreamConstants.LogMessage.TAGS_REMOVED,
 					taskName,
 					StreamUtil.listDownArrayContent(tagsRemoved, ", ")));
 		} else {
-			showAndLogResult(StreamUtil.LOG_NO_TAGS_REMOVED);
+			showAndLogResult(StreamConstants.LogMessage.NO_TAGS_REMOVED);
 		}
 	}
 
@@ -1241,10 +1242,10 @@ public class Stream {
 			String content = parser.getCommandContent();
 			executeInput(command, content);
 		} catch (AssertionError e) {
-			showAndLogError(String.format(StreamUtil.LOG_ERRORS,
+			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS,
 					"AssertionError", e.getMessage()));
 		} catch (Exception e) {
-			showAndLogError(String.format(StreamUtil.LOG_ERRORS, e.getClass()
+			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS, e.getClass()
 					.getSimpleName(), e.getMessage()));
 		}
 	}
@@ -1253,14 +1254,14 @@ public class Stream {
 
 	public void filterAndProcessInput(String input) {
 		if (input == null) {
-			showAndLogError(String.format(StreamUtil.LOG_ERRORS,
-					"AssertionError", StreamUtil.FAIL_NULL_INPUT));
+			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS,
+					"AssertionError", StreamConstants.Assertion.NULL_INPUT));
 		} else {
 			log(input);
 			if (input.length() >= 7
 					&& (input.substring(0, 7).equals("recover") || input
 							.substring(0, 7).equals("dismiss"))) {
-				showAndLogError(StreamUtil.LOG_CMD_UNKNOWN);
+				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
 			} else {
 				processInput(input);
 				save();
@@ -1287,7 +1288,7 @@ public class Stream {
 			 * input commands "recover" and "dismiss" is for the undo process
 			 * and cannot be accessed directly by user
 			 */
-			showAndLogResult(StreamUtil.LOG_CMD_UNKNOWN);
+			showAndLogResult(StreamConstants.LogMessage.CMD_UNKNOWN);
 		} else {
 			processInput(input);
 		}
@@ -1295,7 +1296,7 @@ public class Stream {
 	}
 
 	public static void main(String[] args) {
-		new Stream(StreamUtil.PARAM_FILENAME);
+		new Stream(StreamConstants.FILENAME);
 	}
 
 }

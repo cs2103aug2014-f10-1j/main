@@ -1,10 +1,10 @@
 package parser;
 
-import exception.StreamParserException;
 import model.StreamObject;
+import util.StreamConstants;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
-import util.StreamUtil;
+import exception.StreamParserException;
 
 /*
  * Parser is used to interpret the user input to a pack of 
@@ -25,7 +25,7 @@ public class StreamParser {
 	private CommandType commandKey;
 	private String commandContent;
 
-	private static final StreamLogger logger = StreamLogger.init(StreamUtil.COMPONENT_STREAMPARSER);
+	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMPARSER);
 
 	public StreamParser() {
 		this.commandKey = CommandType.INIT;

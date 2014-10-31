@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StreamConstants;
 import util.StreamUtil;
 import exception.StreamModificationException;
 
@@ -57,7 +58,7 @@ public class StreamObject {
 	// @author A0093874N
 
 	public void setOrdering(ArrayList<String> anotherTaskList) {
-		assert (StreamUtil.listEqual(taskList, anotherTaskList)) : StreamUtil.FAIL_NOT_EQUAL;
+		assert (StreamUtil.listEqual(taskList, anotherTaskList)) : StreamConstants.Assertion.NOT_EQUAL;
 		taskList = anotherTaskList;
 	}
 

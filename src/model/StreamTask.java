@@ -1,10 +1,10 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Calendar;
+import java.util.Collections;
 
-import util.StreamUtil;
+import util.StreamConstants;
 
 public class StreamTask {
 
@@ -184,7 +184,7 @@ public class StreamTask {
 		if (hasTag(tag.toUpperCase())) {
 			tags.remove(tag.toUpperCase());
 		} else {
-			System.out.println(String.format(StreamUtil.ERR_TAG_DOES_NOT_EXIST,
+			System.out.println(String.format(StreamConstants.ExceptionMessage.ERR_TAG_DOES_NOT_EXIST,
 					tag));
 		}
 	}
@@ -260,7 +260,7 @@ public class StreamTask {
 			strDeadline = "Not specified";
 		} else {
 			strDeadline = deadline.get(Calendar.DATE) + " "
-					+ StreamUtil.MONTHS[(deadline.get(Calendar.MONTH))] + " "
+					+ StreamConstants.Calendar.MONTHS[(deadline.get(Calendar.MONTH))] + " "
 					+ deadline.get(Calendar.YEAR);
 		}
 		System.out.println("Deadline = " + strDeadline);
