@@ -69,7 +69,7 @@ public class StreamAddTaskTest {
 	@Test 
 	public void getTaskTestTwo() {
 		try {
-			StreamTask myTask = streamObject.getTask("AAA");
+			streamObject.getTask("AAA");
 			fail("A test message");
 		} catch (StreamModificationException e) {
 			

@@ -1,9 +1,7 @@
 package util;
 
 import static org.junit.Assert.*;
-import model.StreamObject;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class StreamUtilTest {

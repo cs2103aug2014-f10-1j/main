@@ -64,7 +64,7 @@ public class StreamModificationTest {
 		
 		Calendar task1Deadline = Calendar.getInstance();
 		task1Deadline.set(2014, 9, 17, 18, 48, 45);
-		streamObject.changeDeadline(TASK_NAME_1, task1Deadline);
+		task1.setDeadline(task1Deadline);
 
 		assertEquals("Deadline after modification", 
 				toDateString(task1Deadline), toDateString(task1.getDeadline()));
@@ -74,7 +74,7 @@ public class StreamModificationTest {
 	public void testRemoveTag() throws StreamModificationException {
 		assertEquals("Tags before modification", true, task3.hasTag("procrastinate"));
 
-		streamObject.removeTag(task3.getTaskName(), "procrastinate");
+		task3.deleteTag("procrastinate");
 
 		assertEquals("Tags after modification", false, task3.hasTag("procrastinate"));
 	}
@@ -83,7 +83,7 @@ public class StreamModificationTest {
 	public void testAddTag() throws StreamModificationException {
 		assertEquals("Tags before modification", false, task3.hasTag("tagtobeadded"));
 
-		streamObject.addTag(task3.getTaskName(), "tagtobeadded");
+		task3.addTag("tagtobeadded");
 
 		assertEquals("Tags after modification", true, task3.hasTag("tagtobeadded"));
 	}
@@ -104,7 +104,7 @@ public class StreamModificationTest {
 		task1.markAsOngoing();
 		assertEquals("Done before modification", false, task2.isDone());
 
-		streamObject.markTaskAsDone(task2.getTaskName());
+		task2.markAsDone();
 
 		assertEquals("Done after modification", true, task2.isDone());
 	}
@@ -114,7 +114,7 @@ public class StreamModificationTest {
 		task1.markAsDone();
 		assertEquals("Done before modification", true, task1.isDone());
 
-		streamObject.markTaskAsOngoing(task1.getTaskName());
+		task1.markAsOngoing();
 
 		assertEquals("Done after modification", false, task1.isDone());
 	}
@@ -126,7 +126,7 @@ public class StreamModificationTest {
 
 		Calendar task3Deadline = Calendar.getInstance();
 		task3Deadline.setTime(taskDeadline.getTime());
-		streamObject.setDueTime(task3.getTaskName(), task3Deadline);
+		task3.setDeadline(task3Deadline);
 
 		assertEquals("Deadline after modification", 
 				toDateString(taskDeadline), toDateString(task2.getDeadline()));
@@ -137,7 +137,7 @@ public class StreamModificationTest {
 		assertEquals("Deadline before modification", 
 				toDateString(taskDeadline), toDateString(task2.getDeadline()));
 		
-		streamObject.setNullDeadline(task2.getTaskName());
+		task2.setNullDeadline();
 
 		assertEquals("Deadline after modification", 
 				null, task2.getDeadline());

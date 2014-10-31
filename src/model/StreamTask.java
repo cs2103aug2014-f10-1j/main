@@ -173,19 +173,26 @@ public class StreamTask {
 
 	// TODO @author?
 
-	public void addTag(String newTag) {
-		tags.add(newTag.toUpperCase());
-		Collections.sort(tags);
+	public Boolean addTag(String newTag) {
+		if (!hasTag(newTag)) {
+			tags.add(newTag.toUpperCase());
+			Collections.sort(tags);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// TODO @author?
 
-	public void deleteTag(String tag) {
+	public Boolean deleteTag(String tag) {
 		if (hasTag(tag.toUpperCase())) {
 			tags.remove(tag.toUpperCase());
+			return true;
 		} else {
 			System.out.println(String.format(StreamConstants.ExceptionMessage.ERR_TAG_DOES_NOT_EXIST,
 					tag));
+			return false;
 		}
 	}
 

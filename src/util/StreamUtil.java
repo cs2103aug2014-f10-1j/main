@@ -208,4 +208,16 @@ public class StreamUtil {
 		return year;
 	}
 
+	// @author A0118007R
+
+	public static boolean isInteger(String x) {
+		try {
+			Integer.parseInt(x);
+			return true;
+		} catch (Exception e) {
+
+		}
+		return false;
+	}
+	
 }

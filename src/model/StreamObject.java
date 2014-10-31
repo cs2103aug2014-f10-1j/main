@@ -67,36 +67,39 @@ public class StreamObject {
 	public void setOrderingWithTasks(List<StreamTask> anotherTaskList) {
 
 		ArrayList<String> orderList = new ArrayList<String>();
-		for (StreamTask task:anotherTaskList) {
+		for (StreamTask task : anotherTaskList) {
 			orderList.add(task.getTaskName());
 		}
 		setOrdering(orderList);
 	}
 
 	// @author A0096529N
-	
+
 	public void sortAlpha(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
-				@Override public int compare(StreamTask o1, StreamTask o2) {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
 					return o2.getTaskName().compareTo(o1.getTaskName());
 				}
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
-				@Override public int compare(StreamTask o1, StreamTask o2) {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
 					return o1.getTaskName().compareTo(o2.getTaskName());
 				}
 			});
 		}
 	}
-	
+
 	// @author A0096529N
-	
+
 	public void sortStartTime(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
-				@Override public int compare(StreamTask o1, StreamTask o2) {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
 					if (o1.getStartTime() == null && o2.getStartTime() == null) {
 						return 0;
 					} else if (o1.getStartTime() == null) {
@@ -110,7 +113,8 @@ public class StreamObject {
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
-				@Override public int compare(StreamTask o1, StreamTask o2) {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
 					if (o1.getStartTime() == null && o2.getStartTime() == null) {
 						return 0;
 					} else if (o1.getStartTime() == null) {
@@ -124,13 +128,14 @@ public class StreamObject {
 			});
 		}
 	}
-	
+
 	// @author A0096529N
-	
+
 	public void sortDeadline(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
-				@Override public int compare(StreamTask o1, StreamTask o2) {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
 					if (o1.getDeadline() == null && o2.getDeadline() == null) {
 						return 0;
 					} else if (o1.getDeadline() == null) {
@@ -144,7 +149,8 @@ public class StreamObject {
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
-				@Override public int compare(StreamTask o1, StreamTask o2) {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
 					if (o1.getDeadline() == null && o2.getDeadline() == null) {
 						return 0;
 					} else if (o1.getDeadline() == null) {
@@ -158,13 +164,13 @@ public class StreamObject {
 			});
 		}
 	}
-	
+
 	private void sort(Comparator<StreamTask> comparator) {
 		List<StreamTask> tempList = getStreamTaskList();
 		Collections.sort(tempList, comparator);
 		setOrderingWithTasks(tempList);
 	}
-	
+
 	/**
 	 * Adds a new task to StreamObject
 	 * 
@@ -185,6 +191,8 @@ public class StreamObject {
 			this.taskList.add(newTaskName);
 		}
 	}
+
+	// @author A0093874N
 
 	public void recoverTask(StreamTask task) {
 		this.taskMap.put(task.getTaskName().toLowerCase(), task);
@@ -235,7 +243,7 @@ public class StreamObject {
 	 * get task description
 	 * 
 	 * @throws StreamModificationException
-	 * 
+	 * @deprecated
 	 */
 
 	public String getTaskDescription(String taskName)
@@ -247,7 +255,7 @@ public class StreamObject {
 	/**
 	 * get task deadline
 	 * 
-	 * 
+	 * @deprecated
 	 */
 
 	public Calendar getTaskDeadline(String taskName)
@@ -295,6 +303,7 @@ public class StreamObject {
 	 * @throws StreamModificationException
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
+	 * @deprecated
 	 */
 	public void changeDeadline(String taskName, Calendar deadline)
 			throws StreamModificationException {
@@ -321,6 +330,7 @@ public class StreamObject {
 	 * @throws StreamModificationException
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
+	 * @deprecated
 	 */
 	public Boolean removeTag(String taskName, String tag)
 			throws StreamModificationException {
@@ -350,6 +360,7 @@ public class StreamObject {
 	 * @throws StreamModificationException
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found
+	 * @deprecated
 	 */
 	public Boolean addTag(String taskName, String tag)
 			throws StreamModificationException {
@@ -410,6 +421,7 @@ public class StreamObject {
 	 * @param taskName
 	 * 
 	 * @throws StreamModificationException
+	 * @deprecated
 	 */
 	public void markTaskAsDone(String taskName)
 			throws StreamModificationException {
@@ -419,6 +431,10 @@ public class StreamObject {
 		taskMap.put(taskName.toLowerCase(), task);
 	}
 
+	/**
+	 * @deprecated
+	 * 
+	 */
 	public void markTaskAsOngoing(String taskName)
 			throws StreamModificationException {
 		StreamTask task = this.getTask(taskName);
@@ -442,6 +458,7 @@ public class StreamObject {
 	 *             </p>
 	 * 
 	 *             The case "calendar is null" will be dealt with by Task.java
+	 * @deprecated
 	 */
 	public void setDueTime(String taskName, Calendar calendar)
 			throws StreamModificationException {
@@ -451,12 +468,16 @@ public class StreamObject {
 		taskMap.put(taskName.toLowerCase(), task);
 	}
 
+	/**
+	 * 
+	 * @deprecated
+	 */
 	public void setNullDeadline(String taskName)
 			throws StreamModificationException {
 		StreamTask currentTask = this.getTask(taskName.toLowerCase());
 		currentTask.setNullDeadline();
 	}
-	
+
 	// @author A0119401U
 	/**
 	 * Set the rank of the selected task
@@ -468,10 +489,11 @@ public class StreamObject {
 	 * Preconditions: new rank is one of the followings: high, medium, low
 	 * </p>
 	 * 
-	 * @param taskName, newRank
+	 * @param taskName
+	 *            , newRank
 	 * 
 	 * @throws StreamModificationException
-	 * 
+	 * @deprecated
 	 */
 	public void setNewRank(String taskName, String newRank)
 			throws StreamModificationException {
@@ -479,7 +501,7 @@ public class StreamObject {
 		taskMap.remove(taskName.toLowerCase());
 		task.setRank(newRank);
 		taskMap.put(taskName.toLowerCase(), task);
-		
+
 	}
 
 	// @author A0096529N
@@ -615,7 +637,7 @@ public class StreamObject {
 	 */
 	public ArrayList<StreamTask> getStreamTaskList() {
 		ArrayList<StreamTask> taskList = new ArrayList<StreamTask>();
-		for (String key:taskMap.keySet()) {
+		for (String key : taskMap.keySet()) {
 			taskList.add(taskMap.get(key));
 		}
 		return taskList;
