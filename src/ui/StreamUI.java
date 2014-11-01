@@ -2,12 +2,15 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -48,7 +51,7 @@ public class StreamUI {
 	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private static final StreamLogger loggerDoc = StreamLogger
-			.init(StreamConstants.ComponentTag.UI);
+			.init(StreamConstants.ComponentTag.STREAMUI);
 
 	private JButton undoButton;
 	private JButton clearSearchButton;
@@ -90,16 +93,24 @@ public class StreamUI {
 		availTasks = new ArrayList<StreamTask>();
 		availIndices = new ArrayList<Integer>();
 
+		Vector<Component> order = new Vector<Component>(3);
+		order.add(newTaskTextField);
+		order.add(console);
+		order.add(logger);
+		mainFrame.setFocusTraversalPolicy(new CustomFocusTraversal(order));
+
 		mainFrame.setVisible(true);
 	}
 
 	// @author A0096529N
-	
+
 	private void setupLookAndFeel() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-			loggerDoc.log(LogLevel.ERROR, StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			loggerDoc.log(LogLevel.ERROR,
+					StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
 		}
 	}
 
@@ -146,7 +157,9 @@ public class StreamUI {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			addComponent(taskPanel, StreamConstants.UI.MARGIN_ELEM,
-					StreamConstants.UI.GRIDX_TASK, i + StreamConstants.UI.GRIDY_TASK_START, StreamConstants.UI.GRIDWIDTH_TASK,
+					StreamConstants.UI.GRIDX_TASK, i
+							+ StreamConstants.UI.GRIDY_TASK_START,
+					StreamConstants.UI.GRIDWIDTH_TASK,
 					StreamConstants.UI.IPADY_TASK);
 			shownTasks[i] = taskPanel;
 			taskPanel.setVisible(false);
@@ -165,37 +178,44 @@ public class StreamUI {
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(StreamConstants.UI.FONT_TITLE);
 		title.setForeground(StreamConstants.UI.COLOR_HEADER);
-		addComponent(title, StreamConstants.UI.MARGIN_HEADER, StreamConstants.UI.GRIDX_HEADER,
-				StreamConstants.UI.GRIDY_HEADER, StreamConstants.UI.GRIDWIDTH_HEADER,
+		addComponent(title, StreamConstants.UI.MARGIN_HEADER,
+				StreamConstants.UI.GRIDX_HEADER,
+				StreamConstants.UI.GRIDY_HEADER,
+				StreamConstants.UI.GRIDWIDTH_HEADER,
 				StreamConstants.UI.IPADY_HEADER);
 	}
 
 	// @author A0096529N
-	
+
 	private void addMenu() {
 		newTaskTextField = new JTextField();
 		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
 		addComponent(newTaskTextField, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_ADD_TASK_TEXTFIELD, StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_INPUT, StreamConstants.UI.IPADY_BUTTON);
-		
+				StreamConstants.UI.GRIDX_ADD_TASK_TEXTFIELD,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_INPUT,
+				StreamConstants.UI.IPADY_BUTTON);
+
 		addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
 		addTaskButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String params = newTaskTextField.getText();
 				newTaskTextField.setText("");
-				stream.filterAndProcessInput(String.format(StreamConstants.Commands.ADD_TASK, params));
+				stream.filterAndProcessInput(String.format(
+						StreamConstants.Commands.ADD_TASK, params));
 			}
 		});
 		addComponent(addTaskButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_ADD_TASK_BTN, StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
-		
+				StreamConstants.UI.GRIDX_ADD_TASK_BTN,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
+
 		addSortDeadlineButton();
 		addSortAlphaButton();
 	}
-	
+
 	// @author A0093874N
 
 	/**
@@ -227,8 +247,9 @@ public class StreamUI {
 				stream.filterAndProcessInput(StreamConstants.Commands.UNDO);
 			}
 		});
-		addComponent(undoButton, StreamConstants.UI.MARGIN_ELEM, StreamConstants.UI.GRIDX_UNDO,
-				StreamConstants.UI.GRIDY_BUTTON, StreamConstants.UI.GRIDWIDTH_BUTTON,
+		addComponent(undoButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_UNDO, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_BUTTON,
 				StreamConstants.UI.IPADY_BUTTON);
 	}
 
@@ -248,8 +269,10 @@ public class StreamUI {
 			}
 		});
 		addComponent(firstPageButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_FIRST, StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDX_FIRST,
+				StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -270,7 +293,8 @@ public class StreamUI {
 		});
 		addComponent(prevPageButton, StreamConstants.UI.MARGIN_ELEM,
 				StreamConstants.UI.GRIDX_PREV, StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -291,7 +315,8 @@ public class StreamUI {
 		});
 		addComponent(nextPageButton, StreamConstants.UI.MARGIN_ELEM,
 				StreamConstants.UI.GRIDX_NEXT, StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -311,7 +336,8 @@ public class StreamUI {
 		});
 		addComponent(lastPageButton, StreamConstants.UI.MARGIN_ELEM,
 				StreamConstants.UI.GRIDX_LAST, StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -330,8 +356,10 @@ public class StreamUI {
 			}
 		});
 		addComponent(clearSearchButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_CLEAR, StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_BUTTON, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDX_CLEAR,
+				StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_BUTTON,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0096529N
@@ -345,8 +373,10 @@ public class StreamUI {
 			}
 		});
 		addComponent(sortAlphaButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_SORT_ALPHA, StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDX_SORT_ALPHA,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0096529N
@@ -360,8 +390,10 @@ public class StreamUI {
 			}
 		});
 		addComponent(sortDeadlineButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_SORT_DEADLINE, StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_NAVIG, StreamConstants.UI.IPADY_BUTTON);
+				StreamConstants.UI.GRIDX_SORT_DEADLINE,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
 	}
 
 	// @author A0093874N
@@ -374,8 +406,10 @@ public class StreamUI {
 	private void addConsole() {
 		console = new JTextField();
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(console, StreamConstants.UI.MARGIN_ELEM, StreamConstants.UI.GRIDX_CONSOLE,
-				StreamConstants.UI.GRIDY_CONSOLE, StreamConstants.UI.GRIDWIDTH_CONSOLE,
+		addComponent(console, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_CONSOLE,
+				StreamConstants.UI.GRIDY_CONSOLE,
+				StreamConstants.UI.GRIDWIDTH_CONSOLE,
 				StreamConstants.UI.IPADY_CONSOLE);
 	}
 
@@ -389,8 +423,10 @@ public class StreamUI {
 	private void addLogger() {
 		logger = new StreamUILogger();
 		logger.setFont(StreamConstants.UI.FONT_LOGGER);
-		addComponent(logger, StreamConstants.UI.MARGIN_ELEM, StreamConstants.UI.GRIDX_LOGGER,
-				StreamConstants.UI.GRIDY_LOGGER, StreamConstants.UI.GRIDWIDTH_LOGGER,
+		addComponent(logger, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_LOGGER,
+				StreamConstants.UI.GRIDY_LOGGER,
+				StreamConstants.UI.GRIDWIDTH_LOGGER,
 				StreamConstants.UI.IPADY_LOGGER);
 	}
 
@@ -405,8 +441,10 @@ public class StreamUI {
 		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
 		footer.setFont(StreamConstants.UI.FONT_FOOTER);
 		footer.setHorizontalAlignment(SwingConstants.RIGHT);
-		addComponent(footer, StreamConstants.UI.MARGIN_FOOTER, StreamConstants.UI.GRIDX_FOOTER,
-				StreamConstants.UI.GRIDY_FOOTER, StreamConstants.UI.GRIDWIDTH_FOOTER,
+		addComponent(footer, StreamConstants.UI.MARGIN_FOOTER,
+				StreamConstants.UI.GRIDX_FOOTER,
+				StreamConstants.UI.GRIDY_FOOTER,
+				StreamConstants.UI.GRIDWIDTH_FOOTER,
 				StreamConstants.UI.IPADY_FOOTER);
 	}
 
@@ -595,10 +633,10 @@ public class StreamUI {
 				StreamUtil.displayStatus(task.isDone()),
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
-						StreamUtil.displayDescription(task.getDescription()),
-						StreamUtil.displayTags(task.getTags())), String.format(
-								StreamConstants.Message.DETAILS_HEADER, task.getTaskName()),
-								JOptionPane.INFORMATION_MESSAGE);
+				StreamUtil.displayDescription(task.getDescription()),
+				StreamUtil.displayTags(task.getTags())), String.format(
+				StreamConstants.Message.DETAILS_HEADER, task.getTaskName()),
+				JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
 	}
@@ -639,4 +677,39 @@ public class StreamUI {
 		}
 	}
 
+	private class CustomFocusTraversal extends FocusTraversalPolicy {
+		Vector<Component> order;
+
+		public CustomFocusTraversal(Vector<Component> order) {
+			this.order = new Vector<Component>(order.size());
+			this.order.addAll(order);
+		}
+
+		public Component getComponentAfter(Container focusCycleRoot,
+				Component aComponent) {
+			int idx = (order.indexOf(aComponent) + 1) % order.size();
+			return order.get(idx);
+		}
+
+		public Component getComponentBefore(Container focusCycleRoot,
+				Component aComponent) {
+			int idx = order.indexOf(aComponent) - 1;
+			if (idx < 0) {
+				idx = order.size() - 1;
+			}
+			return order.get(idx);
+		}
+
+		public Component getDefaultComponent(Container focusCycleRoot) {
+			return order.get(1);
+		}
+
+		public Component getLastComponent(Container focusCycleRoot) {
+			return order.lastElement();
+		}
+
+		public Component getFirstComponent(Container focusCycleRoot) {
+			return order.get(0);
+		}
+	}
 }
