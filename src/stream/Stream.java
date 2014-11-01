@@ -932,6 +932,7 @@ public class Stream {
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
+				showAndLogResult(StreamConstants.LogMessage.UNSORT);
 				inputStack.push("some fake input to be popped");
 				break;
 

@@ -35,6 +35,7 @@ public class StreamConstants {
 		public static final String RANK = "Changed ranking for \"%1$s\" to \"%2$s\"";
 		public static final String CLEAR = "Cleared all tasks";
 		public static final String RECOVER = "Recovered %1$s task(s)";
+		public static final String UNSORT = "Restored to previous task sorting";
 		public static final String NAME = "Changed name for \"%1$s\" to \"%2$s\"";
 		public static final String MARK = "\"%1$s\" marked as %2$s";
 		public static final String ERRORS = "%1$s: %2$s";

@@ -2,13 +2,15 @@ package parser;
 
 import parser.StreamParser.CommandType;
 
-/*
+/**
  * Content of the parser to be used by the Logic Part
  * CommandKey is the identifier like "add" or "delete"
  * while commandContent is the additional info
  * 
  * @author: Jiang Shenhao
+ * @deprecated since not used anywhere. should this be deleted?
  */
+
 public class StreamParserContent {
 	private CommandType commandKey;
 	private String commandContent;
