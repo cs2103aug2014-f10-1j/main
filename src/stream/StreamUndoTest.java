@@ -129,7 +129,7 @@ public class StreamUndoTest {
 		String taskNameForTest = "a task";
 		in("add " + taskNameForTest);
 		in("modify 1 due 11/11 desc multiple inputs");
-		assertEquals("has date 11/11", "11/11/2014",
+		assertEquals("has date 11/11", "11/11/2014, 00:00:00",
 				StreamUtil.getCalendarWriteUp(st.stobj.getTask(taskNameForTest)
 						.getDeadline()));
 		assertEquals("has description", "multiple inputs",

@@ -35,13 +35,13 @@ public class StreamUtil {
 				return (day >= 1) && (day <= 29);
 			} else {
 				return (day >= 1) && (day <= 28);
-			}	
+			}
 		} else {
 			return (day >= 1) && (day <= 30);
 		}
-		
+
 	}
-	
+
 	public static boolean isLeapYear(int year) {
 		if (year % 400 == 0) {
 			return true;
@@ -53,8 +53,8 @@ public class StreamUtil {
 	}
 
 	private static boolean isMonthWith31Days(int month) {
-		return (month == 1) || (month == 3) || (month == 5) || (month ==7) ||
-				(month == 8) || (month == 10) || (month == 12);
+		return (month == 1) || (month == 3) || (month == 5) || (month == 7)
+				|| (month == 8) || (month == 10) || (month == 12);
 	}
 
 	public static boolean isValidYear(int year) {
@@ -182,7 +182,10 @@ public class StreamUtil {
 	public static String getCalendarWriteUp(Calendar calendar) {
 		return calendar.get(Calendar.DAY_OF_MONTH) + "/"
 				+ (calendar.get(Calendar.MONTH) + 1) + "/"
-				+ calendar.get(Calendar.YEAR);
+				+ calendar.get(Calendar.YEAR) + ", "
+				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY)) + ":"
+				+ addZeroToTime(calendar.get(Calendar.MINUTE)) + ":"
+				+ addZeroToTime(calendar.get(Calendar.SECOND));
 	}
 
 	// TODO @author?
@@ -219,5 +222,5 @@ public class StreamUtil {
 		}
 		return false;
 	}
-	
+
 }
