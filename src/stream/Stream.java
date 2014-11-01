@@ -147,7 +147,7 @@ public class Stream {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		return stobj.hasTask(taskName);
 	}
-	
+
 	// @author A0118007R
 	boolean isValidParameter(String param) {
 		for (String s : validParameters) {
@@ -541,7 +541,8 @@ public class Stream {
 				index));
 		//
 		// This section is contributed by A0093874N
-		return String.format(StreamConstants.LogMessage.MARK, task, "done");
+		return String.format(StreamConstants.LogMessage.MARK,
+				task.getTaskName(), "done");
 		//
 	}
 
@@ -562,7 +563,8 @@ public class Stream {
 				.format(StreamConstants.Commands.MARK_DONE, index));
 		//
 		// This section is contributed by A0093874N
-		return String.format(StreamConstants.LogMessage.MARK, task, "ongoing");
+		return String.format(StreamConstants.LogMessage.MARK,
+				task.getTaskName(), "ongoing");
 		//
 	}
 
@@ -677,14 +679,8 @@ public class Stream {
 
 	private void saveLogFile() throws IOException {
 		Calendar now = Calendar.getInstance();
-		String day = StreamUtil.addZeroToTime(now.get(Calendar.DAY_OF_MONTH));
-		String mth = StreamUtil.addZeroToTime(now.get(Calendar.MONTH));
-		Integer yr = now.get(Calendar.YEAR);
-		String hr = StreamUtil.addZeroToTime(now.get(Calendar.HOUR_OF_DAY));
-		String min = StreamUtil.addZeroToTime(now.get(Calendar.MINUTE));
-		String sec = StreamUtil.addZeroToTime(now.get(Calendar.SECOND));
-		String logFileName = String.format(StreamConstants.LOGFILE, day, mth,
-				yr.toString().substring(2), hr, min, sec);
+		String logFileName = String.format(StreamConstants.LOGFILE, StreamUtil
+				.stripCalendarChars(StreamUtil.getCalendarWriteUp(now)));
 		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
 
@@ -925,7 +921,7 @@ public class Stream {
 						false);
 				inputStack.push("some fake input to be popped");
 				break;
-				
+
 			case UNSORT:
 				logCommand("UNSORT");
 				stobj.setOrdering(orderingStack.pop());
@@ -1294,7 +1290,7 @@ public class Stream {
 			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS,
 					"AssertionError", StreamConstants.Assertion.NULL_INPUT));
 		} else {
-			log(input);
+			log(StreamUtil.showAsTerminalInput(input));
 			if (isBlockedInput(input)) {
 				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
 			} else {

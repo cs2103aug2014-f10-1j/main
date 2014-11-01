@@ -12,7 +12,7 @@ public class StreamConstants {
 	public static final String VERSION = "V0.2";
 	public static final String FILENAME = "stream";
 	public static final String SAVEFILE = "%1$s.json";
-	public static final String LOGFILE = "%1$s%2$s%3$s %4$s%5$s%6$s.txt";
+	public static final String LOGFILE = "%1$s.txt";
 	
 	public static class Calendar {
 		public static final String[] MONTHS = { "January", "February", "March",
@@ -21,7 +21,7 @@ public class StreamConstants {
 	}
 	public static class ComponentTag {
 		public static final String STREAM = "stream";
-		public static final String UI = "ui";
+		public static final String STREAMUI = "ui";
 		public static final String STREAMOBJECT = "model";
 		public static final String STREAMIO = "io";
 		public static final String STREAMPARSER = "parser";

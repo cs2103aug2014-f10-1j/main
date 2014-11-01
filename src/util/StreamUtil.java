@@ -20,6 +20,12 @@ import javax.swing.JLabel;
  *         Khong Wai How, Jiang Shenhao
  */
 public class StreamUtil {
+
+	public static final String DATE_DELIMITER = "/";
+	public static final String TIME_DELIMITER = ":";
+	public static final String PREFIX_INPUT = "<< ";
+	public static final String PREFIX_OUTPUT = ">> ";
+
 	// Date-Validity Checking methods
 	// @author A0118007R
 
@@ -123,9 +129,14 @@ public class StreamUtil {
 
 	// @author A0093874N
 
+	public static String showAsTerminalInput(String logMessage) {
+		return PREFIX_INPUT + logMessage;
+	}
+
+	// @author A0093874N
+
 	public static String showAsTerminalResponse(String logMessage) {
-		final String PREFIX = ">> ";
-		return PREFIX + logMessage;
+		return PREFIX_OUTPUT + logMessage;
 	}
 
 	// @author A0093874N
@@ -180,18 +191,27 @@ public class StreamUtil {
 	// @author A0093874N
 
 	public static String getCalendarWriteUp(Calendar calendar) {
-		return calendar.get(Calendar.DAY_OF_MONTH) + "/"
-				+ (calendar.get(Calendar.MONTH) + 1) + "/"
-				+ calendar.get(Calendar.YEAR) + ", "
-				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY)) + ":"
-				+ addZeroToTime(calendar.get(Calendar.MINUTE)) + ":"
-				+ addZeroToTime(calendar.get(Calendar.SECOND));
+		return addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
+				+ DATE_DELIMITER
+				+ addZeroToTime((calendar.get(Calendar.MONTH) + 1))
+				+ DATE_DELIMITER + calendar.get(Calendar.YEAR) + ", "
+				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
+				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.MINUTE))
+				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.SECOND));
+	}
+
+	// @author A0093874N
+
+	public static String stripCalendarChars(String str) {
+		str = str.replaceAll(DATE_DELIMITER, "").replaceAll(TIME_DELIMITER, "")
+				.replace(",", "");
+		return str;
 	}
 
 	// TODO @author?
 
 	public static Calendar parseCalendar(String contents) {
-		String[] dueDate = contents.split("/");
+		String[] dueDate = contents.split(DATE_DELIMITER);
 		int year = parseYear(dueDate);
 		int day = Integer.parseInt(dueDate[0].trim());
 		int month = Integer.parseInt(dueDate[1].trim());
