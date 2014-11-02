@@ -73,10 +73,10 @@ public class StreamSaveTest {
 		stream.save();
 
 		String expectedContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
-				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
-				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		assertEquals("Saved state", expectedContent, fileToString(testFile));

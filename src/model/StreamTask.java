@@ -6,6 +6,8 @@ import java.util.Collections;
 
 import util.StreamConstants;
 import util.StreamLogger;
+import util.StreamLogger.LogLevel;
+import util.StreamUtil;
 
 /**
  * Some documentation.
@@ -34,19 +36,25 @@ public class StreamTask {
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
 		this.done = false;
-		this.rank = null;
+		this.rank = "low";
 	}
 
-	// TODO @author?
+	// @author A0118007R
 
 	public String getTaskName() {
 		return this.taskName;
 	}
 
-	// TODO @author?
+	// @author A0118007R
 
 	public void setTaskName(String newTaskName) {
 		this.taskName = newTaskName;
+	}
+	
+	// @author A0093874N
+	
+	private void log(String message) {
+		logger.log(LogLevel.DEBUG, message);
 	}
 
 	// @author A0118007R
@@ -185,7 +193,7 @@ public class StreamTask {
 		this.tags = new ArrayList<String>();
 	}
 
-	// TODO @author?
+	// @author A0096529N
 
 	public Boolean addTag(String newTag) {
 		if (!hasTag(newTag)) {
@@ -196,8 +204,8 @@ public class StreamTask {
 			return false;
 		}
 	}
-
-	// TODO @author?
+	
+	// @author A0096529N
 
 	public Boolean deleteTag(String tag) {
 		if (hasTag(tag.toUpperCase())) {
@@ -210,7 +218,127 @@ public class StreamTask {
 		}
 	}
 
-	// TODO @author?
+	/*
+	 * brought from Stream.java 
+	 */
+	
+	public ArrayList<String> addTags(String[] tags) {
+		ArrayList<String> tagsAdded = new ArrayList<String>();
+		ArrayList<String> tagsNotAdded = new ArrayList<String>();
+		int start = 0;
+		if (StreamUtil.isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (addTag(tags[i])) {
+				tagsAdded.add(tags[i]);
+			} else {
+				tagsNotAdded.add(tags[i]);
+			}
+		}
+		// log both tagsAdded and tagsNotAdded
+		return tagsAdded;
+	}
+
+	public ArrayList<String> removeTags(String[] tags) {
+		ArrayList<String> tagsRemoved = new ArrayList<String>();
+		ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+		int start = 0;
+		if (StreamUtil.isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (deleteTag(tags[i])) {
+				tagsRemoved.add(tags[i]);
+			} else {
+				tagsNotRemoved.add(tags[i]);
+			}
+		}
+		// log both tagsRemoved and tagsNotRemoved
+		return tagsRemoved;
+	}
+
+/*
+	private void logTagsAdded(String taskName, ArrayList<String> tagsAdded,
+			ArrayList<String> tagsNotAdded) {
+		logAddedTags(taskName, tagsAdded);
+		logUnaddedTags(taskName, tagsNotAdded);
+	}
+
+	private void logUnaddedTags(String taskName, ArrayList<String> tagsNotAdded) {
+		if (!tagsNotAdded.isEmpty()) {
+			log(String.format(StreamConstants.LogMessage.TAGS_NOT_ADDED,
+					taskName,
+					StreamUtil.listDownArrayContent(tagsNotAdded, ", ")));
+		}
+	}
+*/
+	
+/*
+	private void logTagsRemoved(String taskName, ArrayList<String> tagsRemoved,
+			ArrayList<String> tagsNotRemoved) {
+		logRemovedTags(taskName, tagsRemoved);
+		logUnremovedTags(taskName, tagsNotRemoved);
+	}
+
+	private void logUnremovedTags(String taskName,
+			ArrayList<String> tagsNotRemoved) {
+		if (!tagsNotRemoved.isEmpty()) {
+			log(String.format(StreamConstants.LogMessage.TAGS_NOT_REMOVED,
+					taskName,
+					StreamUtil.listDownArrayContent(tagsNotRemoved, ", ")));
+		}
+	}
+*/
+	
+/*
+	private void addTags(String[] tags, StreamTask task,
+			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded)
+			throws StreamModificationException {
+		int start = 0;
+		processAddingTags(tags, task, tagsAdded, tagsNotAdded, start);
+	}
+
+	private void processAddingTags(String[] tags, StreamTask task,
+			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded,
+			int start) throws StreamModificationException {
+		if (StreamUtil.isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (task.addTag(tags[i])) {
+				tagsAdded.add(tags[i]);
+			} else {
+				tagsNotAdded.add(tags[i]);
+			}
+		}
+	}
+*/
+	
+/*
+	private void removeTags(String[] tags, StreamTask task,
+			ArrayList<String> tagsRemoved, ArrayList<String> tagsNotRemoved)
+			throws StreamModificationException {
+		int start = 0;
+		if (StreamUtil.isInteger(tags[0])) {
+			start = 1;
+		}
+		processRemoveTags(tags, task, tagsRemoved, tagsNotRemoved, start);
+	}
+
+	private void processRemoveTags(String[] tags, StreamTask task,
+			ArrayList<String> tagsRemoved, ArrayList<String> tagsNotRemoved,
+			int start) throws StreamModificationException {
+		for (int i = start; i < tags.length; i++) {
+			if (task.deleteTag(tags[i])) {
+				tagsRemoved.add(tags[i]);
+			} else {
+				tagsNotRemoved.add(tags[i]);
+			}
+		}
+	}
+*/
+	// @author A0096529N
 
 	public boolean hasTag(String tag) {
 		if (tags.contains(tag.toUpperCase())) {
@@ -243,7 +371,7 @@ public class StreamTask {
 		return false;
 	}
 
-	// TODO @author?
+	// @author A0119401U
 
 	public boolean isDone() {
 		return this.done;
@@ -255,7 +383,7 @@ public class StreamTask {
 		this.done = true;
 	}
 
-	// TODO @author?
+	// @author A0119401U
 
 	public void markAsOngoing() {
 		this.done = false;

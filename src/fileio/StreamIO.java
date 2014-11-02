@@ -261,6 +261,7 @@ public class StreamIO {
 			taskJson.put(TaskKey.NAME, task.getTaskName());
 			taskJson.put(TaskKey.DESCRIPTION, task.getDescription());
 			taskJson.put(TaskKey.TAGS, task.getTags());
+			taskJson.put(TaskKey.RANK, task.getRank());
 			taskJson.put(TaskKey.STARTTIME, formatDate(task.getStartTime()));
 			taskJson.put(TaskKey.DEADLINE, formatDate(task.getDeadline()));
 			taskJson.put(TaskKey.DONE, task.isDone());
@@ -308,6 +309,10 @@ public class StreamIO {
 				if (isDone) {
 					task.markAsDone();
 				}
+			}
+			
+			if (taskJson.has(TaskKey.RANK)){
+				task.setRank(taskJson.getString(TaskKey.RANK));
 			}
 			return task;
 		} catch (JSONException | ParseException e) {
@@ -363,5 +368,6 @@ public class StreamIO {
 		static final String DESCRIPTION = "taskDescription";
 		static final String TAGS = "tags";
 		static final String DONE = "done";
+		static final String RANK = "rank";
 	}
 }

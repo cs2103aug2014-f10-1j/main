@@ -634,9 +634,9 @@ public class StreamUI {
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
 				StreamUtil.displayDescription(task.getDescription()),
-				StreamUtil.displayTags(task.getTags())), String.format(
-				StreamConstants.Message.DETAILS_HEADER, task.getTaskName()),
-				JOptionPane.INFORMATION_MESSAGE);
+				StreamUtil.displayTags(task.getTags()), task.getRank()), String
+				.format(StreamConstants.Message.DETAILS_HEADER,
+						task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
 	}

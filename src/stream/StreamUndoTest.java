@@ -129,7 +129,7 @@ public class StreamUndoTest {
 		String taskNameForTest = "a task";
 		in("add " + taskNameForTest);
 		in("modify 1 due 11/11 desc multiple inputs");
-		assertEquals("has date 11/11", "11/11/2014, 00:00:00",
+		assertEquals("has date 11/11", "11/11/2014 00:00:00",
 				StreamUtil.getCalendarWriteUp(st.stobj.getTask(taskNameForTest)
 						.getDeadline()));
 		assertEquals("has description", "multiple inputs",
@@ -206,6 +206,37 @@ public class StreamUndoTest {
 		in("undo");
 		assertTrue("Now unsorted again",
 				compare(st.stobj.getTaskList(), unsorted));
+	}
+
+	@Test
+	public void undoTagTest() throws Exception {
+		in("add a task");
+		in("tag 1 sometask randomtask");
+		assertTrue("Tag sometask exists",
+				st.stobj.getTask("a task").hasTag("sometask"));
+		assertTrue("Tag randomtask exists",
+				st.stobj.getTask("a task").hasTag("randomtask"));
+		in("tag 1 sometask newtask");
+		assertTrue("Tag newtask exists",
+				st.stobj.getTask("a task").hasTag("newtask"));
+		in("undo");
+		assertTrue("Tag sometask still exists", st.stobj.getTask("a task")
+				.hasTag("sometask"));
+		assertFalse("Tag newtask no longer exists", st.stobj.getTask("a task")
+				.hasTag("newtask"));
+		in("untag 1 randomtask newtask");
+		assertFalse("Tag randomtask no longer exists",
+				st.stobj.getTask("a task").hasTag("randomtask"));
+		in("undo");
+		assertTrue("Tag randomtask exists again", st.stobj.getTask("a task")
+				.hasTag("randomtask"));
+		assertFalse("Tag newtask still not exist", st.stobj.getTask("a task")
+				.hasTag("newtask"));
+		in("undo");
+		assertFalse("Tag randomtask no longer exists",
+				st.stobj.getTask("a task").hasTag("randomtask"));
+		assertFalse("Tag sometask no longer exists", st.stobj.getTask("a task")
+				.hasTag("sometask"));
 	}
 
 }
