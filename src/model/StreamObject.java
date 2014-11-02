@@ -138,7 +138,7 @@ public class StreamObject {
 	}
 
 	// @author A0096529N
-
+	
 	public void sortDeadline(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
@@ -172,6 +172,8 @@ public class StreamObject {
 			});
 		}
 	}
+
+	// @author A0096529N
 
 	private void sort(Comparator<StreamTask> comparator) {
 		List<StreamTask> tempList = getStreamTaskList();

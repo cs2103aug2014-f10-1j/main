@@ -39,13 +39,13 @@ public class StreamTask {
 		this.rank = "low";
 	}
 
-	// TODO @author?
+	// @author A0118007R
 
 	public String getTaskName() {
 		return this.taskName;
 	}
 
-	// TODO @author?
+	// @author A0118007R
 
 	public void setTaskName(String newTaskName) {
 		this.taskName = newTaskName;
@@ -193,7 +193,7 @@ public class StreamTask {
 		this.tags = new ArrayList<String>();
 	}
 
-	// TODO @author?
+	// @author A0096529N
 
 	public Boolean addTag(String newTag) {
 		if (!hasTag(newTag)) {
@@ -205,7 +205,7 @@ public class StreamTask {
 		}
 	}
 	
-	// TODO @author?
+	// @author A0096529N
 
 	public Boolean deleteTag(String tag) {
 		if (hasTag(tag.toUpperCase())) {
@@ -338,7 +338,7 @@ public class StreamTask {
 		}
 	}
 */
-	// TODO @author?
+	// @author A0096529N
 
 	public boolean hasTag(String tag) {
 		if (tags.contains(tag.toUpperCase())) {
@@ -371,7 +371,7 @@ public class StreamTask {
 		return false;
 	}
 
-	// TODO @author?
+	// @author A0119401U
 
 	public boolean isDone() {
 		return this.done;

@@ -26,12 +26,13 @@ public class StreamUtil {
 	public static final String PREFIX_INPUT = "<< ";
 	public static final String PREFIX_OUTPUT = ">> ";
 
-	// Date-Validity Checking methods
 	// @author A0118007R
 
 	public static boolean isValidMonth(int month) {
 		return (month >= 1) && (month <= 12);
 	}
+
+	// @author A0118007R
 
 	public static boolean isValidDate(int day, int month, int year) {
 		if (isMonthWith31Days(month)) {
@@ -48,6 +49,8 @@ public class StreamUtil {
 
 	}
 
+	// @author A0118007R
+
 	public static boolean isLeapYear(int year) {
 		if (year % 400 == 0) {
 			return true;
@@ -58,10 +61,14 @@ public class StreamUtil {
 		}
 	}
 
+	// @author A0118007R
+
 	private static boolean isMonthWith31Days(int month) {
 		return (month == 1) || (month == 3) || (month == 5) || (month == 7)
 				|| (month == 8) || (month == 10) || (month == 12);
 	}
+
+	// @author A0118007R
 
 	public static boolean isValidYear(int year) {
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -98,6 +105,8 @@ public class StreamUtil {
 			return listDownArrayContent(tags, ", ");
 		}
 	}
+
+	// @author A0093874N
 
 	public static String displayTagsAsCommand(ArrayList<String> tags) {
 		if (tags.size() == 0) {
@@ -207,7 +216,7 @@ public class StreamUtil {
 		return str;
 	}
 
-	// TODO @author?
+	// @author A0118007R
 
 	public static Calendar parseCalendar(String contents) {
 		String[] dueDate = contents.split(DATE_DELIMITER);
@@ -218,7 +227,7 @@ public class StreamUtil {
 		return calendar;
 	}
 
-	// TODO @author ?
+	// @author A0118007R
 
 	public static int parseYear(String[] dueDate) {
 		int year;

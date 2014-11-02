@@ -376,6 +376,8 @@ public class Stream {
 				noOfTasks));
 	}
 
+	// @author A0093874N
+
 	private void clear(int noOfTasks) throws StreamModificationException {
 		for (int i = 0; i < noOfTasks; i++) {
 			deleteTask(stobj.getTaskNames().get(0));
@@ -516,6 +518,8 @@ public class Stream {
 					parsedCalendar);
 		}
 	}
+
+	// @author A0118007R
 
 	private void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
 		if (currentDeadline == null) {
@@ -966,12 +970,16 @@ public class Stream {
 		}
 	}
 
+	// @author A0093874N
+
 	private void recover(int noOfTasksToRecover) {
 		for (int i = 0; i < noOfTasksToRecover; i++) {
 			StreamTask task = dumpedTasks.pop();
 			stobj.recoverTask(task);
 		}
 	}
+
+	// @author A0093874N
 
 	private void processUndo() {
 		if (inputStack.isEmpty()) {
@@ -991,6 +999,8 @@ public class Stream {
 		}
 	}
 
+	// @author A0118007R
+
 	private void pushUntaggingIntoInputStack(int taskIndex,
 			ArrayList<String> tagsRemoved) {
 		if (tagsRemoved.size() != 0) {
@@ -999,6 +1009,8 @@ public class Stream {
 					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
 		}
 	}
+
+	// @author A0118007R
 
 	private void pushTaggingIntoInputStack(int taskIndex,
 			ArrayList<String> tagsAdded) {
@@ -1009,6 +1021,8 @@ public class Stream {
 							StreamUtil.listDownArrayContent(tagsAdded, " ")));
 		}
 	}
+
+	// @author A0118007R
 
 	private void mark(StreamTask task, int taskIndex, String markType)
 			throws StreamModificationException {
@@ -1029,6 +1043,8 @@ public class Stream {
 		}
 	}
 
+	// @author A0118007R
+
 	private String processTagModification(String inverseCommand,
 			ArrayList<String> oldTags, ArrayList<String> newTags) {
 		String inverseTag = compareTagged(oldTags, newTags);
@@ -1042,12 +1058,16 @@ public class Stream {
 		return inverseCommand;
 	}
 
+	// @author A0118007R
+
 	private void addModificationParameters(String[] contents,
 			ArrayList<String> modifyParams) {
 		for (int i = 1; i < contents.length; i++) {
 			modifyParams.add(contents[i]);
 		}
 	}
+
+	// @author A0118007R
 
 	private String buildInverseCommand(String taskName, int taskIndex,
 			StreamTask currTask) {
@@ -1069,6 +1089,8 @@ public class Stream {
 		return inverseCommand;
 	}
 
+	// @author A0118007R
+
 	private String buildModifyDeadline(StreamTask currTask,
 			String inverseCommand) {
 		Calendar oldDue = currTask.getDeadline();
@@ -1081,6 +1103,8 @@ public class Stream {
 		return inverseCommand;
 	}
 
+	// @author A0118007R
+
 	private String buildModifyDescription(StreamTask currTask,
 			String inverseCommand) {
 		String oldDesc = currTask.getDescription();
@@ -1091,6 +1115,8 @@ public class Stream {
 		}
 		return inverseCommand;
 	}
+
+	// @author A0118007R
 
 	private String checkForNullAndProcessInput(String[] contents,
 			String taskName, int taskIndex) throws StreamModificationException {
@@ -1154,6 +1180,8 @@ public class Stream {
 		return inverseTag;
 	}
 
+	// @author A0118007R
+
 	private String buildInverseTag(ArrayList<String> oldTags,
 			ArrayList<String> newTags, String inverseTag) {
 		for (String old : oldTags) {
@@ -1172,6 +1200,8 @@ public class Stream {
 		inverseUntag = buildInverseUntag(oldTags, newTags, inverseUntag);
 		return inverseUntag;
 	}
+
+	// @author A0118007R
 
 	private String buildInverseUntag(ArrayList<String> oldTags,
 			ArrayList<String> newTags, String inverseUntag) {
