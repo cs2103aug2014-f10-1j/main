@@ -39,6 +39,9 @@ public class StreamObject {
 		this.taskList = taskList;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public ArrayList<String> getTaskNames() {
 		return taskList;
 	}
@@ -51,16 +54,6 @@ public class StreamObject {
 			counter.add(i + 1);
 		}
 		return counter;
-	}
-
-	// @author A0093874N
-
-	public ArrayList<String> getOrdering() {
-		ArrayList<String> order = new ArrayList<String>();
-		for (String task : taskList) {
-			order.add(task);
-		}
-		return order;
 	}
 
 	// @author A0093874N
@@ -138,7 +131,7 @@ public class StreamObject {
 	}
 
 	// @author A0096529N
-	
+
 	public void sortDeadline(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
@@ -513,16 +506,17 @@ public class StreamObject {
 		taskMap.put(taskName.toLowerCase(), task);
 
 	}
-	
+
 	// @author A0119401U
 	/**
 	 * 
 	 * @param taskName
 	 * @return the actual index of a given task
+	 * @deprecated not really needed, can be un-deprecated if we find a use
 	 */
-	
-	public int getTaskIndex(String taskName){
-		return (taskList.indexOf(taskName)+1);
+
+	public int getTaskIndex(String taskName) {
+		return (taskList.indexOf(taskName) + 1);
 	}
 
 	// @author A0096529N
@@ -637,6 +631,10 @@ public class StreamObject {
 	}
 
 	// @author A0096529N
+	public String getTaskNumber(int i) {
+		return taskList.get(i - 1);
+	}
+
 	/**
 	 * @return taskMap a copy of the task map.
 	 */

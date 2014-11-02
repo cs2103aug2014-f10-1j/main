@@ -135,6 +135,9 @@ public class StreamTask {
 	// improved by A0093874N
 
 	// This one needs to be checked later
+	/**
+	 * @deprecated
+	 */
 	public boolean isDue() {
 		if (deadline != null) {
 			return deadline.before(Calendar.getInstance());
