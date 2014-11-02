@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import util.StreamConstants;
+import util.StreamLogger;
 import util.StreamUtil;
 import exception.StreamModificationException;
 
@@ -23,8 +24,9 @@ public class StreamObject {
 	private static final String ERROR_TASK_DOES_NOT_EXIST = "The task \"%1$s\" does not exist.";
 	private static final String ERROR_NEW_TASK_NAME_NOT_AVAILABLE = "The name \"%1$s\" is not available.";
 
-	protected HashMap<String, StreamTask> taskMap;
-	protected ArrayList<String> taskList;
+	private HashMap<String, StreamTask> taskMap;
+	private ArrayList<String> taskList;
+	private static StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMOBJECT);
 
 	public StreamObject() {
 		this.taskMap = new HashMap<String, StreamTask>();

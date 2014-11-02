@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collections;
 
 import util.StreamConstants;
+import util.StreamLogger;
 
 /**
  * Some documentation.
@@ -22,6 +23,7 @@ public class StreamTask {
 	private ArrayList<String> tags;
 	private boolean done;
 	private String rank;
+	private static StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMOBJECT);
 
 	// Constructor
 
