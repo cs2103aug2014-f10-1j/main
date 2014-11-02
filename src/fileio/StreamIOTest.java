@@ -108,10 +108,10 @@ public class StreamIOTest {
 	public void saveTest() {
 		String testMessage = "Write map to file";
 		String expectedFileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
-				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
-				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		try {
@@ -155,10 +155,10 @@ public class StreamIOTest {
 	@Test
 	public void mapToJsonTest() {
 		String testMessage = "Map to JSON conversion";
-		String expectedJsonString = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
+		String expectedJsonString = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
 				+ "\"taskName\":\"Code Jarvis\","
 				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
-				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]";
 		try {
@@ -177,7 +177,7 @@ public class StreamIOTest {
 		 */
 		testOneTaskToJson(
 				"Task to JSON conversion - Code Jarvis",
-				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"done\":false,\"deadline\":\"20410719000000\","
+				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
 						+ "\"taskName\":\"Code Jarvis\","
 						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}",
 						task1);
@@ -187,7 +187,7 @@ public class StreamIOTest {
 	public void taskToJsonTest2() {
 		testOneTaskToJson(
 				"Task to JSON conversion - Build IoT",
-				"{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"done\":false,\"deadline\":\"20180101123456\","
+				"{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
 						+ "\"taskName\":\"Build IoT\","
 						+ "\"taskDescription\":\"Internet of Things\"}", task2);
 	}
