@@ -679,7 +679,7 @@ public class Stream {
 
 	private void showAndLogError(String errorMessageForDoc,
 			String errorMessageForUser) {
-		stui.log(errorMessageForUser, false);
+		stui.log(errorMessageForUser, true);
 		log(StreamUtil.showAsTerminalResponse(errorMessageForDoc));
 	}
 
