@@ -24,7 +24,7 @@ import fileio.StreamIO;
  * all different components from different packages, namely <b>StreamUI</b>,
  * <b>StreamObject</b>, <b>StreamIO</b>, and <b>StreamParser</b>.
  * 
- * @version v0.2
+ * @version V0.4
  * @author Wilson Kurniawan, John Kevin Tjahjadi, Steven Khong Wai How, Jiang
  *         Shenhao
  */

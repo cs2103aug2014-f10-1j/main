@@ -6,15 +6,16 @@ import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import exception.StreamParserException;
 
-/*
+// @author A0119401U
+/**
  * Parser is used to interpret the user input to a pack of 
  * information and later on pass it to the Logic part
  * 
  * Need to be modified later, since I just found out that the COMMAND_TYPE
  * may not be useful here (don't need to specify it)
  * 
- * @author: A0119401U
- * 
+ * @version V0.4
+ * @author Jiang Shenhao
  */
 public class StreamParser {
 

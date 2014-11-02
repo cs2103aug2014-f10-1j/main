@@ -25,7 +25,7 @@ import util.StreamUtil;
  * deletion or task marking (both done and not done) are available for user's
  * convenience.
  * 
- * @version V0.2
+ * @version V0.4
  * @author Wilson Kurniawan
  */
 public class StreamTaskView extends JPanel {

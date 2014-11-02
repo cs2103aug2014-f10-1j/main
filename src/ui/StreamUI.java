@@ -38,7 +38,7 @@ import util.StreamUtil;
  * for user input, logger for terminal feedback, and some buttons for users'
  * convenience in processing some tasks.
  * 
- * @version V0.2
+ * @version V0.4
  * @author Wilson Kurniawan
  */
 public class StreamUI {

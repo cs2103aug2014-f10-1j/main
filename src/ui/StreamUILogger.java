@@ -9,7 +9,7 @@ import util.StreamUtil;
  * A simple non-editable JTextField component to display log messages. Error
  * messages and normal log messages are displayed differently.
  * 
- * @version V0.2
+ * @version V0.4
  * @author Wilson Kurniawan
  */
 public class StreamUILogger extends JTextField {

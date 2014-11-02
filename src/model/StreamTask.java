@@ -6,6 +6,12 @@ import java.util.Collections;
 
 import util.StreamConstants;
 
+/**
+ * Some documentation.
+ * 
+ * @version V0.4
+ * @author John Kevin Tjahjadi
+ */
 public class StreamTask {
 
 	// Attributes

@@ -9,7 +9,7 @@ import javax.swing.border.Border;
 
 public class StreamConstants {
 
-	public static final String VERSION = "V0.2";
+	public static final String VERSION = "V0.4";
 	public static final String FILENAME = "stream";
 	public static final String SAVEFILE = "%1$s.json";
 	public static final String LOGFILE = "%1$s.txt";

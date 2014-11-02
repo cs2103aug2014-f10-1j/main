@@ -11,6 +11,12 @@ import util.StreamConstants;
 import util.StreamUtil;
 import exception.StreamModificationException;
 
+/**
+ * Some documentation.
+ * 
+ * @version V0.4
+ * @author John Kevin Tjahjadi
+ */
 public class StreamObject {
 
 	private static final String ERROR_TASK_ALREADY_EXISTS = "\"%1$s\" already exists in the tasks list.";

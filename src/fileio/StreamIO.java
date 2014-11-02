@@ -53,8 +53,8 @@ import exception.StreamIOException;
  * Refer to method documentation for details.
  * </p>
  * 
+ * @version V0.4
  * @author Steven Khong
- * 
  */
 public class StreamIO {
 
