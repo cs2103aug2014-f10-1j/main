@@ -297,17 +297,16 @@ public class Stream {
 				ArrayList<String> tagsRemoved = new ArrayList<String>();
 				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
 				removeTags(tagsToRemove, stobj.getTask(taskName), tagsRemoved,
-						tagsNotRemoved);
+						tagsNotRemoved);*/
 				break;
 			case "rank":
 				String inputRank = contents.trim();
 				if (inputRank.equals("high")||inputRank.equals("h")
 						|| inputRank.equals("medium") || inputRank.equals("m")
-						|| inputRank.equals("low") || inputRank.equals("l")){
+						|| inputRank.equals("low") || inputRank.equals("l")) {
 					int index = stobj.getTaskIndex(taskName);
 					setRanking(taskName,index,inputRank);
-				}
-				else{
+				} else {
 					throw new StreamModificationException("Please enter a valid rank.");
 				}
 				break;
@@ -316,16 +315,12 @@ public class Stream {
 				int index = stobj.getTaskIndex(taskName);
 				if (status.equals("done") || status.equals("finished")){
 					markAsDone(task, index);
-				}
-				else if (status.equals("going") || status.equals("doing")){
+				} else if (status.equals("ongoing") || status.equals("going") || status.equals("doing")) {
 					markAsOngoing(task, index);
-				}
-				else{
+				} else {
 					throw new StreamModificationException("Please enter a valid mark.");
 				}
-						tagsNotRemoved);*/
 				break;
-		// TODO include marking also, if possible
 		}
 	}
 
