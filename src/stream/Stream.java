@@ -295,6 +295,17 @@ public class Stream {
 				removeTags(tagsToRemove, stobj.getTask(taskName), tagsRemoved,
 						tagsNotRemoved);
 				break;
+			case "rank":
+				String inputRank = contents.trim();
+				if (inputRank.equals("high")||inputRank.equals("h")
+						|| inputRank.equals("medium") || inputRank.equals("m")
+						|| inputRank.equals("low") || inputRank.equals("l")){
+					int index = stobj.getTaskIndex(taskName);
+					setRanking(taskName,index,inputRank);
+				}
+				else{
+					throw new StreamModificationException("Please enter a valid rank.");
+				}
 		// TODO include marking also, if possible
 		}
 	}
