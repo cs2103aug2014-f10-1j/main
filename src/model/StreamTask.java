@@ -6,6 +6,8 @@ import java.util.Collections;
 
 import util.StreamConstants;
 import util.StreamLogger;
+import util.StreamLogger.LogLevel;
+import util.StreamUtil;
 
 /**
  * Some documentation.
@@ -47,6 +49,12 @@ public class StreamTask {
 
 	public void setTaskName(String newTaskName) {
 		this.taskName = newTaskName;
+	}
+	
+	// @author A0093874N
+	
+	private void log(String message) {
+		logger.log(LogLevel.DEBUG, message);
 	}
 
 	// @author A0118007R
@@ -196,7 +204,7 @@ public class StreamTask {
 			return false;
 		}
 	}
-
+	
 	// TODO @author?
 
 	public Boolean deleteTag(String tag) {
@@ -210,6 +218,45 @@ public class StreamTask {
 		}
 	}
 
+	/*
+	 * brought from Stream.java 
+	 */
+	
+	public ArrayList<String> addTags(String[] tags) {
+		ArrayList<String> tagsAdded = new ArrayList<String>();
+		ArrayList<String> tagsNotAdded = new ArrayList<String>();
+		int start = 0;
+		if (StreamUtil.isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (addTag(tags[i])) {
+				tagsAdded.add(tags[i]);
+			} else {
+				tagsNotAdded.add(tags[i]);
+			}
+		}
+		// log both tagsAdded and tagsNotAdded
+		return tagsAdded;
+	}
+
+	public ArrayList<String> removeTags(String[] tags) {
+		ArrayList<String> tagsRemoved = new ArrayList<String>();
+		ArrayList<String> tagsNotRemoved = new ArrayList<String>();
+		int start = 0;
+		if (StreamUtil.isInteger(tags[0])) {
+			start = 1;
+		}
+		for (int i = start; i < tags.length; i++) {
+			if (deleteTag(tags[i])) {
+				tagsRemoved.add(tags[i]);
+			} else {
+				tagsNotRemoved.add(tags[i]);
+			}
+		}
+		// log both tagsRemoved and tagsNotRemoved
+		return tagsRemoved;
+	}
 	// TODO @author?
 
 	public boolean hasTag(String tag) {

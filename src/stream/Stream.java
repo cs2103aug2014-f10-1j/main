@@ -149,7 +149,7 @@ public class Stream {
 	}
 
 	// @author A0118007R
-	boolean isValidParameter(String param) {
+	private boolean isValidParameter(String param) {
 		for (String s : validParameters) {
 			if (s.equals(param)) {
 				return true;
@@ -283,13 +283,17 @@ public class Stream {
 				break;
 			case "tag":
 				String[] newTags = contents.split(" ");
+				stobj.getTask(taskName).addTags(newTags);
+				/*
 				ArrayList<String> tagsAdded = new ArrayList<String>();
 				ArrayList<String> tagsNotAdded = new ArrayList<String>();
 				addTags(newTags, stobj.getTask(taskName), tagsAdded,
-						tagsNotAdded);
+						tagsNotAdded);*/
 				break;
 			case "untag":
 				String[] tagsToRemove = contents.split(" ");
+				stobj.getTask(taskName).removeTags(tagsToRemove);
+				/*0
 				ArrayList<String> tagsRemoved = new ArrayList<String>();
 				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
 				removeTags(tagsToRemove, stobj.getTask(taskName), tagsRemoved,
@@ -319,6 +323,7 @@ public class Stream {
 				else{
 					throw new StreamModificationException("Please enter a valid mark.");
 				}
+						tagsNotRemoved);*/
 				break;
 		// TODO include marking also, if possible
 		}
@@ -474,7 +479,7 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	String setDescription(String task, int index, String description)
+	private String setDescription(String task, int index, String description)
 			throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(task);
 		String oldDescription = currentTask.getDescription();
@@ -735,6 +740,7 @@ public class Stream {
 
 		String[] contents;
 		String[] tags;
+		ArrayList<String> processedTags;
 		String taskName;
 		String logMessage;
 		int taskIndex;
@@ -859,26 +865,38 @@ public class Stream {
 			case TAG:
 				logCommand("TAG");
 				tags = content.split(" ");
-				ArrayList<String> tagsAdded = new ArrayList<String>();
-				ArrayList<String> tagsNotAdded = new ArrayList<String>();
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
+
+				processedTags = stobj.getTask(taskName).addTags(tags);
+				pushTaggingIntoInputStack(taskIndex, processedTags);
+				logAddedTags(taskName, processedTags);
+				/*
+				ArrayList<String> tagsAdded = new ArrayList<String>();
+				ArrayList<String> tagsNotAdded = new ArrayList<String>();
 				addTags(tags, stobj.getTask(taskName), tagsAdded, tagsNotAdded);
 				pushTaggingIntoInputStack(taskIndex, tagsAdded);
 				logTagsAdded(taskName, tagsAdded, tagsNotAdded);
+				*/
 				break;
 
 			case UNTAG:
 				logCommand("UNTAG");
 				tags = content.split(" ");
-				ArrayList<String> tagsRemoved = new ArrayList<String>();
-				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				
+				processedTags = stobj.getTask(taskName).removeTags(tags);
+				pushUntaggingIntoInputStack(taskIndex, processedTags);
+				logRemovedTags(taskName, processedTags);
+				/*
+				ArrayList<String> tagsRemoved = new ArrayList<String>();
+				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
 				removeTags(tags, stobj.getTask(taskName), tagsRemoved,
 						tagsNotRemoved);
 				pushUntaggingIntoInputStack(taskIndex, tagsRemoved);
 				logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
+				*/
 				break;
 
 			case FILTER:
