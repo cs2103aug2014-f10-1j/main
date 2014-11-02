@@ -29,15 +29,6 @@ import fileio.StreamIO;
  *         Shenhao
  */
 
-// TODO all the null assertions shouldn't be there. Rather, StreamParser should
-// check for null input before passing the commands to the logic to process.
-// Looking forward to the parser being able to do it!
-
-// TODO Now the there are exception handling in the StreamParser.java and
-// entering commands like
-// "add " and "del " will throw exceptions, telling the user that the input is
-// invalid. Does this solve the above to-do note? --Shenhao
-
 public class Stream {
 
 	StreamObject stobj;
@@ -63,10 +54,14 @@ public class Stream {
 		resetTasks();
 	}
 
+	// @author A0118007R
+
 	private void resetTasks() {
 		stui.resetAvailableTasks(stobj.getCounter(),
 				stobj.getStreamTaskList(stobj.getCounter()), true, false);
 	}
+
+	// @author A0118007R
 
 	private void initializeStream() {
 		stui = new StreamUI(this);
@@ -277,48 +272,34 @@ public class Stream {
 				if (contents.equals("null")) {
 					task.setDeadline(null);
 				} else {
+					// TODO implement JChronic here ASAP!
 					Calendar due = StreamUtil.parseCalendar(contents);
 					task.setDeadline(due);
 				}
 				break;
 			case "tag":
 				String[] newTags = contents.split(" ");
-				stobj.getTask(taskName).addTags(newTags);
-				/*
-				ArrayList<String> tagsAdded = new ArrayList<String>();
-				ArrayList<String> tagsNotAdded = new ArrayList<String>();
-				addTags(newTags, stobj.getTask(taskName), tagsAdded,
-						tagsNotAdded);*/
+				task.addTags(newTags);
 				break;
 			case "untag":
 				String[] tagsToRemove = contents.split(" ");
-				stobj.getTask(taskName).removeTags(tagsToRemove);
-				/*0
-				ArrayList<String> tagsRemoved = new ArrayList<String>();
-				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
-				removeTags(tagsToRemove, stobj.getTask(taskName), tagsRemoved,
-						tagsNotRemoved);*/
+				task.removeTags(tagsToRemove);
 				break;
 			case "rank":
 				String inputRank = contents.trim();
-				if (inputRank.equals("high")||inputRank.equals("h")
+				if (inputRank.equals("high") || inputRank.equals("h")
 						|| inputRank.equals("medium") || inputRank.equals("m")
 						|| inputRank.equals("low") || inputRank.equals("l")) {
-					int index = stobj.getTaskIndex(taskName);
-					setRanking(taskName,index,inputRank);
-				} else {
-					throw new StreamModificationException("Please enter a valid rank.");
+					task.setRank(inputRank);
 				}
 				break;
 			case "mark":
 				String status = contents.trim();
-				int index = stobj.getTaskIndex(taskName);
-				if (status.equals("done") || status.equals("finished")){
-					markAsDone(task, index);
-				} else if (status.equals("ongoing") || status.equals("going") || status.equals("doing")) {
-					markAsOngoing(task, index);
-				} else {
-					throw new StreamModificationException("Please enter a valid mark.");
+				if (status.equals("done") || status.equals("finished")) {
+					task.markAsDone();
+				} else if (status.equals("ongoing") || status.equals("going")
+						|| status.equals("doing")) {
+					task.markAsOngoing();
 				}
 				break;
 		}
@@ -495,7 +476,6 @@ public class Stream {
 		StreamTask currentTask = stobj.getTask(task);
 		String oldRank = currentTask.getRank();
 		currentTask.setRank(taskRank);
-		// public static final String CMD_RANK = "rank %1$s %2$s";
 
 		inputStack.push(String.format(StreamConstants.Commands.RANK, index,
 				oldRank));
@@ -542,6 +522,7 @@ public class Stream {
 			inputStack.push(String.format(StreamConstants.Commands.DUE,
 					taskIndex, "null"));
 		} else {
+			// TODO incorporate some JChronic here?
 			inputStack.push(String.format(StreamConstants.Commands.DUE,
 					taskIndex, currentDeadline.get(Calendar.DATE) + "/"
 							+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
@@ -866,13 +847,6 @@ public class Stream {
 				processedTags = stobj.getTask(taskName).addTags(tags);
 				pushTaggingIntoInputStack(taskIndex, processedTags);
 				logAddedTags(taskName, processedTags);
-				/*
-				ArrayList<String> tagsAdded = new ArrayList<String>();
-				ArrayList<String> tagsNotAdded = new ArrayList<String>();
-				addTags(tags, stobj.getTask(taskName), tagsAdded, tagsNotAdded);
-				pushTaggingIntoInputStack(taskIndex, tagsAdded);
-				logTagsAdded(taskName, tagsAdded, tagsNotAdded);
-				*/
 				break;
 
 			case UNTAG:
@@ -880,18 +854,10 @@ public class Stream {
 				tags = content.split(" ");
 				taskIndex = Integer.parseInt(tags[0]);
 				taskName = stobj.getTaskNames().get(taskIndex - 1);
-				
+
 				processedTags = stobj.getTask(taskName).removeTags(tags);
 				pushUntaggingIntoInputStack(taskIndex, processedTags);
 				logRemovedTags(taskName, processedTags);
-				/*
-				ArrayList<String> tagsRemoved = new ArrayList<String>();
-				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
-				removeTags(tags, stobj.getTask(taskName), tagsRemoved,
-						tagsNotRemoved);
-				pushUntaggingIntoInputStack(taskIndex, tagsRemoved);
-				logTagsRemoved(taskName, tagsRemoved, tagsNotRemoved);
-				*/
 				break;
 
 			case FILTER:
@@ -1013,6 +979,7 @@ public class Stream {
 		} else {
 			String undoneInput = inputStack.pop();
 			showAndLogResult(StreamConstants.LogMessage.UNDO_SUCCESS);
+			log(StreamUtil.showAsTerminalInput(undoneInput));
 			processInput(undoneInput);
 
 			/*
@@ -1086,7 +1053,17 @@ public class Stream {
 			StreamTask currTask) {
 		String inverseCommand = "modify " + taskIndex + " name " + taskName
 				+ " ";
-
+		// TODO help to refactor these
+		// added by A0093874N
+		Boolean isDone = currTask.isDone();
+		if (isDone) {
+			inverseCommand += "mark done ";
+		} else {
+			inverseCommand += "mark ongoing ";
+		}
+		String oldRank = currTask.getRank();
+		inverseCommand += "rank " + oldRank + " ";
+		//
 		inverseCommand = buildModifyDescription(currTask, inverseCommand);
 		inverseCommand = buildModifyDeadline(currTask, inverseCommand);
 		return inverseCommand;

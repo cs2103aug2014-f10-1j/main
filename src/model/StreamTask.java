@@ -36,7 +36,7 @@ public class StreamTask {
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
 		this.done = false;
-		this.rank = null;
+		this.rank = "low";
 	}
 
 	// TODO @author?
@@ -302,7 +302,7 @@ public class StreamTask {
 		this.done = true;
 	}
 
-	// TODO @author?
+	// @author A0119401U
 
 	public void markAsOngoing() {
 		this.done = false;

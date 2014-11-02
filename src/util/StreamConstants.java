@@ -101,7 +101,7 @@ public class StreamConstants {
 		public static final String TEXT_INDEX = "#%1$s";
 
 		public static final String DETAILS_HEADER = "Details for %1$s";
-		public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s";
+		public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s\nRank: %6$s";
 	}
 	public static class ExceptionMessage {
 		public static final String ERR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";

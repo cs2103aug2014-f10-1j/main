@@ -194,7 +194,7 @@ public class StreamUtil {
 		return addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
 				+ DATE_DELIMITER
 				+ addZeroToTime((calendar.get(Calendar.MONTH) + 1))
-				+ DATE_DELIMITER + calendar.get(Calendar.YEAR) + ", "
+				+ DATE_DELIMITER + calendar.get(Calendar.YEAR) + " "
 				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
 				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.MINUTE))
 				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.SECOND));
@@ -203,8 +203,7 @@ public class StreamUtil {
 	// @author A0093874N
 
 	public static String stripCalendarChars(String str) {
-		str = str.replaceAll(DATE_DELIMITER, "").replaceAll(TIME_DELIMITER, "")
-				.replace(",", "");
+		str = str.replaceAll(DATE_DELIMITER, "").replaceAll(TIME_DELIMITER, "");
 		return str;
 	}
 
