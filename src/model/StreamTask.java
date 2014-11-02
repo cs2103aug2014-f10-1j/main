@@ -57,6 +57,9 @@ public class StreamTask {
 
 	// @author A0118007R
 
+	/**
+	 * @deprecated
+	 */
 	public void resetParams() {
 		this.taskDescription = null;
 		this.deadline = null;
@@ -175,6 +178,9 @@ public class StreamTask {
 
 	// @author A0118007R
 
+	/**
+	 * @deprecated
+	 */
 	public void resetTags() {
 		this.tags = new ArrayList<String>();
 	}

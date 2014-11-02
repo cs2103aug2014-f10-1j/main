@@ -653,15 +653,34 @@ public class Stream {
 	 * 
 	 */
 	private void showAndLogResult(String logMessage) {
-		stui.log(logMessage, false);
-		log(StreamUtil.showAsTerminalResponse(logMessage));
+		showAndLogResult(logMessage, logMessage);
 	}
 
 	// @author A0118007R
 
 	private void showAndLogError(String errorMessage) {
-		stui.log(errorMessage, true);
-		log(StreamUtil.showAsTerminalResponse(errorMessage));
+		showAndLogError(errorMessage, errorMessage);
+	}
+
+	/*
+	 * These two can be used if the log message to be documented and to be
+	 * displayed are different (especially for exception/error messages)
+	 */
+
+	// @author A0093874N
+
+	private void showAndLogResult(String logMessageForDoc,
+			String logMessageForUser) {
+		stui.log(logMessageForUser, false);
+		log(StreamUtil.showAsTerminalResponse(logMessageForDoc));
+	}
+
+	// @author A0093874N
+
+	private void showAndLogError(String errorMessageForDoc,
+			String errorMessageForUser) {
+		stui.log(errorMessageForUser, false);
+		log(StreamUtil.showAsTerminalResponse(errorMessageForDoc));
 	}
 
 	// @author A0096529N
