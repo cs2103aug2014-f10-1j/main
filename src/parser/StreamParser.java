@@ -185,7 +185,7 @@ public class StreamParser {
 	private void checkDismissValidity(String[] contents)
 			throws StreamParserException {
 		if (contents.length != 2 || !isInteger(contents[1])) {
-			throw new StreamParserException("Invalid index!");
+			throw new StreamParserException("Please enter a valid index!");
 		}
 	}
 
@@ -196,7 +196,7 @@ public class StreamParser {
 					"Please specify filter criteria!");
 		}
 		if (!isValidFilterType(contents[1].trim())) {
-			throw new StreamParserException("Invalid filter type!");
+			throw new StreamParserException("Please enter a valid filter type!");
 		}
 	}
 
@@ -209,41 +209,41 @@ public class StreamParser {
 	private void checkUntaggingValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (contents.length < 3 || !isInteger(contents[1])) {
-			throw new StreamParserException("Invalid index!");
+			throw new StreamParserException("Please enter a valid index!");
 		}
 
 		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-			throw new StreamParserException("Out of range!");
+			throw new StreamParserException("The index you entered is out of range!");
 		}
 	}
 
 	private void checkFinishedValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (!isInteger(contents[1])) {
-			throw new StreamParserException("Invalid index!");
+			throw new StreamParserException("Please enter a valid index!");
 		}
 
 		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-			throw new StreamParserException("Out of range!");
+			throw new StreamParserException("The index you entered is out of range!");
 		}
 	}
 
 	private void checkRankValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (contents.length != 3) {
-			throw new StreamParserException("Not enough information!");
+			throw new StreamParserException("Please provide more information!");
 		}
 
 		else if (!isInteger(contents[1])) {
-			throw new StreamParserException("Invalid index!");
+			throw new StreamParserException("Please entr a valid index!");
 		}
 
 		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-			throw new StreamParserException("Out of range!");
+			throw new StreamParserException("The index you entered is out of range!");
 		}
 
 		else if (!checkRanking(contents[2])) {
-			throw new StreamParserException("Invalid input rank!");
+			throw new StreamParserException("Please enter a valid input rank!");
 		}
 	}
 	
@@ -259,7 +259,7 @@ public class StreamParser {
 	private void checkMultiValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (contents.length < 3) {
-			throw new StreamParserException("Not enough information!");
+			throw new StreamParserException("Please provide more information!");
 		} else
 			checkFinishedValidity(contents, numOfTasks);
 	}
@@ -267,7 +267,7 @@ public class StreamParser {
 	private void checkDeleteValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (contents.length != 2) {
-			throw new StreamParserException("Invalid input!");
+			throw new StreamParserException("Please enter a valid command!");
 		} else
 			checkFinishedValidity(contents, numOfTasks);
 	}
@@ -317,7 +317,8 @@ public class StreamParser {
 	private boolean checkRanking(String rankInput) {
 		String stdRank = rankInput.toLowerCase();
 		return stdRank.equals("high") || stdRank.equals("medium")
-				|| stdRank.equals("low");
+				|| stdRank.equals("low") || stdRank.equals("h") 
+				|| stdRank.equals("m") || stdRank.equals("l");
 	}
 
 	// @author A0093874N
