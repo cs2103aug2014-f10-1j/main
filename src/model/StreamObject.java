@@ -511,6 +511,17 @@ public class StreamObject {
 		taskMap.put(taskName.toLowerCase(), task);
 
 	}
+	
+	// @author A0119401U
+	/**
+	 * 
+	 * @param taskName
+	 * @return the actual index of a given task
+	 */
+	
+	public int getTaskIndex(String taskName){
+		return (taskList.indexOf(taskName)+1);
+	}
 
 	// @author A0096529N
 	/**

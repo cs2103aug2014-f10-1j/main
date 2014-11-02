@@ -51,7 +51,7 @@ public class Stream {
 	private Stack<ArrayList<String>> orderingStack;
 
 	private final String[] validParameters = { "name", "desc", "due", "by",
-			"tag", "untag" };
+			"tag", "untag", "rank", "mark" };
 
 	// author ??? refactored by A0118007R
 
@@ -294,6 +294,31 @@ public class Stream {
 				ArrayList<String> tagsNotRemoved = new ArrayList<String>();
 				removeTags(tagsToRemove, stobj.getTask(taskName), tagsRemoved,
 						tagsNotRemoved);
+				break;
+			case "rank":
+				String inputRank = contents.trim();
+				if (inputRank.equals("high")||inputRank.equals("h")
+						|| inputRank.equals("medium") || inputRank.equals("m")
+						|| inputRank.equals("low") || inputRank.equals("l")){
+					int index = stobj.getTaskIndex(taskName);
+					setRanking(taskName,index,inputRank);
+				}
+				else{
+					throw new StreamModificationException("Please enter a valid rank.");
+				}
+				break;
+			case "mark":
+				String status = contents.trim();
+				int index = stobj.getTaskIndex(taskName);
+				if (status.equals("done") || status.equals("finished")){
+					markAsDone(task, index);
+				}
+				else if (status.equals("going") || status.equals("doing")){
+					markAsOngoing(task, index);
+				}
+				else{
+					throw new StreamModificationException("Please enter a valid mark.");
+				}
 				break;
 		// TODO include marking also, if possible
 		}
