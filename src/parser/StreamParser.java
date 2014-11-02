@@ -4,6 +4,7 @@ import model.StreamObject;
 import util.StreamConstants;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
+import util.StreamUtil;
 import exception.StreamParserException;
 
 // @author A0119401U
@@ -26,7 +27,8 @@ public class StreamParser {
 	private CommandType commandKey;
 	private String commandContent;
 
-	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMPARSER);
+	private static final StreamLogger logger = StreamLogger
+			.init(StreamConstants.ComponentTag.STREAMPARSER);
 
 	public StreamParser() {
 		this.commandKey = CommandType.INIT;
@@ -184,7 +186,7 @@ public class StreamParser {
 
 	private void checkDismissValidity(String[] contents)
 			throws StreamParserException {
-		if (contents.length != 2 || !isInteger(contents[1])) {
+		if (contents.length != 2 || !StreamUtil.isInteger(contents[1])) {
 			throw new StreamParserException("Please enter a valid index!");
 		}
 	}
@@ -208,7 +210,7 @@ public class StreamParser {
 
 	private void checkUntaggingValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 3 || !isInteger(contents[1])) {
+		if (contents.length < 3 || !StreamUtil.isInteger(contents[1])) {
 			throw new StreamParserException("Please enter a valid index!");
 		}
 
@@ -219,7 +221,7 @@ public class StreamParser {
 
 	private void checkFinishedValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (!isInteger(contents[1])) {
+		if (!StreamUtil.isInteger(contents[1])) {
 			throw new StreamParserException("Please enter a valid index!");
 		}
 
@@ -234,7 +236,7 @@ public class StreamParser {
 			throw new StreamParserException("Please provide more information!");
 		}
 
-		else if (!isInteger(contents[1])) {
+		else if (!StreamUtil.isInteger(contents[1])) {
 			throw new StreamParserException("Please entr a valid index!");
 		}
 
@@ -300,6 +302,12 @@ public class StreamParser {
 		return this.commandContent;
 	}
 
+	// TODO a similar method is already in StreamUtil. someone do comparison and
+	// update with the better one?
+
+	/**
+	 * @deprecated
+	 */
 	private boolean isInteger(String str) {
 		int size = str.length();
 		for (int i = 0; i < size; i++) {

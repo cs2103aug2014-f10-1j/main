@@ -34,7 +34,7 @@ public class Stream {
 	StreamObject stobj;
 	StreamUI stui;
 	private StreamParser parser;
-	private StreamLogger logger;
+	private StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAM);
 
 	private String filename;
 	private Stack<String> inputStack;
@@ -82,6 +82,9 @@ public class Stream {
 	}
 
 	// @author A0096529N
+	/**
+	 * @deprecated as we can initialize directly
+	 */
 	private void initStreamLogger() {
 		logger = StreamLogger.init(StreamConstants.ComponentTag.STREAM);
 	}
@@ -348,7 +351,7 @@ public class Stream {
 			throws StreamModificationException {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		StreamTask deletedTask = stobj.getTask(taskName);
-		ArrayList<String> order = stobj.getOrdering();
+		ArrayList<String> order = stobj.getTaskList();
 		orderingStack.push(order);
 		dismissTask(taskName);
 
@@ -369,7 +372,7 @@ public class Stream {
 	 */
 	private void clearAllTasks() throws StreamModificationException {
 		int noOfTasks = stobj.getNumberOfTasks();
-		orderingStack.push(stobj.getOrdering());
+		orderingStack.push(stobj.getTaskList());
 		clear(noOfTasks);
 		assert (stobj.getNumberOfTasks() == 0) : StreamConstants.Assertion.NOT_CLEARED;
 		inputStack.push(String.format(StreamConstants.Commands.RECOVER,
@@ -380,7 +383,7 @@ public class Stream {
 
 	private void clear(int noOfTasks) throws StreamModificationException {
 		for (int i = 0; i < noOfTasks; i++) {
-			deleteTask(stobj.getTaskNames().get(0));
+			deleteTask(stobj.getTaskNumber(1));
 			/*
 			 * This is because we don't want the "recover 1". Rather, we'll
 			 * replace with "recover noOfTasks" at the end of the process.
@@ -637,11 +640,10 @@ public class Stream {
 	void printTasks() {
 		System.out.println(" ");
 		System.out.println("Your current tasks: ");
-		ArrayList<String> myTasks = stobj.getTaskNames();
-		int numberOfTasks = myTasks.size();
+		int numberOfTasks = stobj.getNumberOfTasks();
 
 		for (int i = 1; i <= numberOfTasks; i++) {
-			System.out.println(i + ". " + myTasks.get(i - 1));
+			System.out.println(i + ". " + stobj.getTaskNumber(i));
 		}
 	}
 
@@ -738,7 +740,7 @@ public class Stream {
 			case DEL:
 				logCommand("DELETE");
 				taskIndex = Integer.parseInt(content);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 				logMessage = deleteTask(taskName);
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
@@ -750,7 +752,7 @@ public class Stream {
 				logCommand("DESCRIBE");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 				String description = contents[1];
 				logMessage = setDescription(taskName, taskIndex, description);
 				showAndLogResult(logMessage);
@@ -761,7 +763,7 @@ public class Stream {
 				contents = content.split(" ", 2);
 
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 
 				logMessage = checkForNullAndProcessInput(contents, taskName,
 						taskIndex);
@@ -775,7 +777,7 @@ public class Stream {
 				logCommand("MODIFY");
 				contents = content.split(" ");
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 
 				ArrayList<String> modifyParams = new ArrayList<String>();
 				StreamTask currTask = stobj.getTask(taskName);
@@ -808,7 +810,7 @@ public class Stream {
 				logCommand("NAME");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
-				String oldTaskName = stobj.getTaskNames().get(taskIndex - 1);
+				String oldTaskName = stobj.getTaskNumber(taskIndex);
 				String newTaskName = contents[1];
 				logMessage = setName(oldTaskName, newTaskName);
 				inputStack.push(String.format(StreamConstants.Commands.NAME,
@@ -824,7 +826,7 @@ public class Stream {
 				logCommand("RANK");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 				String taskRank = contents[1];
 				logMessage = setRanking(taskName, taskIndex, taskRank);
 				showAndLogResult(logMessage);
@@ -834,7 +836,7 @@ public class Stream {
 				logCommand("MARK");
 				contents = content.split(" ", 2);
 				taskIndex = Integer.parseInt(contents[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 				String markType = contents[1].trim();
 				mark(stobj.getTask(taskName), taskIndex, markType);
 				stui.resetAvailableTasks(stobj.getCounter(),
@@ -846,7 +848,7 @@ public class Stream {
 				logCommand("TAG");
 				tags = content.split(" ");
 				taskIndex = Integer.parseInt(tags[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 
 				processedTags = stobj.getTask(taskName).addTags(tags);
 				pushTaggingIntoInputStack(taskIndex, processedTags);
@@ -857,7 +859,7 @@ public class Stream {
 				logCommand("UNTAG");
 				tags = content.split(" ");
 				taskIndex = Integer.parseInt(tags[0]);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 
 				processedTags = stobj.getTask(taskName).removeTags(tags);
 				pushUntaggingIntoInputStack(taskIndex, processedTags);
@@ -891,7 +893,7 @@ public class Stream {
 
 			case SORT:
 				logCommand("SORT");
-				ArrayList<String> oldOrdering = stobj.getOrdering();
+				ArrayList<String> oldOrdering = stobj.getTaskList();
 				orderingStack.push(oldOrdering);
 				logMessage = sort(content);
 				stui.resetAvailableTasks(stobj.getCounter(),
@@ -904,7 +906,7 @@ public class Stream {
 			case VIEW:
 				logCommand("VIEW");
 				taskIndex = Integer.parseInt(content);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 				logMessage = printDetails(taskName);
 				showAndLogResult(logMessage);
 				break;
@@ -939,7 +941,7 @@ public class Stream {
 			case DISMISS:
 				logCommand("DISMISS");
 				taskIndex = Integer.parseInt(content);
-				taskName = stobj.getTaskNames().get(taskIndex - 1);
+				taskName = stobj.getTaskNumber(taskIndex);
 				dismissTask(taskName);
 				showAndLogResult(String.format(
 						StreamConstants.LogMessage.DELETE, taskName));
