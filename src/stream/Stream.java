@@ -51,7 +51,7 @@ public class Stream {
 	private Stack<ArrayList<String>> orderingStack;
 
 	private final String[] validParameters = { "name", "desc", "due", "by",
-			"tag", "untag" };
+			"tag", "untag", "rank" };
 
 	// author ??? refactored by A0118007R
 
