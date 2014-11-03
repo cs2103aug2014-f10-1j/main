@@ -80,7 +80,7 @@ public class StreamUI {
 		addMainFrame();
 		addContentPanel();
 		addHeader();
-		addMenu();
+		// addMenu();
 		setUpView();
 		addButtons();
 		addConsole();
@@ -224,12 +224,12 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addButtons() {
-		addUndoButton();
+		// addUndoButton();
 		addFirstPageButton();
 		addPrevPageButton();
 		addNextPageButton();
 		addLastPageButton();
-		addClearSearchButton();
+		// addClearSearchButton();
 	}
 
 	// @author A0093874N

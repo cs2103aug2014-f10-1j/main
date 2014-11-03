@@ -49,6 +49,8 @@ public class StreamTaskView extends JPanel {
 		addTimingLabel();
 		addDeleteButton();
 		addMarkButton();
+		delButton.setVisible(false);
+		markButton.setVisible(false);
 	}
 
 	// @author A0093874N
