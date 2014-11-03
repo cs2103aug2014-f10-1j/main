@@ -536,6 +536,51 @@ public class Stream {
 							+ currentDeadline.get(Calendar.YEAR)));
 		}
 	}
+	
+	// @author A0119401U
+
+	/**
+	 * Set the start date of the selected task
+	 * 
+	 * @author Jiang Shenhao
+	 * @throws StreamModificationException
+		*/
+	private String setStartDate(String taskName, int taskIndex, Calendar calendar)
+			throws StreamModificationException {
+		StreamTask currentTask = stobj.getTask(taskName);
+		Calendar currentStartTime = currentTask.getStartTime();
+		pushInverseStartCommand(taskIndex, currentStartTime);
+		return setStartTime(taskName, calendar);
+
+	}
+
+	private String setStartTime(String taskName, Calendar calendar)
+			throws StreamModificationException {
+		StreamTask task = stobj.getTask(taskName);
+		if (calendar == null) {
+			task.setNullStartTime();
+			return String
+					.format(StreamConstants.LogMessage.START_NOT_SPECIFIED, taskName);
+		} else {
+			task.setStartTime(calendar);
+			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
+			return String.format(StreamConstants.LogMessage.START, taskName,
+					parsedCalendar);
+		}
+	}
+
+
+	private void pushInverseStartCommand(int taskIndex, Calendar currentStartTime) {
+		if (currentStartTime == null) {
+			inputStack.push(String.format(StreamConstants.Commands.START,
+					taskIndex, "null"));
+		} else {
+			inputStack.push(String.format(StreamConstants.Commands.START,
+					taskIndex, currentStartTime.get(Calendar.DATE) + "/"
+							+ (currentStartTime.get(Calendar.MONTH) + 1) + "/"
+							+ currentStartTime.get(Calendar.YEAR)));
+		}
+	}
 
 	// @author A0119401U
 
@@ -766,10 +811,25 @@ public class Stream {
 				taskName = stobj.getTaskNumber(taskIndex);
 
 				logMessage = checkForNullAndProcessInput(contents, taskName,
-						taskIndex);
+						taskIndex, "due");
 				stui.resetAvailableTasks(stobj.getCounter(),
 						stobj.getStreamTaskList(stobj.getCounter()), false,
 						false);
+				showAndLogResult(logMessage);
+				break;
+				
+			case START:
+				logCommand("START");
+				contents = content.split(" ", 2);
+
+				taskIndex = Integer.parseInt(contents[0]);
+				taskName = stobj.getTaskNumber(taskIndex);
+
+				logMessage = checkForNullAndProcessInput(contents, taskName,
+						taskIndex, "start");
+				
+				// Sorry I don't know how to integrate the UI part to the start time
+				// so missing code here
 				showAndLogResult(logMessage);
 				break;
 
@@ -1119,16 +1179,29 @@ public class Stream {
 	}
 
 	// @author A0118007R
+	// updated by A0119401U
 
 	private String checkForNullAndProcessInput(String[] contents,
-			String taskName, int taskIndex) throws StreamModificationException {
+			String taskName, int taskIndex, String action) throws StreamModificationException {
 		String logMessage;
-		if (contents[1].trim().equals("null")) {
-			logMessage = setDueDate(taskName, taskIndex, null);
-		} else {
-			String due = contents[1];
-			Calendar calendar = StreamUtil.parseCalendar(due);
-			logMessage = setDueDate(taskName, taskIndex, calendar);
+		if(action.equals("due")){
+			
+			if (contents[1].trim().equals("null")) {
+				logMessage = setDueDate(taskName, taskIndex, null);
+			} else {
+				String due = contents[1];
+				Calendar calendar = StreamUtil.parseCalendar(due);
+				logMessage = setDueDate(taskName, taskIndex, calendar);
+			}
+		}
+		else{
+			if (contents[1].trim().equals("null")) {
+				logMessage = setStartDate(taskName, taskIndex, null);
+			} else {
+				String start = contents[1];
+				Calendar calendar = StreamUtil.parseCalendar(start);
+				logMessage = setStartDate(taskName, taskIndex, calendar);
+			}
 		}
 		return logMessage;
 	}
