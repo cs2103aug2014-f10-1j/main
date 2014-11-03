@@ -97,6 +97,7 @@ public class StreamUI {
 		shortcut.put('f', "filter ");
 		shortcut.put('m', "mark ");
 		shortcut.put('y', "modify ");
+		shortcut.put('v', "view ");
 		shortcut.put('t', "sort ");
 		shortcut.put('u', "undo");
 		shortcut.put('e', "exit");

@@ -15,13 +15,15 @@ Currently, STREAM is capable of basic CRUD (Create, Read, Update, Delete) operat
 * **name** *indexNo* *newName*: renames a task
 * **modify** *indexNo* *properties and contents*: modifies multiple properties of a task in one go
 * **desc** *indexNo* *description*: updates the task's description
-* **rank** *indexNo* *newRank*: update the task's rank
+* **rank** *indexNo* *newRank*: updates the task's rank
+* **start** *indexNo* *startDate*: updates the task's start date
 * **due**  *indexNo* *dueDate*: updates the task's due date
 * **mark** *indexNo* *(done|ongoing)*: marks a task as either done or ongoing (not done)
 * **view** *indexNo*: view the details of a task
 * **tag** *indexNo* *tags*: adds tags to a task
 * **untag** *indexNo* *tags*: removes tags from a task
 * **search** *keyphrase*: searches tasks that match the keyphrase
+* **filter** *(criteria)*: filters the tasks that fulfills the criteria
 * **sort** *(alphabetical|deadline)* *[ascending/descending]*: sorts tasks according to the category
 * **clrsrc**: clears search result
 * **undo**: undoes the last operation
@@ -30,6 +32,18 @@ Currently, STREAM is capable of basic CRUD (Create, Read, Update, Delete) operat
 We support multiple, integrated commands such as
 
 **add** *some task* **due** *28/11* **desc** *buy Pokemon Omega Ruby* **tag** *#awesome #newgame #whatisfinals*
+
+We also support keyboard shortcuts, as follows:
+* *a*: **add**
+* *d*: **delete**
+* *v*: **view**
+* *m*: **mark**
+* *y*: **modify**
+* *t*: **sort**
+* *s*: **search**
+* *f*: **filter**
+* *u*: **undo**
+* *e*: **exit**
 
 We aim to add more features and improve this project to even greater heights.
 
