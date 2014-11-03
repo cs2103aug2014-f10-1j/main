@@ -5,8 +5,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -340,18 +340,14 @@ public class StreamIO {
 	}
 
 	// @author A0093874N
-	
 	/**
 	 * Saves the log file upon exiting.
 	 * 
 	 * @author Wilson Kurniawan
 	 */
-
-	public static void saveLogFile(List<String> logMessages, String logFileName)
-			throws IOException {
-		File fout = new File(logFileName);
-		FileOutputStream fos = new FileOutputStream(fout);
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+	public static void saveLogFile(List<String> logMessages, String logFileName) throws IOException {
+		FileWriter fwriter = new FileWriter(logFileName, true);
+		BufferedWriter bw = new BufferedWriter(fwriter);
 		for (int i = 0; i < logMessages.size(); i++) {
 			bw.write(logMessages.get(i));
 			bw.newLine();
