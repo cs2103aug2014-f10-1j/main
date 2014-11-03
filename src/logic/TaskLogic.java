@@ -60,7 +60,6 @@ public class TaskLogic extends BaseLogic {
 
 	// @author A0118007R
 	// updated by A0119401U
-
 	public void modifyTask(StreamTask task, String attribute, String contents) 
 			throws StreamModificationException {
 		contents = contents.trim();
@@ -94,12 +93,16 @@ public class TaskLogic extends BaseLogic {
 			}
 			break;
 		case "tag":
-			String[] newTags = contents.split(" ");
-			addTags(task, newTags);
+			addTags(task, contents.split(" "));
 			break;
 		case "untag":
-			String[] tagsToRemove = contents.split(" ");
-			removeTags(task, tagsToRemove);
+			removeTags(task, contents.split(" "));
+			break;
+		case "settags":
+			task.getTags().clear();
+			if (!contents.trim().isEmpty()) {
+				addTags(task, contents.split(" "));
+			}
 			break;
 		case "rank":
 			String inputRank = contents.trim();

@@ -45,7 +45,7 @@ public class Stream {
 	private String filename;
 
 	private final String[] validParameters = { "name", "desc", "start", "from", "due", "by",
-			"tag", "untag", "rank", "mark" };
+			"tag", "untag", "settags", "rank", "mark" };
 
 	// author ??? refactored by A0118007R
 
@@ -142,7 +142,7 @@ public class Stream {
 	 *             present.
 	 * @return <strong>String</strong> - the log message
 	 */
-	String processNewTaskWithParams(String taskNameWithParams) throws StreamModificationException {
+	String processAddCommandWithParams(String taskNameWithParams) throws StreamModificationException {
 		assert (taskNameWithParams != null) : StreamConstants.Assertion.NULL_INPUT;
 		// from here, section is modified by A0118007R
 		String[] contents = taskNameWithParams.split(" ");
@@ -535,7 +535,7 @@ public class Stream {
 		switch (command) {
 		case ADD:
 			logCommand("ADD");
-			logMessage = processNewTaskWithParams(content);
+			logMessage = processAddCommandWithParams(content);
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
@@ -604,11 +604,8 @@ public class Stream {
 
 			// get old state and push to undo
 
-			String inverseCommand = buildInverseCommand(taskName,
-					taskIndex, currTask);
-
-			ArrayList<String> oldTags = new ArrayList<String>(
-					currTask.getTags());
+			String inverseCommand = stackLogic.pushInverseModifyCommand(
+					taskName, taskIndex, currTask);
 
 			addModificationParameters(contents, modifyParams);
 
@@ -616,12 +613,7 @@ public class Stream {
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
-			ArrayList<String> newTags = currTask.getTags();
-			inverseCommand = processTagModification(inverseCommand,
-					oldTags, newTags);
 			
-			//TODO best if entire inverse command can 
-			//be constructed in stackLogic instead.
 			stackLogic.pushInverseModifyCommand(inverseCommand);
 
 			showAndLogResult(String.format(
@@ -862,75 +854,11 @@ public class Stream {
 
 	// @author A0118007R
 
-	private String processTagModification(String inverseCommand,
-			ArrayList<String> oldTags, ArrayList<String> newTags) {
-		String inverseTag = compareTagged(oldTags, newTags);
-		String inverseUntag = compareUntagged(oldTags, newTags);
-		if (inverseTag != "tag ") {
-			inverseCommand += inverseTag;
-		}
-		if (inverseUntag != "untag ") {
-			inverseCommand += inverseUntag;
-		}
-		return inverseCommand;
-	}
-
-	// @author A0118007R
-
 	private void addModificationParameters(String[] contents,
 			ArrayList<String> modifyParams) {
 		for (int i = 1; i < contents.length; i++) {
 			modifyParams.add(contents[i]);
 		}
-	}
-
-	// @author A0118007R
-
-	private String buildInverseCommand(String taskName, int taskIndex,
-			StreamTask currTask) {
-		String inverseCommand = "modify " + taskIndex + " name " + taskName
-				+ " ";
-		// TODO help to refactor these
-		// added by A0093874N
-		Boolean isDone = currTask.isDone();
-		if (isDone) {
-			inverseCommand += "mark done ";
-		} else {
-			inverseCommand += "mark ongoing ";
-		}
-		String oldRank = currTask.getRank();
-		inverseCommand += "rank " + oldRank + " ";
-		//
-		inverseCommand = buildModifyDescription(currTask, inverseCommand);
-		inverseCommand = buildModifyDeadline(currTask, inverseCommand);
-		return inverseCommand;
-	}
-
-	// @author A0118007R
-
-	private String buildModifyDeadline(StreamTask currTask,
-			String inverseCommand) {
-		Calendar oldDue = currTask.getDeadline();
-		if (oldDue != null) {
-			String dueString = StreamUtil.getCalendarWriteUp(oldDue);
-			inverseCommand = inverseCommand + "due " + dueString + " ";
-		} else {
-			inverseCommand = inverseCommand + "due null ";
-		}
-		return inverseCommand;
-	}
-
-	// @author A0118007R
-
-	private String buildModifyDescription(StreamTask currTask,
-			String inverseCommand) {
-		String oldDesc = currTask.getDescription();
-		if (oldDesc != null) {
-			inverseCommand = inverseCommand + "desc " + oldDesc + " ";
-		} else {
-			inverseCommand = inverseCommand + "desc null ";
-		}
-		return inverseCommand;
 	}
 
 	// @author A0118007R
@@ -999,48 +927,6 @@ public class Stream {
 		default:
 			return "Unknown sort category \"" + sortBy + "\"";
 		}
-	}
-
-	// @author A0093874N
-
-	private String compareTagged(ArrayList<String> oldTags,
-			ArrayList<String> newTags) {
-		String inverseTag = "tag ";
-		inverseTag = buildInverseTag(oldTags, newTags, inverseTag);
-		return inverseTag;
-	}
-
-	// @author A0118007R
-
-	private String buildInverseTag(ArrayList<String> oldTags,
-			ArrayList<String> newTags, String inverseTag) {
-		for (String old : oldTags) {
-			if (!newTags.contains(old)) {
-				inverseTag = inverseTag + old + " ";
-			}
-		}
-		return inverseTag;
-	}
-
-	// @author A0093874N
-
-	private String compareUntagged(ArrayList<String> oldTags,
-			ArrayList<String> newTags) {
-		String inverseUntag = "untag ";
-		inverseUntag = buildInverseUntag(oldTags, newTags, inverseUntag);
-		return inverseUntag;
-	}
-
-	// @author A0118007R
-
-	private String buildInverseUntag(ArrayList<String> oldTags,
-			ArrayList<String> newTags, String inverseUntag) {
-		for (String newer : newTags) {
-			if (!oldTags.contains(newer)) {
-				inverseUntag += inverseUntag + newer + " ";
-			}
-		}
-		return inverseUntag;
 	}
 
 	// @author A0093874N
