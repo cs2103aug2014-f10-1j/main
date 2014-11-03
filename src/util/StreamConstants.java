@@ -41,10 +41,10 @@ public class StreamConstants {
 		public static final String ERRORS = "%1$s: %2$s";
 		public static final String UNDO_FAIL = "Nothing to undo";
 		public static final String UNDO_SUCCESS = "Undoing the previous action";
-		public static final String START = "Start date for \"%1$s\" set to \"%2$s\"";
-		public static final String START_NOT_SPECIFIED = "Start Time for \"%1$s\" is not specified";
 		public static final String DUE_NEVER = "Due date for \"%1$s\" is removed";
 		public static final String DUE = "Due date for \"%1$s\" set to \"%2$s\"";
+		public static final String START = "Start date for \"%1$s\" set to \"%2$s\"";
+		public static final String START_NOT_SPECIFIED = "Start Time for \"%1$s\" is not specified";
 		public static final String CMD_UNKNOWN = "Unknown command entered";
 		public static final String TAGS_ADDED = "Tags added to \"%1$s\": %2$s";
 		public static final String TAGS_NOT_ADDED = "Tags not added to \"%1$s\": %2$s";
