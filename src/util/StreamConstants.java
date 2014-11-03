@@ -43,6 +43,8 @@ public class StreamConstants {
 		public static final String UNDO_SUCCESS = "Undoing the previous action";
 		public static final String DUE_NEVER = "Due date for \"%1$s\" is removed";
 		public static final String DUE = "Due date for \"%1$s\" set to \"%2$s\"";
+		public static final String START = "Start date for \"%1$s\" set to \"%2$s\"";
+		public static final String START_NOT_SPECIFIED = "Start Time for \"%1$s\" is not specified";
 		public static final String CMD_UNKNOWN = "Unknown command entered";
 		public static final String TAGS_ADDED = "Tags added to \"%1$s\": %2$s";
 		public static final String TAGS_NOT_ADDED = "Tags not added to \"%1$s\": %2$s";
@@ -63,6 +65,7 @@ public class StreamConstants {
 		public static final String RECOVER = "recover %1$s";
 		public static final String DESC = "desc %1$s %2$s";
 		public static final String DUE = "due %1$s %2$s";
+		public static final String START = "start %1$s %2$s";
 		public static final String RANK = "rank %1$s %2$s";
 		public static final String MARK_DONE = "mark %1$s done";
 		public static final String MARK_NOT_DONE = "mark %1$s ongoing";

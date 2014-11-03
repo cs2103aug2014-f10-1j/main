@@ -21,7 +21,7 @@ import exception.StreamParserException;
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, UNSORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS, FIRST, PREV, NEXT, LAST;
+		INIT, ADD, DEL, DESC, DUE, START, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, UNSORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS, FIRST, PREV, NEXT, LAST;
 	}
 
 	private CommandType commandKey;
@@ -72,6 +72,7 @@ public class StreamParser {
 				break;
 			case "due":
 			case "by":
+			case "to":
 
 				/*
 				 * The exception for this one will be implemented after the
@@ -79,6 +80,9 @@ public class StreamParser {
 				 */
 
 				this.commandKey = CommandType.DUE;
+				break;
+			case "from":
+				this.commandKey = CommandType.START;
 				break;
 			case "view":
 				this.commandKey = CommandType.VIEW;
