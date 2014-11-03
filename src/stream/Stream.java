@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Stack;
 
+import logic.StackLogic;
 import logic.StreamLogic;
 import logic.TaskLogic;
 import model.StreamObject;
@@ -36,6 +37,7 @@ public class Stream {
 	StreamObject streamObject;
 	StreamUI stui;
 	TaskLogic taskLogic = TaskLogic.init();
+	StackLogic stackLogic = StackLogic.init();
 	StreamLogic streamLogic;
 	
 	private StreamParser parser;
@@ -139,7 +141,7 @@ public class Stream {
 	 * Pre-condition: <i>taskName</i> is not null
 	 * </p>
 	 * 
-	 * @param taskName
+	 * @param taskNameWithParams
 	 *            - the task name
 	 * @author Wilson Kurniawan
 	 * @throws StreamModificationException
@@ -147,48 +149,40 @@ public class Stream {
 	 *             present.
 	 * @return <strong>String</strong> - the log message
 	 */
-	String addTask(String taskName) throws StreamModificationException {
-		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+	String processNewTaskWithParams(String taskNameWithParams) throws StreamModificationException {
+		assert (taskNameWithParams != null) : StreamConstants.Assertion.NULL_INPUT;
 		// from here, section is modified by A0118007R
-		String content = taskName;
-		String[] splittedContent = content.split(" ");
+		String[] contents = taskNameWithParams.split(" ");
 
-		String nameOfTask = "";
+		String taskName = "";
 		// scans until next valid parameter and officially add the task
 		// TODO: refactor
 
 		// this section onwards is contributed by A0118007R
-		boolean nameFound = false;
 		ArrayList<String> modifyParams = new ArrayList<String>();
 
-		for (int i = 0; i < splittedContent.length; i++) {
-			String s = splittedContent[i];
-			if (!nameFound) {
-				if (isValidParameter(s)) {
-					nameFound = true;
-				} else {
-					nameOfTask = nameOfTask + s + " ";
-				}
-			} else {
-				for (int k = i - 1; k < splittedContent.length; k++) {
-					modifyParams.add(splittedContent[k]);
+		for (int i = 0; i < contents.length; i++) {
+			String word = contents[i];
+			if (isValidParameter(word)) {
+				for (int k = i - 1; k < contents.length; k++) {
+					modifyParams.add(contents[k]);
 				}
 				break;
+			} else {
+				taskName = taskName + word + " ";
 			}
 		}
 
-		nameOfTask = nameOfTask.trim(); // this is the solution to the bug
-		addTaskAndProcessParameters(nameOfTask, nameFound, modifyParams);
-		//
+		taskName = taskName.trim(); // this is the solution to the bug
+		addTaskWithParams(taskName, modifyParams);
 
-		return String.format(StreamConstants.LogMessage.ADD, nameOfTask);
+		return String.format(StreamConstants.LogMessage.ADD, taskName);
 
 	}
 
 	// @author A0118007R
 
-	private void addTaskAndProcessParameters(String taskName,
-			boolean nameFound, ArrayList<String> modifyParams)
+	private void addTaskWithParams(String taskName, ArrayList<String> modifyParams)
 					throws StreamModificationException {
 
 		streamLogic.addTask(taskName);
@@ -197,103 +191,35 @@ public class Stream {
 		inputStack.push(String.format(StreamConstants.Commands.DISMISS,
 				streamLogic.getNumberOfTasks()));
 
-		if (nameFound) {
-			executeModifyParameters(taskName, modifyParams);
+		if (modifyParams.size() > 0) {
+			modifyTaskWithParams(taskName, modifyParams);
 		}
 	}
 
 	// @author A0118007R
 
-	private void executeModifyParameters(String nameOfTask,
-			ArrayList<String> modifyParams) throws StreamModificationException {
-		StreamTask currentTask = streamLogic.getTask(nameOfTask);
+	private void modifyTaskWithParams(String taskName, ArrayList<String> modifyParams) 
+			throws StreamModificationException {
+		StreamTask task = streamLogic.getTask(taskName);
 
 		// method for splitting the input to add to the specified param
 		// TODO: refactor
-		String command = modifyParams.get(0);
+		String attribute = modifyParams.get(0);
 		String contents = "";
 		for (int i = 1; i < modifyParams.size(); i++) {
 			String s = modifyParams.get(i);
 			if (isValidParameter(s)) {
 				// first content is guaranteed to be a valid parameter
-				processParameterModification(command, contents.trim(),
-						currentTask);
-				command = s;
+				streamLogic.modifyTask(task, attribute, contents.trim());
+				attribute = s;
 				contents = "";
 
 			} else {
 				contents = contents + s + " ";
 			}
 		}
-		processParameterModification(command, contents, currentTask);
+		streamLogic.modifyTask(task, attribute, contents);
 
-	}
-
-	// @author A0118007R
-	// updated by A0119401U
-
-	private void processParameterModification(String command, String contents,
-			StreamTask task) throws StreamModificationException {
-		contents = contents.trim();
-		String taskName = task.getTaskName();
-		switch (command) {
-		case "name":
-			setName(taskName, contents);
-			break;
-		case "desc":
-			if (contents.equals("null")) {
-				task.setDescription(null);
-			} else {
-				task.setDescription(contents);
-			}
-			break;
-		case "due":
-		case "by":
-		case "to":
-			if (contents.equals("null")) {
-				task.setDeadline(null);
-			} else {
-				// TODO implement JChronic here ASAP!
-				Calendar due = StreamUtil.parseCalendar(contents);
-				task.setDeadline(due);
-			}
-			break;
-		case "start":
-		case "from":
-			if (contents.equals("null")) {
-				task.setStartTime(null);
-			} else {
-
-				Calendar start = StreamUtil.parseCalendar(contents);
-				task.setStartTime(start);
-			}
-			break;
-		case "tag":
-			String[] newTags = contents.split(" ");
-			taskLogic.addTags(task, newTags);
-			break;
-		case "untag":
-			String[] tagsToRemove = contents.split(" ");
-			taskLogic.removeTags(task, tagsToRemove);
-			break;
-		case "rank":
-			String inputRank = contents.trim();
-			if (inputRank.equals("high") || inputRank.equals("h")
-					|| inputRank.equals("medium") || inputRank.equals("m")
-					|| inputRank.equals("low") || inputRank.equals("l")) {
-				task.setRank(inputRank);
-			}
-			break;
-		case "mark":
-			String status = contents.trim();
-			if (status.equals("done") || status.equals("finished")) {
-				task.markAsDone();
-			} else if (status.equals("ongoing") || status.equals("going")
-					|| status.equals("doing")) {
-				task.markAsOngoing();
-			}
-			break;
-		}
 	}
 
 	// @author A0093874N
@@ -413,30 +339,6 @@ public class Stream {
 
 	/**
 	 * <p>
-	 * Changes a task's name.
-	 * </p>
-	 * <p>
-	 * Pre-condition: <i>oldName, newName, index</i> not null
-	 * </p>
-	 * 
-	 * @author John Kevin Tjahjadi
-	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the log message
-	 */
-
-	private String setName(String oldName, String newName)
-			throws StreamModificationException {
-		assert (oldName != null && newName != null) : StreamConstants.Assertion.NULL_INPUT;
-		streamLogic.updateTaskName(oldName, newName);
-
-		// This section is contributed by A0093874N
-		return String.format(StreamConstants.LogMessage.NAME, oldName, newName);
-	}
-
-	// @author A0118007R
-
-	/**
-	 * <p>
 	 * Adds a description to a task.
 	 * </p>
 	 * <p>
@@ -483,30 +385,14 @@ public class Stream {
 	 * @author Jiang Shenhao
 	 * @throws StreamModificationException
 	 */
-	private String setDueDate(String taskName, int taskIndex, Calendar calendar)
-			throws StreamModificationException {
-		StreamTask currentTask = streamLogic.getTask(taskName);
-		Calendar currentDeadline = currentTask.getDeadline();
-		pushInverseDueCommand(taskIndex, currentDeadline);
-		// This section is contributed by A0093874N
-		return setDeadline(taskName, calendar);
-		//
-	}
-
-	// @author A0093874N
-	private String setDeadline(String taskName, Calendar calendar)
+	private String setDueDate(String taskName, int taskIndex, Calendar newDeadline)
 			throws StreamModificationException {
 		StreamTask task = streamLogic.getTask(taskName);
-		if (calendar == null) {
-			task.setDeadline(null);
-			return String
-					.format(StreamConstants.LogMessage.DUE_NEVER, taskName);
-		} else {
-			task.setDeadline(calendar);
-			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
-			return String.format(StreamConstants.LogMessage.DUE, taskName,
-					parsedCalendar);
-		}
+		Calendar deadline = task.getDeadline();
+		pushInverseDueCommand(taskIndex, deadline);
+		// This section is contributed by A0093874N
+		return taskLogic.setDeadline(task, newDeadline);
+		//
 	}
 
 	// @author A0118007R
@@ -716,7 +602,7 @@ public class Stream {
 		switch (command) {
 		case ADD:
 			logCommand("ADD");
-			logMessage = addTask(content);
+			logMessage = processNewTaskWithParams(content);
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
@@ -793,7 +679,7 @@ public class Stream {
 
 			addModificationParameters(contents, modifyParams);
 
-			executeModifyParameters(taskName, modifyParams);
+			modifyTaskWithParams(taskName, modifyParams);
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
@@ -813,7 +699,7 @@ public class Stream {
 			taskIndex = Integer.parseInt(contents[0]);
 			String oldTaskName = streamLogic.getTaskNumber(taskIndex);
 			String newTaskName = contents[1];
-			logMessage = setName(oldTaskName, newTaskName);
+			logMessage = streamLogic.updateTaskName(oldTaskName, newTaskName);
 			inputStack.push(String.format(StreamConstants.Commands.NAME,
 					taskIndex, oldTaskName));
 			stui.resetAvailableTasks(streamLogic.getIndex(),
@@ -1369,4 +1255,29 @@ public class Stream {
 
 		}
 	}		
+
+	// @author A0118007R
+	/**
+	 * <p>
+	 * Changes a task's name.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>oldName, newName, index</i> not null
+	 * </p>
+	 * 
+	 * @author John Kevin Tjahjadi
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 * @deprecated by A0096529N merged into StreamLogic.updateTaskName
+	 */
+	@SuppressWarnings("unused")
+	private String setName(String oldName, String newName)
+			throws StreamModificationException {
+		assert (oldName != null && newName != null) : StreamConstants.Assertion.NULL_INPUT;
+		streamLogic.updateTaskName(oldName, newName);
+
+		// This section is contributed by A0093874N
+		return String.format(StreamConstants.LogMessage.NAME, oldName, newName);
+	}
+
 }

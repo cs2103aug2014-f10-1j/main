@@ -2,10 +2,13 @@ package logic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
+import exception.StreamModificationException;
 import model.StreamTask;
 import util.StreamConstants;
+import util.StreamUtil;
 
 public class TaskLogic extends BaseLogic {
 
@@ -53,6 +56,84 @@ public class TaskLogic extends BaseLogic {
 				task.getTaskName(), Arrays.toString(tags)));
 		Collections.sort(task.getTags());
 		return tagsRemoved;
+	}
+
+	// @author A0118007R
+	// updated by A0119401U
+
+	public void modifyTask(StreamTask task, String attribute, String contents) 
+			throws StreamModificationException {
+		contents = contents.trim();
+		switch (attribute) {
+		case "desc":
+			if (contents.equals("null")) {
+				task.setDescription(null);
+			} else {
+				task.setDescription(contents);
+			}
+			break;
+		case "due":
+		case "by":
+		case "to":
+			if (contents.equals("null")) {
+				task.setDeadline(null);
+			} else {
+				// TODO implement JChronic here ASAP!
+				Calendar due = StreamUtil.parseCalendar(contents);
+				task.setDeadline(due);
+			}
+			break;
+		case "start":
+		case "from":
+			if (contents.equals("null")) {
+				task.setStartTime(null);
+			} else {
+
+				Calendar start = StreamUtil.parseCalendar(contents);
+				task.setStartTime(start);
+			}
+			break;
+		case "tag":
+			String[] newTags = contents.split(" ");
+			addTags(task, newTags);
+			break;
+		case "untag":
+			String[] tagsToRemove = contents.split(" ");
+			removeTags(task, tagsToRemove);
+			break;
+		case "rank":
+			String inputRank = contents.trim();
+			if (inputRank.equals("high") || inputRank.equals("h")
+					|| inputRank.equals("medium") || inputRank.equals("m")
+					|| inputRank.equals("low") || inputRank.equals("l")) {
+				task.setRank(inputRank);
+			}
+			break;
+		case "mark":
+			String status = contents.trim();
+			if (status.equals("done") || status.equals("finished")) {
+				task.markAsDone();
+			} else if (status.equals("ongoing") || status.equals("going")
+					|| status.equals("doing")) {
+				task.markAsOngoing();
+			}
+			break;
+		}
+	}
+
+	// @author A0093874N
+	public String setDeadline(StreamTask task, Calendar calendar)
+			throws StreamModificationException {
+		if (calendar == null) {
+			task.setDeadline(null);
+			return String
+					.format(StreamConstants.LogMessage.DUE_NEVER, task.getTaskName());
+		} else {
+			task.setDeadline(calendar);
+			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
+			return String.format(StreamConstants.LogMessage.DUE, task.getTaskName(),
+					parsedCalendar);
+		}
 	}
 
 	@Override 

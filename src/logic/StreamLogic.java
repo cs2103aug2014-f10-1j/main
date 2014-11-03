@@ -22,6 +22,7 @@ import exception.StreamModificationException;
 public class StreamLogic extends BaseLogic {
 
 	private StreamObject streamObject;
+	private TaskLogic taskLogic = TaskLogic.init();
 
 	private StreamLogic() {
 	}
@@ -263,8 +264,9 @@ public class StreamLogic extends BaseLogic {
 	 *             if taskName given does not return a match, i.e. task not
 	 *             found. Or when task with newTaskName is already present.
 	 */
-	public void updateTaskName(String taskName, String newTaskName)
+	public String updateTaskName(String taskName, String newTaskName)
 			throws StreamModificationException {
+		assert (taskName != null && newTaskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		StreamTask task = getTask(taskName);
 		if (!taskName.equals(newTaskName)) {
 			if (streamObject.containsKey(newTaskName)) {
@@ -277,6 +279,30 @@ public class StreamLogic extends BaseLogic {
 		streamObject.remove(task.getTaskName());
 		task.setTaskName(newTaskName);
 		streamObject.put(newTaskName, task, index);
+		// This section is contributed by A0093874N
+		return String.format(StreamConstants.LogMessage.NAME, taskName, newTaskName);
+	}
+
+	// @author A0096529N
+	/**
+	 * Modify an attribute of a task
+	 * 
+	 * @param task to modify
+	 * @param attribute to be modified
+	 * @param contents that contains the instruction to modify that attribute
+	 * @return result of this operation
+	 * @throws StreamModificationException 
+	 */
+	public void modifyTask(StreamTask task, String attribute, String contents) 
+			throws StreamModificationException {
+		logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION, 
+				task.getTaskName(), attribute, contents));
+		if (attribute.equalsIgnoreCase("name")) {
+			// modify name need access to streamObject, special case
+			updateTaskName(task.getTaskName(), contents);
+		} else {
+			taskLogic.modifyTask(task, attribute, contents);
+		}
 	}
 
 	// @author A0096529N
@@ -394,6 +420,7 @@ public class StreamLogic extends BaseLogic {
 		return streamObject.getTaskList().get(i - 1);
 	}
 
+	// @author A0096529N
 	/**
 	 * @return taskMap a copy of the task map.
 	 */

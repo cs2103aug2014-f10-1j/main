@@ -60,6 +60,7 @@ public class StreamConstants {
 		public static final String LOAD_FAILED = "Load from file failed, %1$s";
 		public static final String SAVE_FAILED = "Save to file failed, %1$s";
 		public static final String MODIFY = "Modified %1$s";
+		public static final String NEW_MODIFICATION = "Modify \"%1$s\" attribute \"%2$s\" contents \"%3$s\"";
 		public static final String UI_LOOKANDFEEL_FAIL = "Could not set look and feel";
 	}
 	public static class Commands {
@@ -119,6 +120,7 @@ public class StreamConstants {
 		public static final String ERR_NEW_TASK_NAME_NOT_AVAILABLE = "The name \"%1$s\" is not available.";
 		public static final String ERR_CREATEFILE = "Test file could not be created "
 				+ "- %1$s\nDelete the file if already present.";
+		public static final String ERR_TASK_MODIFICATION = "Could not modify file: %1$s";
 	}
 	public static class UI {
 		public static final Color COLOR_HEADER = Color.getHSBColor(
