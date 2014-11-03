@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -86,6 +88,23 @@ public class StreamUI {
 		addConsole();
 		empowerConsole(this.new EnterAction());
 		addLogger();
+
+		HashMap<Character, String> shortcut = new HashMap<Character, String>();
+		shortcut.put('a', "add ");
+		shortcut.put('s', "search ");
+		shortcut.put('d', "delete ");
+		shortcut.put('f', "filter ");
+		shortcut.put('m', "mark ");
+		shortcut.put('y', "modify ");
+		shortcut.put('t', "sort ");
+		shortcut.put('u', "undo");
+		shortcut.put('e', "exit");
+		shortcut.put('c', "");
+		for (Iterator<Character> iter = shortcut.keySet().iterator(); iter
+				.hasNext();) {
+			Character c = iter.next();
+			empowerKeyboardShortcuts(c, shortcut.get(c));
+		}
 		addFooter();
 		log(StreamConstants.Message.WELCOME, false);
 		pageShown = 1;
@@ -93,8 +112,8 @@ public class StreamUI {
 		availTasks = new ArrayList<StreamTask>();
 		availIndices = new ArrayList<Integer>();
 
-		Vector<Component> order = new Vector<Component>(3);
-		order.add(newTaskTextField);
+		Vector<Component> order = new Vector<Component>(2);
+		// order.add(newTaskTextField);
 		order.add(console);
 		order.add(logger);
 		mainFrame.setFocusTraversalPolicy(new CustomFocusTraversal(order));
@@ -515,6 +534,20 @@ public class StreamUI {
 		console.getActionMap().put("processInput", action);
 	}
 
+	private void empowerKeyboardShortcuts(char c, String s) {
+		ArrayList<JButton> buttons = new ArrayList<JButton>();
+		buttons.add(firstPageButton);
+		buttons.add(prevPageButton);
+		buttons.add(nextPageButton);
+		buttons.add(lastPageButton);
+		for (JButton b: buttons) {
+			b.getInputMap().put(KeyStroke.getKeyStroke(c), s);
+			b.getActionMap().put(s, this.new KeyboardShortcut(s));			
+		}
+		logger.getInputMap().put(KeyStroke.getKeyStroke(c), s);
+		logger.getActionMap().put(s, this.new KeyboardShortcut(s));			
+	}
+
 	// @author A0093874N
 
 	/**
@@ -719,7 +752,7 @@ public class StreamUI {
 		}
 
 		public Component getDefaultComponent(Container focusCycleRoot) {
-			return order.get(1);
+			return order.get(0);
 		}
 
 		public Component getLastComponent(Container focusCycleRoot) {
@@ -729,5 +762,22 @@ public class StreamUI {
 		public Component getFirstComponent(Container focusCycleRoot) {
 			return order.get(0);
 		}
+	}
+
+	private class KeyboardShortcut extends AbstractAction {
+
+		private static final long serialVersionUID = 1L;
+		private String text;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			console.setText(text);
+			console.requestFocus();
+		}
+
+		KeyboardShortcut(String s) {
+			this.text = s;
+		}
+
 	}
 }
