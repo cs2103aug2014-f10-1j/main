@@ -83,6 +83,7 @@ public class StreamParser {
 			break;
 			
 		case "start":
+		case "from":
 			
 			this.commandKey = CommandType.START;
 			break;

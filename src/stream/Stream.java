@@ -41,7 +41,7 @@ public class Stream {
 	private Stack<StreamTask> dumpedTasks;
 	private Stack<ArrayList<String>> orderingStack;
 
-	private final String[] validParameters = { "name", "desc", "due", "by",
+	private final String[] validParameters = { "name", "desc", "start", "from", "due", "by",
 			"tag", "untag", "rank", "mark" };
 
 	// author ??? refactored by A0118007R
@@ -258,6 +258,7 @@ public class Stream {
 	}
 
 	// @author A0118007R
+	// updated by A0119401U
 
 	private void processParameterModification(String command, String contents,
 			StreamTask task) throws StreamModificationException {
@@ -272,12 +273,23 @@ public class Stream {
 				break;
 			case "due":
 			case "by":
+			case "to":
 				if (contents.equals("null")) {
 					task.setDeadline(null);
 				} else {
 					// TODO implement JChronic here ASAP!
 					Calendar due = StreamUtil.parseCalendar(contents);
 					task.setDeadline(due);
+				}
+				break;
+			case "start":
+			case "from":
+				if (contents.equals("null")) {
+					task.setStartTime(null);
+				} else {
+					
+					Calendar start = StreamUtil.parseCalendar(contents);
+					task.setStartTime(start);
 				}
 				break;
 			case "tag":
