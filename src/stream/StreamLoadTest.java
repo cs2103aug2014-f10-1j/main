@@ -38,8 +38,8 @@ public class StreamLoadTest {
 		calendar.setTime(date);
 		task1.setDeadline(calendar);
 		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
-		task1.addTag("epic");
-		task1.addTag("impossible");
+		task1.getTags().add("EPIC");
+		task1.getTags().add("IMPOSSIBLE");
 
 		task2 = new StreamTask("Build IoT");
 		Calendar calendar2 = Calendar.getInstance();
@@ -47,9 +47,9 @@ public class StreamLoadTest {
 		calendar2.setTime(date2);
 		task2.setDeadline(calendar2);
 		task2.setDescription("Internet of Things");
-		task2.addTag("epic");
-		task2.addTag("popular");
-		task2.addTag("urgent");
+		task2.getTags().add("EPIC");
+		task2.getTags().add("POPULAR");
+		task2.getTags().add("URGENT");
 
 		map = new HashMap<String, StreamTask>();
 		map.put(task1.getTaskName().toLowerCase(), task1);

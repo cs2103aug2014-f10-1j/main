@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Stack;
 
+import logic.TaskLogic;
 import model.StreamObject;
 import model.StreamTask;
 import parser.StreamParser;
@@ -35,6 +36,8 @@ public class Stream {
 	StreamUI stui;
 	private StreamParser parser;
 	private StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAM);
+	
+	private TaskLogic taskLogic = TaskLogic.init();
 
 	private String filename;
 	private Stack<String> inputStack;
@@ -260,7 +263,11 @@ public class Stream {
 			setName(taskName, contents);
 			break;
 		case "desc":
-			task.setDescription(contents);
+			if (contents.equals("null")) {
+				task.setDescription(null);
+			} else {
+				task.setDescription(contents);
+			}
 			break;
 		case "due":
 		case "by":
@@ -285,11 +292,11 @@ public class Stream {
 			break;
 		case "tag":
 			String[] newTags = contents.split(" ");
-			task.addTags(newTags);
+			taskLogic.addTags(task, newTags);
 			break;
 		case "untag":
 			String[] tagsToRemove = contents.split(" ");
-			task.removeTags(tagsToRemove);
+			taskLogic.removeTags(task, tagsToRemove);
 			break;
 		case "rank":
 			String inputRank = contents.trim();
@@ -467,7 +474,7 @@ public class Stream {
 			throws StreamModificationException {
 		StreamTask currentTask = stobj.getTask(task);
 		String oldDescription = currentTask.getDescription();
-		currentTask.setDescription(description);
+		currentTask.setDescription(description.equals("null") ? null : description);
 
 		// This section is contributed by A0093874N
 		inputStack.push(String.format(StreamConstants.Commands.DESC, index,
@@ -725,6 +732,7 @@ public class Stream {
 		ArrayList<String> processedTags;
 		String taskName;
 		String logMessage;
+		StreamTask task;
 		int taskIndex;
 
 		switch (command) {
@@ -864,8 +872,9 @@ public class Stream {
 			tags = content.split(" ");
 			taskIndex = Integer.parseInt(tags[0]);
 			taskName = stobj.getTaskNumber(taskIndex);
-
-			processedTags = stobj.getTask(taskName).addTags(tags);
+			task = stobj.getTask(taskName);
+			
+			processedTags = taskLogic.addTags(task, tags);
 			pushTaggingIntoInputStack(taskIndex, processedTags);
 			logAddedTags(taskName, processedTags);
 			break;
@@ -875,8 +884,9 @@ public class Stream {
 			tags = content.split(" ");
 			taskIndex = Integer.parseInt(tags[0]);
 			taskName = stobj.getTaskNumber(taskIndex);
-
-			processedTags = stobj.getTask(taskName).removeTags(tags);
+			task = stobj.getTask(taskName);
+			
+			processedTags = taskLogic.removeTags(task, tags);
 			pushUntaggingIntoInputStack(taskIndex, processedTags);
 			logRemovedTags(taskName, processedTags);
 			break;

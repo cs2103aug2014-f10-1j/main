@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
+import logic.TaskLogic;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +14,7 @@ import exception.StreamModificationException;
 //@author A0096529N
 //TODO add tests for negative cases, where exceptions should be thrown where relevant.
 public class StreamModificationTest {
+	private static final TaskLogic taskLogic = TaskLogic.init();
 
 	private StreamObject streamObject;
 	private StreamTask task1, task2, task3;
@@ -31,26 +34,26 @@ public class StreamModificationTest {
 		task1 = new StreamTask(TASK_NAME_1);
 		task1.setDescription("If a = b and b = c, find x.");
 		task1.setDeadline(task1Deadline);
-		task1.addTag("x");
-		task1.addTag("find");
-		task1.addTag("math");
-		task1.addTag("simple");
+		task1.getTags().add("X");
+		task1.getTags().add("FIND");
+		task1.getTags().add("MATH");
+		task1.getTags().add("SIMPLE");
 		streamObject.recoverTask(task1);
 
 		Calendar task2Deadline = Calendar.getInstance();
 		task2Deadline.setTime(taskDeadline.getTime());
 		task2 = new StreamTask(TASK_NAME_2);
 		task2.setDescription("Try and search around the bamboo forest...");
-		task2.addTag("impossible");
 		task2.setDeadline(task2Deadline);
-		task2.addTag("panda");
-		task2.addTag("nolink");
+		task2.getTags().add("IMPOSSIBLE");
+		task2.getTags().add("PANDA");
+		task2.getTags().add("NOLINE");
 		streamObject.recoverTask(task2);
 		
 		task3 = new StreamTask(TASK_NAME_3);
 		task3.setDescription("Code the unit tests for StreamObject");
-		task3.addTag("boringtask");
-		task3.addTag("procrastinate");
+		task3.getTags().add("BORINGTASK");
+		task3.getTags().add("PROCRASTINATE");
 		streamObject.recoverTask(task3);
 	}
 
@@ -71,16 +74,16 @@ public class StreamModificationTest {
 	public void testRemoveTag() throws StreamModificationException {
 		assertEquals("Tags before modification", true, task3.hasTag("procrastinate"));
 
-		task3.deleteTag("procrastinate");
+		taskLogic.removeTags(task3, "procrastinate");
 
 		assertEquals("Tags after modification", false, task3.hasTag("procrastinate"));
 	}
 
 	@Test 
-	public void testAddTag() throws StreamModificationException {
+	public void testAddTags() throws StreamModificationException {
 		assertEquals("Tags before modification", false, task3.hasTag("tagtobeadded"));
 
-		task3.addTag("tagtobeadded");
+		task3.getTags().add("TAGTOBEADDED");
 
 		assertEquals("Tags after modification", true, task3.hasTag("tagtobeadded"));
 	}
@@ -134,7 +137,7 @@ public class StreamModificationTest {
 		assertEquals("Deadline before modification", 
 				toDateString(taskDeadline), toDateString(task2.getDeadline()));
 		
-		task2.setNullDeadline();
+		task2.setDeadline(null);
 
 		assertEquals("Deadline after modification", 
 				null, task2.getDeadline());

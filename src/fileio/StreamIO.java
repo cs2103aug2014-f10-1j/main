@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import logic.TaskLogic;
 import model.StreamTask;
 
 import org.json.JSONArray;
@@ -63,6 +64,7 @@ public class StreamIO {
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
 	static String SAVE_LOCATION = "default.json";
+	private static final TaskLogic taskLogic = TaskLogic.init();
 	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMIO);
 
 	//@author A0096529N
@@ -320,7 +322,7 @@ public class StreamIO {
 			if (taskJson.has(TaskKey.TAGS)) {
 				JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
 				for (int i = 0; i < tagsJson.length(); i++) {
-					task.addTag(tagsJson.getString(i));
+					taskLogic.addTags(task, tagsJson.getString(i));
 				}
 			}
 			

@@ -22,7 +22,8 @@ public class StreamConstants {
 	public static class ComponentTag {
 		public static final String STREAM = "stream";
 		public static final String STREAMUI = "ui";
-		public static final String STREAMOBJECT = "model";
+		public static final String STREAMOBJECT = "streamLogic";
+		public static final String STREAMTASK = "taskLogic";
 		public static final String STREAMIO = "io";
 		public static final String STREAMPARSER = "parser";
 	}
@@ -46,11 +47,13 @@ public class StreamConstants {
 		public static final String START = "Start date for \"%1$s\" set to \"%2$s\"";
 		public static final String START_NOT_SPECIFIED = "Start Time for \"%1$s\" is not specified";
 		public static final String CMD_UNKNOWN = "Unknown command entered";
-		public static final String TAGS_ADDED = "Tags added to \"%1$s\": %2$s";
+		public static final String TAGS_TO_ADD = "Tags to add \"%1$s\": %2$s";
+		public static final String TAGS_TO_REMOVE = "Tags to remove \"%1$s\": %2$s";
 		public static final String TAGS_NOT_ADDED = "Tags not added to \"%1$s\": %2$s";
+		public static final String TAGS_NOT_REMOVED = "Tags not removed \"%1$s\": %2$s";
+		public static final String TAGS_ADDED = "Tags added to \"%1$s\": %2$s";
 		public static final String NO_TAGS_ADDED = "No new tags added";
 		public static final String TAGS_REMOVED = "Tags removed from \"%1$s\": %2$s";
-		public static final String TAGS_NOT_REMOVED = "Tags not removed \"%1$s\": %2$s";
 		public static final String NO_TAGS_REMOVED = "No tags removed";
 		public static final String SEARCH = "Searching for \"%1$s\", %2$s queries found";
 		public static final String FILTER = "Filtering for tasks \"%1$s\", %2$s queries found";
@@ -91,6 +94,9 @@ public class StreamConstants {
 		public static final String NO_NEXT_PAGE = "Cannot navigate forward from last page";
 		public static final String SIZE_DIFFERENT = "The size of the indices and tasks arrays are different";
 		public static final String TOO_MANY_PAGES = "The requested page exceeds the total number of pages";
+		public static final String TASK_DUPLICATE_TAG = "Duplicate tag";
+		public static final String TASK_TAG_NOTFOUND = "Delete tag not found";
+		public static final String TASK_TAG_NOTUPPERCASE = "Tag not in uppercase";
 	}
 	public static class Message {
 		public static final String WELCOME = "Welcome to Stream "

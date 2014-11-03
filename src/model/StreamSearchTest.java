@@ -27,16 +27,16 @@ public class StreamSearchTest {
 		streamObject.addTask("Find X");
 		task1 = streamObject.getTask("Find X");
 		task1.setDescription("If a = b and b = c, find x.");
-		task1.addTag("x");
-		task1.addTag("find");
-		task1.addTag("math");
-		task1.addTag("simple");
+		task1.getTags().add("X");
+		task1.getTags().add("FIND");
+		task1.getTags().add("MATH");
+		task1.getTags().add("SIMPLE");
 		streamObject.addTask("Find Pandora's Box");
 		task2 = streamObject.getTask("Find Pandora's Box");
 		task2.setDescription("Try and search around the bamboo forest...");
-		task2.addTag("impossible");
-		task2.addTag("panda");
-		task2.addTag("nolink");
+		task2.getTags().add("IMPOSSIBLE");
+		task2.getTags().add("PANDA");
+		task2.getTags().add("NOLINE");
 	}
 
 	@Test 
