@@ -961,6 +961,22 @@ public class Stream {
 				inputStack.push("some fake input to be popped");
 				break;
 
+			case FIRST:
+				stui.goToFirstPage();
+				break;
+				
+			case PREV:
+				stui.goToPrevPage();
+				break;
+				
+			case NEXT:
+				stui.goToNextPage();
+				break;
+				
+			case LAST:
+				stui.goToLastPage();
+				break;
+				
 			case EXIT:
 				logCommand("EXIT");
 				System.out.println(StreamConstants.Message.THANK_YOU);

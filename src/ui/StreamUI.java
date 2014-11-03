@@ -265,7 +265,7 @@ public class StreamUI {
 		firstPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				repopulateTaskView(1);
+				stream.filterAndProcessInput("first");
 			}
 		});
 		addComponent(firstPageButton, StreamConstants.UI.MARGIN_ELEM,
@@ -287,8 +287,7 @@ public class StreamUI {
 		prevPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				assert (pageShown != 1) : StreamConstants.Assertion.NO_PREV_PAGE;
-				repopulateTaskView(pageShown - 1);
+				stream.filterAndProcessInput("prev");
 			}
 		});
 		addComponent(prevPageButton, StreamConstants.UI.MARGIN_ELEM,
@@ -309,8 +308,7 @@ public class StreamUI {
 		nextPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				assert (pageShown != totalPage) : StreamConstants.Assertion.NO_NEXT_PAGE;
-				repopulateTaskView(pageShown + 1);
+				stream.filterAndProcessInput("next");
 			}
 		});
 		addComponent(nextPageButton, StreamConstants.UI.MARGIN_ELEM,
@@ -331,7 +329,7 @@ public class StreamUI {
 		lastPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				repopulateTaskView(totalPage);
+				stream.filterAndProcessInput("last");
 			}
 		});
 		addComponent(lastPageButton, StreamConstants.UI.MARGIN_ELEM,
@@ -639,6 +637,26 @@ public class StreamUI {
 						task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
+	}
+	
+	public void goToFirstPage() {
+		repopulateTaskView(1);
+	}
+	
+	public void goToPrevPage() {
+		if (pageShown != 1) {
+			repopulateTaskView(pageShown - 1);			
+		}
+	}
+	
+	public void goToNextPage() {
+		if (pageShown != totalPage) {
+			repopulateTaskView(pageShown + 1);			
+		}
+	}
+	
+	public void goToLastPage() {
+		repopulateTaskView(totalPage);
 	}
 
 	// @author A0093874N
