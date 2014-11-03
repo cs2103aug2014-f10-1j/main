@@ -64,7 +64,8 @@ public class StreamUI {
 	private JButton sortAlphaButton;
 	private JButton sortDeadlineButton;
 	private JButton addTaskButton;
-
+	private ArrayList<JButton> buttons = new ArrayList<JButton>();
+	
 	private boolean isSearch;
 	private int pageShown;
 	private int totalPage;
@@ -104,6 +105,17 @@ public class StreamUI {
 				.hasNext();) {
 			Character c = iter.next();
 			empowerKeyboardShortcuts(c, shortcut.get(c));
+		}
+		
+		HashMap<String, String> navig = new HashMap<String, String>();
+		navig.put("DOWN", "first");
+		navig.put("LEFT", "prev");
+		navig.put("RIGHT", "next");
+		navig.put("UP", "last");
+		for (Iterator<String> iter = navig.keySet().iterator(); iter
+				.hasNext();) {
+			String s = iter.next();
+			empowerNavigationShortcuts(s, navig.get(s));
 		}
 		addFooter();
 		log(StreamConstants.Message.WELCOME, false);
@@ -248,6 +260,10 @@ public class StreamUI {
 		addPrevPageButton();
 		addNextPageButton();
 		addLastPageButton();
+		buttons.add(firstPageButton);
+		buttons.add(prevPageButton);
+		buttons.add(nextPageButton);
+		buttons.add(lastPageButton);
 		// addClearSearchButton();
 	}
 
@@ -535,17 +551,21 @@ public class StreamUI {
 	}
 
 	private void empowerKeyboardShortcuts(char c, String s) {
-		ArrayList<JButton> buttons = new ArrayList<JButton>();
-		buttons.add(firstPageButton);
-		buttons.add(prevPageButton);
-		buttons.add(nextPageButton);
-		buttons.add(lastPageButton);
 		for (JButton b: buttons) {
 			b.getInputMap().put(KeyStroke.getKeyStroke(c), s);
 			b.getActionMap().put(s, this.new KeyboardShortcut(s));			
 		}
 		logger.getInputMap().put(KeyStroke.getKeyStroke(c), s);
 		logger.getActionMap().put(s, this.new KeyboardShortcut(s));			
+	}
+	
+	private void empowerNavigationShortcuts(String dir, String cmd) {
+		for (JButton b: buttons) {
+			b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+			b.getActionMap().put(cmd, this.new NavigationShortcut(cmd));			
+		}
+		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+		logger.getActionMap().put(cmd, this.new NavigationShortcut(cmd));		
 	}
 
 	// @author A0093874N
@@ -775,9 +795,25 @@ public class StreamUI {
 			console.requestFocus();
 		}
 
-		KeyboardShortcut(String s) {
+		private KeyboardShortcut(String s) {
 			this.text = s;
 		}
 
+	}
+	
+	private class NavigationShortcut extends AbstractAction {
+
+		private static final long serialVersionUID = 1L;
+		private String command;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			stream.filterAndProcessInput(command);
+			logger.requestFocus();
+		}
+		
+		private NavigationShortcut(String cmd) {
+			this.command = cmd;
+		}
 	}
 }
