@@ -42,7 +42,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc -1 ok",stobj);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Invalid index!";
+			final String expectedMessage = "Please enter a valid index!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -50,7 +50,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc newcq ok",stobj);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Invalid index!";
+			final String expectedMessage = "Please enter a valid index!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -58,7 +58,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc 300 ok",stobj);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Out of range!";
+			final String expectedMessage = "The index you entered is out of range!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -66,7 +66,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc 1",stobj);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Not enough information!";
+			final String expectedMessage = "Please provide more information!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
@@ -81,7 +81,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Invalid input!";
+			final String expectedMessage = "Please enter a valid command!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -91,7 +91,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Invalid index!";
+			final String expectedMessage = "Please enter a valid index!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
@@ -106,7 +106,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Invalid index!";
+			final String expectedMessage = "Please enter a valid index!";
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			

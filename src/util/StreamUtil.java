@@ -239,16 +239,16 @@ public class StreamUtil {
 		return year;
 	}
 
-	// @author A0118007R
+	// @author A0119401U
 
-	public static boolean isInteger(String x) {
-		try {
-			Integer.parseInt(x);
-			return true;
-		} catch (Exception e) {
-
+	public static boolean isInteger(String str) {
+		int size = str.length();
+		for (int i = 0; i < size; i++) {
+			if (!Character.isDigit(str.charAt(i))) {
+				return false;
+			}
 		}
-		return false;
+		return size > 0;
 	}
 
 }

@@ -194,7 +194,7 @@ public class StreamParser {
 				break;				
 			default:
 				logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
-				throw new StreamParserException("Unknown command type");
+				throw new StreamParserException("Unknown command type.");
 
 		}
 		this.commandContent = executeCommand(contents);
@@ -253,7 +253,7 @@ public class StreamParser {
 		}
 
 		else if (!StreamUtil.isInteger(contents[1])) {
-			throw new StreamParserException("Please entr a valid index!");
+			throw new StreamParserException("Please enter a valid index!");
 		}
 
 		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
@@ -318,21 +318,6 @@ public class StreamParser {
 		return this.commandContent;
 	}
 
-	// TODO a similar method is already in StreamUtil. someone do comparison and
-	// update with the better one?
-
-	/**
-	 * @deprecated
-	 */
-	private boolean isInteger(String str) {
-		int size = str.length();
-		for (int i = 0; i < size; i++) {
-			if (!Character.isDigit(str.charAt(i))) {
-				return false;
-			}
-		}
-		return size > 0;
-	}
 
 	private boolean withinRange(int index, int numOfTasks) {
 		return index >= 1 && index <= numOfTasks;
