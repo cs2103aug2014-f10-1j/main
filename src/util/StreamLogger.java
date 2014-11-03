@@ -7,6 +7,28 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * <h1>StreamLogger - Stream logger component</h1>
+ * 
+ * <p>
+ * Stores logs in a synchronized list for various components.
+ * </p>
+ * 
+ * <h2>Example</h2> 
+ * 
+ * <pre>
+ * {@code
+ * //Initialize logger, similar to Object.getInstance() taught.
+ * StreamLogger logger = StreamLogger.init(componentName);
+ * 
+ * //Use logger to add log to log stack
+ * logger.log(LogLevel.DEBUG, logMessage);
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
  * @author Steven Khong
  */
 public class StreamLogger {
@@ -21,17 +43,7 @@ public class StreamLogger {
 
 	//@author A0096529N
 	/**
-	 * Logger component for Stream.
-	 * 
-	 * <pre>
-	 * {@code
-	 * //Initialize logger, similar to Object.getInstance() taught.
-	 * StreamLogger logger = StreamLogger.init(componentName);
-	 * 
-	 * //Use logger to add log to log stack
-	 * logger.log(LogLevel.DEBUG, logMessage);
-	 * }
-	 * </pre>
+	 * Lazy constructor for StreamLogger to obtain an instance.
 	 * 
 	 * @param componentName standardized name of component
 	 * @return StreamLogger instance for use to log
@@ -57,6 +69,11 @@ public class StreamLogger {
 	}
 
 	//@author A0096529N
+	/**
+	 * Returns a copy of the log stack
+	 * 
+	 * @return logStack list of log messages
+	 */
 	public static List<String> getLogStack() {
 		return new ArrayList<String>(logStack);
 	}

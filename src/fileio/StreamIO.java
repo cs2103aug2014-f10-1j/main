@@ -28,7 +28,7 @@ import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import exception.StreamIOException;
 
-// @author A0096529N
+//@author A0096529N
 /**
  * <h1>StreamIO - Stream file IO component</h1>
  * 
@@ -47,8 +47,10 @@ import exception.StreamIOException;
  * Save location defaults to "stream.json", and may not be modified.
  * </p>
  * 
- * <h2>API</h2> StreamIO.save(HashMap&lt;String, Task&gt;) <br/>
- * StreamIO.load()
+ * <h2>API</h2> 
+ * StreamIO.save(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) <br/>
+ * StreamIO.load(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) <br/>
+ * StreamIO.saveLogFile(List&lt;String&gt; logStack, String filename) <br/>
  * <p>
  * Refer to method documentation for details.
  * </p>
@@ -63,7 +65,7 @@ public class StreamIO {
 	static String SAVE_LOCATION = "default.json";
 	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMIO);
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * <p>
 	 * Reads and inflate the contents of serialized storage file into
@@ -77,7 +79,8 @@ public class StreamIO {
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
 	 */
-	public static void load(Map<String, StreamTask> taskMap, List<String> taskList) throws StreamIOException {
+	public static void load(Map<String, StreamTask> taskMap, List<String> taskList) 
+			throws StreamIOException {
 		JSONObject tasksJson = loadFromFile(new File(SAVE_LOCATION));
 		if (tasksJson != null) {
 			loadMap(taskMap, tasksJson);
@@ -88,7 +91,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * <p>
 	 * Serializes and write the contents of StreamObject into
@@ -115,10 +118,30 @@ public class StreamIO {
 			logger.log(LogLevel.DEBUG, "JSON conversion failed during save - " + e.getMessage());
 			throw new StreamIOException("JSON conversion failed - "
 					+ e.getMessage(), e);
+		} catch (IOException e) {
+			logger.log(LogLevel.DEBUG, "IO failure during save - " + e.getMessage());
+			throw new StreamIOException("Could not save to file - "
+					+ e.getMessage(), e);
 		}
 	}
 
-	// @author A0096529N
+	//@author A0093874N
+	/**
+	 * Saves the log file upon exiting.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
+	public static void saveLogFile(List<String> logMessages, String logFileName) throws IOException {
+		FileWriter fwriter = new FileWriter(logFileName, true);
+		BufferedWriter bw = new BufferedWriter(fwriter);
+		for (int i = 0; i < logMessages.size(); i++) {
+			bw.write(logMessages.get(i));
+			bw.newLine();
+		}
+		bw.close();
+	}
+
+	//@author A0096529N
 	/**
 	 * @param saveLocation file path of storage file to save.
 	 */
@@ -126,7 +149,7 @@ public class StreamIO {
 		SAVE_LOCATION = new File(saveLocation).getAbsolutePath();
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * @return file path of the save location.
 	 */
@@ -134,7 +157,7 @@ public class StreamIO {
 		return SAVE_LOCATION;
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static void loadTaskList(List<String> taskList, JSONObject tasksJson) throws StreamIOException {
 		try {
 			JSONObject orderListJson = tasksJson.getJSONObject(TaskKey.TASKLIST);
@@ -147,7 +170,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static void loadMap(Map<String, StreamTask> taskMap, JSONObject tasksJson) throws StreamIOException {
 		try {
 			JSONArray taskMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
@@ -160,7 +183,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static JSONObject taskListToJson(List<String> taskList) throws StreamIOException {
 		try {
 			JSONObject orderListJson = new JSONObject();
@@ -174,7 +197,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static List<String> jsonToTaskList(JSONObject orderListJson) throws StreamIOException {
 		try {
 			List<String> taskList = new ArrayList<String>();
@@ -189,21 +212,18 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static void writeToFile(File destin, JSONObject tasksJson)
-			throws StreamIOException {
+			throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(destin)) {
 			if (destin.exists()) {
 				destin.delete();
 			}
 			fos.write(tasksJson.toString().getBytes());
-		} catch (IOException e) {
-			throw new StreamIOException("Could not write to file - "
-					+ e.getMessage(), e);
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static JSONObject loadFromFile(File file) throws StreamIOException {
 		StringBuilder stringBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -227,7 +247,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static JSONArray mapToJson(Map<String, StreamTask> map)
 			throws StreamIOException {
 		JSONArray mapJson = new JSONArray();
@@ -238,7 +258,7 @@ public class StreamIO {
 		return mapJson;
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static HashMap<String, StreamTask> jsonToMap(JSONArray tasksJson)
 			throws StreamIOException {
 		try {
@@ -254,7 +274,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static JSONObject taskToJson(StreamTask task) throws StreamIOException {
 		try {
 			JSONObject taskJson = new JSONObject();
@@ -272,7 +292,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static StreamTask jsonToTask(JSONObject taskJson) throws StreamIOException {
 		try {
 			String taskName = taskJson.getString(TaskKey.NAME);
@@ -321,7 +341,7 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static String formatDate(Calendar calendar) {
 		if (calendar == null) {
 			return null;
@@ -330,29 +350,13 @@ public class StreamIO {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	static String formatDate(Date date) {
 		if (date == null) {
 			return null;
 		} else {
 			return dateFormat.format(date);
 		}
-	}
-
-	// @author A0093874N
-	/**
-	 * Saves the log file upon exiting.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	public static void saveLogFile(List<String> logMessages, String logFileName) throws IOException {
-		FileWriter fwriter = new FileWriter(logFileName, true);
-		BufferedWriter bw = new BufferedWriter(fwriter);
-		for (int i = 0; i < logMessages.size(); i++) {
-			bw.write(logMessages.get(i));
-			bw.newLine();
-		}
-		bw.close();
 	}
 
 	private class TaskKey {

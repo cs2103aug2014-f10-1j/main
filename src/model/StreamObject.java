@@ -39,13 +39,6 @@ public class StreamObject {
 		this.taskList = taskList;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public ArrayList<String> getTaskNames() {
-		return taskList;
-	}
-
 	// @author A0093874N
 
 	public ArrayList<Integer> getCounter() {
@@ -243,32 +236,6 @@ public class StreamObject {
 
 	// @author A0118007R
 	/**
-	 * get task description
-	 * 
-	 * @throws StreamModificationException
-	 * @deprecated
-	 */
-
-	public String getTaskDescription(String taskName)
-			throws StreamModificationException {
-		StreamTask myTask = getTask(taskName);
-		return myTask.getDescription();
-	}
-
-	/**
-	 * get task deadline
-	 * 
-	 * @deprecated
-	 */
-
-	public Calendar getTaskDeadline(String taskName)
-			throws StreamModificationException {
-		StreamTask myTask = getTask(taskName);
-		return myTask.getDeadline();
-	}
-
-	// @author A0118007R
-	/**
 	 * Deletes a specific task
 	 * 
 	 * <p>
@@ -288,92 +255,6 @@ public class StreamObject {
 		} else {
 			throw new StreamModificationException(String.format(
 					ERROR_TASK_DOES_NOT_EXIST, taskName));
-		}
-	}
-
-	// @author A0096529N
-	/**
-	 * Modify a task's deadline
-	 * 
-	 * <p>
-	 * Precondition: taskName, deadline != null
-	 * </p>
-	 * 
-	 * @param taskName
-	 *            to be modified
-	 * @param deadline
-	 *            to be set in the task
-	 * @throws StreamModificationException
-	 *             if taskName given does not return a match, i.e. task not
-	 *             found
-	 * @deprecated
-	 */
-	public void changeDeadline(String taskName, Calendar deadline)
-			throws StreamModificationException {
-		StreamTask task = taskMap.get(taskName.toLowerCase());
-		if (task == null) {
-			throw new StreamModificationException(String.format(
-					ERROR_TASK_DOES_NOT_EXIST, taskName));
-		}
-		task.setDeadline(deadline);
-	}
-
-	// @author A0096529N
-	/**
-	 * Remove the given tag from a specified task
-	 * 
-	 * <p>
-	 * Precondition: taskName, tag != null
-	 * </p>
-	 * 
-	 * @param taskName
-	 *            to be modified
-	 * @param tag
-	 *            to be removed from the task
-	 * @throws StreamModificationException
-	 *             if taskName given does not return a match, i.e. task not
-	 *             found
-	 * @deprecated
-	 */
-	public Boolean removeTag(String taskName, String tag)
-			throws StreamModificationException {
-		StreamTask task = getTask(taskName);
-		if (task.hasTag(tag)) {
-			task.deleteTag(tag);
-			// Slight improvement by A0093874N
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	// @author A0096529N
-	/**
-	 * Add the given tag from a specified task. Does nothing if tag already
-	 * present.
-	 * 
-	 * <p>
-	 * Precondition: taskName, tag != null
-	 * </p>
-	 * 
-	 * @param taskName
-	 *            to be modified
-	 * @param tag
-	 *            to be added to the task
-	 * @throws StreamModificationException
-	 *             if taskName given does not return a match, i.e. task not
-	 *             found
-	 * @deprecated
-	 */
-	public Boolean addTag(String taskName, String tag)
-			throws StreamModificationException {
-		StreamTask task = getTask(taskName);
-		if (!task.hasTag(tag)) {
-			task.addTag(tag);
-			// Slight improvement by A0093874N
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -410,113 +291,6 @@ public class StreamObject {
 		int index = taskList.indexOf(taskName);
 		taskList.add(index, newTaskName);
 		taskList.remove(index + 1);
-	}
-
-	// @author A0119401U
-	/**
-	 * 
-	 * Mark the selected task as done
-	 * 
-	 * <p>
-	 * Precondition: taskName != null
-	 * </p>
-	 * 
-	 * @param taskName
-	 * 
-	 * @throws StreamModificationException
-	 * @deprecated
-	 */
-	public void markTaskAsDone(String taskName)
-			throws StreamModificationException {
-		StreamTask task = this.getTask(taskName);
-		taskMap.remove(taskName.toLowerCase());
-		task.markAsDone();
-		taskMap.put(taskName.toLowerCase(), task);
-	}
-
-	/**
-	 * @deprecated
-	 * 
-	 */
-	public void markTaskAsOngoing(String taskName)
-			throws StreamModificationException {
-		StreamTask task = this.getTask(taskName);
-		taskMap.remove(taskName.toLowerCase());
-		task.markAsOngoing();
-		taskMap.put(taskName.toLowerCase(), task);
-	}
-
-	// @author A0119401U
-	/**
-	 * 
-	 * Set the due time of the selected task
-	 * 
-	 * @param taskName
-	 *            , calendar
-	 * 
-	 * @throws StreamModificationException
-	 * 
-	 *             <p>
-	 *             Precondition: taskName != null
-	 *             </p>
-	 * 
-	 *             The case "calendar is null" will be dealt with by Task.java
-	 * @deprecated
-	 */
-	public void setDueTime(String taskName, Calendar calendar)
-			throws StreamModificationException {
-		StreamTask task = this.getTask(taskName);
-		taskMap.remove(taskName.toLowerCase());
-		task.setDeadline(calendar);
-		taskMap.put(taskName.toLowerCase(), task);
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 */
-	public void setNullDeadline(String taskName)
-			throws StreamModificationException {
-		StreamTask currentTask = this.getTask(taskName.toLowerCase());
-		currentTask.setNullDeadline();
-	}
-
-	// @author A0119401U
-	/**
-	 * Set the rank of the selected task
-	 * <p>
-	 * Key info is the newly entered rank of the selected task
-	 * </p>
-	 * 
-	 * <p>
-	 * Preconditions: new rank is one of the followings: high, medium, low
-	 * </p>
-	 * 
-	 * @param taskName
-	 *            , newRank
-	 * 
-	 * @throws StreamModificationException
-	 * @deprecated
-	 */
-	public void setNewRank(String taskName, String newRank)
-			throws StreamModificationException {
-		StreamTask task = this.getTask(taskName);
-		taskMap.remove(taskName.toLowerCase());
-		task.setRank(newRank);
-		taskMap.put(taskName.toLowerCase(), task);
-
-	}
-
-	// @author A0119401U
-	/**
-	 * 
-	 * @param taskName
-	 * @return the actual index of a given task
-	 * @deprecated not really needed, can be un-deprecated if we find a use
-	 */
-
-	public int getTaskIndex(String taskName) {
-		return (taskList.indexOf(taskName) + 1);
 	}
 
 	// @author A0096529N
@@ -559,7 +333,7 @@ public class StreamObject {
 			// check if task description contains key phrase
 			if (task.getDescription() != null
 					&& task.getDescription().toLowerCase()
-							.contains(keyphrase.toLowerCase())) {
+					.contains(keyphrase.toLowerCase())) {
 				tasks.add(i + 1);
 				continue;
 			}
@@ -575,7 +349,6 @@ public class StreamObject {
 	}
 
 	// @author A0093874N
-
 	public ArrayList<Integer> filterTasks(String criteria) {
 		ArrayList<Integer> tasks = new ArrayList<Integer>();
 		String[] type = criteria.split(" ");
@@ -583,38 +356,38 @@ public class StreamObject {
 		for (int i = 1; i <= taskList.size(); i++) {
 			StreamTask task = taskMap.get(taskList.get(i - 1).toLowerCase());
 			switch (type[0]) {
-				case "done":
-					if (task.isDone()) {
-						tasks.add(i);
-					}
-					break;
-				case "ongoing":
-					if (!task.isDone()) {
-						tasks.add(i);
-					}
-					break;
-				case "notime":
-					if (task.isFloatingTask()) {
-						tasks.add(i);
-					}
-					break;
-				case "before":
-					dueDate = StreamUtil.parseCalendar(type[1]);
-					if (task.getDeadline() != null
-							&& task.getDeadline().before(dueDate)) {
-						tasks.add(i);
-					}
-					break;
-				case "after":
-					dueDate = StreamUtil.parseCalendar(type[1]);
-					if (task.getDeadline() != null
-							&& task.getDeadline().after(dueDate)) {
-						tasks.add(i);
-					}
-					break;
-				default:
-					// shouldn't happen as input is filtered in parser
-					break;
+			case "done":
+				if (task.isDone()) {
+					tasks.add(i);
+				}
+				break;
+			case "ongoing":
+				if (!task.isDone()) {
+					tasks.add(i);
+				}
+				break;
+			case "notime":
+				if (task.isFloatingTask()) {
+					tasks.add(i);
+				}
+				break;
+			case "before":
+				dueDate = StreamUtil.parseCalendar(type[1]);
+				if (task.getDeadline() != null
+						&& task.getDeadline().before(dueDate)) {
+					tasks.add(i);
+				}
+				break;
+			case "after":
+				dueDate = StreamUtil.parseCalendar(type[1]);
+				if (task.getDeadline() != null
+						&& task.getDeadline().after(dueDate)) {
+					tasks.add(i);
+				}
+				break;
+			default:
+				// shouldn't happen as input is filtered in parser
+				break;
 			}
 		}
 		return tasks;
@@ -705,4 +478,234 @@ public class StreamObject {
 		}
 		return timedTaskList;
 	}
+
+
+	// Depreciated methods
+
+	/**
+	 * @deprecated
+	 */
+	public ArrayList<String> getTaskNames() {
+		return taskList;
+	}
+
+	// @author A0096529N
+	/**
+	 * Modify a task's deadline
+	 * 
+	 * <p>
+	 * Precondition: taskName, deadline != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            to be modified
+	 * @param deadline
+	 *            to be set in the task
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
+	 * @deprecated
+	 */
+	public void changeDeadline(String taskName, Calendar deadline)
+			throws StreamModificationException {
+		StreamTask task = taskMap.get(taskName.toLowerCase());
+		if (task == null) {
+			throw new StreamModificationException(String.format(
+					ERROR_TASK_DOES_NOT_EXIST, taskName));
+		}
+		task.setDeadline(deadline);
+	}
+
+	// @author A0096529N
+	/**
+	 * Remove the given tag from a specified task
+	 * 
+	 * <p>
+	 * Precondition: taskName, tag != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            to be modified
+	 * @param tag
+	 *            to be removed from the task
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
+	 * @deprecated
+	 */
+	public Boolean removeTag(String taskName, String tag)
+			throws StreamModificationException {
+		StreamTask task = getTask(taskName);
+		if (task.hasTag(tag)) {
+			task.deleteTag(tag);
+			// Slight improvement by A0093874N
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// @author A0096529N
+	/**
+	 * Add the given tag from a specified task. Does nothing if tag already
+	 * present.
+	 * 
+	 * <p>
+	 * Precondition: taskName, tag != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            to be modified
+	 * @param tag
+	 *            to be added to the task
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
+	 * @deprecated
+	 */
+	public Boolean addTag(String taskName, String tag)
+			throws StreamModificationException {
+		StreamTask task = getTask(taskName);
+		if (!task.hasTag(tag)) {
+			task.addTag(tag);
+			// Slight improvement by A0093874N
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// @author A0119401U
+	/**
+	 * 
+	 * Mark the selected task as done
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 * 
+	 * @throws StreamModificationException
+	 * @deprecated
+	 */
+	public void markTaskAsDone(String taskName)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		taskMap.remove(taskName.toLowerCase());
+		task.markAsDone();
+		taskMap.put(taskName.toLowerCase(), task);
+	}
+
+	// @author A0119401U
+	/**
+	 * @deprecated
+	 * 
+	 */
+	public void markTaskAsOngoing(String taskName)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		taskMap.remove(taskName.toLowerCase());
+		task.markAsOngoing();
+		taskMap.put(taskName.toLowerCase(), task);
+	}
+
+	// @author A0119401U
+	/**
+	 * 
+	 * Set the due time of the selected task
+	 * 
+	 * @param taskName
+	 *            , calendar
+	 * 
+	 * @throws StreamModificationException
+	 * 
+	 *             <p>
+	 *             Precondition: taskName != null
+	 *             </p>
+	 * 
+	 *             The case "calendar is null" will be dealt with by Task.java
+	 * @deprecated
+	 */
+	public void setDueTime(String taskName, Calendar calendar)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		taskMap.remove(taskName.toLowerCase());
+		task.setDeadline(calendar);
+		taskMap.put(taskName.toLowerCase(), task);
+	}
+
+	// @author A0119401U
+	/**
+	 * 
+	 * @deprecated
+	 */
+	public void setNullDeadline(String taskName)
+			throws StreamModificationException {
+		StreamTask currentTask = this.getTask(taskName.toLowerCase());
+		currentTask.setNullDeadline();
+	}
+
+	// @author A0119401U
+	/**
+	 * Set the rank of the selected task
+	 * <p>
+	 * Key info is the newly entered rank of the selected task
+	 * </p>
+	 * 
+	 * <p>
+	 * Preconditions: new rank is one of the followings: high, medium, low
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            , newRank
+	 * 
+	 * @throws StreamModificationException
+	 * @deprecated
+	 */
+	public void setNewRank(String taskName, String newRank)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		taskMap.remove(taskName.toLowerCase());
+		task.setRank(newRank);
+		taskMap.put(taskName.toLowerCase(), task);
+
+	}
+
+	// @author A0119401U
+	/**
+	 * 
+	 * @param taskName
+	 * @return the actual index of a given task
+	 * @deprecated not really needed, can be un-deprecated if we find a use
+	 */
+	public int getTaskIndex(String taskName) {
+		return (taskList.indexOf(taskName) + 1);
+	}
+
+	// @author A0118007R
+	/**
+	 * get task description
+	 * 
+	 * @throws StreamModificationException
+	 * @deprecated
+	 */
+	public String getTaskDescription(String taskName)
+			throws StreamModificationException {
+		StreamTask myTask = getTask(taskName);
+		return myTask.getDescription();
+	}
+
+	// @author A0118007R
+	/**
+	 * get task deadline
+	 * 
+	 * @deprecated
+	 */
+	public Calendar getTaskDeadline(String taskName)
+			throws StreamModificationException {
+		StreamTask myTask = getTask(taskName);
+		return myTask.getDeadline();
+	}
+
 }
