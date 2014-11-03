@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Stack;
 
 import logic.StackLogic;
 import logic.StreamLogic;
@@ -39,14 +38,11 @@ public class Stream {
 	TaskLogic taskLogic = TaskLogic.init();
 	StackLogic stackLogic = StackLogic.init();
 	StreamLogic streamLogic;
-	
+
 	private StreamParser parser;
 	private StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAM);
 
 	private String filename;
-	private Stack<String> inputStack;
-	private Stack<StreamTask> dumpedTasks;
-	private Stack<ArrayList<String>> orderingStack;
 
 	private final String[] validParameters = { "name", "desc", "start", "from", "due", "by",
 			"tag", "untag", "rank", "mark" };
@@ -72,9 +68,6 @@ public class Stream {
 	private void initializeStream() {
 		stui = new StreamUI(this);
 		parser = new StreamParser();
-		inputStack = new Stack<String>();
-		dumpedTasks = new Stack<StreamTask>();
-		orderingStack = new Stack<ArrayList<String>>();
 	}
 
 	// @author A0096529N
@@ -183,13 +176,12 @@ public class Stream {
 	// @author A0118007R
 
 	private void addTaskWithParams(String taskName, ArrayList<String> modifyParams)
-					throws StreamModificationException {
+			throws StreamModificationException {
 
 		streamLogic.addTask(taskName);
 		assert (streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_ADDED;
 
-		inputStack.push(String.format(StreamConstants.Commands.DISMISS,
-				streamLogic.getNumberOfTasks()));
+		stackLogic.pushInverseAddCommand(streamLogic.getNumberOfTasks());
 
 		if (modifyParams.size() > 0) {
 			modifyTaskWithParams(taskName, modifyParams);
@@ -266,12 +258,9 @@ public class Stream {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 		StreamTask deletedTask = streamLogic.getTask(taskName);
 		ArrayList<String> order = streamLogic.getTaskList();
-		orderingStack.push(order);
 		dismissTask(taskName);
 
-		// This section is contributed by A0093874N
-		dumpedTasks.push(deletedTask);
-		inputStack.push(String.format(StreamConstants.Commands.RECOVER, 1));
+		stackLogic.pushInverseDeleteCommand(deletedTask, order);
 		return String.format(StreamConstants.LogMessage.DELETE, taskName);
 		//
 	}
@@ -285,26 +274,9 @@ public class Stream {
 	 * @throws StreamModificationException
 	 */
 	private void clearAllTasks() throws StreamModificationException {
-		int noOfTasks = streamLogic.getNumberOfTasks();
-		orderingStack.push(streamLogic.getTaskList());
-		clear(noOfTasks);
+		stackLogic.pushInverseClearCommand(streamLogic.getTaskList(), streamLogic.getStreamTaskList());
+		streamLogic.clear();
 		assert (streamLogic.getNumberOfTasks() == 0) : StreamConstants.Assertion.NOT_CLEARED;
-		inputStack.push(String.format(StreamConstants.Commands.RECOVER,
-				noOfTasks));
-	}
-
-	// @author A0093874N
-
-	private void clear(int noOfTasks) throws StreamModificationException {
-		for (int i = 0; i < noOfTasks; i++) {
-			deleteTask(streamLogic.getTaskNumber(1));
-			/*
-			 * This is because we don't want the "recover 1". Rather, we'll
-			 * replace with "recover noOfTasks" at the end of the process.
-			 */
-			inputStack.pop();
-			orderingStack.pop();
-		}
 	}
 
 	// @author A0118007R
@@ -355,9 +327,7 @@ public class Stream {
 		String oldDescription = currentTask.getDescription();
 		currentTask.setDescription(description.equals("null") ? null : description);
 
-		// This section is contributed by A0093874N
-		inputStack.push(String.format(StreamConstants.Commands.DESC, index,
-				oldDescription));
+		stackLogic.pushInverseSetDescriptionCommand(index, oldDescription);
 		return String.format(StreamConstants.LogMessage.DESC,
 				currentTask.getTaskName(), description);
 		//
@@ -371,8 +341,7 @@ public class Stream {
 		String oldRank = currentTask.getRank();
 		currentTask.setRank(taskRank);
 
-		inputStack.push(String.format(StreamConstants.Commands.RANK, index,
-				oldRank));
+		stackLogic.pushInverseSetRankingCommand(index, oldRank);
 		return String.format(StreamConstants.LogMessage.RANK,
 				currentTask.getTaskName(), taskRank);
 	}
@@ -389,25 +358,10 @@ public class Stream {
 			throws StreamModificationException {
 		StreamTask task = streamLogic.getTask(taskName);
 		Calendar deadline = task.getDeadline();
-		pushInverseDueCommand(taskIndex, deadline);
+		stackLogic.pushInverseDueCommand(taskIndex, deadline);
 		// This section is contributed by A0093874N
 		return taskLogic.setDeadline(task, newDeadline);
 		//
-	}
-
-	// @author A0118007R
-
-	private void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
-		if (currentDeadline == null) {
-			inputStack.push(String.format(StreamConstants.Commands.DUE,
-					taskIndex, "null"));
-		} else {
-			// TODO incorporate some JChronic here?
-			inputStack.push(String.format(StreamConstants.Commands.DUE,
-					taskIndex, currentDeadline.get(Calendar.DATE) + "/"
-							+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
-							+ currentDeadline.get(Calendar.YEAR)));
-		}
 	}
 
 	// @author A0119401U
@@ -422,7 +376,7 @@ public class Stream {
 			throws StreamModificationException {
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		Calendar currentStartTime = currentTask.getStartTime();
-		pushInverseStartCommand(taskIndex, currentStartTime);
+		stackLogic.pushInverseStartCommand(taskIndex, currentStartTime);
 		return setStartTime(taskName, calendar);
 
 	}
@@ -443,35 +397,18 @@ public class Stream {
 		}
 	}
 
-
-	private void pushInverseStartCommand(int taskIndex, Calendar currentStartTime) {
-		if (currentStartTime == null) {
-			inputStack.push(String.format(StreamConstants.Commands.START,
-					taskIndex, "null"));
-		} else {
-			inputStack.push(String.format(StreamConstants.Commands.START,
-					taskIndex, currentStartTime.get(Calendar.DATE) + "/"
-							+ (currentStartTime.get(Calendar.MONTH) + 1) + "/"
-							+ currentStartTime.get(Calendar.YEAR)));
-		}
-	}
-
 	// @author A0119401U
-
 	/**
 	 * Mark the selected task as done
 	 * 
 	 * @author Jiang Shenhao
-	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private String markAsDone(StreamTask task, int index)
-			throws StreamModificationException {
+	private String markAsDone(StreamTask task, int index) {
+		boolean wasDone = task.isDone();
 		task.markAsDone();
-		// This section is contributed by A0118007R
-		inputStack.push(String.format(StreamConstants.Commands.MARK_NOT_DONE,
-				index));
-		//
+
+		stackLogic.pushInverseSetDoneCommand(wasDone, index);
 		// This section is contributed by A0093874N
 		return String.format(StreamConstants.LogMessage.MARK,
 				task.getTaskName(), "done");
@@ -479,21 +416,17 @@ public class Stream {
 	}
 
 	// @author A0118007R
-
 	/**
 	 * Mark the selected task as ongoing
 	 * 
 	 * @author John Kevin Tjahjadi
-	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private String markAsOngoing(StreamTask task, int index)
-			throws StreamModificationException {
+	private String markAsOngoing(StreamTask task, int index) {
+		boolean wasDone = task.isDone();
 		task.markAsOngoing();
-		//
-		inputStack.push(String
-				.format(StreamConstants.Commands.MARK_DONE, index));
-		//
+		
+		stackLogic.pushInverseSetDoneCommand(wasDone, index);
 		// This section is contributed by A0093874N
 		return String.format(StreamConstants.LogMessage.MARK,
 				task.getTaskName(), "ongoing");
@@ -686,8 +619,10 @@ public class Stream {
 			ArrayList<String> newTags = currTask.getTags();
 			inverseCommand = processTagModification(inverseCommand,
 					oldTags, newTags);
-
-			inputStack.push(inverseCommand.trim());
+			
+			//TODO best if entire inverse command can 
+			//be constructed in stackLogic instead.
+			stackLogic.pushInverseModifyCommand(inverseCommand);
 
 			showAndLogResult(String.format(
 					StreamConstants.LogMessage.MODIFY, taskName));
@@ -700,8 +635,7 @@ public class Stream {
 			String oldTaskName = streamLogic.getTaskNumber(taskIndex);
 			String newTaskName = contents[1];
 			logMessage = streamLogic.updateTaskName(oldTaskName, newTaskName);
-			inputStack.push(String.format(StreamConstants.Commands.NAME,
-					taskIndex, oldTaskName));
+			stackLogic.pushInverseSetNameCommand(taskIndex, oldTaskName);
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
@@ -737,9 +671,9 @@ public class Stream {
 			taskIndex = Integer.parseInt(tags[0]);
 			taskName = streamLogic.getTaskNumber(taskIndex);
 			task = streamLogic.getTask(taskName);
-			
+
 			processedTags = taskLogic.addTags(task, tags);
-			pushTaggingIntoInputStack(taskIndex, processedTags);
+			stackLogic.pushInverseAddTagCommand(taskIndex, processedTags);
 			logAddedTags(taskName, processedTags);
 			break;
 
@@ -749,9 +683,9 @@ public class Stream {
 			taskIndex = Integer.parseInt(tags[0]);
 			taskName = streamLogic.getTaskNumber(taskIndex);
 			task = streamLogic.getTask(taskName);
-			
+
 			processedTags = taskLogic.removeTags(task, tags);
-			pushUntaggingIntoInputStack(taskIndex, processedTags);
+			stackLogic.pushInverseUntagCommand(taskIndex, processedTags);
 			logRemovedTags(taskName, processedTags);
 			break;
 
@@ -783,12 +717,11 @@ public class Stream {
 		case SORT:
 			logCommand("SORT");
 			ArrayList<String> oldOrdering = streamLogic.getTaskList();
-			orderingStack.push(oldOrdering);
 			logMessage = sort(content);
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
-			inputStack.push("unsort");
+			stackLogic.pushInverseSortCommand(oldOrdering);
 			showAndLogResult(logMessage);
 			break;
 
@@ -820,11 +753,11 @@ public class Stream {
 			recover(noOfTasksToRecover);
 			showAndLogResult(String.format(
 					StreamConstants.LogMessage.RECOVER, noOfTasksToRecover));
-			streamLogic.setOrdering(orderingStack.pop());
+			streamLogic.setOrdering(stackLogic.popOrder());
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
-			inputStack.push("some fake input to be popped");
+			stackLogic.pushPlaceholderInput();
 			break;
 
 		case DISMISS:
@@ -837,17 +770,17 @@ public class Stream {
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
-			inputStack.push("some fake input to be popped");
+			stackLogic.pushPlaceholderInput();
 			break;
 
 		case UNSORT:
 			logCommand("UNSORT");
-			streamLogic.setOrdering(orderingStack.pop());
+			streamLogic.setOrdering(stackLogic.popOrder());
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
 			showAndLogResult(StreamConstants.LogMessage.UNSORT);
-			inputStack.push("some fake input to be popped");
+			stackLogic.pushPlaceholderInput();
 			break;
 
 		case FIRST:
@@ -881,7 +814,7 @@ public class Stream {
 
 	private void recover(int noOfTasksToRecover) {
 		for (int i = 0; i < noOfTasksToRecover; i++) {
-			StreamTask task = dumpedTasks.pop();
+			StreamTask task = stackLogic.recoverTask();
 			streamLogic.recoverTask(task);
 		}
 	}
@@ -889,10 +822,10 @@ public class Stream {
 	// @author A0093874N
 
 	private void processUndo() {
-		if (inputStack.isEmpty()) {
+		if (!stackLogic.hasInverseInput()) {
 			showAndLogResult(StreamConstants.LogMessage.UNDO_FAIL);
 		} else {
-			String undoneInput = inputStack.pop();
+			String undoneInput = stackLogic.popInverseInput();
 			showAndLogResult(StreamConstants.LogMessage.UNDO_SUCCESS);
 			log(StreamUtil.showAsTerminalInput(undoneInput));
 			processInput(undoneInput);
@@ -902,30 +835,7 @@ public class Stream {
 			 * to the inputStack. If not popped, the undo process will be
 			 * trapped between just two processes.
 			 */
-			inputStack.pop();
-		}
-	}
-
-	// @author A0118007R
-
-	private void pushUntaggingIntoInputStack(int taskIndex,
-			ArrayList<String> tagsRemoved) {
-		if (tagsRemoved.size() != 0) {
-			inputStack.push(String.format(StreamConstants.Commands.TAG,
-					taskIndex,
-					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
-		}
-	}
-
-	// @author A0118007R
-
-	private void pushTaggingIntoInputStack(int taskIndex,
-			ArrayList<String> tagsAdded) {
-		if (tagsAdded.size() != 0) {
-			inputStack
-			.push(String.format(StreamConstants.Commands.UNTAG,
-					taskIndex,
-					StreamUtil.listDownArrayContent(tagsAdded, " ")));
+			stackLogic.popInverseInput();
 		}
 	}
 
@@ -1210,6 +1120,26 @@ public class Stream {
 
 	public static void main(String[] args) {
 		new Stream(StreamConstants.FILENAME);
+	}
+
+	// @author A0093874N
+	/**
+	 * 
+	 * @param noOfTasks
+	 * @throws StreamModificationException
+	 * @deprecated by A0096529N - undo handling moved to StackLogic
+	 */
+	@SuppressWarnings("unused")
+	private void clear(int noOfTasks) throws StreamModificationException {
+		for (int i = 0; i < noOfTasks; i++) {
+			deleteTask(streamLogic.getTaskNumber(1));
+			/*
+			 * This is because we don't want the "recover 1". Rather, we'll
+			 * replace with "recover noOfTasks" at the end of the process.
+			 */
+			//inputStack.pop();
+			//orderingStack.pop();
+		}
 	}
 
 	// @author A0118007R

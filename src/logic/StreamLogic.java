@@ -179,6 +179,12 @@ public class StreamLogic extends BaseLogic {
 		streamObject.put(task.getTaskName(), task);
 	}
 
+	// @author A0096529N
+
+	public void clear() {
+		streamObject.clear();
+	}
+
 	// @author A0093874N
 	/**
 	 * <p>

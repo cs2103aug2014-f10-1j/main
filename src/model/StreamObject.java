@@ -92,10 +92,15 @@ public class StreamObject {
 	public boolean contains(String taskName) {
 		return taskList.contains(taskName);
 	}
-	
+
 	//@author A0096529N
 	public void remove(String taskName) {
 		taskMap.remove(taskName.toLowerCase());
 		taskList.remove(taskName);
+	}
+	//@author A0096529N
+	public void clear() {
+		taskMap.clear();
+		taskList.clear();
 	}
 }
