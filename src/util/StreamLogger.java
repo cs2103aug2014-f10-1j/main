@@ -55,7 +55,8 @@ public class StreamLogger {
 					getLevel(logLevel), componentName.toUpperCase(), message));	
 		}
 	}
-	
+
+	//@author A0096529N
 	public static List<String> getLogStack() {
 		return new ArrayList<String>(logStack);
 	}

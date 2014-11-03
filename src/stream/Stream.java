@@ -767,8 +767,7 @@ public class Stream {
 
 	private void saveLogFile() throws IOException {
 		Calendar now = Calendar.getInstance();
-		String logFileName = String.format(StreamConstants.LOGFILE, StreamUtil
-				.stripCalendarChars(StreamUtil.getCalendarWriteUp(now)));
+		String logFileName = String.format(StreamConstants.LOGFILE, StreamUtil.getDateString(now));
 		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
 

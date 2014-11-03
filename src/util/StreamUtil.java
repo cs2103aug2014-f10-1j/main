@@ -2,6 +2,7 @@ package util;
 
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -25,6 +26,7 @@ public class StreamUtil {
 	public static final String TIME_DELIMITER = ":";
 	public static final String PREFIX_INPUT = "<< ";
 	public static final String PREFIX_OUTPUT = ">> ";
+	public static final SimpleDateFormat cleanDateFormat = new SimpleDateFormat("yyyyMMdd");
 
 	// @author A0118007R
 
@@ -207,6 +209,12 @@ public class StreamUtil {
 				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
 				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.MINUTE))
 				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.SECOND));
+	}
+
+	// @author A0096529N
+
+	public static String getDateString(Calendar calendar) {
+		return cleanDateFormat.format(calendar.getTime());
 	}
 
 	// @author A0093874N
