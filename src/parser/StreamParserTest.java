@@ -1,7 +1,7 @@
 package parser;
 
-import static org.junit.Assert.*;
-import model.StreamObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,12 +12,10 @@ import exception.StreamParserException;
 public class StreamParserTest {
 
 	StreamParser stparser;
-	StreamObject stobj;
 	
 	@Before
 	public void setUp() throws Exception {
 		stparser = new StreamParser();
-		stobj = new StreamObject();
 	}
 
 	@Test
@@ -25,7 +23,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("add ",stobj);
+			stparser.interpretCommand("add ", 0);
 			fail();
 			
 		}catch (StreamParserException e) {
@@ -39,7 +37,7 @@ public class StreamParserTest {
 	public void parserDescTest() {
 		
 		try{
-			stparser.interpretCommand("desc -1 ok",stobj);
+			stparser.interpretCommand("desc -1 ok", 0);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = "Please enter a valid index!";
@@ -47,7 +45,7 @@ public class StreamParserTest {
 		}
 		
 		try{
-			stparser.interpretCommand("desc newcq ok",stobj);
+			stparser.interpretCommand("desc newcq ok", 0);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = "Please enter a valid index!";
@@ -55,7 +53,7 @@ public class StreamParserTest {
 		}
 		
 		try{
-			stparser.interpretCommand("desc 300 ok",stobj);
+			stparser.interpretCommand("desc 300 ok", 0);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = "The index you entered is out of range!";
@@ -63,7 +61,7 @@ public class StreamParserTest {
 		}
 		
 		try{
-			stparser.interpretCommand("desc 1",stobj);
+			stparser.interpretCommand("desc 1", 0);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = "Please provide more information!";
@@ -77,7 +75,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("del ",stobj);
+			stparser.interpretCommand("del ", 0);
 			fail();
 			
 		}catch (StreamParserException e) {
@@ -87,7 +85,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("del as",stobj);
+			stparser.interpretCommand("del as", 0);
 			fail();
 			
 		}catch (StreamParserException e) {
@@ -102,7 +100,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("done tutorial",stobj);
+			stparser.interpretCommand("done tutorial", 0);
 			fail();
 			
 		}catch (StreamParserException e) {

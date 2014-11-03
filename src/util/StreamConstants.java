@@ -22,7 +22,7 @@ public class StreamConstants {
 	public static class ComponentTag {
 		public static final String STREAM = "stream";
 		public static final String STREAMUI = "ui";
-		public static final String STREAMOBJECT = "streamLogic";
+		public static final String STREAMLOGIC = "streamLogic";
 		public static final String STREAMTASK = "taskLogic";
 		public static final String STREAMIO = "io";
 		public static final String STREAMPARSER = "parser";
@@ -114,6 +114,11 @@ public class StreamConstants {
 	}
 	public static class ExceptionMessage {
 		public static final String ERR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
+		public static final String ERR_TASK_ALREADY_EXISTS = "\"%1$s\" already exists in the tasks list.";
+		public static final String ERR_TASK_DOES_NOT_EXIST = "The task \"%1$s\" does not exist.";
+		public static final String ERR_NEW_TASK_NAME_NOT_AVAILABLE = "The name \"%1$s\" is not available.";
+		public static final String ERR_CREATEFILE = "Test file could not be created "
+				+ "- %1$s\nDelete the file if already present.";
 	}
 	public static class UI {
 		public static final Color COLOR_HEADER = Color.getHSBColor(

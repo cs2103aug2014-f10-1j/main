@@ -38,7 +38,7 @@ public class StreamSaveTest {
 		stream = new Stream(testFile.getAbsolutePath());
 		String taskName1 = "Code Jarvis";
 		stream.addTask(taskName1);
-		task1 = stream.stobj.getTask(taskName1);
+		task1 = stream.streamLogic.getTask(taskName1);
 		Calendar calendar = Calendar.getInstance();
 		Date date = simpleDateFormat.parse("20410719000000");
 		calendar.setTime(date);
@@ -49,7 +49,7 @@ public class StreamSaveTest {
 
 		String taskName2 = "Build IoT";
 		stream.addTask(taskName2);
-		task2 = stream.stobj.getTask(taskName2);
+		task2 = stream.streamLogic.getTask(taskName2);
 		Calendar calendar2 = Calendar.getInstance();
 		Date date2 = simpleDateFormat.parse("20180101123456");
 		calendar2.setTime(date2);

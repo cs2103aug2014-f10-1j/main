@@ -1,6 +1,5 @@
 package parser;
 
-import model.StreamObject;
 import util.StreamConstants;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
@@ -35,11 +34,10 @@ public class StreamParser {
 		this.commandContent = null;
 	}
 
-	public void interpretCommand(String input, StreamObject stobj)
+	public void interpretCommand(String input, int numOfTasks)
 			throws StreamParserException {
 		String[] contents = input.trim().split(" ", 2);
 		String key = contents[0].toLowerCase();
-		int numOfTasks = stobj.getNumberOfTasks();
 		switch (key) {
 			case "add":
 

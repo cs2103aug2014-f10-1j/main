@@ -1,10 +1,11 @@
-package model;
+package logic;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
-import logic.TaskLogic;
+import model.StreamObject;
+import model.StreamTask;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +15,9 @@ import exception.StreamModificationException;
 //@author A0096529N
 //TODO add tests for negative cases, where exceptions should be thrown where relevant.
 public class StreamModificationTest {
-	private static final TaskLogic taskLogic = TaskLogic.init();
+	private TaskLogic taskLogic = TaskLogic.init();
+	private StreamLogic streamLogic = StreamLogic.init(new StreamObject());
 
-	private StreamObject streamObject;
 	private StreamTask task1, task2, task3;
 	private Calendar taskDeadline;
 	private String TASK_NAME_1 = "Find X";
@@ -30,7 +31,6 @@ public class StreamModificationTest {
 		
 		Calendar task1Deadline = Calendar.getInstance();
 		task1Deadline.setTime(taskDeadline.getTime());
-		streamObject = new StreamObject();
 		task1 = new StreamTask(TASK_NAME_1);
 		task1.setDescription("If a = b and b = c, find x.");
 		task1.setDeadline(task1Deadline);
@@ -38,7 +38,7 @@ public class StreamModificationTest {
 		task1.getTags().add("FIND");
 		task1.getTags().add("MATH");
 		task1.getTags().add("SIMPLE");
-		streamObject.recoverTask(task1);
+		streamLogic.recoverTask(task1);
 
 		Calendar task2Deadline = Calendar.getInstance();
 		task2Deadline.setTime(taskDeadline.getTime());
@@ -48,13 +48,13 @@ public class StreamModificationTest {
 		task2.getTags().add("IMPOSSIBLE");
 		task2.getTags().add("PANDA");
 		task2.getTags().add("NOLINE");
-		streamObject.recoverTask(task2);
+		streamLogic.recoverTask(task2);
 		
 		task3 = new StreamTask(TASK_NAME_3);
 		task3.setDescription("Code the unit tests for StreamObject");
 		task3.getTags().add("BORINGTASK");
 		task3.getTags().add("PROCRASTINATE");
-		streamObject.recoverTask(task3);
+		streamLogic.recoverTask(task3);
 	}
 
 	@Test 
@@ -94,7 +94,7 @@ public class StreamModificationTest {
 		
 		assertEquals("Task name before modification", TASK_NAME_3, task3.getTaskName());
 
-		streamObject.updateTaskName(task3.getTaskName(), newTaskName);
+		streamLogic.updateTaskName(task3.getTaskName(), newTaskName);
 
 		assertEquals("Task name after modification", newTaskName, task3.getTaskName());
 	}

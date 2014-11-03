@@ -18,9 +18,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import util.StreamConstants;
+
 public class StreamLoadTest {
-	private static final String CREATEFILE_EXCEPTION_MESSAGE = "Test file could not be created "
-			+ "- %1$s\nDelete the file if already present.";
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;
@@ -71,7 +71,7 @@ public class StreamLoadTest {
 			}
 			stringToFile(testFile, fileContent);
 		} catch (IOException e) {
-			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE, e.getMessage()), e);
+			throw new IOException(String.format(StreamConstants.ExceptionMessage.ERR_CREATEFILE, e.getMessage()), e);
 		}
 	}
 
@@ -86,14 +86,14 @@ public class StreamLoadTest {
 	public void testLoadMap() {
 		Stream stream = new Stream(testFile.getAbsolutePath());
 		assertEquals("Loaded task map", serializeTaskMap(map),
-				serializeTaskMap(stream.stobj.getTaskMap()));
+				serializeTaskMap(stream.streamLogic.getTaskMap()));
 	}
 
 	// @author A0096529N
 	@Test 
 	public void testLoadList() {
 		Stream stream = new Stream(testFile.getAbsolutePath());
-		assertEquals("Loaded task map", taskList, stream.stobj.getTaskList());
+		assertEquals("Loaded task map", taskList, stream.streamLogic.getTaskList());
 	}
 
 	// @author A0096529N

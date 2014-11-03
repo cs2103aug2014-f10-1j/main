@@ -59,20 +59,20 @@ public class StreamUndoTest {
 	@Test
 	public void undoAddTest() throws Exception {
 		in("add do CS2103");
-		assertEquals("do CS2103 is included", true, st.hasTask("do CS2103"));
+		assertEquals("do CS2103 is included", true, st.streamLogic.hasTask("do CS2103"));
 		in("add do CS2105");
-		assertEquals("do CS2105 is included", true, st.hasTask("do CS2105"));
+		assertEquals("do CS2105 is included", true, st.streamLogic.hasTask("do CS2105"));
 		in("add do CS2106");
-		assertEquals("do CS2106 is included", true, st.hasTask("do CS2106"));
+		assertEquals("do CS2106 is included", true, st.streamLogic.hasTask("do CS2106"));
 		in("undo");
 		assertEquals("do CS2106 is not included", false,
-				st.hasTask("do CS2106"));
+				st.streamLogic.hasTask("do CS2106"));
 		in("undo");
 		assertEquals("do CS2105 is not included", false,
-				st.hasTask("do CS2105"));
+				st.streamLogic.hasTask("do CS2105"));
 		in("undo");
 		assertEquals("do CS2103 is not included", false,
-				st.hasTask("do CS2103"));
+				st.streamLogic.hasTask("do CS2103"));
 	}
 
 	@Test
@@ -80,9 +80,9 @@ public class StreamUndoTest {
 		in("add do CS2103");
 		in("delete 1");
 		assertEquals("do CS2103 is not included", false,
-				st.hasTask("do CS2103"));
+				st.streamLogic.hasTask("do CS2103"));
 		in("undo");
-		assertEquals("do CS2103 is included", true, st.hasTask("do CS2103"));
+		assertEquals("do CS2103 is included", true, st.streamLogic.hasTask("do CS2103"));
 	}
 
 	@Test
@@ -90,11 +90,11 @@ public class StreamUndoTest {
 		in("add do CS2103");
 		in("name 1 do CS2107");
 		in("name 1 do CS2104");
-		assertEquals("do CS2104 is included", true, st.hasTask("do CS2104"));
+		assertEquals("do CS2104 is included", true, st.streamLogic.hasTask("do CS2104"));
 		in("undo");
-		assertEquals("do CS2107 is included", true, st.hasTask("do CS2107"));
+		assertEquals("do CS2107 is included", true, st.streamLogic.hasTask("do CS2107"));
 		in("undo");
-		assertEquals("do CS2103 is included", true, st.hasTask("do CS2103"));
+		assertEquals("do CS2103 is included", true, st.streamLogic.hasTask("do CS2103"));
 	}
 
 	@Test
@@ -105,9 +105,9 @@ public class StreamUndoTest {
 		in("add do CS2106");
 		in("add do CS2107");
 		in("clear");
-		assertEquals("no tasks added", 0, st.stobj.getNumberOfTasks());
+		assertEquals("no tasks added", 0, st.streamLogic.getNumberOfTasks());
 		in("undo");
-		assertEquals("5 tasks added", 5, st.stobj.getNumberOfTasks());
+		assertEquals("5 tasks added", 5, st.streamLogic.getNumberOfTasks());
 	}
 
 	@Test
@@ -118,20 +118,20 @@ public class StreamUndoTest {
 		in("modify 1 name " + newTaskName
 				+ " tag fordemo v0.2 desc multiple inputs");
 		assertEquals("new name is \"" + newTaskName + "\"", false,
-				st.hasTask(taskNameForTest));
+				st.streamLogic.hasTask(taskNameForTest));
 		assertEquals("has description", "multiple inputs",
-				st.stobj.getTask(newTaskName).getDescription());
-		assertFalse("has tags", st.stobj.getTask(newTaskName).getTags()
+				st.streamLogic.getTask(newTaskName).getDescription());
+		assertFalse("has tags", st.streamLogic.getTask(newTaskName).getTags()
 				.isEmpty());
 		in("undo");
 		assertEquals("old name is \"" + taskNameForTest + "\"", true,
-				st.hasTask(taskNameForTest));
-		assertNull("no description", st.stobj.getTask(taskNameForTest)
+				st.streamLogic.hasTask(taskNameForTest));
+		assertNull("no description", st.streamLogic.getTask(taskNameForTest)
 				.getDescription());
-		assertTrue("no tags", st.stobj.getTask(taskNameForTest).getTags()
+		assertTrue("no tags", st.streamLogic.getTask(taskNameForTest).getTags()
 				.isEmpty());
 		in("undo");
-		assertFalse("no task added", st.hasTask(taskNameForTest));
+		assertFalse("no task added", st.streamLogic.hasTask(taskNameForTest));
 	}
 
 	@Test
@@ -140,14 +140,14 @@ public class StreamUndoTest {
 		in("add " + taskNameForTest);
 		in("modify 1 due 11/11 desc multiple inputs");
 		assertEquals("has date 11/11", "11/11/2014 00:00:00",
-				StreamUtil.getCalendarWriteUp(st.stobj.getTask(taskNameForTest)
+				StreamUtil.getCalendarWriteUp(st.streamLogic.getTask(taskNameForTest)
 						.getDeadline()));
 		assertEquals("has description", "multiple inputs",
-				st.stobj.getTask(taskNameForTest).getDescription());
+				st.streamLogic.getTask(taskNameForTest).getDescription());
 		in("modify 1 due null desc null");
-		assertNull("has date 11/11", st.stobj.getTask(taskNameForTest)
+		assertNull("has date 11/11", st.streamLogic.getTask(taskNameForTest)
 				.getDeadline());
-		assertNull("has description", st.stobj.getTask(taskNameForTest)
+		assertNull("has description", st.streamLogic.getTask(taskNameForTest)
 				.getDescription());
 	}
 
@@ -185,11 +185,11 @@ public class StreamUndoTest {
 	@Test
 	public void undoMarkTest() throws Exception {
 		in("add a task");
-		assertFalse("Task 1 is not done", st.stobj.getTask("a task").isDone());
+		assertFalse("Task 1 is not done", st.streamLogic.getTask("a task").isDone());
 		in("mark 1 done");
-		assertTrue("Task 1 is done", st.stobj.getTask("a task").isDone());
+		assertTrue("Task 1 is done", st.streamLogic.getTask("a task").isDone());
 		in("undo");
-		assertFalse("Task 1 is not done", st.stobj.getTask("a task").isDone());
+		assertFalse("Task 1 is not done", st.streamLogic.getTask("a task").isDone());
 	}
 
 	@Test
@@ -205,17 +205,17 @@ public class StreamUndoTest {
 		String[] alphaSorted = { "Task A", "Task B", "Task C", "Task D" };
 		String[] chronoSorted = { "Task B", "Task C", "Task A", "Task D" };
 		String[] unsorted = { "Task D", "Task A", "Task C", "Task B" };
-		assertTrue("Unsorted", compare(st.stobj.getTaskList(), unsorted));
+		assertTrue("Unsorted", compare(st.streamLogic.getTaskList(), unsorted));
 		in("sort a ascending");
 		assertTrue("Sorted alphabetically",
-				compare(st.stobj.getTaskList(), alphaSorted));
+				compare(st.streamLogic.getTaskList(), alphaSorted));
 		in("sort t descending");
 		assertTrue("Sorted chronologically",
-				compare(st.stobj.getTaskList(), chronoSorted));
+				compare(st.streamLogic.getTaskList(), chronoSorted));
 		in("undo");
 		in("undo");
 		assertTrue("Now unsorted again",
-				compare(st.stobj.getTaskList(), unsorted));
+				compare(st.streamLogic.getTaskList(), unsorted));
 	}
 
 	@Test
@@ -223,29 +223,29 @@ public class StreamUndoTest {
 		in("add a task");
 		in("tag 1 sometask randomtask");
 		assertTrue("Tag sometask exists",
-				st.stobj.getTask("a task").hasTag("sometask"));
+				st.streamLogic.getTask("a task").hasTag("sometask"));
 		assertTrue("Tag randomtask exists",
-				st.stobj.getTask("a task").hasTag("randomtask"));
+				st.streamLogic.getTask("a task").hasTag("randomtask"));
 		in("tag 1 sometask newtask");
 		assertTrue("Tag newtask exists",
-				st.stobj.getTask("a task").hasTag("newtask"));
+				st.streamLogic.getTask("a task").hasTag("newtask"));
 		in("undo");
-		assertTrue("Tag sometask still exists", st.stobj.getTask("a task")
+		assertTrue("Tag sometask still exists", st.streamLogic.getTask("a task")
 				.hasTag("sometask"));
-		assertFalse("Tag newtask no longer exists", st.stobj.getTask("a task")
+		assertFalse("Tag newtask no longer exists", st.streamLogic.getTask("a task")
 				.hasTag("newtask"));
 		in("untag 1 randomtask newtask");
 		assertFalse("Tag randomtask no longer exists",
-				st.stobj.getTask("a task").hasTag("randomtask"));
+				st.streamLogic.getTask("a task").hasTag("randomtask"));
 		in("undo");
-		assertTrue("Tag randomtask exists again", st.stobj.getTask("a task")
+		assertTrue("Tag randomtask exists again", st.streamLogic.getTask("a task")
 				.hasTag("randomtask"));
-		assertFalse("Tag newtask still not exist", st.stobj.getTask("a task")
+		assertFalse("Tag newtask still not exist", st.streamLogic.getTask("a task")
 				.hasTag("newtask"));
 		in("undo");
 		assertFalse("Tag randomtask no longer exists",
-				st.stobj.getTask("a task").hasTag("randomtask"));
-		assertFalse("Tag sometask no longer exists", st.stobj.getTask("a task")
+				st.streamLogic.getTask("a task").hasTag("randomtask"));
+		assertFalse("Tag sometask no longer exists", st.streamLogic.getTask("a task")
 				.hasTag("sometask"));
 	}
 
