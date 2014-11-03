@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import model.StreamTask;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -65,6 +66,12 @@ public class StreamSaveTest {
 		taskList = new ArrayList<String>();
 		taskList.add(task1.getTaskName());
 		taskList.add(task2.getTaskName());
+	}
+
+	// @author A0096529N
+	@After 
+	public void tearDown() throws Exception {
+		testFile.delete();
 	}
 
 	// @author A0096529N

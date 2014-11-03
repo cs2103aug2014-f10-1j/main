@@ -30,7 +30,8 @@ public class StreamLoadTest {
 	private File testFile = new File("test.json");
 
 	// @author A0096529N
-	@Before public void setUp() throws Exception {
+	@Before 
+	public void setUp() throws Exception {
 		task1 = new StreamTask("Code Jarvis");
 		Calendar calendar = Calendar.getInstance();
 		Date date = simpleDateFormat.parse("20410719000000");
@@ -75,19 +76,22 @@ public class StreamLoadTest {
 	}
 
 	// @author A0096529N
-	@After public void tearDown() throws Exception {
+	@After
+	public void tearDown() throws Exception {
 		testFile.delete();
 	}
 
 	// @author A0096529N
-	@Test public void testLoadMap() {
+	@Test 
+	public void testLoadMap() {
 		Stream stream = new Stream(testFile.getAbsolutePath());
 		assertEquals("Loaded task map", serializeTaskMap(map),
 				serializeTaskMap(stream.stobj.getTaskMap()));
 	}
 
 	// @author A0096529N
-	@Test public void testLoadList() {
+	@Test 
+	public void testLoadList() {
 		Stream stream = new Stream(testFile.getAbsolutePath());
 		assertEquals("Loaded task map", taskList, stream.stobj.getTaskList());
 	}
