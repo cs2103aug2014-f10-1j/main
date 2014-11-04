@@ -35,10 +35,30 @@ import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 
+// @author A0093874N
+
 /**
+ * <p>
  * The GUI for Stream, featuring graphical view of user's added tasks, console
- * for user input, logger for terminal feedback, and some buttons for users'
- * convenience in processing some tasks.
+ * for user input, and logger for terminal feedback. Also equipped with some
+ * keyboard shortcuts for user's convenience.
+ * </p>
+ * 
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamUI.resetAvailableTasks(ArrayList&lt;Integer&gt; indices,
+ * ArrayList&lt;StreamTask&gt; tasks, Boolean isReset, Boolean isSearching)</li>
+ * <li>StreamUI.log(String logMsg, Boolean isErrorMsg)</li>
+ * <li>StreamUI.displayDetails(StreamTask task)</li>
+ * <li>StreamUI.getNumberOfTasksStored()</li>
+ * <li>StreamUI.goToFirstPage()</li>
+ * <li>StreamUI.goToPrevPage()</li>
+ * <li>StreamUI.goToNextPage()</li>
+ * <li>StreamUI.goToLastPage()</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
  * 
  * @version V0.4
  * @author Wilson Kurniawan
@@ -65,15 +85,13 @@ public class StreamUI {
 	private JButton sortDeadlineButton;
 	private JButton addTaskButton;
 	private ArrayList<JButton> buttons = new ArrayList<JButton>();
-	
+
 	private boolean isSearch;
 	private int pageShown;
 	private int totalPage;
 	private StreamTaskView[] shownTasks;
 	private ArrayList<StreamTask> availTasks;
 	private ArrayList<Integer> availIndices;
-
-	// @author A0093874N
 
 	public StreamUI(Stream str) {
 
@@ -85,7 +103,9 @@ public class StreamUI {
 		addHeader();
 		// addMenu();
 		setUpView();
-		addButtons();
+		// addUndoButton();
+		addNavigationButtons();
+		// addClearSearchButton();
 		addConsole();
 		empowerConsole(this.new EnterAction());
 		addLogger();
@@ -107,14 +127,13 @@ public class StreamUI {
 			Character c = iter.next();
 			empowerKeyboardShortcuts(c, shortcut.get(c));
 		}
-		
+
 		HashMap<String, String> navig = new HashMap<String, String>();
 		navig.put("DOWN", "first");
 		navig.put("LEFT", "prev");
 		navig.put("RIGHT", "next");
 		navig.put("UP", "last");
-		for (Iterator<String> iter = navig.keySet().iterator(); iter
-				.hasNext();) {
+		for (Iterator<String> iter = navig.keySet().iterator(); iter.hasNext();) {
 			String s = iter.next();
 			empowerNavigationShortcuts(s, navig.get(s));
 		}
@@ -134,24 +153,8 @@ public class StreamUI {
 		mainFrame.setVisible(true);
 	}
 
-	// @author A0096529N
-
-	private void setupLookAndFeel() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException e) {
-			loggerDoc.log(LogLevel.ERROR,
-					StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
-		}
-	}
-
-	// @author A0093874N
-
 	/**
 	 * Constructs the main frame for Stream's User Interface.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addMainFrame() {
 		mainFrame = new JFrame(StreamConstants.Message.TEXT_TITLE);
@@ -161,12 +164,8 @@ public class StreamUI {
 		mainFrame.setLocationRelativeTo(null);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the content panel for Stream's User Interface.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addContentPanel() {
 		contentPanel = new JPanel();
@@ -176,12 +175,8 @@ public class StreamUI {
 		mainFrame.setContentPane(contentPanel);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the task view panel.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void setUpView() {
 		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
@@ -198,12 +193,8 @@ public class StreamUI {
 		}
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the header portion.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addHeader() {
 		JLabel title = new JLabel(StreamConstants.Message.TEXT_HEADER);
@@ -217,46 +208,10 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_HEADER);
 	}
 
-	// @author A0096529N
-
-	private void addMenu() {
-		newTaskTextField = new JTextField();
-		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(newTaskTextField, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_ADD_TASK_TEXTFIELD,
-				StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_INPUT,
-				StreamConstants.UI.IPADY_BUTTON);
-
-		addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
-		addTaskButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String params = newTaskTextField.getText();
-				newTaskTextField.setText("");
-				stream.filterAndProcessInput(String.format(
-						StreamConstants.Commands.ADD_TASK, params));
-			}
-		});
-		addComponent(addTaskButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_ADD_TASK_BTN,
-				StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_NAVIG,
-				StreamConstants.UI.IPADY_BUTTON);
-
-		addSortDeadlineButton();
-		addSortAlphaButton();
-	}
-
-	// @author A0093874N
-
 	/**
 	 * Constructs the usable buttons of Stream's User Interface.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
-	private void addButtons() {
-		// addUndoButton();
+	private void addNavigationButtons() {
 		addFirstPageButton();
 		addPrevPageButton();
 		addNextPageButton();
@@ -265,36 +220,10 @@ public class StreamUI {
 		buttons.add(prevPageButton);
 		buttons.add(nextPageButton);
 		buttons.add(lastPageButton);
-		// addClearSearchButton();
 	}
-
-	// @author A0093874N
-
-	/**
-	 * Constructs the undo button.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private void addUndoButton() {
-		undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
-		undoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.UNDO);
-			}
-		});
-		addComponent(undoButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_UNDO, StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_BUTTON,
-				StreamConstants.UI.IPADY_BUTTON);
-	}
-
-	// @author A0093874N
 
 	/**
 	 * Constructs the navigate-to-first-page button.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addFirstPageButton() {
 		firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
@@ -311,12 +240,8 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_BUTTON);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the navigate-to-previous-page button.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addPrevPageButton() {
 		prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
@@ -332,12 +257,8 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_BUTTON);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the navigate-to-next-page button.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addNextPageButton() {
 		nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
@@ -353,12 +274,8 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_BUTTON);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the navigate-to-last-page button.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addLastPageButton() {
 		lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
@@ -374,68 +291,8 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_BUTTON);
 	}
 
-	// @author A0093874N
-
-	/**
-	 * Constructs the clear-search-result button.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private void addClearSearchButton() {
-		clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
-		clearSearchButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC);
-			}
-		});
-		addComponent(clearSearchButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_CLEAR,
-				StreamConstants.UI.GRIDY_BUTTON,
-				StreamConstants.UI.GRIDWIDTH_BUTTON,
-				StreamConstants.UI.IPADY_BUTTON);
-	}
-
-	// @author A0096529N
-
-	private void addSortAlphaButton() {
-		sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
-		sortAlphaButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA);
-			}
-		});
-		addComponent(sortAlphaButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_SORT_ALPHA,
-				StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_NAVIG,
-				StreamConstants.UI.IPADY_BUTTON);
-	}
-
-	// @author A0096529N
-
-	private void addSortDeadlineButton() {
-		sortDeadlineButton = new JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
-		sortDeadlineButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
-			}
-		});
-		addComponent(sortDeadlineButton, StreamConstants.UI.MARGIN_ELEM,
-				StreamConstants.UI.GRIDX_SORT_DEADLINE,
-				StreamConstants.UI.GRIDY_MENU,
-				StreamConstants.UI.GRIDWIDTH_NAVIG,
-				StreamConstants.UI.IPADY_BUTTON);
-	}
-
-	// @author A0093874N
-
 	/**
 	 * Constructs the console for user input.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addConsole() {
 		console = new StreamUIConsole();
@@ -447,12 +304,8 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_CONSOLE);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the logger panel to display terminal response.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addLogger() {
 		logger = new StreamUILogger();
@@ -464,12 +317,8 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_LOGGER);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Constructs the footer portion.
-	 * 
-	 * @author Wilson Kurniawan
 	 */
 	private void addFooter() {
 		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
@@ -482,13 +331,10 @@ public class StreamUI {
 				StreamConstants.UI.IPADY_FOOTER);
 	}
 
-	// @author A0093874N
-
 	/**
 	 * Adds a component to the User Interface based on the determined settings
 	 * and dimensions.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @param comp
 	 *            - the component to be added
 	 * @param inset
@@ -517,31 +363,9 @@ public class StreamUI {
 		contentPanel.add(comp, gbc);
 	}
 
-	// @author A0093874N
-
-	/**
-	 * Logs a message/error message to the logger.
-	 * 
-	 * @author Wilson Kurniawan
-	 * @param logMsg
-	 *            - the message to be logged
-	 * @param isErrorMsg
-	 *            - determines the formatting (different for error message)
-	 */
-	public void log(String logMsg, Boolean isErrorMsg) {
-		if (isErrorMsg) {
-			logger.showErrorMessage(logMsg);
-		} else {
-			logger.showLogMessage(logMsg);
-		}
-	}
-
-	// @author A0093874N
-
 	/**
 	 * Equips the console with the action invoked upon pressing enter.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @param action
 	 *            - the enter action
 	 */
@@ -551,30 +375,85 @@ public class StreamUI {
 		console.getActionMap().put("processInput", action);
 	}
 
-	private void empowerKeyboardShortcuts(char c, String s) {
-		for (JButton b: buttons) {
-			b.getInputMap().put(KeyStroke.getKeyStroke(c), s);
-			b.getActionMap().put(s, this.new KeyboardShortcut(s));			
+	/**
+	 * Equips keyboard shortcut to elements outside the command line.
+	 * 
+	 * @param key
+	 *            - the key shortcut
+	 * @param cmd
+	 *            - the target command
+	 */
+	private void empowerKeyboardShortcuts(char key, String cmd) {
+		for (JButton b : buttons) {
+			b.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
+			b.getActionMap().put(cmd, this.new KeyboardShortcut(cmd));
 		}
-		logger.getInputMap().put(KeyStroke.getKeyStroke(c), s);
-		logger.getActionMap().put(s, this.new KeyboardShortcut(s));			
-	}
-	
-	private void empowerNavigationShortcuts(String dir, String cmd) {
-		for (JButton b: buttons) {
-			b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
-			b.getActionMap().put(cmd, this.new NavigationShortcut(cmd));			
-		}
-		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
-		logger.getActionMap().put(cmd, this.new NavigationShortcut(cmd));		
+		logger.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
+		logger.getActionMap().put(cmd, this.new KeyboardShortcut(cmd));
 	}
 
-	// @author A0093874N
+	/**
+	 * Equips navigation shortcut to elements outside the command line.
+	 * 
+	 * @param dir
+	 *            - the key shortcut (L/R/U/D)
+	 * @param cmd
+	 *            - the target command
+	 */
+	private void empowerNavigationShortcuts(String dir, String cmd) {
+		for (JButton b : buttons) {
+			b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+			b.getActionMap().put(cmd, this.new NavigationShortcut(cmd));
+		}
+		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+		logger.getActionMap().put(cmd, this.new NavigationShortcut(cmd));
+	}
+
+	/**
+	 * Resets the viewable tasks according to the page shown.
+	 * 
+	 * @param page
+	 *            - the page number to be shown
+	 */
+	private void repopulateTaskView(int page) {
+		assert (page <= totalPage) : StreamConstants.Assertion.TOO_MANY_PAGES;
+		pageShown = page;
+		int startPoint = (pageShown - 1) * StreamConstants.UI.MAX_VIEWABLE_TASK;
+		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
+			StreamTaskView taskPanel = shownTasks[i];
+			try {
+				int index = availIndices.get(startPoint + i);
+				StreamTask task = availTasks.get(startPoint + i);
+				taskPanel.updateView(index, task);
+			} catch (IndexOutOfBoundsException e) {
+				taskPanel.hideView();
+			}
+		}
+		determineClickableNavigators();
+	}
+
+	/**
+	 * Determines which navigator buttons are clickable based on the current
+	 * page shown and total pages available.
+	 */
+	private void determineClickableNavigators() {
+		firstPageButton.setEnabled(true);
+		prevPageButton.setEnabled(true);
+		nextPageButton.setEnabled(true);
+		lastPageButton.setEnabled(true);
+		if (pageShown == 1) {
+			firstPageButton.setEnabled(false);
+			prevPageButton.setEnabled(false);
+		}
+		if (pageShown == totalPage) {
+			nextPageButton.setEnabled(false);
+			lastPageButton.setEnabled(false);
+		}
+	}
 
 	/**
 	 * Resets the viewable tasks to the chosen indices and <b>StreamTask</b>s.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @param indices
 	 *            - the list of indices to be displayed
 	 * @param tasks
@@ -618,62 +497,26 @@ public class StreamUI {
 				"Task viewer refreshed with " + indices.size() + " new tasks");
 	}
 
-	// @author A0093874N
-
 	/**
-	 * Resets the viewable tasks according to the page shown.
+	 * Logs a message/error message to the logger.
 	 * 
-	 * @author Wilson Kurniawan
-	 * @param page
-	 *            - the page number to be shown
+	 * @param logMsg
+	 *            - the message to be logged
+	 * @param isErrorMsg
+	 *            - determines the formatting (different for error message)
 	 */
-	private void repopulateTaskView(int page) {
-		assert (page <= totalPage) : StreamConstants.Assertion.TOO_MANY_PAGES;
-		pageShown = page;
-		int startPoint = (pageShown - 1) * StreamConstants.UI.MAX_VIEWABLE_TASK;
-		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
-			StreamTaskView taskPanel = shownTasks[i];
-			try {
-				int index = availIndices.get(startPoint + i);
-				StreamTask task = availTasks.get(startPoint + i);
-				taskPanel.updateView(index, task);
-			} catch (IndexOutOfBoundsException e) {
-				taskPanel.hideView();
-			}
-		}
-		determineClickableNavigators();
-	}
-
-	// @author A0093874N
-
-	/**
-	 * Determines which navigator buttons are clickable based on the current
-	 * page shown and total pages available.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private void determineClickableNavigators() {
-		firstPageButton.setEnabled(true);
-		prevPageButton.setEnabled(true);
-		nextPageButton.setEnabled(true);
-		lastPageButton.setEnabled(true);
-		if (pageShown == 1) {
-			firstPageButton.setEnabled(false);
-			prevPageButton.setEnabled(false);
-		}
-		if (pageShown == totalPage) {
-			nextPageButton.setEnabled(false);
-			lastPageButton.setEnabled(false);
+	public void log(String logMsg, Boolean isErrorMsg) {
+		if (isErrorMsg) {
+			logger.showErrorMessage(logMsg);
+		} else {
+			logger.showLogMessage(logMsg);
 		}
 	}
-
-	// @author A0093874N
 
 	/**
 	 * Displays the detailed information of a task in a dialog window upon
 	 * clicking the name.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @param task
 	 *            - the <b>StreamTask</b> from which the information is obtained
 	 *            from
@@ -692,28 +535,6 @@ public class StreamUI {
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
 	}
-	
-	public void goToFirstPage() {
-		repopulateTaskView(1);
-	}
-	
-	public void goToPrevPage() {
-		if (pageShown != 1) {
-			repopulateTaskView(pageShown - 1);			
-		}
-	}
-	
-	public void goToNextPage() {
-		if (pageShown != totalPage) {
-			repopulateTaskView(pageShown + 1);			
-		}
-	}
-	
-	public void goToLastPage() {
-		repopulateTaskView(totalPage);
-	}
-
-	// @author A0093874N
 
 	/**
 	 * Gets the number of tasks stored in the task viewer after
@@ -725,7 +546,37 @@ public class StreamUI {
 		return availTasks.size();
 	}
 
-	// @author A0093874N
+	/**
+	 * Navigates to the first page.
+	 */
+	public void goToFirstPage() {
+		repopulateTaskView(1);
+	}
+
+	/**
+	 * Navigates to the previous page.
+	 */
+	public void goToPrevPage() {
+		if (pageShown != 1) {
+			repopulateTaskView(pageShown - 1);
+		}
+	}
+
+	/**
+	 * Navigates to the next page.
+	 */
+	public void goToNextPage() {
+		if (pageShown != totalPage) {
+			repopulateTaskView(pageShown + 1);
+		}
+	}
+
+	/**
+	 * Navigates to the last page.
+	 */
+	public void goToLastPage() {
+		repopulateTaskView(totalPage);
+	}
 
 	/**
 	 * <p>
@@ -733,7 +584,7 @@ public class StreamUI {
 	 * console to the input parser and subsequently processor.
 	 * </p>
 	 * <p>
-	 * Credits to developers from F10-04J for this idea.
+	 * Credits to developers from F10-4J for this idea.
 	 * </p>
 	 * 
 	 * @author Wilson Kurniawan
@@ -742,13 +593,18 @@ public class StreamUI {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void actionPerformed(ActionEvent event) {
+		public void actionPerformed(ActionEvent e) {
 			String input = console.getText();
 			stream.filterAndProcessInput(input);
 			console.setText("");
 		}
 	}
 
+	/**
+	 * Customizes the tab-based focus traversal policy.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
 	private class CustomFocusTraversal extends FocusTraversalPolicy {
 		Vector<Component> order;
 
@@ -785,6 +641,11 @@ public class StreamUI {
 		}
 	}
 
+	/**
+	 * Matches the keyboard shortcut pressed to the corresponding command.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
 	private class KeyboardShortcut extends AbstractAction {
 
 		private static final long serialVersionUID = 1L;
@@ -796,12 +657,18 @@ public class StreamUI {
 			console.requestFocus();
 		}
 
-		private KeyboardShortcut(String s) {
-			this.text = s;
+		private KeyboardShortcut(String str) {
+			this.text = str;
 		}
 
 	}
-	
+
+	/**
+	 * Matches the navigation shortcut pressed to the corresponding navigation
+	 * command.
+	 * 
+	 * @author Wilson Kurniawan
+	 */
 	private class NavigationShortcut extends AbstractAction {
 
 		private static final long serialVersionUID = 1L;
@@ -812,9 +679,134 @@ public class StreamUI {
 			stream.filterAndProcessInput(command);
 			logger.requestFocus();
 		}
-		
+
 		private NavigationShortcut(String cmd) {
 			this.command = cmd;
 		}
 	}
+
+	/**
+	 * Constructs the undo button.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void addUndoButton() {
+		undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
+		undoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput(StreamConstants.Commands.UNDO);
+			}
+		});
+		addComponent(undoButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_UNDO, StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_BUTTON,
+				StreamConstants.UI.IPADY_BUTTON);
+	}
+
+	/**
+	 * Constructs the clear-search-result button.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void addClearSearchButton() {
+		clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
+		clearSearchButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC);
+			}
+		});
+		addComponent(clearSearchButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_CLEAR,
+				StreamConstants.UI.GRIDY_BUTTON,
+				StreamConstants.UI.GRIDWIDTH_BUTTON,
+				StreamConstants.UI.IPADY_BUTTON);
+	}
+
+	// @author A0096529N
+
+	private void setupLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			loggerDoc.log(LogLevel.ERROR,
+					StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
+		}
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void addMenu() {
+		newTaskTextField = new JTextField();
+		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
+		addComponent(newTaskTextField, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_ADD_TASK_TEXTFIELD,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_INPUT,
+				StreamConstants.UI.IPADY_BUTTON);
+
+		addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
+		addTaskButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String params = newTaskTextField.getText();
+				newTaskTextField.setText("");
+				stream.filterAndProcessInput(String.format(
+						StreamConstants.Commands.ADD_TASK, params));
+			}
+		});
+		addComponent(addTaskButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_ADD_TASK_BTN,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
+
+		addSortDeadlineButton();
+		addSortAlphaButton();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private void addSortAlphaButton() {
+		sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
+		sortAlphaButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA);
+			}
+		});
+		addComponent(sortAlphaButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_SORT_ALPHA,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private void addSortDeadlineButton() {
+		sortDeadlineButton = new JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
+		sortDeadlineButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
+			}
+		});
+		addComponent(sortDeadlineButton, StreamConstants.UI.MARGIN_ELEM,
+				StreamConstants.UI.GRIDX_SORT_DEADLINE,
+				StreamConstants.UI.GRIDY_MENU,
+				StreamConstants.UI.GRIDWIDTH_NAVIG,
+				StreamConstants.UI.IPADY_BUTTON);
+	}
+
 }
