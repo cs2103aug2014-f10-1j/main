@@ -5,13 +5,11 @@ import java.awt.Graphics2D;
 import javax.swing.JTextField;
 import util.StreamConstants;
 
-// @author A0093874N
+//@author A0093874N
 
 /**
- * <p>
- * A simple <b>JTextField</b> functioning as console for user input. Equipped with
- * placeholder text so that user knows where to go.
- * </p>
+ * A simple <b>JTextField</b> functioning as console for user input. Equipped
+ * with placeholder text so that user knows where to go.
  * 
  * @version V0.4
  * @author Wilson Kurniawan

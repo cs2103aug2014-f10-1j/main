@@ -2,8 +2,6 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.FocusTraversalPolicy;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -35,7 +32,7 @@ import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 
-// @author A0093874N
+//@author A0093874N
 
 /**
  * <p>
@@ -107,7 +104,7 @@ public class StreamUI {
 		addNavigationButtons();
 		// addClearSearchButton();
 		addConsole();
-		empowerConsole(this.new EnterAction());
+		empowerConsole(new StreamUIConsoleEnterAction(stream, console));
 		addLogger();
 
 		HashMap<Character, String> shortcut = new HashMap<Character, String>();
@@ -148,7 +145,7 @@ public class StreamUI {
 		// order.add(newTaskTextField);
 		order.add(console);
 		order.add(logger);
-		mainFrame.setFocusTraversalPolicy(new CustomFocusTraversal(order));
+		mainFrame.setFocusTraversalPolicy(new StreamUIFocusTraversal(order));
 
 		mainFrame.setVisible(true);
 	}
@@ -386,10 +383,12 @@ public class StreamUI {
 	private void empowerKeyboardShortcuts(char key, String cmd) {
 		for (JButton b : buttons) {
 			b.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
-			b.getActionMap().put(cmd, this.new KeyboardShortcut(cmd));
+			b.getActionMap().put(cmd,
+					new StreamUIKeyboardShortcut(console, cmd));
 		}
 		logger.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
-		logger.getActionMap().put(cmd, this.new KeyboardShortcut(cmd));
+		logger.getActionMap().put(cmd,
+				new StreamUIKeyboardShortcut(console, cmd));
 	}
 
 	/**
@@ -403,10 +402,12 @@ public class StreamUI {
 	private void empowerNavigationShortcuts(String dir, String cmd) {
 		for (JButton b : buttons) {
 			b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
-			b.getActionMap().put(cmd, this.new NavigationShortcut(cmd));
+			b.getActionMap().put(cmd,
+					new StreamUINavigationShortcut(stream, logger, cmd));
 		}
 		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
-		logger.getActionMap().put(cmd, this.new NavigationShortcut(cmd));
+		logger.getActionMap().put(cmd,
+				new StreamUINavigationShortcut(stream, logger, cmd));
 	}
 
 	/**
@@ -579,116 +580,8 @@ public class StreamUI {
 	}
 
 	/**
-	 * <p>
-	 * The action invoked upon pressing "enter" in console. It fires the text in
-	 * console to the input parser and subsequently processor.
-	 * </p>
-	 * <p>
-	 * Credits to developers from F10-4J for this idea.
-	 * </p>
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private class EnterAction extends AbstractAction {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String input = console.getText();
-			stream.filterAndProcessInput(input);
-			console.setText("");
-		}
-	}
-
-	/**
-	 * Customizes the tab-based focus traversal policy.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private class CustomFocusTraversal extends FocusTraversalPolicy {
-		Vector<Component> order;
-
-		public CustomFocusTraversal(Vector<Component> order) {
-			this.order = new Vector<Component>(order.size());
-			this.order.addAll(order);
-		}
-
-		public Component getComponentAfter(Container focusCycleRoot,
-				Component aComponent) {
-			int idx = (order.indexOf(aComponent) + 1) % order.size();
-			return order.get(idx);
-		}
-
-		public Component getComponentBefore(Container focusCycleRoot,
-				Component aComponent) {
-			int idx = order.indexOf(aComponent) - 1;
-			if (idx < 0) {
-				idx = order.size() - 1;
-			}
-			return order.get(idx);
-		}
-
-		public Component getDefaultComponent(Container focusCycleRoot) {
-			return order.get(0);
-		}
-
-		public Component getLastComponent(Container focusCycleRoot) {
-			return order.lastElement();
-		}
-
-		public Component getFirstComponent(Container focusCycleRoot) {
-			return order.get(0);
-		}
-	}
-
-	/**
-	 * Matches the keyboard shortcut pressed to the corresponding command.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private class KeyboardShortcut extends AbstractAction {
-
-		private static final long serialVersionUID = 1L;
-		private String text;
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			console.setText(text);
-			console.requestFocus();
-		}
-
-		private KeyboardShortcut(String str) {
-			this.text = str;
-		}
-
-	}
-
-	/**
-	 * Matches the navigation shortcut pressed to the corresponding navigation
-	 * command.
-	 * 
-	 * @author Wilson Kurniawan
-	 */
-	private class NavigationShortcut extends AbstractAction {
-
-		private static final long serialVersionUID = 1L;
-		private String command;
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			stream.filterAndProcessInput(command);
-			logger.requestFocus();
-		}
-
-		private NavigationShortcut(String cmd) {
-			this.command = cmd;
-		}
-	}
-
-	/**
 	 * Constructs the undo button.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @deprecated
 	 */
 	@SuppressWarnings("unused")
@@ -709,7 +602,6 @@ public class StreamUI {
 	/**
 	 * Constructs the clear-search-result button.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @deprecated
 	 */
 	@SuppressWarnings("unused")
@@ -730,9 +622,8 @@ public class StreamUI {
 
 	// @author A0096529N
 	/**
-	 * Sets up the UI according to system theme
-	 * i.e. MacOS, Windows, Ubuntu, etc.
-	 * 
+	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
+	 * etc.
 	 */
 	private void setupLookAndFeel() {
 		try {
