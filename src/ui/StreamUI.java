@@ -49,7 +49,7 @@ public class StreamUI {
 
 	private JFrame mainFrame;
 	private JPanel contentPanel;
-	private JTextField console;
+	private StreamUIConsole console;
 	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private static final StreamLogger loggerDoc = StreamLogger
@@ -438,7 +438,7 @@ public class StreamUI {
 	 * @author Wilson Kurniawan
 	 */
 	private void addConsole() {
-		console = new JTextField();
+		console = new StreamUIConsole();
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
 		addComponent(console, StreamConstants.UI.MARGIN_ELEM,
 				StreamConstants.UI.GRIDX_CONSOLE,
