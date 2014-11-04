@@ -33,11 +33,11 @@ import fileio.StreamIO;
 
 public class Stream {
 
-	StreamObject streamObject;
+	StreamObject streamObject = new StreamObject();
 	StreamUI stui;
 	TaskLogic taskLogic = TaskLogic.init();
 	StackLogic stackLogic = StackLogic.init();
-	StreamLogic streamLogic;
+	StreamLogic streamLogic = StreamLogic.init(streamObject);
 
 	private StreamParser parser;
 	private StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAM);
@@ -83,17 +83,16 @@ public class Stream {
 	// @author A0096529N
 	void load() {
 		try {
-			HashMap<String, StreamTask> allTasks = new HashMap<String, StreamTask>();
+			HashMap<String, StreamTask> taskMap = new HashMap<String, StreamTask>();
 			ArrayList<String> taskList = new ArrayList<String>();
 
-			StreamIO.load(allTasks, taskList);
-			streamObject = new StreamObject(allTasks, taskList);
+			StreamIO.load(taskMap, taskList);
+			streamObject.setTaskList(taskList);
+			streamObject.setTaskMap(taskMap);
 		} catch (StreamIOException e) {
 			log(String.format(StreamConstants.LogMessage.LOAD_FAILED,
 					e.getMessage()));
-			streamObject = new StreamObject();
 		}
-		streamLogic = StreamLogic.init(streamObject);
 	}
 
 	// @author A0096529N

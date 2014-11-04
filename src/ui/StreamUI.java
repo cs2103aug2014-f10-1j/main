@@ -729,7 +729,11 @@ public class StreamUI {
 	}
 
 	// @author A0096529N
-
+	/**
+	 * Sets up the UI according to system theme
+	 * i.e. MacOS, Windows, Ubuntu, etc.
+	 * 
+	 */
 	private void setupLookAndFeel() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
