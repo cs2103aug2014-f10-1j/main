@@ -69,6 +69,8 @@ public class StreamConstants {
 		public static final String POP_INVERSE_COMMAND = "Pop inverse command \"%1$s\"";
 		public static final String POP_ORDER = "Pop inverse order \"%1$s\"";
 		public static final String POP_INVERSE_TASK = "Pop inverse task \"%1$s\"";
+		public static final String SET_DEADLINE = "Set deadline for \"%1$s\" on \"%2$s\"";
+		public static final String SET_STARTTIME = "Set start time for \"%1$s\" on \"%2$s\"";
 	}
 	public static class Commands {
 		// Reverse commands (for undo)

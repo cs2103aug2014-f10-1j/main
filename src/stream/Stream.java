@@ -363,7 +363,6 @@ public class Stream {
 	}
 
 	// @author A0119401U
-
 	/**
 	 * Set the start date of the selected task
 	 * 
@@ -375,24 +374,8 @@ public class Stream {
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		Calendar currentStartTime = currentTask.getStartTime();
 		stackLogic.pushInverseStartCommand(taskIndex, currentStartTime);
-		return setStartTime(taskName, calendar);
+		return taskLogic.setStartTime(currentTask, calendar);
 
-	}
-
-	// @author A0119401U
-	private String setStartTime(String taskName, Calendar calendar)
-			throws StreamModificationException {
-		StreamTask task = streamLogic.getTask(taskName);
-		if (calendar == null) {
-			task.setStartTime(null);
-			return String
-					.format(StreamConstants.LogMessage.START_NOT_SPECIFIED, taskName);
-		} else {
-			task.setStartTime(calendar);
-			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
-			return String.format(StreamConstants.LogMessage.START, taskName,
-					parsedCalendar);
-		}
 	}
 
 	// @author A0119401U
@@ -741,13 +724,13 @@ public class Stream {
 			logCommand("RECOVER");
 			int noOfTasksToRecover = Integer.parseInt(content);
 			recover(noOfTasksToRecover);
-			showAndLogResult(String.format(
-					StreamConstants.LogMessage.RECOVER, noOfTasksToRecover));
 			streamLogic.setOrdering(stackLogic.popOrder());
+			stackLogic.pushPlaceholderInput();
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
-			stackLogic.pushPlaceholderInput();
+			showAndLogResult(String.format(
+					StreamConstants.LogMessage.RECOVER, noOfTasksToRecover));
 			break;
 
 		case DISMISS:
@@ -755,22 +738,22 @@ public class Stream {
 			taskIndex = Integer.parseInt(content);
 			taskName = streamLogic.getTaskNumber(taskIndex);
 			dismissTask(taskName);
-			showAndLogResult(String.format(
-					StreamConstants.LogMessage.DELETE, taskName));
+			stackLogic.pushPlaceholderInput();
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
-			stackLogic.pushPlaceholderInput();
+			showAndLogResult(String.format(
+					StreamConstants.LogMessage.DELETE, taskName));
 			break;
 
 		case UNSORT:
 			logCommand("UNSORT");
 			streamLogic.setOrdering(stackLogic.popOrder());
+			stackLogic.pushPlaceholderInput();
 			stui.resetAvailableTasks(streamLogic.getIndex(),
 					streamLogic.getStreamTaskList(streamLogic.getIndex()), false,
 					false);
 			showAndLogResult(StreamConstants.LogMessage.UNSORT);
-			stackLogic.pushPlaceholderInput();
 			break;
 
 		case FIRST:

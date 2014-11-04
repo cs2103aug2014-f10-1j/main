@@ -301,11 +301,11 @@ public class StreamLogic extends BaseLogic {
 	 */
 	public void modifyTask(StreamTask task, String attribute, String contents) 
 			throws StreamModificationException {
-		logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION, 
-				task.getTaskName(), attribute, contents));
 		if (attribute.equalsIgnoreCase("name")) {
 			// modify name need access to streamObject, special case
 			updateTaskName(task.getTaskName(), contents);
+			logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION, 
+					task.getTaskName(), attribute, contents));
 		} else {
 			taskLogic.modifyTask(task, attribute, contents);
 		}

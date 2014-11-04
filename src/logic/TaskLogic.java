@@ -58,39 +58,60 @@ public class TaskLogic extends BaseLogic {
 		return tagsRemoved;
 	}
 
+	// @author A0093874N
+	public String setDeadline(StreamTask task, Calendar calendar) {
+		String result = null;
+		String parsedCalendar = null;
+		if (calendar == null) {
+			task.setDeadline(null);
+			result = String
+					.format(StreamConstants.LogMessage.DUE_NEVER, task.getTaskName());
+		} else {
+			task.setDeadline(calendar);
+			parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
+			result = String.format(StreamConstants.LogMessage.DUE, task.getTaskName(),
+					parsedCalendar);
+		}
+		logDebug(String.format(StreamConstants.LogMessage.SET_DEADLINE, 
+				task.getTaskName(), parsedCalendar));
+		return result;
+	}
+
+	// @author A0119401U
+	public String setStartTime(StreamTask task, Calendar calendar) {
+		String result = null;
+		String parsedCalendar = null;
+		if (calendar == null) {
+			task.setStartTime(null);
+			result = String
+					.format(StreamConstants.LogMessage.START_NOT_SPECIFIED, task.getTaskName());
+		} else {
+			task.setStartTime(calendar);
+			parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
+			result = String.format(StreamConstants.LogMessage.START, task.getTaskName(),
+					parsedCalendar);
+		}
+		logDebug(String.format(StreamConstants.LogMessage.SET_STARTTIME, 
+				task.getTaskName(), parsedCalendar));
+		return result;
+	}
+
 	// @author A0118007R
 	// updated by A0119401U
-	public void modifyTask(StreamTask task, String attribute, String contents) 
-			throws StreamModificationException {
+	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
 		switch (attribute) {
 		case "desc":
-			if (contents.equals("null")) {
-				task.setDescription(null);
-			} else {
-				task.setDescription(contents);
-			}
+			description(task, contents);
 			break;
 		case "due":
 		case "by":
 		case "to":
-			if (contents.equals("null")) {
-				task.setDeadline(null);
-			} else {
-				// TODO implement JChronic here ASAP!
-				Calendar due = StreamUtil.parseCalendar(contents);
-				task.setDeadline(due);
-			}
+			deadline(task, contents);
 			break;
 		case "start":
 		case "from":
-			if (contents.equals("null")) {
-				task.setStartTime(null);
-			} else {
-
-				Calendar start = StreamUtil.parseCalendar(contents);
-				task.setStartTime(start);
-			}
+			startTime(task, contents);
 			break;
 		case "tag":
 			addTags(task, contents.split(" "));
@@ -99,43 +120,75 @@ public class TaskLogic extends BaseLogic {
 			removeTags(task, contents.split(" "));
 			break;
 		case "settags":
-			task.getTags().clear();
-			if (!contents.trim().isEmpty()) {
-				addTags(task, contents.split(" "));
-			}
+			settags(task, contents);
 			break;
 		case "rank":
-			String inputRank = contents.trim();
-			if (inputRank.equals("high") || inputRank.equals("h")
-					|| inputRank.equals("medium") || inputRank.equals("m")
-					|| inputRank.equals("low") || inputRank.equals("l")) {
-				task.setRank(inputRank);
-			}
+			rank(task, contents);
 			break;
 		case "mark":
-			String status = contents.trim();
-			if (status.equals("done") || status.equals("finished")) {
-				task.markAsDone();
-			} else if (status.equals("ongoing") || status.equals("going")
-					|| status.equals("doing")) {
-				task.markAsOngoing();
-			}
+			mark(task, contents);
 			break;
+		}
+		logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION, 
+				task.getTaskName(), attribute, contents));
+	}
+
+	// @author A0118007R
+	private void description(StreamTask task, String contents) {
+		if (contents.equals("null")) {
+			task.setDescription(null);
+		} else {
+			task.setDescription(contents);
 		}
 	}
 
-	// @author A0093874N
-	public String setDeadline(StreamTask task, Calendar calendar)
-			throws StreamModificationException {
-		if (calendar == null) {
+	// @author A0118007R
+	private void deadline(StreamTask task, String contents) {
+		if (contents.equals("null")) {
 			task.setDeadline(null);
-			return String
-					.format(StreamConstants.LogMessage.DUE_NEVER, task.getTaskName());
 		} else {
-			task.setDeadline(calendar);
-			String parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
-			return String.format(StreamConstants.LogMessage.DUE, task.getTaskName(),
-					parsedCalendar);
+			// TODO implement JChronic here ASAP!
+			Calendar due = StreamUtil.parseCalendar(contents);
+			task.setDeadline(due);
+		}
+	}
+
+	// @author A0118007R
+	private void startTime(StreamTask task, String contents) {
+		if (contents.equals("null")) {
+			task.setStartTime(null);
+		} else {
+			Calendar start = StreamUtil.parseCalendar(contents);
+			task.setStartTime(start);
+		}
+	}
+
+	// @author A0096529N
+	private void settags(StreamTask task, String contents) {
+		task.getTags().clear();
+		if (!contents.trim().isEmpty()) {
+			addTags(task, contents.split(" "));
+		}
+	}
+
+	// @author A0118007R
+	private void mark(StreamTask task, String contents) {
+		String status = contents.trim();
+		if (status.equals("done") || status.equals("finished")) {
+			task.markAsDone();
+		} else if (status.equals("ongoing") || status.equals("going")
+				|| status.equals("doing")) {
+			task.markAsOngoing();
+		}
+	}
+
+	//@author A0119401U
+	private void rank(StreamTask task, String contents) {
+		String inputRank = contents.trim();
+		if (inputRank.equals("high") || inputRank.equals("h")
+				|| inputRank.equals("medium") || inputRank.equals("m")
+				|| inputRank.equals("low") || inputRank.equals("l")) {
+			task.setRank(inputRank);
 		}
 	}
 
