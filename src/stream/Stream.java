@@ -48,7 +48,6 @@ public class Stream {
 			"tag", "untag", "settags", "rank", "mark" };
 
 	// author ??? refactored by A0118007R
-
 	public Stream(String file) {
 		initStreamIO(file);
 		initializeStream();
@@ -603,7 +602,7 @@ public class Stream {
 
 			// get old state and push to undo
 
-			String inverseCommand = stackLogic.pushInverseModifyCommand(
+			String inverseCommand = stackLogic.prepareInverseModifyCommand(
 					taskName, taskIndex, currTask);
 
 			addModificationParameters(contents, modifyParams);
@@ -816,7 +815,7 @@ public class Stream {
 		if (!stackLogic.hasInverseInput()) {
 			showAndLogResult(StreamConstants.LogMessage.UNDO_FAIL);
 		} else {
-			String undoneInput = stackLogic.popInverseInput();
+			String undoneInput = stackLogic.popInverseCommand();
 			showAndLogResult(StreamConstants.LogMessage.UNDO_SUCCESS);
 			log(StreamUtil.showAsTerminalInput(undoneInput));
 			processInput(undoneInput);
@@ -826,7 +825,7 @@ public class Stream {
 			 * to the inputStack. If not popped, the undo process will be
 			 * trapped between just two processes.
 			 */
-			stackLogic.popInverseInput();
+			stackLogic.popInverseCommand();
 		}
 	}
 

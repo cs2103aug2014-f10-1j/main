@@ -24,6 +24,7 @@ public class StreamConstants {
 		public static final String STREAMUI = "ui";
 		public static final String STREAMLOGIC = "streamLogic";
 		public static final String STREAMTASK = "taskLogic";
+		public static final String STREAMSTACK = "stackLogic";
 		public static final String STREAMIO = "io";
 		public static final String STREAMPARSER = "parser";
 	}
@@ -62,6 +63,12 @@ public class StreamConstants {
 		public static final String MODIFY = "Modified %1$s";
 		public static final String NEW_MODIFICATION = "Modify \"%1$s\" attribute \"%2$s\" contents \"%3$s\"";
 		public static final String UI_LOOKANDFEEL_FAIL = "Could not set look and feel";
+		public static final String PUSH_INVERSE_COMMAND = "Pushed inverse command \"%1$s\"";
+		public static final String PUSH_ORDER = "Pushed inverse order \"%1$s\"";
+		public static final String PUSH_INVERSE_TASK = "Pushed inverse task \"%1$s\"";
+		public static final String POP_INVERSE_COMMAND = "Pop inverse command \"%1$s\"";
+		public static final String POP_ORDER = "Pop inverse order \"%1$s\"";
+		public static final String POP_INVERSE_TASK = "Pop inverse task \"%1$s\"";
 	}
 	public static class Commands {
 		// Reverse commands (for undo)
@@ -98,6 +105,9 @@ public class StreamConstants {
 		public static final String TASK_DUPLICATE_TAG = "Duplicate tag";
 		public static final String TASK_TAG_NOTFOUND = "Delete tag not found";
 		public static final String TASK_TAG_NOTUPPERCASE = "Tag not in uppercase";
+		public static final String EMPTY_INVERSE_COMMAND = "Empty inverse command";
+		public static final String EMPTY_INVERSE_ORDER = "Empty inverse order";
+		public static final String NULL_INVERSE_TASK = "Null inverse task";
 	}
 	public static class Message {
 		public static final String WELCOME = "Welcome to Stream "

@@ -1,6 +1,7 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Stack;
 
@@ -8,7 +9,7 @@ import util.StreamConstants;
 import util.StreamUtil;
 import model.StreamTask;
 
-public class StackLogic {
+public class StackLogic extends BaseLogic {
 	private Stack<String> inputStack;
 	private Stack<StreamTask> dumpedTasks;
 	private Stack<ArrayList<String>> orderingStack;
@@ -25,96 +26,95 @@ public class StackLogic {
 
 	//@author A0118007R
 	public void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
+		String inverseCommand = null;
 		if (currentDeadline == null) {
-			inputStack.push(String.format(StreamConstants.Commands.DUE,
-					taskIndex, "null"));
+			inverseCommand = String.format(StreamConstants.Commands.DUE,
+					taskIndex, "null");
 		} else {
 			// TODO incorporate some JChronic here?
-			inputStack.push(String.format(StreamConstants.Commands.DUE,
-					taskIndex, getInputDate(currentDeadline)));
+			inverseCommand = String.format(StreamConstants.Commands.DUE,
+					taskIndex, getInputDate(currentDeadline));
 		}
+		pushInput(inverseCommand);
 	}
 
 	//@author A0119401U
 	public void pushInverseStartCommand(int taskIndex, Calendar currentStartTime) {
+		String inverseCommand = null;
 		if (currentStartTime == null) {
-			inputStack.push(String.format(StreamConstants.Commands.START,
-					taskIndex, "null"));
+			inverseCommand = String.format(StreamConstants.Commands.START,
+					taskIndex, "null");
 		} else {
-			inputStack.push(String.format(StreamConstants.Commands.START,
-					taskIndex, getInputDate(currentStartTime)));
+			inverseCommand = String.format(StreamConstants.Commands.START,
+					taskIndex, getInputDate(currentStartTime));
 		}
+		pushInput(inverseCommand);
 	}
 
 	//@author A0096529N
 	public void pushInverseAddCommand(int index) {
-		inputStack.push(String.format(StreamConstants.Commands.DISMISS,
+		pushInput(String.format(StreamConstants.Commands.DISMISS,
 				index));
 	}
 
 	//@author A0093874N
 	public void pushInverseDeleteCommand(StreamTask deletedTask, ArrayList<String> order) {
-		orderingStack.push(order);
-		dumpedTasks.push(deletedTask);
-		inputStack.push(String.format(StreamConstants.Commands.RECOVER, 1));
+		pushOrder(order);
+		pushDumpedTask(deletedTask);
+		pushInput(String.format(StreamConstants.Commands.RECOVER, 1));
 	}
 
 	//@author A0096529N
 	public void pushInverseClearCommand(ArrayList<String> originalOrder, ArrayList<StreamTask> deletedTasks) {
-		orderingStack.add(originalOrder);
+		pushOrder(originalOrder);
 		for (StreamTask task:deletedTasks) {
-			dumpedTasks.push(task);
+			pushDumpedTask(task);
 		}
-		inputStack.push(String.format(StreamConstants.Commands.RECOVER,
+		pushInput(String.format(StreamConstants.Commands.RECOVER,
 				deletedTasks.size()));
 	}
 
 	//@author A0093874N
 	public void pushInverseSetRankingCommand(int index, String oldRank) {
-		inputStack.push(String.format(StreamConstants.Commands.RANK, index, oldRank));
+		pushInput(String.format(StreamConstants.Commands.RANK, index, oldRank));
 	}
 
 	//@author A0093874N
 	public void pushInverseSetDescriptionCommand(int index, String oldDescription) {
-		inputStack.push(String.format(StreamConstants.Commands.DESC, index, oldDescription));
-	}
-
-	//@author A0096529N
-	private String getInputDate(Calendar currentDeadline) {
-		return currentDeadline.get(Calendar.DATE) + "/"
-				+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
-				+ currentDeadline.get(Calendar.YEAR);
+		pushInput(String.format(StreamConstants.Commands.DESC, index, oldDescription));
 	}
 
 	//@author A0118007R
 	public void pushInverseSetDoneCommand(boolean wasDone, int index) {
+		String inverseCommand = null;
 		if (wasDone) {
-			inputStack.push(String.format(StreamConstants.Commands.MARK_DONE, index));
+			inverseCommand = String.format(StreamConstants.Commands.MARK_DONE, index);
 		} else {
-			inputStack.push(String.format(StreamConstants.Commands.MARK_NOT_DONE, index));
+			inverseCommand = String.format(StreamConstants.Commands.MARK_NOT_DONE, index);
 		}
+		pushInput(inverseCommand);
 	}
 
 	//@author A0096529N
 	public void pushInverseSetNameCommand(int taskIndex, String oldTaskName) {
-		inputStack.push(String.format(StreamConstants.Commands.NAME, taskIndex, oldTaskName));
+		pushInput(String.format(StreamConstants.Commands.NAME, taskIndex, oldTaskName));
 	}
 
 	//@author A0096529N
 	public void pushInverseModifyCommand(String inverseCommand) {
-		inputStack.push(inverseCommand.trim());
+		pushInput(inverseCommand.trim());
 	}
 
 	//@author A0096529N
 	public void pushInverseSortCommand(ArrayList<String> oldOrdering) {
-		orderingStack.push(oldOrdering);
-		inputStack.push("unsort");
+		pushOrder(oldOrdering);
+		pushInput("unsort");
 	}
 
 	//@author A0118007R
 	public void pushInverseUntagCommand(int taskIndex, ArrayList<String> tagsRemoved) {
 		if (tagsRemoved.size() > 0) {
-			inputStack.push(String.format(StreamConstants.Commands.TAG, taskIndex,
+			pushInput(String.format(StreamConstants.Commands.TAG, taskIndex,
 					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
 		}
 	}
@@ -122,13 +122,13 @@ public class StackLogic {
 	//@author A0118007R
 	public void pushInverseAddTagCommand(int taskIndex, ArrayList<String> tagsAdded) {
 		if (tagsAdded.size() > 0) {
-			inputStack.push(String.format(StreamConstants.Commands.UNTAG, taskIndex,
+			pushInput(String.format(StreamConstants.Commands.UNTAG, taskIndex,
 					StreamUtil.listDownArrayContent(tagsAdded, " ")));
 		}
 	}
 
 	//@author A0118007R
-	public String pushInverseModifyCommand(String taskName, int taskIndex,
+	public String prepareInverseModifyCommand(String taskName, int taskIndex,
 			StreamTask currTask) {
 		String inverseCommand = "modify " + taskIndex + " name " + taskName
 				+ " ";
@@ -184,8 +184,36 @@ public class StackLogic {
 	}
 
 	//@author A0096529N
+	private void pushDumpedTask(StreamTask deletedTask) {
+		assert(deletedTask != null) : StreamConstants.Assertion.NULL_INVERSE_TASK;
+		dumpedTasks.push(deletedTask);
+		logDebug(String.format(StreamConstants.LogMessage.PUSH_INVERSE_TASK, 
+				deletedTask.getTaskName()));
+	}
+	
+	//@author A0096529N
 	public StreamTask recoverTask() {
-		return dumpedTasks.pop();
+		StreamTask dumpedTask = dumpedTasks.pop();
+		logDebug(String.format(StreamConstants.LogMessage.POP_INVERSE_TASK, 
+				dumpedTask.getTaskName()));
+		return dumpedTask;
+	}
+
+	//@author A0096529N
+	private void pushInput(String inverseCommand) {
+		assert(inverseCommand != null && !inverseCommand.isEmpty()) : 
+			StreamConstants.Assertion.EMPTY_INVERSE_COMMAND;
+		inputStack.push(inverseCommand);
+		logDebug(String.format(StreamConstants.LogMessage.PUSH_INVERSE_COMMAND, 
+				inverseCommand));
+	}
+
+	//@author A0096529N
+	public String popInverseCommand() {
+		String inverseCommand = inputStack.pop();
+		logDebug(String.format(StreamConstants.LogMessage.POP_INVERSE_COMMAND, 
+				inverseCommand));
+		return inverseCommand;
 	}
 
 	//@author A0096529N
@@ -194,21 +222,41 @@ public class StackLogic {
 	}
 
 	//@author A0096529N
-	public String popInverseInput() {
-		return inputStack.pop();
+	public void pushPlaceholderInput() {
+		pushInput("placeholderforundo");
 	}
 
 	//@author A0096529N
-	public void pushPlaceholderInput() {
-		inputStack.add("CS2103");
+	private void pushOrder(ArrayList<String> order) {
+		assert(order != null && !order.isEmpty()) : 
+			StreamConstants.Assertion.EMPTY_INVERSE_ORDER;
+		orderingStack.push(order);
+		logDebug(String.format(StreamConstants.LogMessage.PUSH_ORDER, 
+				Arrays.toString(order.toArray())));
 	}
 
 	//@author A0096529N
 	public ArrayList<String> popOrder() {
-		return orderingStack.pop();
+		ArrayList<String> order = orderingStack.pop();
+		logDebug(String.format(StreamConstants.LogMessage.POP_ORDER, 
+				Arrays.toString(order.toArray())));
+		return order;
 	}
 
-	
+	//@author A0096529N
+	private String getInputDate(Calendar currentDeadline) {
+		return currentDeadline.get(Calendar.DATE) + "/"
+				+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
+				+ currentDeadline.get(Calendar.YEAR);
+	}
+
+	//@author generated
+	@Override 
+	protected String getLoggerComponentName() {
+		return StreamConstants.ComponentTag.STREAMSTACK;
+	}
+
+
 	// Depreciated methods
 
 	//@author A0118007R
