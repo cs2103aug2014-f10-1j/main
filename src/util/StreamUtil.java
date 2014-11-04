@@ -27,7 +27,20 @@ public class StreamUtil {
 	public static final String PREFIX_INPUT = "<< ";
 	public static final String PREFIX_OUTPUT = ">> ";
 	public static final SimpleDateFormat cleanDateFormat = new SimpleDateFormat("yyyyMMdd");
+	private static final String[] MODIFICATION_ATTRIBUTES = { "name", "desc", "start", "from", "due", "by",
+		"tag", "untag", "settags", "rank", "mark" }; //Not sure if this is the right place, but for now its here.
 
+	// @author A0118007R
+	public static boolean isValidAttribute(String param) {
+		for (String s : MODIFICATION_ATTRIBUTES) {
+			if (s.equals(param)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
 	// @author A0118007R
 
 	public static boolean isValidMonth(int month) {

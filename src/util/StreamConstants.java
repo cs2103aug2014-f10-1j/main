@@ -13,11 +13,11 @@ public class StreamConstants {
 	public static final String FILENAME = "stream";
 	public static final String SAVEFILE = "%1$s.json";
 	public static final String LOGFILE = "%1$s.txt";
-	
+
 	public static class Calendar {
 		public static final String[] MONTHS = { "January", "February", "March",
-				"April", "May", "June", "July", "August", "September", "October",
-				"November", "December" };
+			"April", "May", "June", "July", "August", "September", "October",
+			"November", "December" };
 	}
 	public static class ComponentTag {
 		public static final String STREAM = "stream";
@@ -82,6 +82,7 @@ public class StreamConstants {
 		public static final String SEARCHED_TASKS = "Searched tasks with keyphrase \"%1$s\", result: %2$s";
 	}
 	public static class Commands {
+
 		// Reverse commands (for undo)
 		public static final String DISMISS = "dismiss %1$s";
 		public static final String RECOVER = "recover %1$s";

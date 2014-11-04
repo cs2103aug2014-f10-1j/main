@@ -62,7 +62,7 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
-	public void sortAlpha(boolean descending) {
+	public String sortAlpha(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
 				@Override
@@ -78,10 +78,12 @@ public class StreamLogic extends BaseLogic {
 				}
 			});
 		}
+		return "Sort by alphabetical order, "
+				+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
-	public void sortStartTime(boolean descending) {
+	public String sortStartTime(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
 				@Override
@@ -113,10 +115,12 @@ public class StreamLogic extends BaseLogic {
 				}
 			});
 		}
+		return "Sort by deadline "
+		+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
-	public void sortDeadline(boolean descending) {
+	public String sortDeadline(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
 				@Override
@@ -148,6 +152,8 @@ public class StreamLogic extends BaseLogic {
 				}
 			});
 		}
+		return "Sort by deadline "
+		+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
@@ -300,6 +306,31 @@ public class StreamLogic extends BaseLogic {
 		return String.format(StreamConstants.LogMessage.NAME, taskName, newTaskName);
 	}
 
+
+	// @author A0118007R
+	public void modifyTaskWithParams(String taskName, List<String> modifyParams) 
+			throws StreamModificationException {
+		StreamTask task = getTask(taskName);
+
+		// method for splitting the input to add to the specified param
+		// TODO: refactor
+		String attribute = modifyParams.get(0);
+		String contents = "";
+		for (int i = 1; i < modifyParams.size(); i++) {
+			String s = modifyParams.get(i);
+			if (StreamUtil.isValidAttribute(s)) {
+				// first content is guaranteed to be a valid parameter
+				modifyTask(task, attribute, contents.trim());
+				attribute = s;
+				contents = "";
+
+			} else {
+				contents = contents + s + " ";
+			}
+		}
+		modifyTask(task, attribute, contents);
+	}
+	
 	// @author A0096529N
 	/**
 	 * Modify an attribute of a task

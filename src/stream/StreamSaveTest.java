@@ -37,7 +37,7 @@ public class StreamSaveTest {
 
 		stream = new Stream(testFile.getAbsolutePath());
 		String taskName1 = "Code Jarvis";
-		stream.processAddCommandWithParams(taskName1);
+		stream.streamLogic.addTask(taskName1);
 		task1 = stream.streamLogic.getTask(taskName1);
 		Calendar calendar = Calendar.getInstance();
 		Date date = simpleDateFormat.parse("20410719000000");
@@ -48,7 +48,7 @@ public class StreamSaveTest {
 		task1.getTags().add("IMPOSSIBLE");
 
 		String taskName2 = "Build IoT";
-		stream.processAddCommandWithParams(taskName2);
+		stream.streamLogic.addTask(taskName2);
 		task2 = stream.streamLogic.getTask(taskName2);
 		Calendar calendar2 = Calendar.getInstance();
 		Date date2 = simpleDateFormat.parse("20180101123456");
