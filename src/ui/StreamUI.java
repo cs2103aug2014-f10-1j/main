@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -104,6 +103,22 @@ public class StreamUI {
 		addNavigationButtons();
 		// addClearSearchButton();
 		addConsole();
+		HashMap<String, String> helpTexts = new HashMap<String, String>();
+		// TODO SOMEBODY HALP ME FILL THIS IN
+		helpTexts.put("add", "Add a new task here");
+		helpTexts.put("search", "Searches tasks by its name, description, or tags");
+		helpTexts.put("delete", "Delete based on index number");
+		helpTexts.put("filter", "Filters tasks by dates or ranks");
+		helpTexts.put("mark", "Marks task as done or ongoing");
+		helpTexts.put("modify", "Modifies multiple parameters of a task in one go");
+		helpTexts.put("view", "Views the details of a task");
+		helpTexts.put("sort", "Sorts tasks by alphabetical or chronological order");
+		helpTexts.put("clear", "Clears all added tasks");
+		helpTexts.put("undo", "Undoes the last action");
+		helpTexts.put("exit", "Exits the program");
+		for (String h : helpTexts.keySet()) {
+			console.addPossibility(h, helpTexts.get(h));
+		}
 		empowerConsole(new StreamUIConsoleEnterAction(stream, console));
 		addLogger();
 
@@ -119,9 +134,7 @@ public class StreamUI {
 		shortcut.put('u', "undo");
 		shortcut.put('e', "exit");
 		shortcut.put('c', "");
-		for (Iterator<Character> iter = shortcut.keySet().iterator(); iter
-				.hasNext();) {
-			Character c = iter.next();
+		for (Character c : shortcut.keySet()) {
 			empowerKeyboardShortcuts(c, shortcut.get(c));
 		}
 
@@ -130,8 +143,7 @@ public class StreamUI {
 		navig.put("LEFT", "prev");
 		navig.put("RIGHT", "next");
 		navig.put("UP", "last");
-		for (Iterator<String> iter = navig.keySet().iterator(); iter.hasNext();) {
-			String s = iter.next();
+		for (String s : navig.keySet()) {
 			empowerNavigationShortcuts(s, navig.get(s));
 		}
 		addFooter();
