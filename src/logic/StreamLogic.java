@@ -1,6 +1,7 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +47,8 @@ public class StreamLogic extends BaseLogic {
 	public void setOrdering(ArrayList<String> anotherTaskList) {
 		assert (StreamUtil.listEqual(streamObject.getTaskList(), anotherTaskList)) : StreamConstants.Assertion.NOT_EQUAL;
 		streamObject.setTaskList(anotherTaskList);
+		logDebug(String.format(StreamConstants.LogMessage.REORDER_TASKS, 
+				Arrays.toString(anotherTaskList.toArray())));
 	}
 
 	// @author A0096529N
@@ -166,10 +169,12 @@ public class StreamLogic extends BaseLogic {
 	 */
 	public void addTask(String newTaskName) throws StreamModificationException {
 		if (hasTask(newTaskName)) {
+			logDebug(String.format(StreamConstants.LogMessage.ADD_DUPLICATE_TASK, newTaskName));
 			throw new StreamModificationException(String.format(
 					StreamConstants.ExceptionMessage.ERR_TASK_ALREADY_EXISTS, newTaskName));
 		} else {
 			streamObject.put(newTaskName, new StreamTask(newTaskName));
+			logDebug(String.format(StreamConstants.LogMessage.ADDED_TASK, newTaskName));
 		}
 	}
 
@@ -177,12 +182,14 @@ public class StreamLogic extends BaseLogic {
 
 	public void recoverTask(StreamTask task) {
 		streamObject.put(task.getTaskName(), task);
+		logDebug(String.format(StreamConstants.LogMessage.RECOVERED_TASK, task.getTaskName()));
 	}
 
 	// @author A0096529N
 
 	public void clear() {
 		streamObject.clear();
+		logDebug(StreamConstants.LogMessage.CLEARED_TASKS);
 	}
 
 	// @author A0093874N
@@ -276,6 +283,8 @@ public class StreamLogic extends BaseLogic {
 		StreamTask task = getTask(taskName);
 		if (!taskName.equals(newTaskName)) {
 			if (streamObject.containsKey(newTaskName)) {
+				logDebug(String.format(StreamConstants.LogMessage.UPDATE_TASK_NAME_DUPLICATE, 
+						newTaskName));
 				throw new StreamModificationException(String.format(
 						StreamConstants.ExceptionMessage.ERR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
 			}
@@ -286,6 +295,8 @@ public class StreamLogic extends BaseLogic {
 		task.setTaskName(newTaskName);
 		streamObject.put(newTaskName, task, index);
 		// This section is contributed by A0093874N
+		logDebug(String.format(StreamConstants.LogMessage.UPDATE_TASK_NAME, 
+				taskName, newTaskName));
 		return String.format(StreamConstants.LogMessage.NAME, taskName, newTaskName);
 	}
 
@@ -304,8 +315,6 @@ public class StreamLogic extends BaseLogic {
 		if (attribute.equalsIgnoreCase("name")) {
 			// modify name need access to streamObject, special case
 			updateTaskName(task.getTaskName(), contents);
-			logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION, 
-					task.getTaskName(), attribute, contents));
 		} else {
 			taskLogic.modifyTask(task, attribute, contents);
 		}
@@ -363,6 +372,8 @@ public class StreamLogic extends BaseLogic {
 			}
 		}
 
+		logDebug(String.format(StreamConstants.LogMessage.SEARCHED_TASKS, 
+				keyphrase, Arrays.toString(tasks.toArray())));
 		return tasks;
 	}
 
@@ -408,6 +419,8 @@ public class StreamLogic extends BaseLogic {
 				break;
 			}
 		}
+		logDebug(String.format(StreamConstants.LogMessage.FILTERED_TASKS, 
+				criteria, Arrays.toString(tasks.toArray())));
 		return tasks;
 	}
 

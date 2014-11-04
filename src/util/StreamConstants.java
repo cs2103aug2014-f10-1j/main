@@ -71,6 +71,15 @@ public class StreamConstants {
 		public static final String POP_INVERSE_TASK = "Pop inverse task \"%1$s\"";
 		public static final String SET_DEADLINE = "Set deadline for \"%1$s\" on \"%2$s\"";
 		public static final String SET_STARTTIME = "Set start time for \"%1$s\" on \"%2$s\"";
+		public static final String REORDER_TASKS = "Reordered tasks %1$s";
+		public static final String ADDED_TASK = "Added task \"%1$s\"";
+		public static final String ADD_DUPLICATE_TASK = "Task name already present \"%1$s\"";
+		public static final String RECOVERED_TASK = "Recovered task \"%1$s\"";
+		public static final String CLEARED_TASKS = "Removed all tasks";
+		public static final String UPDATE_TASK_NAME_DUPLICATE = "Task name not available \"%1$s\"";
+		public static final String UPDATE_TASK_NAME = "Updated task name \"%1$s\" to \"%2$s\"";
+		public static final String FILTERED_TASKS = "Filter tasks with criteria \"%1$s\", result: %2$s";
+		public static final String SEARCHED_TASKS = "Searched tasks with keyphrase \"%1$s\", result: %2$s";
 	}
 	public static class Commands {
 		// Reverse commands (for undo)
