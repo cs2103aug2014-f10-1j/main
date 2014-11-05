@@ -30,8 +30,8 @@ public class StreamUtil {
 	public static final String PREFIX_INPUT = "<< ";
 	public static final String PREFIX_OUTPUT = ">> ";
 	public static final SimpleDateFormat cleanDateFormat = new SimpleDateFormat("yyyyMMdd");
-	private static final String[] MODIFICATION_ATTRIBUTES = { "name", "desc", "start", "from", "due", "by",
-		"tag", "untag", "settags", "rank", "mark" }; //Not sure if this is the right place, but for now its here.
+	private static final String[] MODIFICATION_ATTRIBUTES = { "-name", "-desc", "-start", "-from", "-due", "-by",
+		"-tag", "-untag", "-settags", "-rank", "-mark" }; //Not sure if this is the right place, but for now its here.
 	private static final String[] MONTHS = {"January", "February", "March", "April", "May", "June", "July", "August", "September", 
 		"October", "November", "December"};
 	
