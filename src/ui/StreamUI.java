@@ -97,14 +97,14 @@ public class StreamUI {
 		stream = str;
 		try {
 			InputStream titleFont = new FileInputStream(
-					"fonts/Awesome Java.ttf");
+					"src/fonts/Awesome Java.ttf");
 			InputStream indexFont = new FileInputStream(
-					"fonts/Awesome Java.ttf");
+					"src/fonts/Awesome Java.ttf");
 			InputStream consoleFont = new FileInputStream(
-					"fonts/Ubuntu.ttf");
-			InputStream loggerFont = new FileInputStream("fonts/Ubuntu.ttf");
-			InputStream footerFont = new FileInputStream("fonts/Ubuntu.ttf");
-			InputStream taskFont = new FileInputStream("fonts/Ubuntu.ttf");
+					"src/fonts/Ubuntu.ttf");
+			InputStream loggerFont = new FileInputStream("src/fonts/Ubuntu.ttf");
+			InputStream footerFont = new FileInputStream("src/fonts/Ubuntu.ttf");
+			InputStream taskFont = new FileInputStream("src/fonts/Ubuntu.ttf");
 			StreamConstants.UI.initFonts(titleFont, indexFont, consoleFont,
 					loggerFont, footerFont, taskFont);
 		} catch (FileNotFoundException e) {
