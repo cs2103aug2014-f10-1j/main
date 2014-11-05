@@ -21,21 +21,21 @@ import stream.Stream;
  * @author Wilson Kurniawan
  */
 public class StreamUIConsoleEnterAction extends AbstractAction {
-	
+
 	private static final long serialVersionUID = 1L;
 	private Stream stream;
 	private StreamUIConsole console;
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String input = console.getText();
 		stream.filterAndProcessInput(input);
 		console.setText("");
 	}
-	
+
 	StreamUIConsoleEnterAction(Stream st, StreamUIConsole cons) {
 		this.stream = st;
 		this.console = cons;
 	}
-	
+
 }

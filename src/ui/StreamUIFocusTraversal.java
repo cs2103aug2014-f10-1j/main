@@ -17,7 +17,7 @@ public class StreamUIFocusTraversal extends FocusTraversalPolicy {
 
 	private Vector<Component> order;
 
-	public StreamUIFocusTraversal(Vector<Component> order) {
+	StreamUIFocusTraversal(Vector<Component> order) {
 		this.order = new Vector<Component>(order.size());
 		this.order.addAll(order);
 	}

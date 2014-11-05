@@ -3,6 +3,7 @@ package util;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
+import java.io.InputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
@@ -16,9 +17,10 @@ public class StreamConstants {
 
 	public static class Calendar {
 		public static final String[] MONTHS = { "January", "February", "March",
-			"April", "May", "June", "July", "August", "September", "October",
-			"November", "December" };
+				"April", "May", "June", "July", "August", "September",
+				"October", "November", "December" };
 	}
+
 	public static class ComponentTag {
 		public static final String STREAM = "stream";
 		public static final String STREAMUI = "ui";
@@ -28,6 +30,7 @@ public class StreamConstants {
 		public static final String STREAMIO = "io";
 		public static final String STREAMPARSER = "parser";
 	}
+
 	public static class LogMessage {
 		public static final String CMD_RECEIVED = "Command received [%1$s]";
 		public static final String ADD = "Added \"%1$s\"";
@@ -81,6 +84,7 @@ public class StreamConstants {
 		public static final String FILTERED_TASKS = "Filter tasks with criteria \"%1$s\", result: %2$s";
 		public static final String SEARCHED_TASKS = "Searched tasks with keyphrase \"%1$s\", result: %2$s";
 	}
+
 	public static class Commands {
 
 		// Reverse commands (for undo)
@@ -104,6 +108,7 @@ public class StreamConstants {
 		public static final String SORT_DEADLINE = "sort t d";
 		public static final String ADD_TASK = "add %1$s";
 	}
+
 	public static class Assertion {
 		public static final String NULL_INPUT = "Null input value detected";
 		public static final String NOT_CLEARED = "Task clearance failed";
@@ -121,9 +126,10 @@ public class StreamConstants {
 		public static final String EMPTY_INVERSE_ORDER = "Empty inverse order";
 		public static final String NULL_INVERSE_TASK = "Null inverse task";
 	}
+
 	public static class Message {
-		public static final String WELCOME = "Welcome to Stream "
-				+ VERSION + "!";
+		public static final String WELCOME = "Welcome to Stream " + VERSION
+				+ "!";
 		public static final String THANK_YOU = "Thank you for using this internal release of Stream[BETA]!";
 
 		public static final String TEXT_TITLE = "STREAM " + VERSION
@@ -135,6 +141,7 @@ public class StreamConstants {
 		public static final String DETAILS_HEADER = "Details for %1$s";
 		public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s\nRank: %6$s";
 	}
+
 	public static class ExceptionMessage {
 		public static final String ERR_TAG_DOES_NOT_EXIST = "Error: The tag \"%1$s\" does not exist.";
 		public static final String ERR_TASK_ALREADY_EXISTS = "\"%1$s\" already exists in the tasks list.";
@@ -144,20 +151,19 @@ public class StreamConstants {
 				+ "- %1$s\nDelete the file if already present.";
 		public static final String ERR_TASK_MODIFICATION = "Could not modify file: %1$s";
 	}
+
 	public static class UI {
 		public static final Color COLOR_HEADER = Color.getHSBColor(
 				(float) 208.52 / 360, (float) 0.5728, (float) 0.8353);
 		public static final Color COLOR_LOG_MSG = Color.BLACK;
 		public static final Color COLOR_ERR_MSG = Color.RED;
 
-		public static final Font FONT_TITLE = new Font("Awesome Java", Font.PLAIN,
-				100);
-		public static final Font FONT_CONSOLE = new Font("Ubuntu", Font.PLAIN, 13);
-		public static final Font FONT_LOGGER = new Font("Ubuntu", Font.PLAIN, 13);
-		public static final Font FONT_FOOTER = new Font("Ubuntu", Font.PLAIN, 12);
-		public static final Font FONT_INDEX = new Font("Awesome Java", Font.PLAIN,
-				70);
-		public static final Font FONT_TASK = new Font("Ubuntu", Font.PLAIN, 13);
+		public static Font FONT_TITLE;
+		public static Font FONT_CONSOLE;
+		public static Font FONT_LOGGER;
+		public static Font FONT_FOOTER;
+		public static Font FONT_INDEX;
+		public static Font FONT_TASK;
 
 		public static final Border MARGIN_MAINFRAME = BorderFactory
 				.createEmptyBorder(20, 10, 20, 10);
@@ -194,9 +200,12 @@ public class StreamConstants {
 		public static final int GRIDX_LAST = GRIDX_NEXT + GRIDWIDTH_NAVIG;
 		public static final int GRIDX_CLEAR = GRIDX_LAST + GRIDWIDTH_NAVIG;
 		public static final int GRIDX_ADD_TASK_TEXTFIELD = 0;
-		public static final int GRIDX_ADD_TASK_BTN = GRIDX_ADD_TASK_TEXTFIELD + GRIDWIDTH_INPUT;
-		public static final int GRIDX_SORT_DEADLINE = GRIDX_ADD_TASK_BTN + GRIDWIDTH_NAVIG + 1;
-		public static final int GRIDX_SORT_ALPHA = GRIDX_SORT_DEADLINE + GRIDWIDTH_NAVIG;
+		public static final int GRIDX_ADD_TASK_BTN = GRIDX_ADD_TASK_TEXTFIELD
+				+ GRIDWIDTH_INPUT;
+		public static final int GRIDX_SORT_DEADLINE = GRIDX_ADD_TASK_BTN
+				+ GRIDWIDTH_NAVIG + 1;
+		public static final int GRIDX_SORT_ALPHA = GRIDX_SORT_DEADLINE
+				+ GRIDWIDTH_NAVIG;
 		public static final int GRIDX_CONSOLE = 0;
 		public static final int GRIDX_LOGGER = 0;
 		public static final int GRIDX_FOOTER = 0;
@@ -210,7 +219,8 @@ public class StreamConstants {
 		public static final int GRIDY_HEADER = 0;
 		public static final int GRIDY_MENU = GRIDY_HEADER + 1;
 		public static final int GRIDY_TASK_START = GRIDY_MENU + 1;
-		public static final int GRIDY_BUTTON = GRIDY_TASK_START + MAX_VIEWABLE_TASK + 1;
+		public static final int GRIDY_BUTTON = GRIDY_TASK_START
+				+ MAX_VIEWABLE_TASK + 1;
 		public static final int GRIDY_CONSOLE = GRIDY_BUTTON + 1;
 		public static final int GRIDY_LOGGER = GRIDY_CONSOLE + 1;
 		public static final int GRIDY_FOOTER = GRIDY_LOGGER + 1;
@@ -246,5 +256,26 @@ public class StreamConstants {
 		public static final String BTN_MARK_DONE = "Mark as done";
 		public static final String BTN_MARK_NOT_DONE = "Mark as ongoing";
 
+		public static void initFonts(InputStream titleFont,
+				InputStream indexFont, InputStream consoleFont,
+				InputStream loggerFont, InputStream footerFont,
+				InputStream taskFont) {
+			try {
+				FONT_TITLE = Font.createFont(Font.TRUETYPE_FONT, titleFont)
+						.deriveFont(Font.PLAIN, 100);
+				FONT_INDEX = Font.createFont(Font.TRUETYPE_FONT, indexFont)
+						.deriveFont(Font.PLAIN, 70);
+				FONT_CONSOLE = Font.createFont(Font.TRUETYPE_FONT, consoleFont)
+						.deriveFont(Font.PLAIN, 13);
+				FONT_LOGGER = Font.createFont(Font.TRUETYPE_FONT, loggerFont)
+						.deriveFont(Font.PLAIN, 13);
+				FONT_FOOTER = Font.createFont(Font.TRUETYPE_FONT, footerFont)
+						.deriveFont(Font.PLAIN, 12);
+				FONT_TASK = Font.createFont(Font.TRUETYPE_FONT, taskFont)
+						.deriveFont(Font.PLAIN, 13);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 }
