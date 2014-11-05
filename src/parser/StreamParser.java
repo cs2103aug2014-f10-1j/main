@@ -36,6 +36,9 @@ public class StreamParser {
 
 	public void interpretCommand(String input, int numOfTasks)
 			throws StreamParserException {
+		if (input.isEmpty()) {
+			throw new StreamParserException("Empty Input");
+		}
 		String[] contents = input.trim().split(" ", 2);
 		String key = contents[0].toLowerCase();
 		switch (key) {

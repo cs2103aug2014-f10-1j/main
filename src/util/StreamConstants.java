@@ -44,8 +44,8 @@ public class StreamConstants {
 		public static final String NAME = "Changed name for \"%1$s\" to \"%2$s\"";
 		public static final String MARK = "\"%1$s\" marked as %2$s";
 		public static final String ERRORS = "%1$s: %2$s";
-		public static final String UNDO_FAIL = "Nothing to undo";
-		public static final String UNDO_SUCCESS = "Undoing the previous action";
+		public static final String UNDO_FAIL = "No previous action to undo";
+		public static final String UNDO_SUCCESS = "Reverted the previous action";
 		public static final String DUE_NEVER = "Due date for \"%1$s\" is removed";
 		public static final String DUE = "Due date for \"%1$s\" set to \"%2$s\"";
 		public static final String START = "Start date for \"%1$s\" set to \"%2$s\"";
@@ -83,6 +83,10 @@ public class StreamConstants {
 		public static final String UPDATE_TASK_NAME = "Updated task name \"%1$s\" to \"%2$s\"";
 		public static final String FILTERED_TASKS = "Filter tasks with criteria \"%1$s\", result: %2$s";
 		public static final String SEARCHED_TASKS = "Searched tasks with keyphrase \"%1$s\", result: %2$s";
+		public static final String PARSER_ERROR = "Could not understand your command, "
+				+ "please refer to the manual for list of commands.\nDetails: %1$s";
+		public static final String EMPTY_INPUT_ERROR = "Please enter a command!";
+		public static final String UNEXPECTED_ERROR = "Opps! An unexpected error occured, please retry.\nDetails: %1$s";
 	}
 
 	public static class Commands {

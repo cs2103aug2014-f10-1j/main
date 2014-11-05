@@ -135,7 +135,7 @@ public class StreamUI {
 		helpTexts.put("sort",
 				"Sorts tasks by alphabetical or chronological order");
 		helpTexts.put("clear", "Clears all added tasks");
-		helpTexts.put("undo", "Undoes the last action");
+		helpTexts.put("undo", "Undo the last action");
 		helpTexts.put("exit", "Exits the program");
 		for (String h : helpTexts.keySet()) {
 			console.addPossibility(h, helpTexts.get(h));

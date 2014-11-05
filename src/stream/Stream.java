@@ -6,9 +6,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import com.mdimension.jchronic.Chronic;
-import com.mdimension.jchronic.utils.Span;
-
 import logic.StackLogic;
 import logic.StreamLogic;
 import logic.TaskLogic;
@@ -23,6 +20,7 @@ import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 import exception.StreamIOException;
 import exception.StreamModificationException;
+import exception.StreamParserException;
 import fileio.StreamIO;
 
 /**
@@ -605,7 +603,7 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	
+
 
 	// @author A0118007R
 	private void executeStartTime(String content) 
@@ -882,11 +880,23 @@ public class Stream {
 			String content = parser.getCommandContent();
 			executeInput(command, content);
 		} catch (AssertionError e) {
-			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS,
-					"AssertionError", e.getMessage()));
+			log(String.format(StreamConstants.LogMessage.ERRORS, "AssertionError", e.getMessage()));
+			showAndLogError(String.format(StreamConstants.LogMessage.UNEXPECTED_ERROR, e.getMessage()));
+		} catch (StreamParserException e) {
+			log(String.format(StreamConstants.LogMessage.ERRORS, 
+					e.getClass().getSimpleName(), e.getMessage()));
+			if (e.getMessage().equals("Empty Input")) {
+				showAndLogError(String.format(StreamConstants.LogMessage.EMPTY_INPUT_ERROR, 
+						e.getClass().getSimpleName() + " " + e.getMessage()));
+			} else {
+				showAndLogError(String.format(StreamConstants.LogMessage.PARSER_ERROR, 
+						e.getClass().getSimpleName() + " " + e.getMessage()));
+			}
 		} catch (Exception e) {
-			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS, e
-					.getClass().getSimpleName(), e.getMessage()));
+			log(String.format(StreamConstants.LogMessage.ERRORS, 
+					e.getClass().getSimpleName(), e.getMessage()));
+			showAndLogError(String.format(StreamConstants.LogMessage.UNEXPECTED_ERROR, 
+					e.getClass().getSimpleName() + " " + e.getMessage()));
 		}
 	}
 
@@ -907,17 +917,15 @@ public class Stream {
 
 	// @author A0093874N
 	public void filterAndProcessInput(String input) {
-		if (input == null) {
-			showAndLogError(String.format(StreamConstants.LogMessage.ERRORS,
-					"AssertionError", StreamConstants.Assertion.NULL_INPUT));
+		assert(input != null) : String.format(StreamConstants.LogMessage.ERRORS,
+				"AssertionError", StreamConstants.Assertion.NULL_INPUT);
+
+		log(StreamUtil.showAsTerminalInput(input));
+		if (isRestrictedInput(input)) {
+			showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
 		} else {
-			log(StreamUtil.showAsTerminalInput(input));
-			if (isRestrictedInput(input)) {
-				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
-			} else {
-				processInput(input);
-				save();
-			}
+			processInput(input);
+			save();
 		}
 	}
 

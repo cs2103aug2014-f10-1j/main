@@ -13,7 +13,6 @@ import org.junit.Test;
 import exception.StreamModificationException;
 
 //@author A0096529N
-//TODO add tests for negative cases, where exceptions should be thrown where relevant.
 public class StreamModificationTest {
 	private TaskLogic taskLogic = TaskLogic.init();
 	private StreamLogic streamLogic = StreamLogic.init(new StreamObject());

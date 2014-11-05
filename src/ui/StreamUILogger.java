@@ -43,6 +43,7 @@ public class StreamUILogger extends JTextField {
 	public void showLogMessage(String logMsg) {
 		setForeground(StreamConstants.UI.COLOR_LOG_MSG);
 		setText(StreamUtil.showAsTerminalResponse(logMsg));
+		setCaretPosition(0);
 	}
 
 	/**
@@ -54,6 +55,7 @@ public class StreamUILogger extends JTextField {
 	public void showErrorMessage(String errMsg) {
 		setForeground(StreamConstants.UI.COLOR_ERR_MSG);
 		setText(StreamUtil.showAsTerminalResponse(errMsg));
+		setCaretPosition(0);
 	}
 
 }
