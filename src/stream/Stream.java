@@ -259,7 +259,7 @@ public class Stream {
 		}
 	}
 
-	// @author A0093874N modified by A0118007R
+	// @author A0118007R
 	/**
 	 * Adds a new task to the tasks list.
 	 * <p>
@@ -268,7 +268,7 @@ public class Stream {
 	 * 
 	 * @param taskNameWithParams
 	 *            - the task name
-	 * @author Wilson Kurniawan
+	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 *             - if a <b>StreamTask<b> named <i>taskName</i> is already
 	 *             present.
