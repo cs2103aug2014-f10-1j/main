@@ -7,8 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,21 +93,20 @@ public class StreamUI {
 	public StreamUI(Stream str) {
 
 		stream = str;
-		try {
-			InputStream titleFont = new FileInputStream(
-					"src/fonts/Awesome Java.ttf");
-			InputStream indexFont = new FileInputStream(
-					"src/fonts/Awesome Java.ttf");
-			InputStream consoleFont = new FileInputStream(
-					"src/fonts/Ubuntu.ttf");
-			InputStream loggerFont = new FileInputStream("src/fonts/Ubuntu.ttf");
-			InputStream footerFont = new FileInputStream("src/fonts/Ubuntu.ttf");
-			InputStream taskFont = new FileInputStream("src/fonts/Ubuntu.ttf");
-			StreamConstants.UI.initFonts(titleFont, indexFont, consoleFont,
-					loggerFont, footerFont, taskFont);
-		} catch (FileNotFoundException e) {
-			System.out.println(e.getMessage());
-		}
+		InputStream titleFont = getClass().getResourceAsStream(
+				"/fonts/Awesome Java.ttf");
+		InputStream indexFont = getClass().getResourceAsStream(
+				"/fonts/Awesome Java.ttf");
+		InputStream consoleFont = getClass().getResourceAsStream(
+				"/fonts/Ubuntu.ttf");
+		InputStream loggerFont = getClass().getResourceAsStream(
+				"/fonts/Ubuntu.ttf");
+		InputStream footerFont = getClass().getResourceAsStream(
+				"/fonts/Ubuntu.ttf");
+		InputStream taskFont = getClass().getResourceAsStream(
+				"/fonts/Ubuntu.ttf");
+		StreamConstants.UI.initFonts(titleFont, indexFont, consoleFont,
+				loggerFont, footerFont, taskFont);
 
 		setupLookAndFeel();
 		addMainFrame();
