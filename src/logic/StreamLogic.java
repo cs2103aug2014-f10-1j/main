@@ -343,7 +343,7 @@ public class StreamLogic extends BaseLogic {
 	 */
 	public void modifyTask(StreamTask task, String attribute, String contents) 
 			throws StreamModificationException {
-		if (attribute.equalsIgnoreCase("name")) {
+		if (attribute.equalsIgnoreCase("-name")) {
 			// modify name need access to streamObject, special case
 			updateTaskName(task.getTaskName(), contents);
 		} else {

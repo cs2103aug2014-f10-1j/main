@@ -115,8 +115,8 @@ public class StreamUndoTest {
 		String taskNameForTest = "a task";
 		String newTaskName = "another task";
 		in("add " + taskNameForTest);
-		in("modify 1 name " + newTaskName
-				+ " tag fordemo v0.2 desc multiple inputs");
+		in("modify 1 -name " + newTaskName
+				+ " -tag fordemo v0.2 -desc multiple inputs");
 		assertEquals("new name is \"" + newTaskName + "\"", false,
 				st.streamLogic.hasTask(taskNameForTest));
 		assertEquals("has description", "multiple inputs",
@@ -138,13 +138,13 @@ public class StreamUndoTest {
 	public void nullModificationTest() throws Exception {
 		String taskNameForTest = "a task";
 		in("add " + taskNameForTest);
-		in("modify 1 due 11/11 desc multiple inputs");
+		in("modify 1 -due 11/11 -desc multiple inputs");
 		assertEquals("has date 11/11", "11 November 2014 12:00:00",
 				StreamUtil.getCalendarWriteUp(st.streamLogic.getTask(taskNameForTest)
 						.getDeadline()));
 		assertEquals("has description", "multiple inputs",
 				st.streamLogic.getTask(taskNameForTest).getDescription());
-		in("modify 1 due null desc null");
+		in("modify 1 -due null -desc null");
 		assertNull("has date 11/11", st.streamLogic.getTask(taskNameForTest)
 				.getDeadline());
 		assertNull("has description", st.streamLogic.getTask(taskNameForTest)

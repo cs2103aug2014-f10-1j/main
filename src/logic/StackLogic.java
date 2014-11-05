@@ -130,18 +130,18 @@ public class StackLogic extends BaseLogic {
 	//@author A0118007R
 	public String prepareInverseModifyCommand(String taskName, int taskIndex,
 			StreamTask currTask) {
-		String inverseCommand = "modify " + taskIndex + " name " + taskName
+		String inverseCommand = "modify " + taskIndex + " -name " + taskName
 				+ " ";
 		// TODO help to refactor these
 		// added by A0093874N
 		Boolean isDone = currTask.isDone();
 		if (isDone) {
-			inverseCommand += "mark done ";
+			inverseCommand += "-mark done ";
 		} else {
-			inverseCommand += "mark ongoing ";
+			inverseCommand += "-mark ongoing ";
 		}
 		String oldRank = currTask.getRank();
-		inverseCommand += "rank " + oldRank + " ";
+		inverseCommand += "-rank " + oldRank + " ";
 		//
 		inverseCommand = buildInverseModifyDescription(currTask, inverseCommand);
 		inverseCommand = buildInverseModifyDeadline(currTask, inverseCommand);
@@ -151,7 +151,7 @@ public class StackLogic extends BaseLogic {
 
 	//@author A0096529N
 	private String buildInverseModifyTag(StreamTask currTask, String inverseCommand) {
-		inverseCommand += "settags ";
+		inverseCommand += "-settags ";
 		for (String tag:currTask.getTags()) {
 			inverseCommand += tag + " ";
 		}
@@ -164,9 +164,9 @@ public class StackLogic extends BaseLogic {
 		Calendar oldDue = currTask.getDeadline();
 		if (oldDue != null) {
 			String dueString = StreamUtil.getCalendarWriteUp(oldDue);
-			inverseCommand = inverseCommand + "due " + dueString + " ";
+			inverseCommand = inverseCommand + "-due " + dueString + " ";
 		} else {
-			inverseCommand = inverseCommand + "due null ";
+			inverseCommand = inverseCommand + "-due null ";
 		}
 		return inverseCommand;
 	}
@@ -176,9 +176,9 @@ public class StackLogic extends BaseLogic {
 			String inverseCommand) {
 		String oldDesc = currTask.getDescription();
 		if (oldDesc != null) {
-			inverseCommand = inverseCommand + "desc " + oldDesc + " ";
+			inverseCommand = inverseCommand + "-desc " + oldDesc + " ";
 		} else {
-			inverseCommand = inverseCommand + "desc null ";
+			inverseCommand = inverseCommand + "-desc null ";
 		}
 		return inverseCommand;
 	}
