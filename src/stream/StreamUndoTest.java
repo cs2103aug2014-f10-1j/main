@@ -141,7 +141,7 @@ public class StreamUndoTest {
 		in("modify 1 due 11/11 desc multiple inputs");
 		System.out.println(StreamUtil.getCalendarWriteUp(st.streamLogic.getTask(taskNameForTest)
 						.getDeadline()));
-		assertEquals("has date 11/11", "11/11/2014 12:00:00",
+		assertEquals("has date 11/11", "11 November 2014 12:00:00",
 				StreamUtil.getCalendarWriteUp(st.streamLogic.getTask(taskNameForTest)
 						.getDeadline()));
 		assertEquals("has description", "multiple inputs",

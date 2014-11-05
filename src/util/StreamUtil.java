@@ -32,6 +32,9 @@ public class StreamUtil {
 	public static final SimpleDateFormat cleanDateFormat = new SimpleDateFormat("yyyyMMdd");
 	private static final String[] MODIFICATION_ATTRIBUTES = { "name", "desc", "start", "from", "due", "by",
 		"tag", "untag", "settags", "rank", "mark" }; //Not sure if this is the right place, but for now its here.
+	private static final String[] MONTHS = {"January", "February", "March", "April", "May", "June", "July", "August", "September", 
+		"October", "November", "December"};
+	
 
 	// @author A0118007R
 	public static boolean isValidAttribute(String param) {
@@ -219,9 +222,9 @@ public class StreamUtil {
 
 	public static String getCalendarWriteUp(Calendar calendar) {
 		return addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
-				+ DATE_DELIMITER
-				+ addZeroToTime((calendar.get(Calendar.MONTH) + 1))
-				+ DATE_DELIMITER + calendar.get(Calendar.YEAR) + " "
+				+ " "
+				+ MONTHS[calendar.get(Calendar.MONTH)]
+				+ " " + calendar.get(Calendar.YEAR) + " "
 				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
 				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.MINUTE))
 				+ TIME_DELIMITER + addZeroToTime(calendar.get(Calendar.SECOND));
@@ -236,7 +239,7 @@ public class StreamUtil {
 	// @author A0093874N
 
 	public static String stripCalendarChars(String str) {
-		str = str.replaceAll(DATE_DELIMITER, " ").replaceAll(TIME_DELIMITER, " ");
+		str = str.replaceAll(TIME_DELIMITER, " ");
 		return str;
 	}
 	
@@ -258,17 +261,51 @@ public class StreamUtil {
 		String[] dueDate = contents.split(" ");
 		int[] dueDateParameters = new int[dueDate.length];
 		for (int i = 0; i < dueDate.length; i++) {
+			if (i != 1) {
 			dueDateParameters[i] = Integer.parseInt(dueDate[i].trim());
+			}
+			
 		}
 		
 		int date = dueDateParameters[0];
-		int month = dueDateParameters[1];
+		int month = getMonthIndex(dueDate[1]);
 		int year = dueDateParameters[2];
 		int hour = dueDateParameters[3];
 		int minute = dueDateParameters[4];
 		int second = dueDateParameters[5];
 		Calendar calendar = new GregorianCalendar(year, month - 1, date, hour, minute, second);
 		return calendar;
+	}
+
+	private static int getMonthIndex(String month) {
+		switch (month) {
+			case "January":
+				return 1;
+			case "February":
+				return 2;
+			case "March":
+				return 3;
+			case "April":
+				return 4;
+			case "May":
+				return 5;
+			case "June":
+				return 6;
+			case "July":
+				return 7;
+			case "August":
+				return 8;
+			case "September":
+				return 9;
+			case "October":
+				return 10;
+			case "November":
+				return 11;
+			case "December":
+				return 12;
+			default:
+				return 0;
+		}
 	}
 
 	// @author A0118007R
