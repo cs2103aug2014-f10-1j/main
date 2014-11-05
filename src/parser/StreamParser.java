@@ -62,7 +62,7 @@ public class StreamParser {
 
 				/*
 				 * Check Multi Validity is a method which can be used to check
-				 * the validity of a user input
+				 * the validity of a user input for several kinds of commands
 				 * 
 				 * Supported commands can be seen below
 				 */
@@ -72,14 +72,24 @@ public class StreamParser {
 				this.commandKey = CommandType.DESC;
 				break;
 			case "due":
-				/*
-				 * The exception for this one will be implemented after the
-				 * 'multiple-commands-in-one-line' feature.
-				 */
+				
+				
+				contents = input.trim().split(" ");
+				
+				checkDueValidity(contents, numOfTasks);
+				
+				contents = input.trim().split(" ",2);
 
 				this.commandKey = CommandType.DUE;
 				break;
 			case "start":
+				
+				contents = input.trim().split(" ");
+				
+				checkStartValidity(contents, numOfTasks);
+				
+				contents = input.trim().split(" ",2);
+				
 				this.commandKey = CommandType.START;
 				break;
 			case "view":
@@ -260,6 +270,36 @@ public class StreamParser {
 
 		else if (!checkRanking(contents[2])) {
 			throw new StreamParserException("Please enter a valid input rank!");
+		}
+	}
+	
+	private void checkDueValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (contents.length < 3) {
+			throw new StreamParserException("Please provide more information!");
+		}
+		
+		else if (!StreamUtil.isInteger(contents[1])) {
+			throw new StreamParserException("Please enter a valid index!");
+		}
+		
+		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
+			throw new StreamParserException("The index you entered is out of range!");
+		}
+	}
+	
+	private void checkStartValidity(String[] contents, int numOfTasks)
+			throws StreamParserException {
+		if (contents.length < 3) {
+			throw new StreamParserException("Please provide more information!");
+		}
+			
+		else if (!StreamUtil.isInteger(contents[1])) {
+			throw new StreamParserException("Please enter a valid index!");
+		}
+			
+		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
+			throw new StreamParserException("The index you entered is out of range!");
 		}
 	}
 	
