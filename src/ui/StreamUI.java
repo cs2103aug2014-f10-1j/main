@@ -124,6 +124,8 @@ public class StreamUI {
 		HashMap<String, String> helpTexts = new HashMap<String, String>();
 		// TODO SOMEBODY HALP ME FILL THIS IN
 		helpTexts.put("add", "Add a new task here");
+		helpTexts.put("due", "Set the deadline for a task based on index number");
+		helpTexts.put("start", "Set the start time for a task based on index number");
 		helpTexts.put("search",
 				"Searches tasks by its name, description, or tags");
 		helpTexts.put("delete", "Delete based on index number");
