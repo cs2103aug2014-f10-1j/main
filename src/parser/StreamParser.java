@@ -11,16 +11,14 @@ import exception.StreamParserException;
  * Parser is used to interpret the user input to a pack of 
  * information and later on pass it to the Logic part
  * 
- * Need to be modified later, since I just found out that the COMMAND_TYPE
- * may not be useful here (don't need to specify it)
- * 
  * @version V0.4
  * @author Jiang Shenhao
  */
 public class StreamParser {
 
 	public enum CommandType {
-		INIT, ADD, DEL, DESC, DUE, START, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, UNSORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS, FIRST, PREV, NEXT, LAST;
+		INIT, ADD, DEL, DESC, DUE, START, VIEW, RANK, MODIFY, NAME, MARK, TAG, UNTAG, SEARCH, SORT, 
+		UNSORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT, ERROR, RECOVER, DISMISS, FIRST, PREV, NEXT, LAST;
 	}
 
 	private CommandType commandKey;
@@ -76,7 +74,7 @@ public class StreamParser {
 				
 				contents = input.trim().split(" ");
 				
-				checkDueValidity(contents, numOfTasks);
+				checkDateValidity(contents, numOfTasks);
 				
 				contents = input.trim().split(" ",2);
 
@@ -86,13 +84,20 @@ public class StreamParser {
 				
 				contents = input.trim().split(" ");
 				
-				checkStartValidity(contents, numOfTasks);
+				checkDateValidity(contents, numOfTasks);
 				
 				contents = input.trim().split(" ",2);
 				
 				this.commandKey = CommandType.START;
 				break;
 			case "view":
+				
+				contents = input.split(" ");
+				
+				checkViewValidity(contents, numOfTasks);
+				
+				contents = input.split(" ",2);
+				
 				this.commandKey = CommandType.VIEW;
 				break;
 			case "rank":
@@ -273,7 +278,7 @@ public class StreamParser {
 		}
 	}
 	
-	private void checkDueValidity(String[] contents, int numOfTasks)
+	private void checkDateValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (contents.length < 3) {
 			throw new StreamParserException("Please provide more information!");
@@ -288,20 +293,18 @@ public class StreamParser {
 		}
 	}
 	
-	private void checkStartValidity(String[] contents, int numOfTasks)
+	private void checkViewValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 3) {
-			throw new StreamParserException("Please provide more information!");
+		if (contents.length != 2) {
+			throw new StreamParserException("Please enter a vlid command!");
 		}
-			
-		else if (!StreamUtil.isInteger(contents[1])) {
-			throw new StreamParserException("Please enter a valid index!");
-		}
-			
 		else if (!withinRange(Integer.parseInt(contents[1]), numOfTasks)) {
 			throw new StreamParserException("The index you entered is out of range!");
 		}
 	}
+	
+	
+	
 	
 	/*
 	 * This multi validity checking is able to validate 
