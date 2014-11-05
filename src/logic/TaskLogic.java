@@ -99,6 +99,8 @@ public class TaskLogic extends BaseLogic {
 	// updated by A0119401U
 	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
+		
+		
 		switch (attribute) {
 		case "-desc":
 			description(task, contents);

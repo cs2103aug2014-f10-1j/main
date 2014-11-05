@@ -72,9 +72,6 @@ public class StreamParser {
 				this.commandKey = CommandType.DESC;
 				break;
 			case "due":
-			case "by":
-			case "to":
-
 				/*
 				 * The exception for this one will be implemented after the
 				 * 'multiple-commands-in-one-line' feature.
@@ -82,7 +79,6 @@ public class StreamParser {
 
 				this.commandKey = CommandType.DUE;
 				break;
-			case "from":
 			case "start":
 				this.commandKey = CommandType.START;
 				break;

@@ -276,7 +276,7 @@ public class Stream {
 	 */
 	private void executeAdd(String taskNameWithParams) 
 			throws StreamModificationException {
-		assert (taskNameWithParams != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(taskNameWithParams);
 		// from here, section is modified by A0118007R
 		String[] contents = taskNameWithParams.split(" ");
 
@@ -324,9 +324,9 @@ public class Stream {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		stackLogic.pushPlaceholderInput();
 
-		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(taskName);
 		streamLogic.deleteTask(taskName);
-		assert (!streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_DELETED;
+		assertNoTask(taskName);
 
 		String result = String.format(StreamConstants.LogMessage.DELETE, taskName);
 		showAndLogResult(result);
@@ -348,17 +348,25 @@ public class Stream {
 			throws StreamModificationException {
 		int taskIndex = Integer.parseInt(content);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(taskName);
 		StreamTask deletedTask = streamLogic.getTask(taskName);
 		ArrayList<String> order = streamLogic.getTaskList();
 
-		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(taskName);
 		streamLogic.deleteTask(taskName);
-		assert (!streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_DELETED;
+		assertNoTask(taskName);
 
 		stackLogic.pushInverseDeleteCommand(deletedTask, order);
 		String result = String.format(StreamConstants.LogMessage.DELETE, taskName);
 		showAndLogResult(result);
+	}
+
+	private void assertNoTask(String taskName) {
+		assert (!streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_DELETED;
+	}
+
+	private void assertNull(String taskName) {
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 	}
 
 	// @author A0093874N
@@ -394,7 +402,7 @@ public class Stream {
 		int taskIndex = Integer.parseInt(content);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 
-		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(taskName);
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		stui.displayDetails(currentTask);
 
@@ -684,7 +692,7 @@ public class Stream {
 	 * @author Steven Khong
 	 */
 	private ArrayList<Integer> executeSearch(String content) {
-		assert (content != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(content);
 		ArrayList<Integer> searchResult = streamLogic.findTasks(content);
 
 		String result = String.format(StreamConstants.LogMessage.SEARCH, 
@@ -696,7 +704,7 @@ public class Stream {
 
 	// @author A0093874N
 	private ArrayList<Integer> executeFilter(String content) {
-		assert (content != null) : StreamConstants.Assertion.NULL_INPUT;
+		assertNull(content);
 		ArrayList<Integer> filterResult = streamLogic.filterTasks(content);
 
 		String result = String.format( StreamConstants.LogMessage.FILTER, 
