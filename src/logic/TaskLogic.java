@@ -100,31 +100,31 @@ public class TaskLogic extends BaseLogic {
 	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
 		switch (attribute) {
-		case "desc":
+		case "-desc":
 			description(task, contents);
 			break;
-		case "due":
-		case "by":
-		case "to":
+		case "-due":
+		case "-by":
+		case "-to":
 			deadline(task, contents);
 			break;
-		case "start":
-		case "from":
+		case "-start":
+		case "-from":
 			startTime(task, contents);
 			break;
-		case "tag":
+		case "-tag":
 			addTags(task, contents.split(" "));
 			break;
-		case "untag":
+		case "-untag":
 			removeTags(task, contents.split(" "));
 			break;
-		case "settags":
+		case "-settags":
 			settags(task, contents);
 			break;
-		case "rank":
+		case "-rank":
 			rank(task, contents);
 			break;
-		case "mark":
+		case "-mark":
 			mark(task, contents);
 			break;
 		}
@@ -240,7 +240,11 @@ public class TaskLogic extends BaseLogic {
 	/*
 	private void addTags(String[] tags, StreamTask task,
 			ArrayList<String> tagsAdded, ArrayList<String> tagsNotAdded)
-			throws StreamModificationException {
+			throws Stream
+
+
+
+ationException {
 		int start = 0;
 		processAddingTags(tags, task, tagsAdded, tagsNotAdded, start);
 	}
