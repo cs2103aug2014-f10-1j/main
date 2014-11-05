@@ -149,11 +149,11 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 			this.isGuessing = false;
 		}
 
-		if (!(entered.equals(""))) {
+		if (!(entered.trim().equals(""))) {
 			String subGuess = drawGuess.substring(entered.length(),
 					drawGuess.length());
 			g.setColor(Color.GRAY);
-			String[] typed = entered.split(" ");
+			String[] typed = entered.trim().split(" ");
 			if (helpTextMap.containsKey(typed[0])) {
 				g.drawString(subGuess + helpTextMap.get(typed[0]),
 						(int) (enteredBounds.getWidth()) + 2, 21);

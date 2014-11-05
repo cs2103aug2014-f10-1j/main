@@ -3,12 +3,12 @@
 This is a project by the awesome group **CS2103AUG2014-F10-1J**, aiming to create a user-friendly to-do-list/task manager, which we call **STREAM**.
 
 Meet the awesome developers of **STREAM**:
-* *Wilson Kurniawan*: Team leader, scheduling/tracking/deadlines; in-charge of ui package
+* *Wilson Kurniawan*: Team leader, scheduling/tracking/deadlines, integration/versioning; in-charge of ui and stream package
 * *John Kevin Tjahjadi*: Documentations and code quality controller; in-charge of model package 
-* *Steven Khong Wai How*: Eclipse expert, testing master; in-charge of fileio package
-* *Jiang Shenhao*: Integration; in-charge of parser package
+* *Steven Khong Wai How*: Eclipse expert, testing master; in-charge of fileio and logic package
+* *Jiang Shenhao*: Compatibility tester; in-charge of parser package
 
-Currently, STREAM is capable of basic CRUD (Create, Read, Update, Delete) operations and multiple undo operation, accompanied with user-friendly Graphical User Interface (GUI). A quick user-guide:
+Currently, **STREAM** is capable of basic CRUD (Create, Read, Update, Delete) operations and multiple undo operation, accompanied with user-friendly Graphical User Interface (GUI). A quick user-guide:
 * **add** *taskName*: adds a new task
 * **delete** *indexNo*: deletes a task
 * **clear**: clears all tasks

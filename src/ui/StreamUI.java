@@ -7,6 +7,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
@@ -92,6 +95,21 @@ public class StreamUI {
 	public StreamUI(Stream str) {
 
 		stream = str;
+		try {
+			InputStream titleFont = new FileInputStream(
+					"fonts/Awesome Java.ttf");
+			InputStream indexFont = new FileInputStream(
+					"fonts/Awesome Java.ttf");
+			InputStream consoleFont = new FileInputStream(
+					"fonts/Ubuntu.ttf");
+			InputStream loggerFont = new FileInputStream("fonts/Ubuntu.ttf");
+			InputStream footerFont = new FileInputStream("fonts/Ubuntu.ttf");
+			InputStream taskFont = new FileInputStream("fonts/Ubuntu.ttf");
+			StreamConstants.UI.initFonts(titleFont, indexFont, consoleFont,
+					loggerFont, footerFont, taskFont);
+		} catch (FileNotFoundException e) {
+			System.out.println(e.getMessage());
+		}
 
 		setupLookAndFeel();
 		addMainFrame();
@@ -106,13 +124,16 @@ public class StreamUI {
 		HashMap<String, String> helpTexts = new HashMap<String, String>();
 		// TODO SOMEBODY HALP ME FILL THIS IN
 		helpTexts.put("add", "Add a new task here");
-		helpTexts.put("search", "Searches tasks by its name, description, or tags");
+		helpTexts.put("search",
+				"Searches tasks by its name, description, or tags");
 		helpTexts.put("delete", "Delete based on index number");
 		helpTexts.put("filter", "Filters tasks by dates or ranks");
 		helpTexts.put("mark", "Marks task as done or ongoing");
-		helpTexts.put("modify", "Modifies multiple parameters of a task in one go");
+		helpTexts.put("modify",
+				"Modifies multiple parameters of a task in one go");
 		helpTexts.put("view", "Views the details of a task");
-		helpTexts.put("sort", "Sorts tasks by alphabetical or chronological order");
+		helpTexts.put("sort",
+				"Sorts tasks by alphabetical or chronological order");
 		helpTexts.put("clear", "Clears all added tasks");
 		helpTexts.put("undo", "Undoes the last action");
 		helpTexts.put("exit", "Exits the program");
