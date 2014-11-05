@@ -83,6 +83,7 @@ public class StreamParser {
 				this.commandKey = CommandType.DUE;
 				break;
 			case "from":
+			case "start":
 				this.commandKey = CommandType.START;
 				break;
 			case "view":
