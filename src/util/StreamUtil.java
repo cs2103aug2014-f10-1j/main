@@ -11,6 +11,9 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import com.mdimension.jchronic.Chronic;
+import com.mdimension.jchronic.utils.Span;
+
 /**
  * A class to contain all constants (that otherwise will clutter the other
  * classes) and helper methods (methods that help some of Stream's processes but
@@ -233,18 +236,38 @@ public class StreamUtil {
 	// @author A0093874N
 
 	public static String stripCalendarChars(String str) {
-		str = str.replaceAll(DATE_DELIMITER, "").replaceAll(TIME_DELIMITER, "");
+		str = str.replaceAll(DATE_DELIMITER, " ").replaceAll(TIME_DELIMITER, " ");
 		return str;
+	}
+	
+	// @author A0118007R
+	public static String parseWithChronic(String due) {
+		Span x;
+		try {
+			x = Chronic.parse(due);
+			due = StreamUtil.stripCalendarChars(StreamUtil.getCalendarWriteUp(x.getBeginCalendar()));
+		} catch (Exception e) {
+			System.out.println("\"" + due + "\" cannot be parsed");
+		}
+		return due;
 	}
 
 	// @author A0118007R
 
 	public static Calendar parseCalendar(String contents) {
-		String[] dueDate = contents.split(DATE_DELIMITER);
-		int year = parseYear(dueDate);
-		int day = Integer.parseInt(dueDate[0].trim());
-		int month = Integer.parseInt(dueDate[1].trim());
-		Calendar calendar = new GregorianCalendar(year, month - 1, day);
+		String[] dueDate = contents.split(" ");
+		int[] dueDateParameters = new int[dueDate.length];
+		for (int i = 0; i < dueDate.length; i++) {
+			dueDateParameters[i] = Integer.parseInt(dueDate[i].trim());
+		}
+		
+		int date = dueDateParameters[0];
+		int month = dueDateParameters[1];
+		int year = dueDateParameters[2];
+		int hour = dueDateParameters[3];
+		int minute = dueDateParameters[4];
+		int second = dueDateParameters[5];
+		Calendar calendar = new GregorianCalendar(year, month - 1, date, hour, minute, second);
 		return calendar;
 	}
 

@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import com.mdimension.jchronic.Chronic;
+import com.mdimension.jchronic.utils.Span;
+
 import logic.StackLogic;
 import logic.StreamLogic;
 import logic.TaskLogic;
@@ -595,11 +598,14 @@ public class Stream {
 			result = setDueDate(taskName, taskIndex, null);
 		} else {
 			String due = contents[1];
+			due = StreamUtil.parseWithChronic(due);
 			Calendar calendar = StreamUtil.parseCalendar(due);
 			result = setDueDate(taskName, taskIndex, calendar);
 		}
 		showAndLogResult(result);
 	}
+
+	
 
 	// @author A0118007R
 	private void executeStartTime(String content) 
@@ -613,6 +619,7 @@ public class Stream {
 			result = setStartDate(taskName, taskIndex, null);
 		} else {
 			String start = contents[1];
+			start = StreamUtil.parseWithChronic(start);
 			Calendar calendar = StreamUtil.parseCalendar(start);
 			result = setStartDate(taskName, taskIndex, calendar);
 		}

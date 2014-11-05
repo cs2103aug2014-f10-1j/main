@@ -7,7 +7,7 @@ import util.StreamUtil;
 public class JChronicExample {
 
 	public static void main(String[] args) {
-		String[] examples = { "7 hours from now", "7 hours later",
+		String[] examples = { "7 weeks from now", "7 hours later",
 				"1 hour 30 minutes from now", "7 minutes from now",
 				"7 minutes ago", "7 hours ago", "tomorrow 2.15pm",
 				"next thursday noon", "last monday evening", "dec 13 midnight",

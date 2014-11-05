@@ -146,7 +146,7 @@ public class TaskLogic extends BaseLogic {
 		if (contents.equals("null")) {
 			task.setDeadline(null);
 		} else {
-			// TODO implement JChronic here ASAP!
+			contents = StreamUtil.parseWithChronic(contents);
 			Calendar due = StreamUtil.parseCalendar(contents);
 			task.setDeadline(due);
 		}
@@ -157,6 +157,7 @@ public class TaskLogic extends BaseLogic {
 		if (contents.equals("null")) {
 			task.setStartTime(null);
 		} else {
+			contents = StreamUtil.parseWithChronic(contents);
 			Calendar start = StreamUtil.parseCalendar(contents);
 			task.setStartTime(start);
 		}
