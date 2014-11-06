@@ -73,6 +73,11 @@ public class Stream {
 	}
 
 	// @author A0096529N
+	/**
+	 * Loads the StreamObject state from a saved file, into the
+	 * current streamObject instance. No new instance of StreamObject
+	 * is created.
+	 */
 	void load() {
 		try {
 			HashMap<String, StreamTask> taskMap = new HashMap<String, StreamTask>();
@@ -88,6 +93,10 @@ public class Stream {
 	}
 
 	// @author A0096529N
+	/**
+	 * Saves the current StreamObject state using StreamIO
+	 * @return result the result of this operation
+	 */
 	String save() {
 		String result = null;
 		try {
