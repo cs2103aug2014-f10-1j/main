@@ -140,7 +140,7 @@ public class Stream {
 
 			case DESC:
 				logCommand("DESCRIBE");
-				executeDescription(content);
+				executeDescribe(content);
 				break;
 
 			case DUE:
@@ -463,7 +463,7 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeDescription(String content)
+	private void executeDescribe(String content)
 			throws StreamModificationException {
 		String[] contents = content.split(" ", 2);
 		int taskIndex = Integer.parseInt(contents[0]);
@@ -481,6 +481,16 @@ public class Stream {
 	}
 
 	// @author A0119401U
+	/**
+	 * Adds a rank to a task
+	 * <p>
+	 * Pre-condition: <i>task, index, description</i> not null
+	 * </p>
+	 * 
+	 * @author Jiang Shenhao
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
 	private void executeRank(String content) throws StreamModificationException {
 		String[] contents = content.split(" ", 2);
 		int taskIndex = Integer.parseInt(contents[0]);
@@ -499,6 +509,16 @@ public class Stream {
 	}
 
 	// @author A0118007R
+	/**
+	 * Changes the name of a task
+	 * <p>
+	 * Pre-condition: <i>task, index, name</i> not null
+	 * </p>
+	 * 
+	 * @author John Kevin Tjahjadi
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
 	private void executeName(String content) throws StreamModificationException {
 		String[] contents = content.split(" ", 2);
 		int taskIndex = Integer.parseInt(contents[0]);
@@ -514,6 +534,16 @@ public class Stream {
 	}
 
 	// @author A0118007R
+	/**
+	 * Modify various parameters of a task
+	 * <p>
+	 * Pre-condition: <i>task, index, specified params</i> not null
+	 * </p>
+	 * 
+	 * @author John Kevin Tjahjadi
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
 	private void executeModify(String content)
 			throws StreamModificationException {
 		String[] contents = content.split(" ");
@@ -521,7 +551,6 @@ public class Stream {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		StreamTask currTask = streamLogic.getTask(taskName);
 
-		// get old state and push to undo
 		String inverseCommand = stackLogic.prepareInverseModifyCommand(
 				taskName, taskIndex, currTask);
 
@@ -536,6 +565,16 @@ public class Stream {
 	}
 
 	// @author A0093874N
+	/**
+	 * Untags some tags that are specified in the input.
+	 * <p>
+	 * Pre-condition: <i>task, index, tags</i> not null
+	 * </p>
+	 * 
+	 * @author Wilson Kurniawan
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
 	private void executeUntag(String content)
 			throws StreamModificationException {
 		String[] tags;
@@ -554,6 +593,16 @@ public class Stream {
 	}
 
 	// @author A0093874N
+	/**
+	 * Tag some tags that are specified in the input.
+	 * <p>
+	 * Pre-condition: <i>task, index, tags</i> not null
+	 * </p>
+	 * 
+	 * @author Wilson Kurniawan
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
 	private void executeTag(String content) throws StreamModificationException {
 		String[] tags;
 		ArrayList<String> processedTags;
@@ -571,6 +620,12 @@ public class Stream {
 	}
 
 	// @author A0093874N
+	/**
+	 * Reverts ordering after being sorted.
+	 * 
+	 * @author Wilson Kurniawan
+	 * @return <strong>String</strong> - the log message
+	 */
 	private void executeUnsort() {
 		streamLogic.setOrdering(stackLogic.popOrder());
 		stackLogic.pushPlaceholderInput();
@@ -578,6 +633,12 @@ public class Stream {
 	}
 
 	// @author A0093874N
+	/**
+	 * Sorts based on the criteria specified
+	 * 
+	 * @param content
+	 * 			- the criteria for sorting
+	 */
 	private void executeRecover(String content) {
 		int noOfTasksToRecover = Integer.parseInt(content);
 		stackLogic.pushPlaceholderInput();
@@ -594,6 +655,10 @@ public class Stream {
 	}
 
 	// @author A0093874N
+	/**
+	 * Execute the undo operation for the last user action
+	 * 
+	 */
 	private void executeUndo() {
 		if (!stackLogic.hasInverseInput()) {
 			showAndLogResult(StreamConstants.LogMessage.UNDO_FAIL);
@@ -613,6 +678,13 @@ public class Stream {
 	}
 
 	// @author A0118007R
+	/**
+	 * Marks the category as the specified category
+	 * 
+	 * @param content
+	 * 			- the category to be used for marking
+	 * @throws StreamModificationException
+	 */
 	private void executeMark(String content) throws StreamModificationException {
 		String[] contents = content.split(" ", 2);
 		int taskIndex = Integer.parseInt(contents[0]);
@@ -1070,7 +1142,7 @@ public class Stream {
 	@SuppressWarnings("unused")
 	private void changeDescription(String task, int index, String newDescription) {
 		try {
-			executeDescription(newDescription);
+			executeDescribe(newDescription);
 		} catch (Exception e) {
 
 		}
