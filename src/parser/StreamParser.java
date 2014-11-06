@@ -274,7 +274,7 @@ public class StreamParser {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		} else {
 			checkIndexValidity(contents, numOfTasks);
-			if (!isParseableDate(contents[PARAM_POS_CONTENT])) {
+			if (!StreamUtil.isParseableDate(contents[PARAM_POS_CONTENT])) {
 				throw new StreamParserException(ERROR_DATE_NOT_PARSEABLE);
 			}
 		}
@@ -468,7 +468,7 @@ public class StreamParser {
 			}
 		} else {
 			contents = filterInput.split(" ", 3);
-			if (contents.length == 3 && isParseableDate(contents[2])) {
+			if (contents.length == 3 && StreamUtil.isParseableDate(contents[2])) {
 				switch (contents[0] + " " + contents[1]) {
 				case "due before":
 					return FilterType.DUEBEF;
@@ -483,7 +483,7 @@ public class StreamParser {
 				}
 			} else {
 				contents = filterInput.split(" ", 2);
-				if (contents.length == 2 && isParseableDate(contents[1])) {
+				if (contents.length == 2 && StreamUtil.isParseableDate(contents[1])) {
 					switch (contents[0]) {
 					case "due":
 						return FilterType.DUEON;
@@ -571,15 +571,6 @@ public class StreamParser {
 				return false;
 			}
 		default:
-			return false;
-		}
-	}
-
-	private static boolean isParseableDate(String date) {
-		try {
-			Chronic.parse(date).getBeginCalendar();
-			return true;
-		} catch (NullPointerException e) {
 			return false;
 		}
 	}
