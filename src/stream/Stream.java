@@ -662,8 +662,7 @@ public class Stream {
 				result = streamLogic.sortDeadline(descending);
 				break;
 			case START:
-				// TODO implement sorting by start time
-				// result = streamLogic.sortStartTime(descending);
+				result = streamLogic.sortStartTime(descending);
 				break;
 			default:
 				// also to play safe
