@@ -1,5 +1,10 @@
 package stream;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -7,8 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import util.StreamConstants;
 import util.StreamUtil;
-import static org.junit.Assert.*;
+import fileio.StreamIO;
 
 // @author A0093874N
 
@@ -21,14 +27,18 @@ import static org.junit.Assert.*;
 public class StreamUndoTest {
 
 	private static Stream st;
-	private File testFile = new File("streamtestfile.json");
+	private static final String TEST_SAVE_FILENAME = "streamtest" + StreamConstants.SAVEFILE_EXTENSION;
+	private File testFile;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
+		StreamIO.setSaveLocation(TEST_SAVE_FILENAME);
+		testFile = new File(StreamIO.getSaveLocation());
+		
 		if (testFile.exists()) {
 			testFile.delete();
 		}
-		st = new Stream("streamtestfile");
+		st = new Stream(TEST_SAVE_FILENAME);
 	}
 	
 	@After 

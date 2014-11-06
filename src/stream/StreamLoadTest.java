@@ -18,16 +18,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import fileio.StreamIO;
 import util.StreamConstants;
 
 public class StreamLoadTest {
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;
+	private static final String TEST_SAVE_FILENAME = "streamtest" + StreamConstants.SAVEFILE_EXTENSION;
 
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss",
 			Locale.ENGLISH);
-	private File testFile = new File("test.json");
+	private File testFile;
 
 	// @author A0096529N
 	@Before 
@@ -66,6 +68,9 @@ public class StreamLoadTest {
 				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\"," + "\"taskDescription\":\"Internet of Things\"}]}";
 		try {
+			StreamIO.setSaveLocation(TEST_SAVE_FILENAME);
+			testFile = new File(StreamIO.getSaveLocation());
+			
 			if (testFile.exists()) {
 				testFile.delete();
 			}
@@ -84,7 +89,7 @@ public class StreamLoadTest {
 	// @author A0096529N
 	@Test 
 	public void testLoadMap() {
-		Stream stream = new Stream(testFile.getAbsolutePath());
+		Stream stream = new Stream(testFile.getName());
 		assertEquals("Loaded task map", serializeTaskMap(map),
 				serializeTaskMap(stream.streamLogic.getTaskMap()));
 	}
@@ -92,7 +97,7 @@ public class StreamLoadTest {
 	// @author A0096529N
 	@Test 
 	public void testLoadList() {
-		Stream stream = new Stream(testFile.getAbsolutePath());
+		Stream stream = new Stream(testFile.getName());
 		assertEquals("Loaded task map", taskList, stream.streamLogic.getTaskList());
 	}
 

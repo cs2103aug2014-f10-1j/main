@@ -3,7 +3,6 @@ package fileio;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -60,19 +59,18 @@ import exception.StreamIOException;
  * @author Steven Khong
  */
 public class StreamIO {
-
+	
+	
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
-	static String SAVE_LOCATION = "default.json";
+	static String STREAM_FILENAME = "default.json";
 	private static final TaskLogic taskLogic = TaskLogic.init();
 	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMIO);
 
 	//@author A0096529N
 	/**
-	 * <p>
 	 * Reads and inflate the contents of serialized storage file into
 	 * StreamObject.
-	 * </p>
 	 * 
 	 * @return <strong>StreamObject</strong> with previous state 
 	 * if the storage file is present, nothing modified if storage file not found.
@@ -83,22 +81,18 @@ public class StreamIO {
 	 */
 	public static void load(Map<String, StreamTask> taskMap, List<String> taskList) 
 			throws StreamIOException {
-		JSONObject tasksJson = loadFromFile(new File(SAVE_LOCATION));
-		if (tasksJson != null) {
-			loadMap(taskMap, tasksJson);
-			loadTaskList(taskList, tasksJson);
-			logger.log(LogLevel.DEBUG, "Loaded file: " + SAVE_LOCATION);
+		File streamFile = new File(getStorageFile(STREAM_FILENAME));
+		if (streamFile.exists()) {
+			loadAndInflate(streamFile, taskMap, taskList);
 		} else {
-			logger.log(LogLevel.DEBUG, "File not found: " + SAVE_LOCATION);
+			loadLegacyStorage(taskMap, taskList);
 		}
 	}
 
 	//@author A0096529N
 	/**
-	 * <p>
 	 * Serializes and write the contents of StreamObject into
 	 * storage file.
-	 * </p>
 	 * 
 	 * @param streamObject
 	 *            - state of StreamObject to be saved
@@ -109,13 +103,15 @@ public class StreamIO {
 	public static void save(Map<String, StreamTask> taskMap, List<String> taskList)
 			throws StreamIOException {
 		try {
+			File streamFile = new File(getStorageFile(STREAM_FILENAME));
+
 			JSONArray taskMapJson = mapToJson(taskMap);
 			JSONObject orderListJson = taskListToJson(taskList);
 			JSONObject tasksJson = new JSONObject();
 			tasksJson.put(TaskKey.TASKMAP, taskMapJson);
 			tasksJson.put(TaskKey.TASKLIST, orderListJson);
-			writeToFile(new File(SAVE_LOCATION), tasksJson);
-			logger.log(LogLevel.DEBUG, "Saved to file: " + SAVE_LOCATION);
+			writeToFile(streamFile, tasksJson);
+			logger.log(LogLevel.DEBUG, "Saved to file: " + getSaveLocation());
 		} catch (JSONException e) {
 			logger.log(LogLevel.DEBUG, "JSON conversion failed during save - " + e.getMessage());
 			throw new StreamIOException("JSON conversion failed - "
@@ -132,15 +128,25 @@ public class StreamIO {
 	 * Saves the log file upon exiting.
 	 * 
 	 * @author Wilson Kurniawan
+	 * @throws StreamIOException 
 	 */
-	public static void saveLogFile(List<String> logMessages, String logFileName) throws IOException {
-		FileWriter fwriter = new FileWriter(logFileName, true);
-		BufferedWriter bw = new BufferedWriter(fwriter);
-		for (int i = 0; i < logMessages.size(); i++) {
-			bw.write(logMessages.get(i));
-			bw.newLine();
+	public static void saveLogFile(List<String> logMessages, String logFileName) 
+			throws StreamIOException {
+		try {
+			FileWriter fwriter = new FileWriter(getLogsStorageFile(logFileName), true);
+			BufferedWriter bw = new BufferedWriter(fwriter);
+			try {
+				for (int i = 0; i < logMessages.size(); i++) {
+					bw.write(logMessages.get(i));
+					bw.newLine();
+				}
+			} finally {
+				bw.close();
+			}
+		} catch (IOException e) {
+			throw new StreamIOException(
+					StreamConstants.ExceptionMessage.ERR_SAVE_LOG, e);
 		}
-		bw.close();
 	}
 
 	//@author A0096529N
@@ -148,15 +154,40 @@ public class StreamIO {
 	 * @param saveLocation file path of storage file to save.
 	 */
 	public static void setSaveLocation(String saveLocation) {
-		SAVE_LOCATION = new File(saveLocation).getAbsolutePath();
+		STREAM_FILENAME = saveLocation;
 	}
 
 	//@author A0093874N
 	/**
 	 * @return file path of the save location.
+	 * @throws StreamIOException 
 	 */
-	public static String getSaveLocation() {
-		return SAVE_LOCATION;
+	public static String getSaveLocation() 
+			throws StreamIOException {
+		return new File(getStorageFile(STREAM_FILENAME)).getAbsolutePath();
+	}
+
+	//@author A0096529N
+	private static void loadAndInflate(File file, Map<String, StreamTask> taskMap, List<String> taskList) 
+			throws StreamIOException {
+		JSONObject tasksJson = loadFromFile(file);
+		if (tasksJson != null) {
+			loadMap(taskMap, tasksJson);
+			loadTaskList(taskList, tasksJson);
+			logger.log(LogLevel.DEBUG, "Loaded file: " + STREAM_FILENAME);
+		} else {
+			logger.log(LogLevel.DEBUG, "File not found: " + STREAM_FILENAME);
+		}
+	}
+
+	//@author A0096529N
+	private static void loadLegacyStorage(Map<String, StreamTask> taskMap, List<String> taskList) 
+			throws StreamIOException {
+		File streamFile = new File(STREAM_FILENAME);
+		if (streamFile.exists()) {
+			loadAndInflate(streamFile, taskMap, taskList);
+			streamFile.delete();
+		}
 	}
 
 	//@author A0096529N
@@ -217,11 +248,17 @@ public class StreamIO {
 	//@author A0096529N
 	static void writeToFile(File destin, JSONObject tasksJson)
 			throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(destin)) {
-			if (destin.exists()) {
-				destin.delete();
+		FileWriter fwriter = new FileWriter(destin, false);
+		BufferedWriter bw = new BufferedWriter(fwriter);
+		try {
+			bw.write(tasksJson.toString());
+			bw.newLine();
+		} finally {
+			try {
+				bw.close();
+			} catch (Exception e) {
+				// ignore exception
 			}
-			fos.write(tasksJson.toString().getBytes());
 		}
 	}
 
@@ -325,14 +362,14 @@ public class StreamIO {
 					taskLogic.addTags(task, tagsJson.getString(i));
 				}
 			}
-			
+
 			if (taskJson.has(TaskKey.DONE)) {
 				Boolean isDone = taskJson.getBoolean(TaskKey.DONE);
 				if (isDone) {
 					task.markAsDone();
 				}
 			}
-			
+
 			if (taskJson.has(TaskKey.RANK)){
 				task.setRank(taskJson.getString(TaskKey.RANK));
 			}
@@ -359,6 +396,56 @@ public class StreamIO {
 		} else {
 			return dateFormat.format(date);
 		}
+	}
+
+	//@author A0096529N
+	private static String getUserHomeDirectory() {
+		String dir = null;
+		try {
+			dir = System.getProperty("user.home");
+		} catch (Exception e) {
+			logger.log(LogLevel.ERROR, String.format(
+					StreamConstants.LogMessage.LOAD_FAIL_USER_HOME, 
+					e.getClass().getSimpleName(), e.getMessage()));
+		}
+		return dir == null ? "" : dir + File.separator;
+	}
+
+	//@author A0096529N
+	private static String getStreamDirectory() throws StreamIOException {
+		String dir = getUserHomeDirectory() + "Documents" + File.separator + "Stream" + File.separator;
+		File streamDirectory = new File(dir);
+		if (!streamDirectory.exists()) {
+			if (!streamDirectory.mkdirs())
+				throw new StreamIOException(
+						StreamConstants.ExceptionMessage.ERR_CREATE_STREAM_DIR);
+		}
+		return dir;
+	}
+
+	//@author A0096529N
+	private static String getStorageFile(String filename) 
+			throws StreamIOException {
+		return getStreamDirectory() + filename;
+	}
+
+	//@author A0096529N
+	private static String getLogsDirectory() 
+			throws StreamIOException {
+		String dir = getStreamDirectory() + "Logs" + File.separator;
+		File streamDirectory = new File(dir);
+		if (!streamDirectory.exists()) {
+			if (!streamDirectory.mkdirs())
+				throw new StreamIOException(
+						StreamConstants.ExceptionMessage.ERR_CREATE_LOG_DIR);
+		}
+		return dir;
+	}
+
+	//@author A0096529N
+	private static String getLogsStorageFile(String logFileName) 
+			throws StreamIOException {
+		return getLogsDirectory() + logFileName;
 	}
 
 	private class TaskKey {

@@ -323,12 +323,24 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0118007R
+	/**
+	 * Modifies the various specified parameters of a task.
+	 * 
+	 * <p>
+	 * Precondition: head of the modifyParams list is a valid parameter
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            to be modified
+	 * @param modifyParams
+	 *            various parameters that are going to be modified
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found. 
+	 */
 	public void modifyTaskWithParams(String taskName, List<String> modifyParams)
 			throws StreamModificationException {
 		StreamTask task = getTask(taskName);
-
-		// method for splitting the input to add to the specified param
-		// TODO: refactor
 		String attribute = modifyParams.get(0);
 		String contents = "";
 		for (int i = 1; i < modifyParams.size(); i++) {
@@ -427,6 +439,13 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0093874N
+	/**
+	 * Filter tasks by various categories
+	 * 
+	 * @param criteria
+	 *            the filtering criteria
+	 *            
+	 */
 	public ArrayList<Integer> filterTasks(String criteria) {
 		ArrayList<Integer> tasks = new ArrayList<Integer>();
 		FilterType type = StreamParser.parseFilterType(criteria);
@@ -533,8 +552,18 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
-	public String getTaskNumber(int i) {
-		return streamObject.getTaskList().get(i - 1);
+	/**
+	 * Retrieves the task name by index
+	 * 
+	 * <p>
+	 * Precondition: index is a valid index
+	 * </p>
+	 * 
+	 * @param index
+	 *            the index of the task
+	 */
+	public String getTaskNumber(int index) {
+		return streamObject.getTaskList().get(index - 1);
 	}
 
 	// @author A0096529N
