@@ -36,6 +36,12 @@ public class StreamParser {
 		ALPHA, START, END, NULL;
 	}
 
+	public enum FilterType {
+		DONE, NOT, HIRANK, MEDRANK, LORANK, DUEON, DUEBEF,
+		DUEAFT, STARTON, STARTBEF, STARTAFT, NOTIMING,
+		DEADLINED, EVENT, NULL;
+	}
+
 	private CommandType commandKey;
 	private String commandContent;
 
@@ -436,75 +442,118 @@ public class StreamParser {
 		}
 	}
 
-	private void checkSortValidity(String[] contents) throws StreamParserException {
-		if (contents.length < 2) {
-			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
-		} else if (contents.length < 3 && !checkSort(contents[PARAM_POS_SORTTYPE], "")) {
-			throw new StreamParserException(ERROR_INVALID_SORT);			
-		} else if (!checkSort(contents[PARAM_POS_SORTTYPE], contents[PARAM_POS_SORTORDER])) {
-			throw new StreamParserException(ERROR_INVALID_SORT);
-		}
-	}
-	
-	private boolean checkRanking(String rankInput) {
-		RankType parsedRank = parseRanking(rankInput);
-		switch (parsedRank) {
-			case HI:
-			case MED:
-			case LO:
-				return true;
-			default:
-				return false;
-		}
-	}
-	
-	private boolean checkMarking(String markInput) {
-		MarkType parsedMark = parseMarking(markInput);
+	public static FilterType parseFilterType(String filterInput) {
+		String[] contents = filterInput.split(" ", 2);
+		MarkType parsedMark = parseMarking(contents[0]);
 		switch (parsedMark) {
 			case DONE:
+				return FilterType.DONE;
 			case NOT:
-				return true;
+				return FilterType.NOT;
 			default:
-				return false;
+		}
+		if (contents[0].equals("rank")) {
+			if (contents.length == 2) {
+				RankType parsedRank = parseRanking(contents[1]);
+				switch (parsedRank) {
+					case HI:
+						return FilterType.HIRANK;
+					case MED:
+						return FilterType.MEDRANK;
+					case LO:
+						return FilterType.LORANK;
+					default:
+						return FilterType.NULL;
+				}
+			} else {
+				return FilterType.NULL;
+			}
+		} else {
+			contents = filterInput.split(" ", 3);
+			if (contents.length == 3 && isParseableDate(contents[2])) {
+				switch (contents[0] + " " + contents[1]) {
+					case "due before":
+						return FilterType.DUEBEF;
+					case "due after":
+						return FilterType.DUEAFT;
+					case "start before":
+						return FilterType.STARTBEF;
+					case "start after":
+						return FilterType.STARTAFT;
+					default:
+						return FilterType.NULL;
+				}
+			} else {
+				contents = filterInput.split(" ", 2);
+				if (contents.length == 2 && isParseableDate(contents[1])) {
+					switch (contents[0]) {
+						case "due":
+							return FilterType.DUEON;
+						case "start":
+							return FilterType.STARTON;
+						default:
+							return FilterType.NULL;
+					}
+				} else if (contents.length == 2) {
+					switch (contents[0] + " " + contents[1]) {
+						case "no timing":
+							return FilterType.NOTIMING;
+						case "has deadline":
+						case "deadlined":
+							return FilterType.DEADLINED;
+						case "event":
+						case "timed":
+							return FilterType.EVENT;
+						default:
+							return FilterType.NULL;
+					}
+				} else {
+					return FilterType.NULL;
+				}
+			}
 		}
 	}
 
-	private boolean checkTimeFilter(String firstWord, String secondWord) {
-		switch (firstWord + " " + secondWord) {
-			case "due before":
-			case "due after":
-			case "start before":
-			case "start after":
-				return true;
-			default:
+	private void checkSortValidity(String[] contents)
+			throws StreamParserException {
+		if (contents.length < 2) {
+			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
+		} else if (contents.length < 3
+				&& !checkSort(contents[PARAM_POS_SORTTYPE], "")) {
+			throw new StreamParserException(ERROR_INVALID_SORT);
+		} else if (!checkSort(contents[PARAM_POS_SORTTYPE],
+				contents[PARAM_POS_SORTORDER])) {
+			throw new StreamParserException(ERROR_INVALID_SORT);
+		}
+	}
+
+	private boolean checkRanking(String rankInput) {
+		RankType parsedRank = parseRanking(rankInput);
+		switch (parsedRank) {
+			case NULL:
 				return false;
+			default:
+				return true;
+		}
+	}
+
+	private boolean checkMarking(String markInput) {
+		MarkType parsedMark = parseMarking(markInput);
+		switch (parsedMark) {
+			case NULL:
+				return false;
+			default:
+				return true;
 		}
 	}
 
 	private boolean checkFilter(String type) {
-		String[] contents = type.split(" ", 2);
-		if (checkMarking(contents[0])) {
-			// filter by mark
-			return true;
-		} else if (contents[0].equals("rank")) {
-			// filter by rank
-			return checkRanking(contents[1]);
-		} else {
-			contents = type.split(" ", 3);
-			if (checkTimeFilter(contents[0], contents[1])) {
-				// filter by time, before/after
-				return isParseableDate(contents[2]);
-			} else {
-				contents = type.split(" ", 2);
-				switch (contents[1]) {
-					case "due":
-					case "start":
-						// filter by time, exact
-						return isParseableDate(contents[1]);
-					default:
-						return false;
-				}
-			}
+		FilterType parsedFilter = parseFilterType(type);
+		switch (parsedFilter) {
+			case NULL:
+				return false;
+			default:
+				return true;
 		}
 	}
 
@@ -530,9 +579,9 @@ public class StreamParser {
 		}
 	}
 
-	private boolean isParseableDate(String date) {
+	private static boolean isParseableDate(String date) {
 		try {
-			Chronic.parse(date);
+			Chronic.parse(date).getBeginCalendar();
 			return true;
 		} catch (NullPointerException e) {
 			return false;

@@ -8,6 +8,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import com.mdimension.jchronic.Chronic;
+
+import parser.StreamParser;
+import parser.StreamParser.FilterType;
+import parser.StreamParser.RankType;
 import model.StreamObject;
 import model.StreamTask;
 import util.StreamConstants;
@@ -45,9 +50,10 @@ public class StreamLogic extends BaseLogic {
 
 	// @author A0093874N
 	public void setOrdering(ArrayList<String> anotherTaskList) {
-		assert (StreamUtil.listEqual(streamObject.getTaskList(), anotherTaskList)) : StreamConstants.Assertion.NOT_EQUAL;
+		assert (StreamUtil.listEqual(streamObject.getTaskList(),
+				anotherTaskList)) : StreamConstants.Assertion.NOT_EQUAL;
 		streamObject.setTaskList(anotherTaskList);
-		logDebug(String.format(StreamConstants.LogMessage.REORDER_TASKS, 
+		logDebug(String.format(StreamConstants.LogMessage.REORDER_TASKS,
 				Arrays.toString(anotherTaskList.toArray())));
 	}
 
@@ -116,7 +122,7 @@ public class StreamLogic extends BaseLogic {
 			});
 		}
 		return "Sort by deadline "
-		+ (descending ? "descending." : "ascending.");
+				+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
@@ -153,7 +159,7 @@ public class StreamLogic extends BaseLogic {
 			});
 		}
 		return "Sort by deadline "
-		+ (descending ? "descending." : "ascending.");
+				+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
@@ -175,12 +181,15 @@ public class StreamLogic extends BaseLogic {
 	 */
 	public void addTask(String newTaskName) throws StreamModificationException {
 		if (hasTask(newTaskName)) {
-			logDebug(String.format(StreamConstants.LogMessage.ADD_DUPLICATE_TASK, newTaskName));
+			logDebug(String.format(
+					StreamConstants.LogMessage.ADD_DUPLICATE_TASK, newTaskName));
 			throw new StreamModificationException(String.format(
-					StreamConstants.ExceptionMessage.ERR_TASK_ALREADY_EXISTS, newTaskName));
+					StreamConstants.ExceptionMessage.ERR_TASK_ALREADY_EXISTS,
+					newTaskName));
 		} else {
 			streamObject.put(newTaskName, new StreamTask(newTaskName));
-			logDebug(String.format(StreamConstants.LogMessage.ADDED_TASK, newTaskName));
+			logDebug(String.format(StreamConstants.LogMessage.ADDED_TASK,
+					newTaskName));
 		}
 	}
 
@@ -188,7 +197,8 @@ public class StreamLogic extends BaseLogic {
 
 	public void recoverTask(StreamTask task) {
 		streamObject.put(task.getTaskName(), task);
-		logDebug(String.format(StreamConstants.LogMessage.RECOVERED_TASK, task.getTaskName()));
+		logDebug(String.format(StreamConstants.LogMessage.RECOVERED_TASK,
+				task.getTaskName()));
 	}
 
 	// @author A0096529N
@@ -240,7 +250,8 @@ public class StreamLogic extends BaseLogic {
 			return streamObject.get(taskName);
 		} else {
 			throw new StreamModificationException(String.format(
-					StreamConstants.ExceptionMessage.ERR_TASK_DOES_NOT_EXIST, taskName));
+					StreamConstants.ExceptionMessage.ERR_TASK_DOES_NOT_EXIST,
+					taskName));
 		}
 	}
 
@@ -263,7 +274,8 @@ public class StreamLogic extends BaseLogic {
 			streamObject.remove(taskName);
 		} else {
 			throw new StreamModificationException(String.format(
-					StreamConstants.ExceptionMessage.ERR_TASK_DOES_NOT_EXIST, taskName));
+					StreamConstants.ExceptionMessage.ERR_TASK_DOES_NOT_EXIST,
+					taskName));
 		}
 	}
 
@@ -289,10 +301,13 @@ public class StreamLogic extends BaseLogic {
 		StreamTask task = getTask(taskName);
 		if (!taskName.equals(newTaskName)) {
 			if (streamObject.containsKey(newTaskName)) {
-				logDebug(String.format(StreamConstants.LogMessage.UPDATE_TASK_NAME_DUPLICATE, 
+				logDebug(String.format(
+						StreamConstants.LogMessage.UPDATE_TASK_NAME_DUPLICATE,
 						newTaskName));
-				throw new StreamModificationException(String.format(
-						StreamConstants.ExceptionMessage.ERR_NEW_TASK_NAME_NOT_AVAILABLE, newTaskName));
+				throw new StreamModificationException(
+						String.format(
+								StreamConstants.ExceptionMessage.ERR_NEW_TASK_NAME_NOT_AVAILABLE,
+								newTaskName));
 			}
 		}
 		int index = streamObject.indexOf(taskName);
@@ -301,14 +316,14 @@ public class StreamLogic extends BaseLogic {
 		task.setTaskName(newTaskName);
 		streamObject.put(newTaskName, task, index);
 		// This section is contributed by A0093874N
-		logDebug(String.format(StreamConstants.LogMessage.UPDATE_TASK_NAME, 
+		logDebug(String.format(StreamConstants.LogMessage.UPDATE_TASK_NAME,
 				taskName, newTaskName));
-		return String.format(StreamConstants.LogMessage.NAME, taskName, newTaskName);
+		return String.format(StreamConstants.LogMessage.NAME, taskName,
+				newTaskName);
 	}
 
-
 	// @author A0118007R
-	public void modifyTaskWithParams(String taskName, List<String> modifyParams) 
+	public void modifyTaskWithParams(String taskName, List<String> modifyParams)
 			throws StreamModificationException {
 		StreamTask task = getTask(taskName);
 
@@ -330,18 +345,21 @@ public class StreamLogic extends BaseLogic {
 		}
 		modifyTask(task, attribute, contents);
 	}
-	
+
 	// @author A0096529N
 	/**
 	 * Modify an attribute of a task
 	 * 
-	 * @param task to modify
-	 * @param attribute to be modified
-	 * @param contents that contains the instruction to modify that attribute
+	 * @param task
+	 *            to modify
+	 * @param attribute
+	 *            to be modified
+	 * @param contents
+	 *            that contains the instruction to modify that attribute
 	 * @return result of this operation
-	 * @throws StreamModificationException 
+	 * @throws StreamModificationException
 	 */
-	public void modifyTask(StreamTask task, String attribute, String contents) 
+	public void modifyTask(StreamTask task, String attribute, String contents)
 			throws StreamModificationException {
 		if (attribute.equalsIgnoreCase("-name")) {
 			// modify name need access to streamObject, special case
@@ -391,7 +409,7 @@ public class StreamLogic extends BaseLogic {
 			// check if task description contains key phrase
 			if (task.getDescription() != null
 					&& task.getDescription().toLowerCase()
-					.contains(keyphrase.toLowerCase())) {
+							.contains(keyphrase.toLowerCase())) {
 				tasks.add(i + 1);
 				continue;
 			}
@@ -403,7 +421,7 @@ public class StreamLogic extends BaseLogic {
 			}
 		}
 
-		logDebug(String.format(StreamConstants.LogMessage.SEARCHED_TASKS, 
+		logDebug(String.format(StreamConstants.LogMessage.SEARCHED_TASKS,
 				keyphrase, Arrays.toString(tasks.toArray())));
 		return tasks;
 	}
@@ -411,46 +429,95 @@ public class StreamLogic extends BaseLogic {
 	// @author A0093874N
 	public ArrayList<Integer> filterTasks(String criteria) {
 		ArrayList<Integer> tasks = new ArrayList<Integer>();
-		String[] type = criteria.split(" ");
+		FilterType type = StreamParser.parseFilterType(criteria);
+		String[] contents;
 		Calendar dueDate;
 		for (int i = 1; i <= streamObject.size(); i++) {
 			StreamTask task = streamObject.get(streamObject.get(i - 1));
-			switch (type[0]) {
-			case "done":
-				if (task.isDone()) {
+			switch (type) {
+				case DONE:
+					if (task.isDone()) {
+						tasks.add(i);
+					}
+					break;
+				case NOT:
+					if (!task.isDone()) {
+						tasks.add(i);
+					}
+					break;
+				case HIRANK:
+					if (StreamParser.parseRanking(task.getRank()) == RankType.HI) {
+						tasks.add(i);
+					}
+					break;
+				case MEDRANK:
+					if (StreamParser.parseRanking(task.getRank()) == RankType.MED) {
+						tasks.add(i);
+					}
+					break;
+				case LORANK:
+					if (StreamParser.parseRanking(task.getRank()) == RankType.LO) {
+						tasks.add(i);
+					}
+					break;
+				case STARTBEF:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getStartTime() != null
+							&& task.getStartTime().before(dueDate)) {
+						tasks.add(i);
+					}
+					break;					
+				case STARTAFT:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getStartTime() != null
+							&& task.getStartTime().after(dueDate)) {
+						tasks.add(i);
+					}
+					break;					
+				case DUEBEF:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getDeadline() != null
+							&& task.getDeadline().before(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case DUEAFT:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getDeadline() != null
+							&& task.getDeadline().after(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case NOTIMING:
+					if (task.isFloatingTask()) {
+						tasks.add(i);
+					}
+					break;
+				case DEADLINED:
+					if (task.isDeadlineTask()) {
+						tasks.add(i);
+					}
+					break;
+				case EVENT:
+					if (task.isTimedTask()) {
+						tasks.add(i);
+					}
+					break;
+				case STARTON:
+				case DUEON:
+					// TODO think on how to implement this
+				default:
+					// shouldn't happen, but in case it happens, pretend
+					// that there is no filter
 					tasks.add(i);
-				}
-				break;
-			case "ongoing":
-				if (!task.isDone()) {
-					tasks.add(i);
-				}
-				break;
-			case "notime":
-				if (task.isFloatingTask()) {
-					tasks.add(i);
-				}
-				break;
-			case "before":
-				dueDate = StreamUtil.parseCalendar(type[1]);
-				if (task.getDeadline() != null
-						&& task.getDeadline().before(dueDate)) {
-					tasks.add(i);
-				}
-				break;
-			case "after":
-				dueDate = StreamUtil.parseCalendar(type[1]);
-				if (task.getDeadline() != null
-						&& task.getDeadline().after(dueDate)) {
-					tasks.add(i);
-				}
-				break;
-			default:
-				// shouldn't happen as input is filtered in parser
-				break;
+					break;
 			}
 		}
-		logDebug(String.format(StreamConstants.LogMessage.FILTERED_TASKS, 
+		logDebug(String.format(StreamConstants.LogMessage.FILTERED_TASKS,
 				criteria, Arrays.toString(tasks.toArray())));
 		return tasks;
 	}
@@ -544,7 +611,7 @@ public class StreamLogic extends BaseLogic {
 		return timedTaskList;
 	}
 
-	@Override 
+	@Override
 	protected String getLoggerComponentName() {
 		return StreamConstants.ComponentTag.STREAMLOGIC;
 	}
