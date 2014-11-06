@@ -521,8 +521,9 @@ public class StreamParser {
 		} else if (contents.length < 3
 				&& !checkSort(contents[PARAM_POS_SORTTYPE], "")) {
 			throw new StreamParserException(ERROR_INVALID_SORT);
-		} else if (!checkSort(contents[PARAM_POS_SORTTYPE],
-				contents[PARAM_POS_SORTORDER])) {
+		} else if (contents.length == 3
+				&& !checkSort(contents[PARAM_POS_SORTTYPE],
+						contents[PARAM_POS_SORTORDER])) {
 			throw new StreamParserException(ERROR_INVALID_SORT);
 		}
 	}
