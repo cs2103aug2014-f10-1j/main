@@ -37,7 +37,7 @@ import fileio.StreamIO;
 
 public class Stream {
 
-	StreamObject streamObject = new StreamObject();
+	StreamObject streamObject = StreamObject.getInstance();
 	StreamUI stui;
 	TaskLogic taskLogic = TaskLogic.init();
 	StackLogic stackLogic = StackLogic.init();
@@ -614,6 +614,14 @@ public class Stream {
 		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String result = null;
+		result = processDue(contents, taskIndex, taskName);
+		showAndLogResult(result);
+	}
+
+	// @author A0118007R
+	private String processDue(String[] contents, int taskIndex, String taskName)
+			throws StreamModificationException {
+		String result;
 		if (contents[1].trim().equals("null")) {
 			result = setDueDate(taskName, taskIndex, null);
 		} else {
@@ -622,7 +630,7 @@ public class Stream {
 			Calendar calendar = StreamUtil.parseCalendar(due);
 			result = setDueDate(taskName, taskIndex, calendar);
 		}
-		showAndLogResult(result);
+		return result;
 	}
 
 	// @author A0118007R
@@ -633,6 +641,14 @@ public class Stream {
 		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String result = null;
+		result = processStartTime(contents, taskIndex, taskName);
+		showAndLogResult(result);
+	}
+
+	// @author A0118007R
+	private String processStartTime(String[] contents, int taskIndex,
+			String taskName) throws StreamModificationException {
+		String result;
 		if (contents[1].trim().equals("null")) {
 			result = setStartDate(taskName, taskIndex, null);
 		} else {
@@ -641,7 +657,7 @@ public class Stream {
 			Calendar calendar = StreamUtil.parseCalendar(start);
 			result = setStartDate(taskName, taskIndex, calendar);
 		}
-		showAndLogResult(result);
+		return result;
 	}
 
 	// @author A0096529N
@@ -727,9 +743,13 @@ public class Stream {
 
 		streamLogic.addTask(taskName);
 		assert (streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_ADDED;
-
 		stackLogic.pushInverseAddCommand(streamLogic.getNumberOfTasks());
+		processParameterAddition(taskName, modifyParams);
+	}
 
+	// @author A0118007R
+	private void processParameterAddition(String taskName, ArrayList<String> modifyParams)
+			throws StreamModificationException {
 		if (modifyParams.size() > 0) {
 			streamLogic.modifyTaskWithParams(taskName, modifyParams);
 		}
