@@ -121,7 +121,7 @@ public class StreamLogic extends BaseLogic {
 				}
 			});
 		}
-		return "Sort by deadline "
+		return "Sort by start time "
 				+ (descending ? "descending." : "ascending.");
 	}
 
