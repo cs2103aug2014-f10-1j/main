@@ -31,7 +31,11 @@ public class StreamParser {
 	public enum RankType {
 		HI, MED, LO, NULL;
 	}
-	
+
+	public enum SortType {
+		ALPHA, START, END, NULL;
+	}
+
 	private CommandType commandKey;
 	private String commandContent;
 
@@ -325,8 +329,47 @@ public class StreamParser {
 	public String getCommandContent() {
 		return this.commandContent;
 	}
-	
+
 	// @author A0093874N
+
+	public static SortType parseSorting(String sortType) {
+		switch (sortType) {
+			case "d":
+			case "due":
+			case "deadline":
+			case "end":
+			case "endtime":
+				return SortType.END;
+			case "s":
+			case "start":
+			case "begin":
+			case "starttime":
+				return SortType.START;
+			case "a":
+			case "alpha":
+			case "alphabetical":
+			case "alphabetically":
+				return SortType.ALPHA;
+			default:
+				return SortType.NULL;
+		}
+	}
+	
+	public static boolean getSortingOrder(String order) {
+		switch (order) {
+			case "":
+			case "a":
+			case "asc":
+			case "ascending":
+				return false;
+			case "d":
+			case "desc":
+			case "descending":
+				return true;
+			default:
+				return false;
+		}
+	}
 
 	public static RankType parseRanking(String rankInput) {
 		switch (rankInput) {
@@ -464,22 +507,12 @@ public class StreamParser {
 			}
 		}
 	}
-	
+
 	private boolean checkSort(String sortBy, String order) {
-		switch (sortBy) {
-			case "d":
-			case "due":
-			case "deadline":
-			case "end":
-			case "endtime":
-			case "s":
-			case "start":
-			case "begin":
-			case "starttime":
-			case "a":
-			case "alpha":
-			case "alphabetical":
-			case "alphabetically":	
+		switch (parseSorting(sortBy)) {
+			case START:
+			case END:
+			case ALPHA:
 				switch (order) {
 					case "":
 					case "d":

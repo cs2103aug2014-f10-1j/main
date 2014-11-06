@@ -13,7 +13,8 @@ import model.StreamObject;
 import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
-import parser.StreamParser.RankType;
+import parser.StreamParser.MarkType;
+import parser.StreamParser.SortType;
 import ui.StreamUI;
 import util.StreamConstants;
 import util.StreamLogger;
@@ -648,30 +649,26 @@ public class Stream {
 			order = content.split(" ")[1];
 		} else {
 			sortBy = content;
-			order = "asc";
+			order = "";
 		}
+		SortType type = StreamParser.parseSorting(sortBy);
+		descending = StreamParser.getSortingOrder(order);
 
-		if (order.equalsIgnoreCase("desc")
-				|| order.equalsIgnoreCase("descending")
-				|| order.equalsIgnoreCase("d")) {
-			descending = true;
-		}
-
-		switch (sortBy.toLowerCase()) {
-		case "alpha":
-		case "a":
-		case "alphabetical":
-		case "alphabetically":
-			result = streamLogic.sortAlpha(descending);
-			break;
-		case "d":
-		case "deadline":
-		case "due":
-			result = streamLogic.sortDeadline(descending);
-			break;
-		default:
-			result = "Unknown sort category \"" + sortBy + "\"";
-			break;
+		switch (type) {
+			case ALPHA:
+				result = streamLogic.sortAlpha(descending);
+				break;
+			case END:
+				result = streamLogic.sortDeadline(descending);
+				break;
+			case START:
+				// TODO implement sorting by start time
+				// result = streamLogic.sortStartTime(descending);
+				break;
+			default:
+				// also to play safe
+				result = "Unknown sort category \"" + sortBy + "\"";
+				break;
 		}
 		showAndLogResult(result);
 	}
