@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 
+import parser.StreamParser;
+import parser.StreamParser.MarkType;
+import parser.StreamParser.RankType;
 import model.StreamTask;
 import util.StreamConstants;
 import util.StreamUtil;
@@ -17,10 +20,10 @@ public class TaskLogic extends BaseLogic {
 
 	// @author A0093874N
 	public ArrayList<String> addTags(StreamTask task, String... tags) {
-		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_ADD, 
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_ADD,
 				task.getTaskName(), Arrays.toString(tags)));
 		ArrayList<String> tagsAdded = new ArrayList<String>();
-		for (String tag:tags) {
+		for (String tag : tags) {
 			if (tag.contains(" ")) {
 				addTags(task, tag.split(" "));
 			} else {
@@ -40,10 +43,10 @@ public class TaskLogic extends BaseLogic {
 
 	// @author A0093874N
 	public ArrayList<String> removeTags(StreamTask task, String... tags) {
-		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_REMOVE, 
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_REMOVE,
 				task.getTaskName(), Arrays.toString(tags)));
 		ArrayList<String> tagsRemoved = new ArrayList<String>();
-		for (String tag:tags) {
+		for (String tag : tags) {
 			tag = tag.toUpperCase();
 			if (task.hasTag(tag)) {
 				task.getTags().remove(tag);
@@ -51,7 +54,7 @@ public class TaskLogic extends BaseLogic {
 			}
 		}
 
-		logDebug(String.format(StreamConstants.LogMessage.TAGS_REMOVED, 
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_REMOVED,
 				task.getTaskName(), Arrays.toString(tags)));
 		Collections.sort(task.getTags());
 		return tagsRemoved;
@@ -63,15 +66,15 @@ public class TaskLogic extends BaseLogic {
 		String parsedCalendar = null;
 		if (calendar == null) {
 			task.setDeadline(null);
-			result = String
-					.format(StreamConstants.LogMessage.DUE_NEVER, task.getTaskName());
+			result = String.format(StreamConstants.LogMessage.DUE_NEVER,
+					task.getTaskName());
 		} else {
 			task.setDeadline(calendar);
 			parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
-			result = String.format(StreamConstants.LogMessage.DUE, task.getTaskName(),
-					parsedCalendar);
+			result = String.format(StreamConstants.LogMessage.DUE,
+					task.getTaskName(), parsedCalendar);
 		}
-		logDebug(String.format(StreamConstants.LogMessage.SET_DEADLINE, 
+		logDebug(String.format(StreamConstants.LogMessage.SET_DEADLINE,
 				task.getTaskName(), parsedCalendar));
 		return result;
 	}
@@ -82,15 +85,16 @@ public class TaskLogic extends BaseLogic {
 		String parsedCalendar = null;
 		if (calendar == null) {
 			task.setStartTime(null);
-			result = String
-					.format(StreamConstants.LogMessage.START_NOT_SPECIFIED, task.getTaskName());
+			result = String.format(
+					StreamConstants.LogMessage.START_NOT_SPECIFIED,
+					task.getTaskName());
 		} else {
 			task.setStartTime(calendar);
 			parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
-			result = String.format(StreamConstants.LogMessage.START, task.getTaskName(),
-					parsedCalendar);
+			result = String.format(StreamConstants.LogMessage.START,
+					task.getTaskName(), parsedCalendar);
 		}
-		logDebug(String.format(StreamConstants.LogMessage.SET_STARTTIME, 
+		logDebug(String.format(StreamConstants.LogMessage.SET_STARTTIME,
 				task.getTaskName(), parsedCalendar));
 		return result;
 	}
@@ -99,38 +103,37 @@ public class TaskLogic extends BaseLogic {
 	// updated by A0119401U
 	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
-		
-		
+
 		switch (attribute) {
-		case "-desc":
-			description(task, contents);
-			break;
-		case "-due":
-		case "-by":
-		case "-to":
-			deadline(task, contents);
-			break;
-		case "-start":
-		case "-from":
-			startTime(task, contents);
-			break;
-		case "-tag":
-			addTags(task, contents.split(" "));
-			break;
-		case "-untag":
-			removeTags(task, contents.split(" "));
-			break;
-		case "-settags":
-			settags(task, contents);
-			break;
-		case "-rank":
-			rank(task, contents);
-			break;
-		case "-mark":
-			mark(task, contents);
-			break;
+			case "-desc":
+				description(task, contents);
+				break;
+			case "-due":
+			case "-by":
+			case "-to":
+				deadline(task, contents);
+				break;
+			case "-start":
+			case "-from":
+				startTime(task, contents);
+				break;
+			case "-tag":
+				addTags(task, contents.split(" "));
+				break;
+			case "-untag":
+				removeTags(task, contents.split(" "));
+				break;
+			case "-settags":
+				settags(task, contents);
+				break;
+			case "-rank":
+				rank(task, contents);
+				break;
+			case "-mark":
+				mark(task, contents);
+				break;
 		}
-		logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION, 
+		logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION,
 				task.getTaskName(), attribute, contents));
 	}
 
@@ -150,6 +153,7 @@ public class TaskLogic extends BaseLogic {
 		} else {
 			contents = StreamUtil.parseWithChronic(contents);
 			Calendar due = StreamUtil.parseCalendar(contents);
+			// TODO if content is not parseable, don't update
 			task.setDeadline(due);
 		}
 	}
@@ -161,6 +165,7 @@ public class TaskLogic extends BaseLogic {
 		} else {
 			contents = StreamUtil.parseWithChronic(contents);
 			Calendar start = StreamUtil.parseCalendar(contents);
+			// TODO if content is not parseable, don't update
 			task.setStartTime(start);
 		}
 	}
@@ -176,25 +181,34 @@ public class TaskLogic extends BaseLogic {
 	// @author A0118007R
 	private void mark(StreamTask task, String contents) {
 		String status = contents.trim();
-		if (status.equals("done") || status.equals("finished")) {
-			task.markAsDone();
-		} else if (status.equals("ongoing") || status.equals("going")
-				|| status.equals("doing")) {
-			task.markAsOngoing();
+		MarkType parsedMarkType = StreamParser.parseMarking(status);
+		switch (parsedMarkType) {
+			case DONE:
+				task.markAsDone();
+				break;
+			case NOT:
+				task.markAsOngoing();
+				break;
+			default:
 		}
 	}
 
-	//@author A0119401U
+	// @author A0119401U
 	private void rank(StreamTask task, String contents) {
 		String inputRank = contents.trim();
-		if (inputRank.equals("high") || inputRank.equals("h")
-				|| inputRank.equals("medium") || inputRank.equals("m")
-				|| inputRank.equals("low") || inputRank.equals("l")) {
-			task.setRank(inputRank);
+		RankType parsedRankType = StreamParser.parseRanking(inputRank);
+		switch (parsedRankType) {
+			case HI:
+			case MED:
+			case LO:
+				String translatedRank = StreamParser
+						.translateRanking(parsedRankType);
+				task.setRank(translatedRank);
+			default:
 		}
 	}
 
-	@Override 
+	@Override
 	protected String getLoggerComponentName() {
 		return StreamConstants.ComponentTag.STREAMTASK;
 	}

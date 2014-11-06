@@ -27,7 +27,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Nothing to add!";
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
@@ -40,7 +40,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc -1 ok", 0);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Please enter a valid index!";
+			final String expectedMessage = StreamParser.ERROR_INVALID_INDEX;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -48,7 +48,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc newcq ok", 0);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Please enter a valid index!";
+			final String expectedMessage = StreamParser.ERROR_INVALID_INDEX;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -56,7 +56,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc 300 ok", 0);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "The index you entered is out of range!";
+			final String expectedMessage = StreamParser.ERROR_INDEX_OUT_OF_BOUNDS;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -64,7 +64,7 @@ public class StreamParserTest {
 			stparser.interpretCommand("desc 1", 0);
 			fail();
 		}catch (Exception e) {
-			final String expectedMessage = "Please provide more information!";
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
@@ -79,7 +79,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Please enter a valid command!";
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INDEX;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 		
@@ -89,7 +89,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Please enter a valid index!";
+			final String expectedMessage = StreamParser.ERROR_INVALID_INDEX;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
@@ -104,7 +104,7 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = "Please enter a valid index!";
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			

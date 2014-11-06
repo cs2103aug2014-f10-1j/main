@@ -209,7 +209,7 @@ public class StreamUndoTest {
 		in("sort a ascending");
 		assertTrue("Sorted alphabetically",
 				compare(st.streamLogic.getTaskList(), alphaSorted));
-		in("sort t descending");
+		in("sort d descending");
 		assertTrue("Sorted chronologically",
 				compare(st.streamLogic.getTaskList(), chronoSorted));
 		in("undo");

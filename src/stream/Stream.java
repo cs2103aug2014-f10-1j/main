@@ -13,6 +13,7 @@ import model.StreamObject;
 import model.StreamTask;
 import parser.StreamParser;
 import parser.StreamParser.CommandType;
+import parser.StreamParser.RankType;
 import ui.StreamUI;
 import util.StreamConstants;
 import util.StreamLogger;
@@ -445,6 +446,8 @@ public class Stream {
 		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String taskRank = contents[1];
+		taskRank = StreamParser.translateRanking(StreamParser
+				.parseRanking(taskRank));
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		String oldRank = currentTask.getRank();
 		currentTask.setRank(taskRank);
@@ -576,18 +579,19 @@ public class Stream {
 		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String markType = contents[1].trim();
+		MarkType parsedMarkType = StreamParser.parseMarking(markType);
 		StreamTask task = streamLogic.getTask(taskName);
 		String result = null;
-		/*
-		 * TODO make the markType more flexible. maybe "finished", "not done",
-		 * "not finished", ...
-		 */
-		if (markType.equals("done")) {
-			result = markAsDone(task, taskIndex);
-		} else if (markType.equals("ongoing")) {
-			result = markAsOngoing(task, taskIndex);
-		} else {
-			result = "Unknown marking type: " + markType;
+		switch (parsedMarkType) {
+			case DONE:
+				result = markAsDone(task, taskIndex);
+				break;
+			case NOT:
+				result = markAsOngoing(task, taskIndex);
+				break;
+			default:
+				// should not happen, but let's play safe
+				result = "Unknown marking type: " + markType;
 		}
 		showAndLogResult(result);
 	}
@@ -610,8 +614,6 @@ public class Stream {
 		}
 		showAndLogResult(result);
 	}
-
-
 
 	// @author A0118007R
 	private void executeStartTime(String content) 
@@ -662,7 +664,7 @@ public class Stream {
 		case "alphabetically":
 			result = streamLogic.sortAlpha(descending);
 			break;
-		case "t":
+		case "d":
 		case "deadline":
 		case "due":
 			result = streamLogic.sortDeadline(descending);
@@ -1003,8 +1005,6 @@ public class Stream {
 	 * 
 	 * @author John Kevin Tjahjadi
 	 * @deprecated by A0093874N. Can be un-deprecated if we find a use for it.
-	 * 
-	 *             TODO unused.
 	 */
 	@SuppressWarnings("unused")
 	private void changeDescription(String task, int index, String newDescription) {

@@ -249,7 +249,7 @@ public class StreamUtil {
 		try {
 			x = Chronic.parse(due);
 			due = StreamUtil.stripCalendarChars(StreamUtil.getCalendarWriteUp(x.getBeginCalendar()));
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			System.out.println("\"" + due + "\" cannot be parsed");
 		}
 		return due;
