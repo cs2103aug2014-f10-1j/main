@@ -136,6 +136,10 @@ public class StreamUI {
 		helpTexts.put("clear", "Clears all added tasks");
 		helpTexts.put("clrsrc", "Clears search result");
 		helpTexts.put("rank", "Change the rank of a certain task based on index number");
+		helpTexts.put("first", "Go to the first page");
+		helpTexts.put("last", "Go to the last page");
+		helpTexts.put("next", "Go to the next page");
+		helpTexts.put("prev", "Go to the previous page");
 		helpTexts.put("undo", "Undo the last action");
 		helpTexts.put("exit", "Exits the program");
 		for (String h : helpTexts.keySet()) {
