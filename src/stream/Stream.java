@@ -1,6 +1,5 @@
 package stream;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -64,8 +63,8 @@ public class Stream {
 
 	// @author A0096529N
 	private void initStreamIO(String file) {
-		if (!file.endsWith(".json")) {
-			filename = String.format(StreamConstants.SAVEFILE, file);
+		if (!file.endsWith(StreamConstants.SAVEFILE_EXTENSION)) {
+			filename = String.format(StreamConstants.SAVEFILE_FORMAT, file);
 		} else {
 			filename = file;
 		}
@@ -87,6 +86,7 @@ public class Stream {
 			streamObject.setTaskList(taskList);
 			streamObject.setTaskMap(taskMap);
 		} catch (StreamIOException e) {
+			e.printStackTrace();
 			log(String.format(StreamConstants.LogMessage.LOAD_FAILED,
 					e.getMessage()));
 		}
@@ -105,6 +105,7 @@ public class Stream {
 			StreamIO.save(allTasks, taskList);
 			result = "File saved to " + StreamIO.getSaveLocation();
 		} catch (StreamIOException e) {
+			e.printStackTrace();
 			result = String.format(StreamConstants.LogMessage.LOAD_FAILED,
 					e.getMessage());
 			log(result);
@@ -114,15 +115,15 @@ public class Stream {
 	}
 
 	// @author A0093874N
-	private void saveLogFile() throws IOException {
+	private void saveLogFile() throws StreamIOException {
 		Calendar now = Calendar.getInstance();
-		String logFileName = String.format(StreamConstants.LOGFILE, StreamUtil.getDateString(now));
+		String logFileName = String.format(StreamConstants.LOGFILE_FORMAT, StreamUtil.getDateString(now));
 		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
 
 	// @author A0118007R
 	private void executeInput(CommandType command, String content)
-			throws StreamModificationException, IOException {
+			throws StreamModificationException, StreamIOException {
 		switch (command) {
 		case ADD:
 			logCommand("ADD");
@@ -261,9 +262,7 @@ public class Stream {
 
 		case EXIT:
 			logCommand("EXIT");
-			showAndLogResult(StreamConstants.Message.THANK_YOU);
-			saveLogFile();
-			System.exit(0);
+			executeExit();
 
 		default:
 			showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
@@ -679,6 +678,19 @@ public class Stream {
 				break;
 		}
 		showAndLogResult(result);
+	}
+
+	// @author A0096529N
+	private void executeExit() {
+		showAndLogResult(StreamConstants.Message.THANK_YOU);
+		save();
+		try {
+			saveLogFile();
+		} catch (StreamIOException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		System.exit(0);
 	}
 
 	// @author A0096529N

@@ -12,8 +12,9 @@ public class StreamConstants {
 
 	public static final String VERSION = "V0.4";
 	public static final String FILENAME = "stream";
-	public static final String SAVEFILE = "%1$s.json";
-	public static final String LOGFILE = "%1$s.txt";
+	public static final String SAVEFILE_EXTENSION = ".json";
+	public static final String SAVEFILE_FORMAT = "%1$s" + SAVEFILE_EXTENSION;
+	public static final String LOGFILE_FORMAT = "%1$s.txt";
 
 	public static class Calendar {
 		public static final String[] MONTHS = { "January", "February", "March",
@@ -87,6 +88,8 @@ public class StreamConstants {
 				+ "please refer to the manual for list of commands.\nDetails: %1$s";
 		public static final String EMPTY_INPUT_ERROR = "Please enter a command!";
 		public static final String UNEXPECTED_ERROR = "Opps! An unexpected error occured, please retry.\nDetails: %1$s";
+		public static final String LOADED_USER_HOME = "Loaded user home dir: %1$s";
+		public static final String LOAD_FAIL_USER_HOME = "Could not load user home dir.";
 	}
 
 	public static class Commands {
@@ -154,6 +157,9 @@ public class StreamConstants {
 		public static final String ERR_CREATEFILE = "Test file could not be created "
 				+ "- %1$s\nDelete the file if already present.";
 		public static final String ERR_TASK_MODIFICATION = "Could not modify file: %1$s";
+		public static final String ERR_CREATE_STREAM_DIR = "Could not create Stream directory";
+		public static final String ERR_SAVE_LOG = "Could not save log file";
+		public static final String ERR_CREATE_LOG_DIR = "Could not create Logs directory";
 	}
 
 	public static class UI {

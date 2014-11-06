@@ -33,7 +33,7 @@ public class StreamIOTest {
 	private static final String CHECKFILE_EXCEPTION_MESSAGE = "Check file could not be created "
 			+ "- %1$s\nDelete the file if already present.";
 	private static final String CHECK_FILE = "streamtestCheckFile.json";
-	private static final String TEST_SAVE_LOCATION = "streamtest.json";
+	private static final String TEST_SAVE_FILENAME = "streamtest";
 	private SimpleDateFormat simpleDateFormat = StreamIO.dateFormat;
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
@@ -41,13 +41,6 @@ public class StreamIOTest {
 
 	@Before
 	public void setUp() throws Exception {
-		StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
-		File saveFile = new File(StreamIO.SAVE_LOCATION);
-		if (!saveFile.createNewFile()) {
-			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE,
-					saveFile.getAbsolutePath()));
-		}
-
 		task1 = new StreamTask("Code Jarvis");
 		Calendar calendar = Calendar.getInstance();
 		Date date = StreamIO.dateFormat.parse("20410719000000");
@@ -85,19 +78,34 @@ public class StreamIOTest {
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]}";
 
-		File checkFile = new File(CHECK_FILE);
+		StreamIO.STREAM_FILENAME = CHECK_FILE;
+		File checkFile = new File(StreamIO.getSaveLocation());
 		try {
 			stringToFile(checkFile, fileContent);
 		} catch (IOException e) {
 			throw new IOException(String.format(CHECKFILE_EXCEPTION_MESSAGE,
 					e.getMessage()), e);
 		}
+		
+		StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
+		File saveFile = new File(StreamIO.getSaveLocation());
+		if (saveFile.exists() && !saveFile.delete()) {
+			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE,
+					saveFile.getAbsolutePath()));
+		}
+		if (!saveFile.createNewFile()) {
+			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE,
+					saveFile.getAbsolutePath()));
+		}
+
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		new File(StreamIO.SAVE_LOCATION).delete();
-		new File(CHECK_FILE).delete();
+		StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
+		new File(StreamIO.getSaveLocation()).delete();
+		StreamIO.STREAM_FILENAME = CHECK_FILE;
+		new File(StreamIO.getSaveLocation()).delete();
 	}
 
 	/*
@@ -115,7 +123,7 @@ public class StreamIOTest {
 				+ "\"taskName\":\"Build IoT\","
 				+ "\"taskDescription\":\"Internet of Things\"}]}";
 		try {
-			File saveFile = new File(StreamIO.SAVE_LOCATION);
+			File saveFile = new File(StreamIO.getSaveLocation());
 			StreamIO.save(map, taskList);
 			assertEquals(testMessage, expectedFileContent,
 					fileToString(saveFile));
@@ -135,20 +143,18 @@ public class StreamIOTest {
 	@Test
 	public void loadTest() {
 		String testMessage = "Load map from file";
-		StreamIO.SAVE_LOCATION = CHECK_FILE;
+		StreamIO.STREAM_FILENAME = CHECK_FILE;
 		try {
+			String expectedMap = serializeTaskMap(map);
 			StreamIO.load(map, taskList);
 
-			String expectedMap = serializeTaskMap(map);
 			String actualMap = serializeTaskMap(map);
-			System.out.println(expectedMap);
-			System.out.println(actualMap);
 			assertEquals(testMessage, expectedMap, actualMap);
 		} catch (StreamIOException e) {
 			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
 					"StreamIOException", e.getMessage()));
 		} finally {
-			StreamIO.SAVE_LOCATION = TEST_SAVE_LOCATION;
+			StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
 		}
 	}
 

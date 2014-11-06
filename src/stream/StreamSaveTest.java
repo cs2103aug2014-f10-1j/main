@@ -18,24 +18,31 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import util.StreamConstants;
+import fileio.StreamIO;
+
 public class StreamSaveTest {
 	private StreamTask task1, task2;
 	private HashMap<String, StreamTask> map;
 	private ArrayList<String> taskList;
+	private static final String TEST_SAVE_FILENAME = "streamtest" + StreamConstants.SAVEFILE_EXTENSION;
 
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
-	private File testFile = new File("test.json");
+	private File testFile;
 	private Stream stream;
 
 	// @author A0096529N
 	@Before
 	public void setUp() throws Exception {
+		StreamIO.setSaveLocation(TEST_SAVE_FILENAME);
+		testFile = new File(StreamIO.getSaveLocation());
+
 		if (testFile.exists()) {
 			testFile.delete();
 		}
 
-		stream = new Stream(testFile.getAbsolutePath());
+		stream = new Stream(testFile.getName());
 		String taskName1 = "Code Jarvis";
 		stream.streamLogic.addTask(taskName1);
 		task1 = stream.streamLogic.getTask(taskName1);
