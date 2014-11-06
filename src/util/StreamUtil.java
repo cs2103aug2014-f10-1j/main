@@ -248,9 +248,12 @@ public class StreamUtil {
 		Span x;
 		try {
 			x = Chronic.parse(due);
-			due = StreamUtil.stripCalendarChars(StreamUtil.getCalendarWriteUp(x.getBeginCalendar()));
+			Calendar begin = x.getBeginCalendar();
+			String calendarWriteUp = StreamUtil.getCalendarWriteUp(begin);
+			due = StreamUtil.stripCalendarChars(calendarWriteUp);
 		} catch (NullPointerException e) {
 			System.out.println("\"" + due + "\" cannot be parsed");
+			//change to logging... show to user?
 		}
 		return due;
 	}
