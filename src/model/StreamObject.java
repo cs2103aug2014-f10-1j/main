@@ -19,10 +19,12 @@ public class StreamObject {
 		this.taskList = new ArrayList<String>();
 	}
 	
+	// @author A0118007R
 	public static StreamObject getInstance() {
 		return new StreamObject();
 	}
 	
+	// @author A0118007R
 	public static StreamObject getInstance(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
 		return new StreamObject(taskMap, taskList);
 	}
