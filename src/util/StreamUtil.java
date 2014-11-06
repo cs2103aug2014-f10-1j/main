@@ -25,7 +25,7 @@ import com.mdimension.jchronic.utils.Span;
  */
 public class StreamUtil {
 
-	public static final String DATE_DELIMITER = "/";
+	// public static final String DATE_DELIMITER = "/";
 	public static final String TIME_DELIMITER = ":";
 	public static final String PREFIX_INPUT = "<< ";
 	public static final String PREFIX_OUTPUT = ">> ";
@@ -35,67 +35,6 @@ public class StreamUtil {
 	private static final String[] MONTHS = {"January", "February", "March", "April", "May", "June", "July", "August", "September", 
 		"October", "November", "December"};
 	
-
-	// @author A0118007R
-	public static boolean isValidAttribute(String param) {
-		for (String s : MODIFICATION_ATTRIBUTES) {
-			if (s.equals(param)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-	
-	// @author A0118007R
-
-	public static boolean isValidMonth(int month) {
-		return (month >= 1) && (month <= 12);
-	}
-
-	// @author A0118007R
-
-	public static boolean isValidDate(int day, int month, int year) {
-		if (isMonthWith31Days(month)) {
-			return (day >= 1) && (day <= 31);
-		} else if (month == 2) {
-			if (isLeapYear(year)) {
-				return (day >= 1) && (day <= 29);
-			} else {
-				return (day >= 1) && (day <= 28);
-			}
-		} else {
-			return (day >= 1) && (day <= 30);
-		}
-
-	}
-
-	// @author A0118007R
-
-	public static boolean isLeapYear(int year) {
-		if (year % 400 == 0) {
-			return true;
-		} else if (year % 100 == 0) {
-			return false;
-		} else {
-			return year % 4 == 0;
-		}
-	}
-
-	// @author A0118007R
-
-	private static boolean isMonthWith31Days(int month) {
-		return (month == 1) || (month == 3) || (month == 5) || (month == 7)
-				|| (month == 8) || (month == 10) || (month == 12);
-	}
-
-	// @author A0118007R
-
-	public static boolean isValidYear(int year) {
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-		return year >= currentYear;
-	}
-
 	// @author A0093874N
 
 	public static String listDownArrayContent(ArrayList<String> array,
@@ -308,18 +247,6 @@ public class StreamUtil {
 		}
 	}
 
-	// @author A0118007R
-
-	public static int parseYear(String[] dueDate) {
-		int year;
-		if (dueDate.length == 2) {
-			year = Calendar.getInstance().get(Calendar.YEAR);
-		} else {
-			year = Integer.parseInt(dueDate[2].trim());
-		}
-		return year;
-	}
-
 	// @author A0119401U
 
 	public static boolean isInteger(String str) {
@@ -330,6 +257,101 @@ public class StreamUtil {
 			}
 		}
 		return size > 0;
+	}
+
+	// @author A0093874N
+	
+	public static boolean isParseableDate(String date) {
+		try {
+			Chronic.parse(date).getBeginCalendar();
+			return true;
+		} catch (NullPointerException e) {
+			return false;
+		}
+	}
+	
+	// @author A0118007R
+	public static boolean isValidAttribute(String param) {
+		for (String s : MODIFICATION_ATTRIBUTES) {
+			if (s.equals(param)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	// @author A0118007R
+	/**
+	 * @deprecated
+	 */
+	public static boolean isValidMonth(int month) {
+		return (month >= 1) && (month <= 12);
+	}
+
+	// @author A0118007R
+	/**
+	 * @deprecated
+	 */
+	public static boolean isValidDate(int day, int month, int year) {
+		if (isMonthWith31Days(month)) {
+			return (day >= 1) && (day <= 31);
+		} else if (month == 2) {
+			if (isLeapYear(year)) {
+				return (day >= 1) && (day <= 29);
+			} else {
+				return (day >= 1) && (day <= 28);
+			}
+		} else {
+			return (day >= 1) && (day <= 30);
+		}
+
+	}
+
+	// @author A0118007R
+	/**
+	 * @deprecated
+	 */
+	public static boolean isLeapYear(int year) {
+		if (year % 400 == 0) {
+			return true;
+		} else if (year % 100 == 0) {
+			return false;
+		} else {
+			return year % 4 == 0;
+		}
+	}
+
+	// @author A0118007R
+	/**
+	 * @deprecated
+	 */
+	private static boolean isMonthWith31Days(int month) {
+		return (month == 1) || (month == 3) || (month == 5) || (month == 7)
+				|| (month == 8) || (month == 10) || (month == 12);
+	}
+
+	// @author A0118007R
+	/**
+	 * @deprecated
+	 */
+	public static boolean isValidYear(int year) {
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		return year >= currentYear;
+	}
+	
+	// @author A0118007R
+	/**
+	 * @deprecated
+	 */
+	public static int parseYear(String[] dueDate) {
+		int year;
+		if (dueDate.length == 2) {
+			year = Calendar.getInstance().get(Calendar.YEAR);
+		} else {
+			year = Integer.parseInt(dueDate[2].trim());
+		}
+		return year;
 	}
 
 }

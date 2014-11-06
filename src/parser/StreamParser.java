@@ -6,8 +6,6 @@ import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 import exception.StreamParserException;
 
-import com.mdimension.jchronic.Chronic;
-
 // @author A0119401U
 /**
  * Parser is used to interpret the user input to a pack of information and later

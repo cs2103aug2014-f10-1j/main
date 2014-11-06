@@ -4,6 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * this whole test is now obsolete...
+ */
+@SuppressWarnings("deprecation")
 public class StreamUtilTest {
 
 	// The test cases below are written by A0118007R for demo during tutorial 09

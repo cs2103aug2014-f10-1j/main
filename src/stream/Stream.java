@@ -53,7 +53,7 @@ public class Stream {
 		initStreamIO(file);
 		initializeStream();
 		load();
-		resetTasks();
+		refreshUI();
 	}
 
 	// @author A0118007R
@@ -953,6 +953,7 @@ public class Stream {
 	/**
 	 * @deprecated - use resetUI instead
 	 */
+	@SuppressWarnings("unused")
 	private void resetTasks() {
 		stui.resetAvailableTasks(streamLogic.getIndex(),
 				streamLogic.getStreamTaskList(streamLogic.getIndex()), true, false);
@@ -982,7 +983,8 @@ public class Stream {
 	/**
 	 * @deprecated
 	 */
-	void printTasks() {
+	@SuppressWarnings("unused")
+	private void printTasks() {
 		System.out.println(" ");
 		System.out.println("Your current tasks: ");
 		int numberOfTasks = streamLogic.getNumberOfTasks();
@@ -996,7 +998,8 @@ public class Stream {
 	/**
 	 * @deprecated for now
 	 */
-	void showAndLogCommand(String command) {
+	@SuppressWarnings("unused")
+	private void showAndLogCommand(String command) {
 		String commandReceived = String.format(
 				StreamConstants.LogMessage.CMD_RECEIVED, command);
 		System.out.println(commandReceived);

@@ -578,7 +578,15 @@ public class StreamLogic extends BaseLogic {
 		return tasks;
 	}
 
+	@Override
+	protected String getLoggerComponentName() {
+		return StreamConstants.ComponentTag.STREAMLOGIC;
+	}
+
 	// @author A0096529N
+	/**
+	 * @deprecated not really used...
+	 */
 	public ArrayList<String> getTimedTaskList() {
 		ArrayList<String> timedTaskList = new ArrayList<String>();
 		for (String taskName : streamObject.keySet()) {
@@ -590,6 +598,9 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * @deprecated not really used...
+	 */
 	public ArrayList<String> getDeadlineTaskList() {
 		ArrayList<String> timedTaskList = new ArrayList<String>();
 		for (String taskName : streamObject.keySet()) {
@@ -601,6 +612,9 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * @deprecated not really used...
+	 */
 	public ArrayList<String> getFloatingTaskList() {
 		ArrayList<String> timedTaskList = new ArrayList<String>();
 		for (String taskName : streamObject.keySet()) {
@@ -609,11 +623,6 @@ public class StreamLogic extends BaseLogic {
 			}
 		}
 		return timedTaskList;
-	}
-
-	@Override
-	protected String getLoggerComponentName() {
-		return StreamConstants.ComponentTag.STREAMLOGIC;
 	}
 
 	// Depreciated methods
