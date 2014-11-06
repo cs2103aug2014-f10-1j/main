@@ -9,14 +9,24 @@ public class StreamObject {
 	private HashMap<String, StreamTask> taskMap;
 	private ArrayList<String> taskList;
 
-	public StreamObject(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
+	private StreamObject(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
 		this.taskMap = taskMap;
 		this.taskList = taskList;
 	}
 	
-	public StreamObject() {
+	private StreamObject() {
 		this.taskMap = new HashMap<String, StreamTask>();
 		this.taskList = new ArrayList<String>();
+	}
+	
+	// @author A0118007R
+	public static StreamObject getInstance() {
+		return new StreamObject();
+	}
+	
+	// @author A0118007R
+	public static StreamObject getInstance(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
+		return new StreamObject(taskMap, taskList);
 	}
 
 	//@author generated

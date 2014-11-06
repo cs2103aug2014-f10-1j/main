@@ -16,7 +16,7 @@ public class StreamAddTaskTest {
 
 	@Before
 	public void setup() throws Exception {
-		streamLogic = StreamLogic.init(new StreamObject());
+		streamLogic = StreamLogic.init(StreamObject.getInstance());
 		streamLogic.addTask("Submit CE2");
 		streamLogic.addTask("Study for midterms");
 	}
@@ -59,7 +59,7 @@ public class StreamAddTaskTest {
 
 	@Before
 	public void resetup() throws Exception {
-		streamLogic = StreamLogic.init(new StreamObject());
+		streamLogic = StreamLogic.init(StreamObject.getInstance());
 		streamLogic.addTask("Submit CE2");
 		streamLogic.addTask("Study for midterms");
 	}
