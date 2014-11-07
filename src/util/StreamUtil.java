@@ -362,6 +362,24 @@ public class StreamUtil {
 		}
 		return size > 0;
 	}
+	
+
+	/**
+	 * 
+	 * A utility function to check whether the given index is within the
+	 * range of the whole list of tasks
+	 * 
+	 * @param index
+	 * @param numOfTasks
+	 * @return boolean value whether it's within the range or not
+	 * 
+	 * Moved from StreamParser since it's more suitable to put here.
+	 */
+	
+	public static boolean isWithinRange(int index, int numOfTasks) {
+		return index >= 1 && index <= numOfTasks;
+	}
+
 
 	//@author A0118007R-unused
 
