@@ -170,7 +170,38 @@ public class StreamParserTest {
 	public void parserFilterTest() {
 		
 		try{
-			
+			stparser.interpretCommand("filter", 5);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		try{
+			stparser.interpretCommand("filter rank no", 3);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INVALID_FILTER;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+	}
+	
+	@Test
+	public void parserSortTest() {
+		
+		try{
+			stparser.interpretCommand("sort", 3);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		try{
+			stparser.interpretCommand("sort command", 3);
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INVALID_SORT;
+			assertEquals(expectedMessage, e.getMessage());
 		}
 	}
 	
