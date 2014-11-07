@@ -82,7 +82,7 @@ public class Stream {
 		ImageIcon lowRankIcon = new ImageIcon(getClass().getResource(
 				"/img/taskLowPriority.png"));
 		ImageIcon calIcon = new ImageIcon(getClass().getResource(
-				"/img/calicon.png"));
+				"/img/calicon2.png"));
 		ImageIcon nullCalIcon = new ImageIcon(getClass().getResource(
 				"/img/nullcal.png"));
 		Font titleFont = null;
@@ -650,18 +650,27 @@ public class Stream {
 	 */
 	private void executeTag(String content) throws StreamModificationException {
 		String[] tags;
+		
 		ArrayList<String> processedTags;
 		String taskName;
 		StreamTask task;
 		int taskIndex;
 		tags = content.split(" ");
+		String[] tagsToBeAdded = new String[tags.length-1];
 		taskIndex = Integer.parseInt(tags[0]);
 		taskName = streamLogic.getTaskNumber(taskIndex);
 		task = streamLogic.getTask(taskName);
-
-		processedTags = taskLogic.addTags(task, tags);
+		
+		removeIndex(tags, tagsToBeAdded);
+		processedTags = taskLogic.addTags(task, tagsToBeAdded);
 		stackLogic.pushInverseAddTagCommand(taskIndex, processedTags);
 		logAddedTags(taskName, processedTags);
+	}
+
+	private void removeIndex(String[] tags, String[] tagsToBeAdded) {
+		for (int i = 1; i < tags.length; i++) {
+			tagsToBeAdded[i-1] = tags[i];
+		}
 	}
 
 	// @author A0093874N
