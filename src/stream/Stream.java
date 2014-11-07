@@ -70,11 +70,11 @@ public class Stream {
 	// @author A0093874N
 	private void initializeExtFiles() {
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
-				"/img/taskDoneIcon40.png"));
+				"/img/taskDoneIcon.png"));
 		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
-				"/img/taskOngoingIcon40.png"));
+				"/img/taskOngoingIcon.png"));
 		ImageIcon overdueIcon = new ImageIcon(getClass().getResource(
-				"/img/taskOverdueIcon40.png"));
+				"/img/taskOverdueIcon.png"));
 		ImageIcon hiRankIcon = new ImageIcon(getClass().getResource(
 				"/img/taskHighPriority.png"));
 		ImageIcon medRankIcon = new ImageIcon(getClass().getResource(
@@ -300,6 +300,10 @@ public class Stream {
 
 			case LAST:
 				stui.goToLastPage();
+				break;
+				
+			case PAGE:
+				stui.goToPage(content);
 				break;
 
 			case EXIT:

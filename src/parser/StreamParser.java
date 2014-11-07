@@ -47,7 +47,7 @@ public class StreamParser {
 			.init(StreamConstants.ComponentTag.STREAMPARSER);
 
 	static final String ERROR_INCOMPLETE_INPUT = "Please provide more information!";
-	static final String ERROR_INCOMPLETE_INDEX = "Please provide the index number!";
+	static final String ERROR_INCOMPLETE_INDEX = "Please provide the index or page number!";
 	static final String ERROR_INVALID_INDEX = "Please provide a valid index number!";
 	static final String ERROR_INVALID_FILTER = "Please enter a valid filter type!";
 	static final String ERROR_INVALID_SORT = "Please enter a valid sorting type!";
@@ -207,6 +207,8 @@ public class StreamParser {
 			break;
 
 		case "page":
+		case "goto":
+			checkTypeTwoValidity(contents, 1 + numOfTasks/StreamConstants.UI.MAX_VIEWABLE_TASK);
 			this.commandKey = CommandType.PAGE;
 			break;
 

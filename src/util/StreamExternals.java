@@ -4,6 +4,11 @@ import java.awt.Font;
 
 import javax.swing.ImageIcon;
 
+/**
+ * A class to contain all external loaded files (images, fonts).
+ * 
+ * @version V0.5
+ */
 public class StreamExternals {
 
 	public static ImageIcon ICON_DONE;

@@ -65,6 +65,7 @@ public class StreamUI {
 	private StreamUIFeedback feedback;
 	private JTextField newTaskTextField;
 	private StreamUILogger logger;
+	private JLabel pageNumber;
 	private static final StreamLogger loggerDoc = StreamLogger
 			.init(StreamConstants.ComponentTag.STREAMUI);
 
@@ -101,6 +102,7 @@ public class StreamUI {
 		addLogger();
 		addKeyboardShortcuts();
 		addNavigShortcuts();
+		addPageNumber();
 		addFooter();
 		setFocusTraversal();
 		// TODO here log saved file loaded or new saved file created instead
@@ -172,6 +174,7 @@ public class StreamUI {
 		helpTexts.put("last", "Go to the last page");
 		helpTexts.put("next", "Go to the next page");
 		helpTexts.put("prev", "Go to the previous page");
+		helpTexts.put("page", "page (page): Go to a specific page");
 		helpTexts.put("undo", "Undo the last action");
 		helpTexts.put("exit", "Exits the program");
 		for (String h : helpTexts.keySet()) {
@@ -193,6 +196,7 @@ public class StreamUI {
 		shortcut.put('v', "view ");
 		shortcut.put('t', "sort ");
 		shortcut.put('u', "undo");
+		shortcut.put('p', "page ");
 		shortcut.put('e', "exit");
 		shortcut.put('c', "");
 		for (Character c : shortcut.keySet()) {
@@ -252,7 +256,7 @@ public class StreamUI {
 	private void setUpView() {
 		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
-			StreamTaskView taskPanel = new StreamTaskView(stream);
+			StreamTaskView taskPanel = new StreamTaskView();
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			taskPanel
 					.setBounds(
@@ -307,6 +311,17 @@ public class StreamUI {
 		logger.setFont(StreamConstants.UI.FONT_LOGGER);
 		logger.setBounds(StreamConstants.UI.BOUNDS_LOGGER);
 		contentPanel.add(logger);
+	}
+
+	/**
+	 * Constructs the page number portion.
+	 */
+	private void addPageNumber() {
+		pageNumber = new JLabel();
+		pageNumber.setFont(StreamConstants.UI.FONT_PAGE_NUM);
+		pageNumber.setHorizontalAlignment(SwingConstants.LEFT);
+		pageNumber.setBounds(StreamConstants.UI.BOUNDS_PAGE_NUM);
+		contentPanel.add(pageNumber);
 	}
 
 	/**
@@ -394,6 +409,8 @@ public class StreamUI {
 				taskPanel.hideView();
 			}
 		}
+		pageNumber.setText(String.format(StreamConstants.Message.TEXT_PAGE_NUM,
+				pageShown, totalPage));
 	}
 
 	/**
@@ -521,6 +538,14 @@ public class StreamUI {
 	 */
 	public void goToLastPage() {
 		repopulateTaskView(totalPage);
+	}
+	
+	/**
+	 * Navigates to a specific page.
+	 */
+	public void goToPage(String content) {
+		String[] contents = content.split(" ");
+		repopulateTaskView(Integer.parseInt(contents[0]));
 	}
 
 	//@author A0093874N-unused
