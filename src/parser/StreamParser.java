@@ -224,7 +224,7 @@ public class StreamParser {
 			throws StreamParserException {
 		if (!StreamUtil.isInteger(contents[PARAM_POS_INDEX])) {
 			throw new StreamParserException(ERROR_INVALID_INDEX);
-		} else if (!isWithinRange(Integer.parseInt(contents[PARAM_POS_INDEX]), numOfTasks)) {
+		} else if (!StreamUtil.isWithinRange(Integer.parseInt(contents[PARAM_POS_INDEX]), numOfTasks)) {
 			throw new StreamParserException(
 					ERROR_INDEX_OUT_OF_BOUNDS);
 		}
@@ -577,60 +577,6 @@ public class StreamParser {
 		}
 	}
 
-	// @author A0119401U
-
-	private boolean isWithinRange(int index, int numOfTasks) {
-		return index >= 1 && index <= numOfTasks;
-	}
-
-	/**
-	 * @deprecated unnecessary since dismiss is not accessible by user
-	 */
-	@SuppressWarnings("unused")
-	private void checkDismissValidity(String[] contents)
-			throws StreamParserException {
-		if (contents.length != 2 || !StreamUtil.isInteger(contents[1])) {
-			throw new StreamParserException("Please enter a valid index!");
-		}
-	}
-
-	/**
-	 * @deprecated use checkTypeOneValidity
-	 */
-	@SuppressWarnings("unused")
-	private void checkSearchValidity(String[] contents)
-			throws StreamParserException {
-		if (contents.length < 2) {
-			throw new StreamParserException("Nothing to search!");
-		}
-	}
-
-	/**
-	 * @deprecated use checkTypeThreeValidity instead
-	 */
-	@SuppressWarnings("unused")
-	private void checkUntaggingValidity(String[] contents, int numOfTasks)
-			throws StreamParserException {
-		if (contents.length < 3 || !StreamUtil.isInteger(contents[1])) {
-			throw new StreamParserException("Please enter a valid index!");
-		} else if (!isWithinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-			throw new StreamParserException(
-					"The index you entered is out of range!");
-		}
-	}
-
-	/**
-	 * @deprecated use checkTypeTwoValidity
-	 */
-	@SuppressWarnings("unused")
-	private void checkViewValidity(String[] contents, int numOfTasks)
-			throws StreamParserException {
-		if (contents.length != 2) {
-			throw new StreamParserException("Please enter a vlid command!");
-		} else if (!isWithinRange(Integer.parseInt(contents[1]), numOfTasks)) {
-			throw new StreamParserException(
-					"The index you entered is out of range!");
-		}
-	}
+	
 
 }
