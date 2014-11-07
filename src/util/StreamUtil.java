@@ -250,6 +250,13 @@ public class StreamUtil {
 		}
 	}
 
+	//@author A0093874N
+	
+	public static String getMonthAbbrev(int mon) {
+		return StreamConstants.Calendar.MONTHS[mon].substring(0, 3)
+				.toUpperCase();
+	}
+
 	// @author A0119401U
 
 	public static boolean isInteger(String str) {
@@ -263,8 +270,11 @@ public class StreamUtil {
 	}
 
 	// @author A0093874N
-	
+
 	public static boolean isParseableDate(String date) {
+		if (date.trim().equals("null")) {
+			return true;
+		}
 		try {
 			Chronic.parse(date).getBeginCalendar();
 			return true;

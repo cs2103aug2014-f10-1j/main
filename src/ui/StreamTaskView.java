@@ -1,13 +1,9 @@
 package ui;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Calendar;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -15,6 +11,7 @@ import javax.swing.SwingConstants;
 import model.StreamTask;
 import stream.Stream;
 import util.StreamConstants;
+import util.StreamExternals;
 import util.StreamUtil;
 
 //@author A0093874N
@@ -22,9 +19,8 @@ import util.StreamUtil;
 /**
  * <p>
  * The task graphical view as viewed by the user. Immediately see-able fields
- * including task name and dates. In addition, two buttons for immediate task
- * deletion or task marking (both done and not done) are available for user's
- * convenience.
+ * include start/end dates (if applicable), task name, task rank, and task
+ * status (done or not done).
  * </p>
  * 
  * <h3>API</h3>
@@ -36,53 +32,33 @@ import util.StreamUtil;
  * Refer to method documentation for details.
  * </p>
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamTaskView extends JPanel {
 
-	private Stream st;
+	private Stream stream;
 	private JLabel index;
+	private StreamUICalendarIcon startCal;
+	private StreamUICalendarIcon endCal;
 	private JLabel taskName;
-	private JLabel timing;
-	private JButton delButton;
-	private JButton markButton;
 	private JLabel rankImage;
 	private JLabel statusImage;
-
-	private static ImageIcon doneImage;
-	private static ImageIcon notdoneImage;
-	private static ImageIcon overdueImage;
-	private static ImageIcon hiRankImage;
-	private static ImageIcon medRankImage;
-	private static ImageIcon lowRankImage;
 	private static final long serialVersionUID = 1L;
 
-	StreamTaskView(Stream stream) {
+	StreamTaskView(Stream st) {
 		super();
-		setLayout(null);
-		st = stream;
+		initParams(st);
 		addIndexNumber();
+		addStartCalendar();
+		addEndCalendar();
 		addTaskNameLabel();
-		addTimingLabel();
 		addRankImage();
 		addStatusImage();
-		// addDeleteButton();
-		// addMarkButton();
 	}
 
-	public static void initImages(ImageIcon done, ImageIcon notdone,
-			ImageIcon overdue, ImageIcon high, ImageIcon med, ImageIcon low) {
-		try {
-			doneImage = done;
-			notdoneImage = notdone;
-			overdueImage = overdue;
-			hiRankImage = high;
-			medRankImage = med;
-			lowRankImage = low;
-		} catch (Exception e) {
-
-		}
+	private void initParams(Stream st) {
+		setLayout(null);
+		stream = st;
 	}
 
 	/**
@@ -92,8 +68,26 @@ public class StreamTaskView extends JPanel {
 		index = new JLabel();
 		index.setHorizontalAlignment(SwingConstants.CENTER);
 		index.setFont(StreamConstants.UI.FONT_INDEX);
-		addComponent(index, 0, 0, StreamConstants.UI.WIDTH_INDEX,
-				StreamConstants.UI.HEIGHT_TASKPANEL);
+		index.setBounds(StreamConstants.UI.BOUNDS_INDEX_NUM);
+		add(index);
+	}
+
+	/**
+	 * Adds the start calendar icon.
+	 */
+	private void addStartCalendar() {
+		startCal = new StreamUICalendarIcon();
+		startCal.setBounds(StreamConstants.UI.BOUNDS_START_CAL);
+		add(startCal);
+	}
+
+	/**
+	 * Adds the end calendar icon.
+	 */
+	private void addEndCalendar() {
+		endCal = new StreamUICalendarIcon();
+		endCal.setBounds(StreamConstants.UI.BOUNDS_END_CAL);
+		add(endCal);
 	}
 
 	/**
@@ -103,76 +97,29 @@ public class StreamTaskView extends JPanel {
 		taskName = new JLabel();
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(taskName, StreamConstants.UI.WIDTH_INDEX, 0, 530,
-				StreamConstants.UI.HEIGHT_TASKPANEL / 2);
+		taskName.setBounds(StreamConstants.UI.BOUNDS_TASK_NAME);
+		add(taskName);
 	}
 
 	/**
-	 * Adds the timing label to the task view.
+	 * Adds the rank image to the task view.
 	 */
-	private void addTimingLabel() {
-		timing = new JLabel();
-		timing.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(timing, StreamConstants.UI.WIDTH_INDEX,
-				StreamConstants.UI.HEIGHT_TASKPANEL / 2, 530,
-				StreamConstants.UI.HEIGHT_TASKPANEL / 2);
-	}
-
 	private void addRankImage() {
 		rankImage = new JLabel();
-		addComponent(rankImage, 600, 0, StreamConstants.UI.HEIGHT_TASKPANEL,
-				StreamConstants.UI.HEIGHT_TASKPANEL);
+		rankImage.setBounds(StreamConstants.UI.BOUNDS_RANK_ICON);
+		add(rankImage);
 	}
 
+	/**
+	 * Adds the status image to the task view.
+	 */
 	private void addStatusImage() {
 		statusImage = new JLabel();
-		addComponent(statusImage, 650, 0, StreamConstants.UI.HEIGHT_TASKPANEL,
-				StreamConstants.UI.HEIGHT_TASKPANEL);
+		statusImage.setBounds(StreamConstants.UI.BOUNDS_STATS_ICON);
+		add(statusImage);
 	}
 
-	/**
-	 * Adds a component to the User Interface based on the determined settings
-	 * and dimensions.
-	 * 
-	 * @param comp
-	 *            - the component to be added
-	 * @param x
-	 *            - the absolute horizontal position
-	 * @param y
-	 *            - the absolute vertical position
-	 * @param height
-	 *            - the height of the component
-	 * @param width
-	 *            - the width of the component
-	 */
-	private void addComponent(Component comp, int x, int y, int width,
-			int height) {
-		comp.setBounds(x, y, width, height);
-		add(comp);
-	}
-
-	/**
-	 * Hides the task from the user view. Invoked if the view object has no task
-	 * assigned to it.
-	 */
-	public void hideView() {
-		setVisible(false);
-	}
-
-	/**
-	 * Updates the task view according to the fields supplied by the
-	 * <b>StreamTask</b> <i>task</i>, assigning it with index number <i>ind</i>.
-	 * 
-	 * @param ind
-	 *            - the index number assigned
-	 * @param task
-	 *            - the <b>StreamTask</b> from which the information is obtained
-	 *            from
-	 */
-	public void updateView(final Integer ind, StreamTask task) {
-		index.setText(String.format(StreamConstants.Message.TEXT_INDEX,
-				ind.toString()));
-		taskName.setText(task.getTaskName());
+	private void reconfigureMouseListeners(final Integer ind) {
 		StreamUtil.clearAllMouseListeners(taskName,
 				taskName.getMouseListeners());
 		taskName.addMouseListener(new MouseListener() {
@@ -180,7 +127,7 @@ public class StreamTaskView extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// display details on mouse click
-				st.filterAndProcessInput(String.format(
+				stream.filterAndProcessInput(String.format(
 						StreamConstants.Commands.VIEW, ind));
 			}
 
@@ -201,101 +148,81 @@ public class StreamTaskView extends JPanel {
 			}
 
 		});
-		timing.setText(StreamUtil.getWrittenTime(task.getStartTime(),
-				task.getDeadline()));
-		if (task.isDone()) {
-			statusImage.setIcon(doneImage);
-		} else if (task.isOverdue()) {
-			statusImage.setIcon(overdueImage);
+	}
+	
+	private void updateStartTime(Calendar startTime) {
+		if (startTime == null) {
+			startCal.hideView();
 		} else {
-			statusImage.setIcon(notdoneImage);
+			startCal.updateView(startTime);
 		}
-		switch (task.getRank()) {
+	}
+	
+	private void updateEndTime(Calendar endTime) {
+		if (endTime == null) {
+			endCal.hideView();
+		} else {
+			endCal.updateView(endTime);
+		}
+	}
+	
+	private void updateRank(String rank) {
+		switch (rank) {
 			case "high":
-				rankImage.setIcon(hiRankImage);
+				rankImage.setIcon(StreamExternals.ICON_HI_RANK);
 				break;
 			case "medium":
-				rankImage.setIcon(medRankImage);
+				rankImage.setIcon(StreamExternals.ICON_MED_RANK);
 				break;
 			case "low":
-				rankImage.setIcon(lowRankImage);
+				rankImage.setIcon(StreamExternals.ICON_LOW_RANK);
 				break;
 			default:
 
 		}
-		/*
-		 * if (task.isDone()) { markButtonNotDone(); } else { markButtonDone();
-		 * }
-		 */
+	}
+	
+	private void updateDoneStatus(StreamTask task) {
+		if (task.isDone()) {
+			statusImage.setIcon(StreamExternals.ICON_DONE);
+		} else if (task.isOverdue()) {
+			statusImage.setIcon(StreamExternals.ICON_OVERDUE);
+		} else {
+			statusImage.setIcon(StreamExternals.ICON_NOT_DONE);
+		}
+	}
+	
+	private void updateBasicParams(Integer ind, String name) {
+		index.setText(String.format(StreamConstants.Message.TEXT_INDEX,
+				ind.toString()));
+		taskName.setText(name);
 		setVisible(true);
 	}
-
+	
 	/**
-	 * Constructs the delete button.
-	 * 
-	 * @deprecated
+	 * Hides the task from the user view. Invoked if the view object has no task
+	 * assigned to it.
 	 */
-	@SuppressWarnings("unused")
-	private void addDeleteButton() {
-		// delButton = new JButton(StreamConstants.UI.BTN_DELETE);
-		delButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				st.filterAndProcessInput(String.format(
-						StreamConstants.Commands.DELETE, index.getText()
-								.substring(1)));
-			}
-		});
+	public void hideView() {
+		setVisible(false);
 	}
 
 	/**
-	 * Constructs the mark button.
+	 * Updates the task view according to the fields supplied by the
+	 * <b>StreamTask</b> <i>task</i>, assigning it with index number <i>ind</i>.
 	 * 
-	 * @deprecated
+	 * @param ind
+	 *            - the index number assigned
+	 * @param task
+	 *            - the <b>StreamTask</b> from which the information is obtained
+	 *            from
 	 */
-	@SuppressWarnings("unused")
-	private void addMarkButton() {
-		markButton = new JButton();
+	public void updateView(Integer ind, StreamTask task) {
+		reconfigureMouseListeners(ind);
+		updateStartTime(task.getStartTime());
+		updateEndTime(task.getDeadline());
+		updateRank(task.getRank());
+		updateDoneStatus(task);
+		updateBasicParams(ind, task.getTaskName());
 	}
-
-	/**
-	 * Converts the task view side button to a "mark as done" button.
-	 * 
-	 * @deprecated
-	 */
-	@SuppressWarnings("unused")
-	private void markButtonDone() {
-		// markButton.setText(StreamConstants.UI.BTN_MARK_DONE);
-		StreamUtil.clearAllActionListeners(markButton,
-				markButton.getActionListeners());
-		markButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				st.filterAndProcessInput(String.format(
-						StreamConstants.Commands.MARK_DONE, index.getText()
-								.substring(1)));
-			}
-		});
-	}
-
-	/**
-	 * Converts the task view side button to a "mark as not done" button.
-	 * 
-	 * @deprecated
-	 */
-	@SuppressWarnings("unused")
-	private void markButtonNotDone() {
-		// markButton.setText(StreamConstants.UI.BTN_MARK_NOT_DONE);
-		StreamUtil.clearAllActionListeners(markButton,
-				markButton.getActionListeners());
-		markButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				st.filterAndProcessInput(String.format(
-						StreamConstants.Commands.MARK_NOT_DONE, index.getText()
-								.substring(1)));
-			}
-		});
-	}
-
 }

@@ -4,14 +4,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -55,8 +53,7 @@ import util.StreamUtil;
  * Refer to method documentation for details.
  * </p>
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamUI {
 
@@ -91,19 +88,12 @@ public class StreamUI {
 
 	public StreamUI(Stream str) {
 
-		stream = str;
-		initFonts();
-		initImages();
-
+		initParams(str);
 		setupLookAndFeel();
 		addMainFrame();
 		addContentPanel();
 		addHeader();
-		// addMenu();
 		setUpView();
-		// addUndoButton();
-		// addNavigationButtons();
-		// addClearSearchButton();
 		addFeedbackBox();
 		addConsole();
 		addAutocomplete();
@@ -112,47 +102,38 @@ public class StreamUI {
 		addKeyboardShortcuts();
 		addNavigShortcuts();
 		addFooter();
+		setFocusTraversal();
 		// TODO here log saved file loaded or new saved file created instead
 		log(StreamConstants.Message.WELCOME, false);
+		presentToUser();
+	}
+
+	private void initParams(Stream str) {
+		stream = str;
+		isSearch = false;
 		pageShown = 1;
 		totalPage = 1;
 		availTasks = new ArrayList<StreamTask>();
 		availIndices = new ArrayList<Integer>();
-		setFocusTraversal();
-		mainFrame.setVisible(true);
 	}
+
+	//@author A0096529N
 
 	/**
-	 * Loads the fonts used.
+	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
+	 * etc.
 	 */
-	private void initFonts() {
-		InputStream titleFont = getClass().getResourceAsStream(
-				"/fonts/Awesome Java.ttf");
-		InputStream consoleFont = getClass().getResourceAsStream(
-				"/fonts/Ubuntu.ttf");
-		StreamConstants.UI.initFonts(titleFont, consoleFont);
-	}
-
-	private void initImages() {
+	private void setupLookAndFeel() {
 		try {
-			ImageIcon doneImage = new ImageIcon(getClass().getResource(
-					"/img/done.png"));
-			ImageIcon notdoneImage = new ImageIcon(getClass().getResource(
-					"/img/notdone.png"));
-			ImageIcon overdueImage = new ImageIcon(getClass().getResource(
-					"/img/overdue.png"));
-			ImageIcon hiRankImage = new ImageIcon(getClass().getResource(
-					"/img/high.png"));
-			ImageIcon medRankImage = new ImageIcon(getClass().getResource(
-					"/img/medium.png"));
-			ImageIcon lowRankImage = new ImageIcon(getClass().getResource(
-					"/img/low.png"));
-			StreamTaskView.initImages(doneImage, notdoneImage, overdueImage,
-					hiRankImage, medRankImage, lowRankImage);
-		} catch (Exception e) {
-
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			loggerDoc.log(LogLevel.ERROR,
+					StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
 		}
 	}
+
+	//@author A0093874N
 
 	/**
 	 * Constructs the autocomplete helper texts.
@@ -238,7 +219,6 @@ public class StreamUI {
 	 */
 	private void setFocusTraversal() {
 		Vector<Component> order = new Vector<Component>(2);
-		// order.add(newTaskTextField);
 		order.add(console);
 		order.add(logger);
 		mainFrame.setFocusTraversalPolicy(new StreamUIFocusTraversal(order));
@@ -274,14 +254,19 @@ public class StreamUI {
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			addComponent(
-					taskPanel,
-					70
-							+ i
-							* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
-					StreamConstants.UI.HEIGHT_TASKPANEL);
+			taskPanel
+					.setBounds(
+							StreamConstants.UI.MARGIN_SIDE,
+							StreamConstants.UI.MARGIN_COMPONENT
+									* 2
+									+ StreamConstants.UI.HEIGHT_HEADER
+									+ i
+									* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
+							StreamConstants.UI.COMPONENT_WIDTH,
+							StreamConstants.UI.HEIGHT_TASKPANEL);
+			contentPanel.add(taskPanel);
 			shownTasks[i] = taskPanel;
-			taskPanel.setVisible(false);
+			taskPanel.hideView();
 		}
 	}
 
@@ -293,7 +278,8 @@ public class StreamUI {
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(StreamConstants.UI.FONT_TITLE);
 		title.setForeground(StreamConstants.UI.COLOR_HEADER);
-		addComponent(title, 10, 50);
+		title.setBounds(StreamConstants.UI.BOUNDS_HEADER);
+		contentPanel.add(title);
 	}
 
 	/**
@@ -302,13 +288,15 @@ public class StreamUI {
 	private void addConsole() {
 		console = new StreamUIConsole(feedback);
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(console, 530, 30);
+		console.setBounds(StreamConstants.UI.BOUNDS_CONSOLE);
+		contentPanel.add(console);
 	}
 
 	private void addFeedbackBox() {
 		feedback = new StreamUIFeedback();
 		feedback.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(feedback, 490, 30);
+		feedback.setBounds(StreamConstants.UI.BOUNDS_FEEDBACK);
+		contentPanel.add(feedback);
 	}
 
 	/**
@@ -317,7 +305,8 @@ public class StreamUI {
 	private void addLogger() {
 		logger = new StreamUILogger();
 		logger.setFont(StreamConstants.UI.FONT_LOGGER);
-		addComponent(logger, 570, 45);
+		logger.setBounds(StreamConstants.UI.BOUNDS_LOGGER);
+		contentPanel.add(logger);
 	}
 
 	/**
@@ -327,24 +316,12 @@ public class StreamUI {
 		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
 		footer.setFont(StreamConstants.UI.FONT_FOOTER);
 		footer.setHorizontalAlignment(SwingConstants.RIGHT);
-		addComponent(footer, 625, 32);
+		footer.setBounds(StreamConstants.UI.BOUNDS_FOOTER);
+		contentPanel.add(footer);
 	}
 
-	/**
-	 * Adds a component to the User Interface based on the determined settings
-	 * and dimensions.
-	 * 
-	 * @param comp
-	 *            - the component to be added
-	 * @param y
-	 *            - the absolute vertical position
-	 * @param width
-	 *            - the width of the component
-	 */
-	private void addComponent(Component comp, int y, int height) {
-		comp.setBounds(StreamConstants.UI.MARGIN_SIDE, y,
-				StreamConstants.UI.COMPONENT_WIDTH, height);
-		contentPanel.add(comp);
+	private void presentToUser() {
+		mainFrame.setVisible(true);
 	}
 
 	/**
@@ -400,7 +377,11 @@ public class StreamUI {
 	 *            - the page number to be shown
 	 */
 	private void repopulateTaskView(int page) {
-		assert (page <= totalPage) : StreamConstants.Assertion.TOO_MANY_PAGES;
+		if (page > totalPage) {
+			page = totalPage;
+		} else if (page < 1) {
+			page = 1;
+		}
 		pageShown = page;
 		int startPoint = (pageShown - 1) * StreamConstants.UI.MAX_VIEWABLE_TASK;
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
@@ -413,7 +394,6 @@ public class StreamUI {
 				taskPanel.hideView();
 			}
 		}
-		// determineClickableNavigators();
 	}
 
 	/**
@@ -542,6 +522,8 @@ public class StreamUI {
 	public void goToLastPage() {
 		repopulateTaskView(totalPage);
 	}
+
+	//@author A0093874N-unused
 
 	/**
 	 * Constructs the usable buttons of Stream's User Interface.
@@ -678,21 +660,7 @@ public class StreamUI {
 		}
 	}
 
-	// @author A0096529N
-
-	/**
-	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
-	 * etc.
-	 */
-	private void setupLookAndFeel() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException e) {
-			loggerDoc.log(LogLevel.ERROR,
-					StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
-		}
-	}
+	//@author A0096529N-unused
 
 	/**
 	 * @deprecated

@@ -39,8 +39,7 @@ import util.StreamConstants;
  * Refer to method documentation for details.
  * </p>
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamUIConsole extends JTextField implements KeyListener,
 		DocumentListener {

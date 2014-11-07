@@ -1,9 +1,12 @@
 package stream;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+
+import javax.swing.ImageIcon;
 
 import logic.StackLogic;
 import logic.StreamLogic;
@@ -16,6 +19,7 @@ import parser.StreamParser.MarkType;
 import parser.StreamParser.SortType;
 import ui.StreamUI;
 import util.StreamConstants;
+import util.StreamExternals;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import util.StreamUtil;
@@ -50,6 +54,7 @@ public class Stream {
 
 	// @author A0118007R
 	public Stream(String file) {
+		initializeExtFiles();
 		initStreamIO(file);
 		initializeStream();
 		load();
@@ -60,6 +65,39 @@ public class Stream {
 	private void initializeStream() {
 		stui = new StreamUI(this);
 		parser = new StreamParser();
+	}
+
+	// @author A0093874N
+	private void initializeExtFiles() {
+		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
+				"/img/done.png"));
+		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
+				"/img/notdone.png"));
+		ImageIcon overdueIcon = new ImageIcon(getClass().getResource(
+				"/img/overdue.png"));
+		ImageIcon hiRankIcon = new ImageIcon(getClass().getResource(
+				"/img/high.png"));
+		ImageIcon medRankIcon = new ImageIcon(getClass().getResource(
+				"/img/medium.png"));
+		ImageIcon lowRankIcon = new ImageIcon(getClass().getResource(
+				"/img/low.png"));
+		ImageIcon calIcon = new ImageIcon(getClass().getResource(
+				"/img/calicon.png"));
+		ImageIcon nullCalIcon = new ImageIcon(getClass().getResource(
+				"/img/nullcal.png"));
+		Font titleFont = null;
+		Font consoleFont = null;
+		try {
+			titleFont = Font.createFont(Font.TRUETYPE_FONT, getClass()
+					.getResourceAsStream("/fonts/Awesome Java.ttf"));
+			consoleFont = Font.createFont(Font.TRUETYPE_FONT, getClass()
+					.getResourceAsStream("/fonts/Ubuntu.ttf"));
+		} catch (Exception e) {
+
+		}
+		StreamExternals.init(doneIcon, notDoneIcon, overdueIcon, hiRankIcon,
+				medRankIcon, lowRankIcon, calIcon, nullCalIcon, titleFont,
+				consoleFont);
 	}
 
 	// @author A0096529N

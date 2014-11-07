@@ -22,8 +22,7 @@ import util.StreamUtil;
  * Refer to method documentation for details.
  * </p>
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamUILogger extends JTextArea {
 

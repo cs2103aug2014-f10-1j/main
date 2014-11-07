@@ -10,8 +10,7 @@ import java.util.Vector;
 /**
  * Customizes the tab-based focus traversal policy.
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamUIFocusTraversal extends FocusTraversalPolicy {
 

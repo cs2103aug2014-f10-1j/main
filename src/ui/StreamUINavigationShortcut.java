@@ -12,8 +12,7 @@ import stream.Stream;
  * The action invoked upon pressing the navigation shortcut, i.e matching the
  * key pressed to the corresponding navigation command.
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamUINavigationShortcut extends AbstractAction {
 

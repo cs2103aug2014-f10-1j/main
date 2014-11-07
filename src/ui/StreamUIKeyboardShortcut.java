@@ -10,8 +10,7 @@ import javax.swing.AbstractAction;
  * The action invoked upon pressing the keyboard shortcut, i.e matching the key
  * pressed to the corresponding command.
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 
 public class StreamUIKeyboardShortcut extends AbstractAction {

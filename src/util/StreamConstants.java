@@ -3,11 +3,11 @@ package util;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
-import java.io.InputStream;
+import java.awt.Rectangle;
 
 public class StreamConstants {
 
-	public static final String VERSION = "V0.4";
+	public static final String VERSION = "V0.5";
 	public static final String FILENAME = "stream";
 	public static final String SAVEFILE_EXTENSION = ".json";
 	public static final String SAVEFILE_FORMAT = "%1$s" + SAVEFILE_EXTENSION;
@@ -167,13 +167,26 @@ public class StreamConstants {
 		public static final Color COLOR_HELP_MSG = Color.GRAY;
 		public static final Color COLOR_LOGGER = Color.GRAY.brighter();
 		public static final Color COLOR_FEEDBACK = Color.WHITE;
+		public static final Color COLOR_MONTH = Color.WHITE;
 
-		public static Font FONT_TITLE;
-		public static Font FONT_CONSOLE;
-		public static Font FONT_LOGGER;
-		public static Font FONT_FOOTER;
-		public static Font FONT_INDEX;
-		public static Font FONT_TASK;
+		public static Font FONT_TITLE = StreamExternals.FONT_TITLE.deriveFont(
+				Font.PLAIN, 100);
+		public static Font FONT_INDEX = StreamExternals.FONT_TITLE.deriveFont(
+				Font.PLAIN, 70);
+		public static Font FONT_CONSOLE = StreamExternals.FONT_CONSOLE
+				.deriveFont(Font.PLAIN, 13);
+		public static Font FONT_LOGGER = StreamExternals.FONT_CONSOLE
+				.deriveFont(Font.PLAIN, 13);
+		public static Font FONT_FOOTER = StreamExternals.FONT_CONSOLE
+				.deriveFont(Font.PLAIN, 13);
+		public static Font FONT_TASK = StreamExternals.FONT_CONSOLE.deriveFont(
+				Font.PLAIN, 13);
+		public static Font FONT_MONTH = StreamExternals.FONT_CONSOLE
+				.deriveFont(Font.PLAIN, 13);
+		public static Font FONT_DATE = StreamExternals.FONT_CONSOLE.deriveFont(
+				Font.PLAIN, 20);
+		public static Font FONT_TIME = StreamExternals.FONT_CONSOLE.deriveFont(
+				Font.PLAIN, 13);
 
 		public static final int HEIGHT_MAINFRAME = 700;
 		public static final int WIDTH_MAINFRAME = 750;
@@ -181,7 +194,9 @@ public class StreamConstants {
 		public static final int MAX_VIEWABLE_TASK = 7;
 
 		public static final int HEIGHT_TASKPANEL = 50;
-		public static final int HEIGHT_CONSOLE = 32;
+		public static final int HEIGHT_CONSOLE = 30;
+		public static final int HEIGHT_HEADER = 50;
+		public static final int HEIGHT_LOGGER = 45;
 		public static final int COMPONENT_WIDTH = 700;
 		public static final int WIDTH_INDEX = 80;
 		public static final int MARGIN_COMPONENT = 10;
@@ -190,20 +205,41 @@ public class StreamConstants {
 		public static final Insets MARGIN_LOGGER = new Insets(5, 5, 5, 5);
 		public static final Insets MARGIN_CONSOLE = new Insets(0, 5, 0, 0);
 
-		public static void initFonts(InputStream titleFont,
-				InputStream consoleFont) {
-			try {
-				FONT_TITLE = Font.createFont(Font.TRUETYPE_FONT, titleFont)
-						.deriveFont(Font.PLAIN, 100);
-				FONT_INDEX = FONT_TITLE.deriveFont(Font.PLAIN, 70);
-				FONT_CONSOLE = Font.createFont(Font.TRUETYPE_FONT, consoleFont)
-						.deriveFont(Font.PLAIN, 13);
-				FONT_LOGGER = FONT_CONSOLE.deriveFont(Font.PLAIN, 13);
-				FONT_FOOTER = FONT_CONSOLE.deriveFont(Font.PLAIN, 12);
-				FONT_TASK = FONT_CONSOLE.deriveFont(Font.PLAIN, 13);
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-		}
+		public static final Rectangle BOUNDS_CAL_ICON = new Rectangle(0, 0,
+				HEIGHT_TASKPANEL, HEIGHT_TASKPANEL);
+		public static final Rectangle BOUNDS_MONTH = new Rectangle(0, 4,
+				HEIGHT_TASKPANEL, 10);
+		public static final Rectangle BOUNDS_DATE = new Rectangle(0, 11,
+				HEIGHT_TASKPANEL, 30);
+		public static final Rectangle BOUNDS_TIME = new Rectangle(0, 37,
+				HEIGHT_TASKPANEL, 10);
+		public static final Rectangle BOUNDS_INDEX_NUM = new Rectangle(0, 0,
+				WIDTH_INDEX, HEIGHT_TASKPANEL);
+		public static final Rectangle BOUNDS_START_CAL = new Rectangle(
+				WIDTH_INDEX, 0, HEIGHT_TASKPANEL, HEIGHT_TASKPANEL);
+		public static final Rectangle BOUNDS_END_CAL = new Rectangle(
+				WIDTH_INDEX + HEIGHT_TASKPANEL, 0, HEIGHT_TASKPANEL,
+				HEIGHT_TASKPANEL);
+		public static final Rectangle BOUNDS_TASK_NAME = new Rectangle(
+				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL, 0, COMPONENT_WIDTH
+						- WIDTH_INDEX - 4 * HEIGHT_TASKPANEL,
+				HEIGHT_TASKPANEL / 2);
+		public static final Rectangle BOUNDS_RANK_ICON = new Rectangle(
+				COMPONENT_WIDTH - 2 * HEIGHT_TASKPANEL, 0, HEIGHT_TASKPANEL,
+				HEIGHT_TASKPANEL);
+		public static final Rectangle BOUNDS_STATS_ICON = new Rectangle(
+				COMPONENT_WIDTH - HEIGHT_TASKPANEL, 0, HEIGHT_TASKPANEL,
+				HEIGHT_TASKPANEL);
+		public static final Rectangle BOUNDS_HEADER = new Rectangle(
+				MARGIN_SIDE, MARGIN_COMPONENT, COMPONENT_WIDTH, HEIGHT_HEADER);
+		public static final Rectangle BOUNDS_CONSOLE = new Rectangle(
+				MARGIN_SIDE, 530, COMPONENT_WIDTH, HEIGHT_CONSOLE);
+		public static final Rectangle BOUNDS_FEEDBACK = new Rectangle(
+				MARGIN_SIDE, 490, COMPONENT_WIDTH, HEIGHT_CONSOLE);
+		public static final Rectangle BOUNDS_FOOTER = new Rectangle(
+				MARGIN_SIDE, 625, COMPONENT_WIDTH, HEIGHT_CONSOLE);
+		public static final Rectangle BOUNDS_LOGGER = new Rectangle(
+				MARGIN_SIDE, 570, COMPONENT_WIDTH, HEIGHT_LOGGER);
+
 	}
 }

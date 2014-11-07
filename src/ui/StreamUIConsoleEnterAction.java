@@ -17,8 +17,7 @@ import stream.Stream;
  * Credits to developers from F10-4J for this idea.
  * </p>
  * 
- * @version V0.4
- * @author Wilson Kurniawan
+ * @version V0.5
  */
 public class StreamUIConsoleEnterAction extends AbstractAction {
 
