@@ -53,11 +53,12 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	private HashMap<String, String> helpTextMap;
 	private StreamUIFeedback feedback;
 
-	private static final String DEFAULT_HELP_TEXT = "    Press right arrow to fill";
-	private static final String UNKNOWN_COMMAND = "    Warning: unknown command";
+	private static final String DEFAULT_HELP_TEXT = "Press right arrow to fill";
+	private static final String UNKNOWN_COMMAND = "Warning: unknown command";
 
 	StreamUIConsole(StreamUIFeedback fdb) {
 		super();
+		setMargin(StreamConstants.UI.MARGIN_CONSOLE);
 		this.possibilities = new ArrayList<String>();
 		this.currentGuess = -1;
 		this.isGuessing = false;
@@ -78,7 +79,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	 */
 	public void addPossibility(String possibility, String helpText) {
 		this.possibilities.add(possibility);
-		this.helpTextMap.put(possibility, "    " + helpText);
+		this.helpTextMap.put(possibility, helpText);
 		Collections.sort(possibilities);
 	}
 
@@ -155,23 +156,22 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 			String subGuess = drawGuess.substring(entered.length(),
 					drawGuess.length());
 			g.setColor(Color.GRAY);
+			g.drawString(subGuess, (int) (enteredBounds.getWidth()) + 7, 20);
 			String[] typed = entered.trim().split(" ");
 			if (helpTextMap.containsKey(typed[0])) {
-				g.drawString(subGuess + helpTextMap.get(typed[0]),
-						(int) (enteredBounds.getWidth()) + 2, 21);
+				feedback.showFeedbackMessage(helpTextMap.get(typed[0]));
 			} else if (isFound) {
-				g.drawString(subGuess + DEFAULT_HELP_TEXT,
-						(int) (enteredBounds.getWidth()) + 2, 21);
+				feedback.showFeedbackMessage(DEFAULT_HELP_TEXT);
 			} else {
-				g.drawString(subGuess + UNKNOWN_COMMAND,
-						(int) (enteredBounds.getWidth()) + 2, 21);
+				feedback.showFeedbackMessage(UNKNOWN_COMMAND);
 			}
 		} else {
 			Graphics2D g2 = (Graphics2D) g.create();
 			g2.setFont(StreamConstants.UI.FONT_CONSOLE);
 			g2.setColor(Color.GRAY);
-			g2.drawString("Enter your command here", 5, 21);
+			g2.drawString("Enter your command here", 5, 20);
 			g2.dispose();
+			feedback.showFeedbackMessage(StreamConstants.Message.WELCOME);
 		}
 	}
 

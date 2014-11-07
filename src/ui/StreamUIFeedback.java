@@ -22,10 +22,12 @@ import util.StreamConstants;
 public class StreamUIFeedback extends JTextField {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	StreamUIFeedback() {
 		super();
 		setBackground(StreamConstants.UI.COLOR_FEEDBACK);
+		setForeground(StreamConstants.UI.COLOR_HELP_MSG);
+		setMargin(StreamConstants.UI.MARGIN_CONSOLE);
 		setEditable(false);
 	}
 
@@ -36,8 +38,7 @@ public class StreamUIFeedback extends JTextField {
 	 *            - the message to be displayed
 	 */
 	public void showFeedbackMessage(String msg) {
-		setForeground(StreamConstants.UI.COLOR_HELP_MSG);
 		setText(msg);
 	}
-
+	
 }

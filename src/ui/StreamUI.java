@@ -110,6 +110,7 @@ public class StreamUI {
 		addKeyboardShortcuts();
 		addNavigShortcuts();
 		addFooter();
+		// TODO here log saved file loaded or new saved file created instead
 		log(StreamConstants.Message.WELCOME, false);
 		pageShown = 1;
 		totalPage = 1;
@@ -135,25 +136,34 @@ public class StreamUI {
 	 */
 	private void addAutocomplete() {
 		HashMap<String, String> helpTexts = new HashMap<String, String>();
-		helpTexts.put("add", "Add a new task here");
-		helpTexts.put("due",
-				"Set the deadline for a task based on index number");
-		helpTexts.put("start",
-				"Set the start time for a task based on index number");
-		helpTexts.put("search",
-				"Searches tasks by its name, description, or tags");
-		helpTexts.put("delete", "Delete based on index number");
-		helpTexts.put("filter", "Filters tasks by dates or ranks");
-		helpTexts.put("mark", "Marks task as done or ongoing");
-		helpTexts.put("modify",
+		helpTexts.put("add",
+				"add (task name) (properties): Add a new task here");
+		helpTexts
+				.put("due",
+						"due (index) (time): Set the deadline for a task based on index number");
+		helpTexts
+				.put("start",
+						"start (index) (time): Set the start time for a task based on index number");
+		helpTexts
+				.put("search",
+						"search (keyphrase): Searches tasks by its name, description, or tags");
+		helpTexts.put("delete", "delete (index): Delete based on index number");
+		helpTexts.put("filter",
+				"filter (criteria): Filters tasks by dates or ranks");
+		helpTexts.put("mark",
+				"mark (index) (mark type): Marks task as done or ongoing");
+		helpTexts.put("modify (index) (properties)",
 				"Modifies multiple parameters of a task in one go");
-		helpTexts.put("view", "Views the details of a task");
-		helpTexts.put("sort",
-				"Sorts tasks by alphabetical or chronological order");
+		helpTexts.put("view", "view (index): Views the details of a task");
+		helpTexts
+				.put("sort",
+						"sort (criteria): Sorts tasks by alphabetical or chronological order");
 		helpTexts.put("clear", "Clears all added tasks");
-		helpTexts.put("clrsrc", "Clears search result");
-		helpTexts.put("rank",
-				"Change the rank of a certain task based on index number");
+		helpTexts
+				.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
+		helpTexts
+				.put("rank",
+						"rank (index) (rank type): Change the rank of a certain task based on index number");
 		helpTexts.put("first", "Go to the first page");
 		helpTexts.put("last", "Go to the last page");
 		helpTexts.put("next", "Go to the next page");
@@ -241,8 +251,11 @@ public class StreamUI {
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			addComponent(taskPanel,
-					70 + i * (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
+			addComponent(
+					taskPanel,
+					70
+							+ i
+							* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
 					StreamConstants.UI.HEIGHT_TASKPANEL);
 			shownTasks[i] = taskPanel;
 			taskPanel.setVisible(false);
@@ -268,7 +281,7 @@ public class StreamUI {
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
 		addComponent(console, 530, 30);
 	}
-	
+
 	private void addFeedbackBox() {
 		feedback = new StreamUIFeedback();
 		feedback.setFont(StreamConstants.UI.FONT_CONSOLE);
@@ -696,7 +709,8 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addSortDeadlineButton() {
-		// sortDeadlineButton = new JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
+		// sortDeadlineButton = new
+		// JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
 		sortDeadlineButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

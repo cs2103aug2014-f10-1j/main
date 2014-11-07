@@ -188,6 +188,7 @@ public class StreamConstants {
 		public static final int MARGIN_SIDE = 25;
 
 		public static final Insets MARGIN_LOGGER = new Insets(5, 5, 5, 5);
+		public static final Insets MARGIN_CONSOLE = new Insets(0, 5, 0, 0);
 
 		public static void initFonts(InputStream titleFont,
 				InputStream consoleFont) {
