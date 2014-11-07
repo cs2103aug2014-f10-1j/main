@@ -5,6 +5,13 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Rectangle;
 
+/**
+ * A class to contain all constants. Things such as messages (error/log/...),
+ * parameters (UI sizes, ...), Stream-related fields (components, ...) can be
+ * found here. Contains other nested classes for better organization.
+ * 
+ * @version V0.5
+ */
 public class StreamConstants {
 
 	public static final String VERSION = "V0.5";
@@ -12,6 +19,12 @@ public class StreamConstants {
 	public static final String SAVEFILE_EXTENSION = ".json";
 	public static final String SAVEFILE_FORMAT = "%1$s" + SAVEFILE_EXTENSION;
 	public static final String LOGFILE_FORMAT = "%1$s.txt";
+	public static final String TIME_DELIMITER = ":";
+	public static final String PREFIX_INPUT = "<< ";
+	public static final String PREFIX_OUTPUT = ">> ";
+	public static final String[] MODIFICATION_ATTRIBUTES = { "-name", "-desc",
+			"-start", "-from", "-due", "-by", "-tag", "-untag", "-settags",
+			"-rank", "-mark", "-to" };
 
 	public static class Calendar {
 		public static final String[] MONTHS = { "January", "February", "March",
@@ -141,6 +154,7 @@ public class StreamConstants {
 		public static final String TEXT_HEADER = "<html>S<font color=\"#ed7d31\">T</font>RE<font color=\"#ed7d31\">A</font>M</html>";
 		public static final String TEXT_FOOTER = "Copyright \u00a9 2014 CS2013AUG2014-F10-01J. All rights reserved.";
 		public static final String TEXT_INDEX = "#%1$s";
+		public static final String TEXT_PAGE_NUM = "Page %1$s/%2$s";
 
 		public static final String DETAILS_HEADER = "Details for %1$s";
 		public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s\nRank: %6$s";
@@ -187,6 +201,8 @@ public class StreamConstants {
 				Font.PLAIN, 20);
 		public static Font FONT_TIME = StreamExternals.FONT_CONSOLE.deriveFont(
 				Font.PLAIN, 13);
+		public static Font FONT_PAGE_NUM = StreamExternals.FONT_CONSOLE
+				.deriveFont(Font.PLAIN, 13);
 
 		public static final int HEIGHT_MAINFRAME = 700;
 		public static final int WIDTH_MAINFRAME = 750;
@@ -237,6 +253,8 @@ public class StreamConstants {
 		public static final Rectangle BOUNDS_FEEDBACK = new Rectangle(
 				MARGIN_SIDE, 490, COMPONENT_WIDTH, HEIGHT_CONSOLE);
 		public static final Rectangle BOUNDS_FOOTER = new Rectangle(
+				MARGIN_SIDE, 625, COMPONENT_WIDTH, HEIGHT_CONSOLE);
+		public static final Rectangle BOUNDS_PAGE_NUM = new Rectangle(
 				MARGIN_SIDE, 625, COMPONENT_WIDTH, HEIGHT_CONSOLE);
 		public static final Rectangle BOUNDS_LOGGER = new Rectangle(
 				MARGIN_SIDE, 570, COMPONENT_WIDTH, HEIGHT_LOGGER);

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+//@author A0096529N
 /**
  * <h1>StreamLogger - Stream logger component</h1>
  * 
@@ -29,7 +30,7 @@ import java.util.Locale;
  * Refer to method documentation for details.
  * </p>
  * 
- * @author Steven Khong
+ * @version V0.5
  */
 public class StreamLogger {
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -41,7 +42,6 @@ public class StreamLogger {
 		DEBUG, INFO, WARNING, ERROR, FATAL;
 	}
 
-	//@author A0096529N
 	/**
 	 * Lazy constructor for StreamLogger to obtain an instance.
 	 * 
@@ -54,7 +54,6 @@ public class StreamLogger {
 		return logger;
 	}
 
-	//@author A0096529N
 	/**
 	 * Adds log message to synchronized log stack.
 	 * 
@@ -68,7 +67,6 @@ public class StreamLogger {
 		}
 	}
 
-	//@author A0096529N
 	/**
 	 * Returns a copy of the log stack
 	 * 
@@ -78,12 +76,10 @@ public class StreamLogger {
 		return new ArrayList<String>(logStack);
 	}
 
-	//@author A0096529N
 	private static String getDate() {
 		return format.format(new Date());
 	}
 
-	//@author A0096529N
 	private static String getLevel(LogLevel logLevel) {
 		switch (logLevel) {
 		case DEBUG:

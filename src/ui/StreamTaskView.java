@@ -1,7 +1,5 @@
 package ui;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Calendar;
 
 import javax.swing.JLabel;
@@ -9,10 +7,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import model.StreamTask;
-import stream.Stream;
 import util.StreamConstants;
 import util.StreamExternals;
-import util.StreamUtil;
 
 //@author A0093874N
 
@@ -36,7 +32,6 @@ import util.StreamUtil;
  */
 public class StreamTaskView extends JPanel {
 
-	private Stream stream;
 	private JLabel index;
 	private StreamUICalendarIcon startCal;
 	private StreamUICalendarIcon endCal;
@@ -45,9 +40,9 @@ public class StreamTaskView extends JPanel {
 	private JLabel statusImage;
 	private static final long serialVersionUID = 1L;
 
-	StreamTaskView(Stream st) {
+	StreamTaskView() {
 		super();
-		initParams(st);
+		initParams();
 		addIndexNumber();
 		addStartCalendar();
 		addEndCalendar();
@@ -56,9 +51,8 @@ public class StreamTaskView extends JPanel {
 		addStatusImage();
 	}
 
-	private void initParams(Stream st) {
+	private void initParams() {
 		setLayout(null);
-		stream = st;
 	}
 
 	/**
@@ -119,37 +113,6 @@ public class StreamTaskView extends JPanel {
 		add(statusImage);
 	}
 
-	private void reconfigureMouseListeners(final Integer ind) {
-		StreamUtil.clearAllMouseListeners(taskName,
-				taskName.getMouseListeners());
-		taskName.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				// display details on mouse click
-				stream.filterAndProcessInput(String.format(
-						StreamConstants.Commands.VIEW, ind));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
-		});
-	}
-	
 	private void updateStartTime(Calendar startTime) {
 		if (startTime == null) {
 			startCal.hideView();
@@ -218,7 +181,6 @@ public class StreamTaskView extends JPanel {
 	 *            from
 	 */
 	public void updateView(Integer ind, StreamTask task) {
-		reconfigureMouseListeners(ind);
 		updateStartTime(task.getStartTime());
 		updateEndTime(task.getDeadline());
 		updateRank(task.getRank());
