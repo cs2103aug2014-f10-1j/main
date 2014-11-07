@@ -345,7 +345,7 @@ public class StreamIO {
 				Date startTimeDate = dateFormat.parse(taskJson
 						.getString(TaskKey.STARTTIME));
 				startTime.setTime(startTimeDate);
-				task.setDeadline(startTime);
+				task.setStartTime(startTime);
 			}
 
 			if (taskJson.has(TaskKey.DEADLINE)) {
