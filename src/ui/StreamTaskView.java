@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.util.Calendar;
 
 import javax.swing.JLabel;
@@ -53,6 +54,8 @@ public class StreamTaskView extends JPanel {
 
 	private void initParams() {
 		setLayout(null);
+		Color bgcolor = new Color(228, 228, 228);
+		setBackground(bgcolor);
 	}
 
 	/**

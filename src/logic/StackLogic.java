@@ -31,9 +31,8 @@ public class StackLogic extends BaseLogic {
 			inverseCommand = String.format(StreamConstants.Commands.DUE,
 					taskIndex, "null");
 		} else {
-			// TODO incorporate some JChronic here?
 			inverseCommand = String.format(StreamConstants.Commands.DUE,
-					taskIndex, getInputDate(currentDeadline));
+					taskIndex, StreamUtil.getCalendarWriteUpForUndo(currentDeadline));
 		}
 		pushInput(inverseCommand);
 	}
@@ -245,9 +244,9 @@ public class StackLogic extends BaseLogic {
 
 	//@author A0096529N
 	private String getInputDate(Calendar currentDeadline) {
-		return currentDeadline.get(Calendar.DATE) + "/"
-				+ (currentDeadline.get(Calendar.MONTH) + 1) + "/"
-				+ currentDeadline.get(Calendar.YEAR);
+		return currentDeadline.get(Calendar.MONTH + 1) + "/"
+				+ (currentDeadline.get(Calendar.DATE) + "/"
+				+ currentDeadline.get(Calendar.YEAR));
 	}
 
 	//@author generated

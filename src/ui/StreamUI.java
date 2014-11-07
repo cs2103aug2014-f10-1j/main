@@ -258,7 +258,7 @@ public class StreamUI {
 		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView();
-			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		//	taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			taskPanel
 					.setBounds(
 							StreamConstants.UI.MARGIN_SIDE,

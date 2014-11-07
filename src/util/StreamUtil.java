@@ -177,6 +177,18 @@ public class StreamUtil {
 				+ addZeroToTime(calendar.get(Calendar.SECOND));
 	}
 
+	
+	// @author A0118007R
+	public static String getCalendarWriteUpForUndo(Calendar calendar) {
+		return addZeroToTime(calendar.get(Calendar.MONTH) + 1) +  StreamConstants.DATE_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
+				+ StreamConstants.DATE_DELIMITER + calendar.get(Calendar.YEAR) + " "
+				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.MINUTE))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.SECOND));
+	}
 	/**
 	 * Converts a dd MONTHNAME yyyy hh:mm:ss calendar to dd MONTHNAME yyyy hh mm
 	 * ss.
@@ -432,4 +444,16 @@ public class StreamUtil {
 		return year;
 	}
 
+	// @author A0118007R
+	public static boolean isValidDeadline(Calendar deadline, Calendar startTime) {
+		Span x = Chronic.parse("now");
+		Calendar currentTime = x.getBeginCalendar();
+		boolean isAfterCurrentTime = deadline.compareTo(currentTime) == 1;
+		if (startTime == null) {
+			return isAfterCurrentTime;
+		} else {
+			boolean isAfterStartTime = deadline.compareTo(startTime) == 1;
+			return isAfterStartTime && isAfterCurrentTime;
+		}
+	}
 }

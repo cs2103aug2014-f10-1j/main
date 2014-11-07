@@ -19,6 +19,7 @@ public class StreamConstants {
 	public static final String SAVEFILE_EXTENSION = ".json";
 	public static final String SAVEFILE_FORMAT = "%1$s" + SAVEFILE_EXTENSION;
 	public static final String LOGFILE_FORMAT = "%1$s.txt";
+	public static final String DATE_DELIMITER = "/";
 	public static final String TIME_DELIMITER = ":";
 	public static final String PREFIX_INPUT = "<< ";
 	public static final String PREFIX_OUTPUT = ">> ";
@@ -171,6 +172,9 @@ public class StreamConstants {
 		public static final String ERR_CREATE_STREAM_DIR = "Could not create Stream directory";
 		public static final String ERR_SAVE_LOG = "Could not save log file";
 		public static final String ERR_CREATE_LOG_DIR = "Could not create Logs directory";
+		public static final String ERR_DEADLINE_BEFORE_STARTTIME = "Error: deadline is not changed. Ensure that you have entered a valid deadline";
+		public static final String ERR_STARTTIME_AFTER_DEADLINE = "Error: start time is not changed. Ensure that you have entered a valid start time";
+
 	}
 
 	public static class UI {

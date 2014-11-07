@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import util.StreamConstants;
+import util.StreamUtil;
 
 /**
  * Some documentation.
@@ -72,7 +73,13 @@ public class StreamTask {
 
 	// @author A0119401U
 	public void setDeadline(Calendar deadline) {
-		this.deadline = deadline;
+		//have any idea to decrease coupling? can check before it is passed here!
+		//TODO: resolve coupling issue
+		if (StreamUtil.isValidDeadline(deadline, this.getStartTime())) {
+			this.deadline = deadline;
+		} else {
+			//some exception handling???
+		}
 	}
 
 	// @author A0119401U

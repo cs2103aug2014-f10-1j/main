@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+import com.mdimension.jchronic.Chronic;
+import com.mdimension.jchronic.utils.Span;
+
 import logic.StackLogic;
 import logic.StreamLogic;
 import logic.TaskLogic;
@@ -781,6 +784,7 @@ public class Stream {
 		} else {
 			String due = contents[1];
 			due = StreamUtil.parseWithChronic(due);
+			
 			Calendar calendar = StreamUtil.parseCalendar(due);
 			result = setDueDate(taskName, taskIndex, calendar);
 		}
@@ -933,11 +937,19 @@ public class Stream {
 			Calendar newDeadline) throws StreamModificationException {
 		StreamTask task = streamLogic.getTask(taskName);
 		Calendar deadline = task.getDeadline();
-		stackLogic.pushInverseDueCommand(taskIndex, deadline);
-		// This section is contributed by A0093874N
-		return taskLogic.setDeadline(task, newDeadline);
-		//
+		Calendar startTime = task.getStartTime();
+		if (StreamUtil.isValidDeadline(newDeadline, startTime)) {
+			stackLogic.pushInverseDueCommand(taskIndex, deadline);
+			// This section is contributed by A0093874N
+			return taskLogic.setDeadline(task, newDeadline);
+			//
+		} else {
+			return StreamConstants.ExceptionMessage.ERR_DEADLINE_BEFORE_STARTTIME;
+		}
+		
 	}
+
+	
 
 	// @author A0119401U
 	/**
