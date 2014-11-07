@@ -660,13 +660,13 @@ public class Stream {
 		taskIndex = Integer.parseInt(tags[0]);
 		taskName = streamLogic.getTaskNumber(taskIndex);
 		task = streamLogic.getTask(taskName);
-		
 		removeIndex(tags, tagsToBeAdded);
 		processedTags = taskLogic.addTags(task, tagsToBeAdded);
 		stackLogic.pushInverseAddTagCommand(taskIndex, processedTags);
 		logAddedTags(taskName, processedTags);
 	}
 
+	// @author A0118007R
 	private void removeIndex(String[] tags, String[] tagsToBeAdded) {
 		for (int i = 1; i < tags.length; i++) {
 			tagsToBeAdded[i-1] = tags[i];
