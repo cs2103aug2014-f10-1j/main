@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,6 +47,11 @@ public class StreamTaskView extends JPanel {
 	private JLabel timing;
 	private JButton delButton;
 	private JButton markButton;
+	private JLabel statusImage;
+
+	private static ImageIcon doneImage;
+	private static ImageIcon notdoneImage;
+	private static ImageIcon overdueImage;
 	private static final long serialVersionUID = 1L;
 
 	StreamTaskView(Stream stream) {
@@ -55,8 +61,20 @@ public class StreamTaskView extends JPanel {
 		addIndexNumber();
 		addTaskNameLabel();
 		addTimingLabel();
+		addStatusImage();
 		// addDeleteButton();
 		// addMarkButton();
+	}
+
+	public static void initImages(ImageIcon done, ImageIcon notdone,
+			ImageIcon overdue) {
+		try {
+			doneImage = done;
+			notdoneImage = notdone;
+			overdueImage = overdue;
+		} catch (Exception e) {
+
+		}
 	}
 
 	/**
@@ -66,7 +84,8 @@ public class StreamTaskView extends JPanel {
 		index = new JLabel();
 		index.setHorizontalAlignment(SwingConstants.CENTER);
 		index.setFont(StreamConstants.UI.FONT_INDEX);
-		addComponent(index, 0, 0, StreamConstants.UI.WIDTH_INDEX, StreamConstants.UI.HEIGHT_TASKPANEL);
+		addComponent(index, 0, 0, StreamConstants.UI.WIDTH_INDEX,
+				StreamConstants.UI.HEIGHT_TASKPANEL);
 	}
 
 	/**
@@ -76,7 +95,8 @@ public class StreamTaskView extends JPanel {
 		taskName = new JLabel();
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(taskName, StreamConstants.UI.WIDTH_INDEX, 0, 530, StreamConstants.UI.HEIGHT_TASKPANEL/2);
+		addComponent(taskName, StreamConstants.UI.WIDTH_INDEX, 0, 530,
+				StreamConstants.UI.HEIGHT_TASKPANEL / 2);
 	}
 
 	/**
@@ -85,8 +105,15 @@ public class StreamTaskView extends JPanel {
 	private void addTimingLabel() {
 		timing = new JLabel();
 		timing.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(timing, StreamConstants.UI.WIDTH_INDEX, StreamConstants.UI.HEIGHT_TASKPANEL/2,
-				530, StreamConstants.UI.HEIGHT_TASKPANEL/2);
+		addComponent(timing, StreamConstants.UI.WIDTH_INDEX,
+				StreamConstants.UI.HEIGHT_TASKPANEL / 2, 530,
+				StreamConstants.UI.HEIGHT_TASKPANEL / 2);
+	}
+
+	private void addStatusImage() {
+		statusImage = new JLabel();
+		addComponent(statusImage, 650, 0, StreamConstants.UI.HEIGHT_TASKPANEL,
+				StreamConstants.UI.HEIGHT_TASKPANEL);
 	}
 
 	/**
@@ -162,6 +189,13 @@ public class StreamTaskView extends JPanel {
 		});
 		timing.setText(StreamUtil.getWrittenTime(task.getStartTime(),
 				task.getDeadline()));
+		if (task.isDone()) {
+			statusImage.setIcon(doneImage);
+		} else if (task.isOverdue()) {
+			statusImage.setIcon(overdueImage);
+		} else {
+			statusImage.setIcon(notdoneImage);
+		}
 		/*
 		 * if (task.isDone()) { markButtonNotDone(); } else { markButtonDone();
 		 * }

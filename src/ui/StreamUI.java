@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -92,6 +93,7 @@ public class StreamUI {
 
 		stream = str;
 		initFonts();
+		initImages();
 
 		setupLookAndFeel();
 		addMainFrame();
@@ -129,6 +131,20 @@ public class StreamUI {
 		InputStream consoleFont = getClass().getResourceAsStream(
 				"/fonts/Ubuntu.ttf");
 		StreamConstants.UI.initFonts(titleFont, consoleFont);
+	}
+
+	private void initImages() {
+		try {
+			ImageIcon doneImage = new ImageIcon(getClass().getResource(
+					"/img/done.png"));
+			ImageIcon notdoneImage = new ImageIcon(getClass().getResource(
+					"/img/notdone.png"));
+			ImageIcon overdueImage = new ImageIcon(getClass().getResource(
+					"/img/overdue.png"));
+			StreamTaskView.initImages(doneImage, notdoneImage, overdueImage);
+		} catch (Exception e) {
+
+		}
 	}
 
 	/**

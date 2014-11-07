@@ -95,11 +95,20 @@ public class StreamTask {
 		return this.done;
 	}
 
+	// @author A0093874N
+	public boolean isOverdue() {
+		if (this.getDeadline() == null) {
+			return false;
+		} else {
+			Calendar dead = this.getDeadline();
+			return dead.before(Calendar.getInstance());
+		}
+	}
+
 	// @author A0096529N
 	public void setDone(boolean done) {
 		this.done = done;
 	}
-
 
 	// Delegate methods
 
