@@ -53,7 +53,7 @@ public class StreamTaskView extends JPanel {
 
 	StreamTaskView(Stream stream) {
 		super();
-		setLayout(new GridBagLayout());
+		setLayout(null);
 		st = stream;
 		addIndexNumber();
 		addTaskNameLabel();
@@ -69,10 +69,7 @@ public class StreamTaskView extends JPanel {
 		index = new JLabel();
 		index.setHorizontalAlignment(SwingConstants.CENTER);
 		index.setFont(StreamConstants.UI.FONT_INDEX);
-		addComponent(index, StreamConstants.UI.MARGIN_TASKVIEW,
-				StreamConstants.UI.GRIDX_INDEX, StreamConstants.UI.GRIDY_INDEX,
-				StreamConstants.UI.GRIDHEIGHT_INDEX,
-				StreamConstants.UI.WEIGHTX_INDEX);
+		addComponent(index, 0, 0, 100, 70);
 	}
 
 	/**
@@ -82,11 +79,7 @@ public class StreamTaskView extends JPanel {
 		taskName = new JLabel();
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(taskName, StreamConstants.UI.MARGIN_TASKVIEW,
-				StreamConstants.UI.GRIDX_TASKNAME,
-				StreamConstants.UI.GRIDY_TASKNAME,
-				StreamConstants.UI.GRIDHEIGHT_TASKNAME,
-				StreamConstants.UI.WEIGHTX_TASKNAME);
+		addComponent(taskName, 100, 0, 530, 35);
 	}
 
 	/**
@@ -95,40 +88,28 @@ public class StreamTaskView extends JPanel {
 	private void addTimingLabel() {
 		timing = new JLabel();
 		timing.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(timing, StreamConstants.UI.MARGIN_TASKVIEW,
-				StreamConstants.UI.GRIDX_TIMING,
-				StreamConstants.UI.GRIDY_TIMING,
-				StreamConstants.UI.GRIDHEIGHT_TIMING,
-				StreamConstants.UI.WEIGHTX_TIMING);
+		addComponent(timing, 100, 35, 530, 35);
 	}
 
 	/**
-	 * Adds a component to the task view based on the determined settings and
-	 * dimensions.
+	 * Adds a component to the User Interface based on the determined settings
+	 * and dimensions.
 	 * 
 	 * @param comp
 	 *            - the component to be added
-	 * @param inset
-	 *            - the margins
-	 * @param gridx
-	 *            - the grid-wise horizontal position
-	 * @param gridy
-	 *            - the grid-wise vertical position
-	 * @param gridheight
-	 *            - the grid-wise vertical length
-	 * @param weightx
-	 *            - the weight of white-space distribution horizontally
+	 * @param x
+	 *            - the absolute horizontal position
+	 * @param y
+	 *            - the absolute vertical position
+	 * @param height
+	 *            - the height of the component
+	 * @param width
+	 *            - the width of the component
 	 */
-	private void addComponent(Component comp, Insets inset, int gridx,
-			int gridy, int gridheight, float weightx) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = inset;
-		gbc.weightx = weightx;
-		gbc.gridx = gridx;
-		gbc.gridy = gridy;
-		gbc.gridheight = gridheight;
-		add(comp, gbc);
+	private void addComponent(Component comp, int x, int y, int width,
+			int height) {
+		comp.setBounds(x, y, width, height);
+		add(comp);
 	}
 
 	/**
@@ -205,12 +186,13 @@ public class StreamTaskView extends JPanel {
 						StreamConstants.Commands.DELETE, index.getText()
 								.substring(1)));
 			}
-		});
-		addComponent(delButton, StreamConstants.UI.MARGIN_TASKVIEW,
-				StreamConstants.UI.GRIDX_DELETE_BTN,
-				StreamConstants.UI.GRIDY_DELETE_BTN,
-				StreamConstants.UI.GRIDHEIGHT_DELETE_BTN,
-				StreamConstants.UI.WEIGHTX_DELETE_BTN);
+		});/*
+			 * addComponent(delButton, StreamConstants.UI.MARGIN_TASKVIEW,
+			 * StreamConstants.UI.GRIDX_DELETE_BTN,
+			 * StreamConstants.UI.GRIDY_DELETE_BTN,
+			 * StreamConstants.UI.GRIDHEIGHT_DELETE_BTN,
+			 * StreamConstants.UI.WEIGHTX_DELETE_BTN);
+			 */
 	}
 
 	/**
@@ -221,11 +203,12 @@ public class StreamTaskView extends JPanel {
 	@SuppressWarnings("unused")
 	private void addMarkButton() {
 		markButton = new JButton();
-		addComponent(markButton, StreamConstants.UI.MARGIN_TASKVIEW,
-				StreamConstants.UI.GRIDX_MARK_BTN,
-				StreamConstants.UI.GRIDY_MARK_BTN,
-				StreamConstants.UI.GRIDHEIGHT_MARK_BTN,
-				StreamConstants.UI.WEIGHTX_MARK_BTN);
+		/*
+		 * addComponent(markButton, StreamConstants.UI.MARGIN_TASKVIEW,
+		 * StreamConstants.UI.GRIDX_MARK_BTN, StreamConstants.UI.GRIDY_MARK_BTN,
+		 * StreamConstants.UI.GRIDHEIGHT_MARK_BTN,
+		 * StreamConstants.UI.WEIGHTX_MARK_BTN);
+		 */
 	}
 
 	/**

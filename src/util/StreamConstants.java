@@ -182,7 +182,7 @@ public class StreamConstants {
 		public static final Insets MARGIN_ELEM = new Insets(10, 10, 0, 10);
 		public static final Insets MARGIN_TASKVIEW = new Insets(0, 0, 0, 0);
 
-		public static final int HEIGHT_MAINFRAME = 750;
+		public static final int HEIGHT_MAINFRAME = 700;
 		public static final int WIDTH_MAINFRAME = 750;
 
 		public static final int MAX_VIEWABLE_TASK = 5;
