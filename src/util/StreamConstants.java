@@ -164,7 +164,9 @@ public class StreamConstants {
 				(float) 208.52 / 360, (float) 0.5728, (float) 0.8353);
 		public static final Color COLOR_LOG_MSG = Color.BLACK;
 		public static final Color COLOR_ERR_MSG = Color.RED;
+		public static final Color COLOR_HELP_MSG = Color.GRAY;
 		public static final Color COLOR_LOGGER = Color.GRAY.brighter();
+		public static final Color COLOR_FEEDBACK = Color.WHITE;
 
 		public static Font FONT_TITLE;
 		public static Font FONT_CONSOLE;

@@ -51,11 +51,12 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	private boolean isGuessing;
 	private boolean isFound;
 	private HashMap<String, String> helpTextMap;
+	private StreamUIFeedback feedback;
 
 	private static final String DEFAULT_HELP_TEXT = "    Press right arrow to fill";
 	private static final String UNKNOWN_COMMAND = "    Warning: unknown command";
 
-	StreamUIConsole() {
+	StreamUIConsole(StreamUIFeedback fdb) {
 		super();
 		this.possibilities = new ArrayList<String>();
 		this.currentGuess = -1;
@@ -63,6 +64,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 		this.addKeyListener(this);
 		this.getDocument().addDocumentListener(this);
 		this.helpTextMap = new HashMap<String, String>();
+		this.feedback = fdb;
 	}
 
 	/**

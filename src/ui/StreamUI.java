@@ -64,6 +64,7 @@ public class StreamUI {
 	private JFrame mainFrame;
 	private JPanel contentPanel;
 	private StreamUIConsole console;
+	private StreamUIFeedback feedback;
 	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private static final StreamLogger loggerDoc = StreamLogger
@@ -101,6 +102,7 @@ public class StreamUI {
 		// addUndoButton();
 		// addNavigationButtons();
 		// addClearSearchButton();
+		addFeedbackBox();
 		addConsole();
 		addAutocomplete();
 		empowerConsole(new StreamUIConsoleEnterAction(stream, console));
@@ -262,9 +264,15 @@ public class StreamUI {
 	 * Constructs the console for user input.
 	 */
 	private void addConsole() {
-		console = new StreamUIConsole();
+		console = new StreamUIConsole(feedback);
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(console, 530, 32);
+		addComponent(console, 530, 30);
+	}
+	
+	private void addFeedbackBox() {
+		feedback = new StreamUIFeedback();
+		feedback.setFont(StreamConstants.UI.FONT_CONSOLE);
+		addComponent(feedback, 490, 30);
 	}
 
 	/**
@@ -273,7 +281,7 @@ public class StreamUI {
 	private void addLogger() {
 		logger = new StreamUILogger();
 		logger.setFont(StreamConstants.UI.FONT_LOGGER);
-		addComponent(logger, 575, 45);
+		addComponent(logger, 570, 45);
 	}
 
 	/**
@@ -324,12 +332,9 @@ public class StreamUI {
 	 *            - the target command
 	 */
 	private void empowerKeyboardShortcuts(char key, String cmd) {
-		/*
-		 * for (JButton b : buttons) {
-		 * b.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
-		 * b.getActionMap().put(cmd, new StreamUIKeyboardShortcut(console,
-		 * cmd)); }
-		 */
+		feedback.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
+		feedback.getActionMap().put(cmd,
+				new StreamUIKeyboardShortcut(console, cmd));
 		logger.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
 		logger.getActionMap().put(cmd,
 				new StreamUIKeyboardShortcut(console, cmd));
@@ -344,12 +349,9 @@ public class StreamUI {
 	 *            - the target command
 	 */
 	private void empowerNavigationShortcuts(String dir, String cmd) {
-		/*
-		 * for (JButton b : buttons) {
-		 * b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
-		 * b.getActionMap().put(cmd, new StreamUINavigationShortcut(stream,
-		 * logger, cmd)); }
-		 */
+		feedback.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+		feedback.getActionMap().put(cmd,
+				new StreamUINavigationShortcut(stream, logger, cmd));
 		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
 		logger.getActionMap().put(cmd,
 				new StreamUINavigationShortcut(stream, logger, cmd));
