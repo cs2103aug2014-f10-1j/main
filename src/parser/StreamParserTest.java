@@ -166,5 +166,13 @@ public class StreamParserTest {
 		}
 	}
 	
+	@Test
+	public void parserFilterTest() {
+		
+		try{
+			
+		}
+	}
+	
 
 }
