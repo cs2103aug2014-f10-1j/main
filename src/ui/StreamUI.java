@@ -90,6 +90,37 @@ public class StreamUI {
 	public StreamUI(Stream str) {
 
 		stream = str;
+		initFonts();
+
+		setupLookAndFeel();
+		addMainFrame();
+		addContentPanel();
+		addHeader();
+		// addMenu();
+		setUpView();
+		// addUndoButton();
+		addNavigationButtons();
+		// addClearSearchButton();
+		addConsole();
+		addAutocomplete();
+		empowerConsole(new StreamUIConsoleEnterAction(stream, console));
+		addLogger();
+		addKeyboardShortcuts();
+		addNavigShortcuts();
+		addFooter();
+		log(StreamConstants.Message.WELCOME, false);
+		pageShown = 1;
+		totalPage = 1;
+		availTasks = new ArrayList<StreamTask>();
+		availIndices = new ArrayList<Integer>();
+		setFocusTraversal();
+		mainFrame.setVisible(true);
+	}
+
+	/**
+	 * Loads the fonts used.
+	 */
+	private void initFonts() {
 		InputStream titleFont = getClass().getResourceAsStream(
 				"/fonts/Awesome Java.ttf");
 		InputStream indexFont = getClass().getResourceAsStream(
@@ -104,17 +135,12 @@ public class StreamUI {
 				"/fonts/Ubuntu.ttf");
 		StreamConstants.UI.initFonts(titleFont, indexFont, consoleFont,
 				loggerFont, footerFont, taskFont);
+	}
 
-		setupLookAndFeel();
-		addMainFrame();
-		addContentPanel();
-		addHeader();
-		// addMenu();
-		setUpView();
-		// addUndoButton();
-		addNavigationButtons();
-		// addClearSearchButton();
-		addConsole();
+	/**
+	 * Constructs the autocomplete helper texts.
+	 */
+	private void addAutocomplete() {
 		HashMap<String, String> helpTexts = new HashMap<String, String>();
 		helpTexts.put("add", "Add a new task here");
 		helpTexts.put("due",
@@ -144,9 +170,12 @@ public class StreamUI {
 		for (String h : helpTexts.keySet()) {
 			console.addPossibility(h, helpTexts.get(h));
 		}
-		empowerConsole(new StreamUIConsoleEnterAction(stream, console));
-		addLogger();
+	}
 
+	/**
+	 * Adds the keyboard shortcuts.
+	 */
+	private void addKeyboardShortcuts() {
 		HashMap<Character, String> shortcut = new HashMap<Character, String>();
 		shortcut.put('a', "add ");
 		shortcut.put('s', "search ");
@@ -162,7 +191,12 @@ public class StreamUI {
 		for (Character c : shortcut.keySet()) {
 			empowerKeyboardShortcuts(c, shortcut.get(c));
 		}
+	}
 
+	/**
+	 * Adds the navigation shortcuts.
+	 */
+	private void addNavigShortcuts() {
 		HashMap<String, String> navig = new HashMap<String, String>();
 		navig.put("DOWN", "first");
 		navig.put("LEFT", "prev");
@@ -171,20 +205,17 @@ public class StreamUI {
 		for (String s : navig.keySet()) {
 			empowerNavigationShortcuts(s, navig.get(s));
 		}
-		addFooter();
-		log(StreamConstants.Message.WELCOME, false);
-		pageShown = 1;
-		totalPage = 1;
-		availTasks = new ArrayList<StreamTask>();
-		availIndices = new ArrayList<Integer>();
+	}
 
+	/**
+	 * Sets the customized tab-based focus traversal policy.
+	 */
+	private void setFocusTraversal() {
 		Vector<Component> order = new Vector<Component>(2);
 		// order.add(newTaskTextField);
 		order.add(console);
 		order.add(logger);
 		mainFrame.setFocusTraversalPolicy(new StreamUIFocusTraversal(order));
-
-		mainFrame.setVisible(true);
 	}
 
 	/**
@@ -605,7 +636,7 @@ public class StreamUI {
 		});
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
 	 * etc.

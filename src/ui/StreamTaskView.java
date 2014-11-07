@@ -1,9 +1,6 @@
 package ui;
 
 import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -19,7 +16,7 @@ import stream.Stream;
 import util.StreamConstants;
 import util.StreamUtil;
 
-// @author A0093874N
+//@author A0093874N
 
 /**
  * <p>
@@ -186,13 +183,7 @@ public class StreamTaskView extends JPanel {
 						StreamConstants.Commands.DELETE, index.getText()
 								.substring(1)));
 			}
-		});/*
-			 * addComponent(delButton, StreamConstants.UI.MARGIN_TASKVIEW,
-			 * StreamConstants.UI.GRIDX_DELETE_BTN,
-			 * StreamConstants.UI.GRIDY_DELETE_BTN,
-			 * StreamConstants.UI.GRIDHEIGHT_DELETE_BTN,
-			 * StreamConstants.UI.WEIGHTX_DELETE_BTN);
-			 */
+		});
 	}
 
 	/**
@@ -203,12 +194,6 @@ public class StreamTaskView extends JPanel {
 	@SuppressWarnings("unused")
 	private void addMarkButton() {
 		markButton = new JButton();
-		/*
-		 * addComponent(markButton, StreamConstants.UI.MARGIN_TASKVIEW,
-		 * StreamConstants.UI.GRIDX_MARK_BTN, StreamConstants.UI.GRIDY_MARK_BTN,
-		 * StreamConstants.UI.GRIDHEIGHT_MARK_BTN,
-		 * StreamConstants.UI.WEIGHTX_MARK_BTN);
-		 */
 	}
 
 	/**
