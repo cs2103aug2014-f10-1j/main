@@ -2,11 +2,7 @@ package util;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Insets;
 import java.io.InputStream;
-
-import javax.swing.BorderFactory;
-import javax.swing.border.Border;
 
 public class StreamConstants {
 
@@ -175,83 +171,17 @@ public class StreamConstants {
 		public static Font FONT_INDEX;
 		public static Font FONT_TASK;
 
-		public static final Border MARGIN_MAINFRAME = BorderFactory
-				.createEmptyBorder(20, 10, 20, 10);
-		public static final Insets MARGIN_HEADER = new Insets(0, 0, 0, 0);
-		public static final Insets MARGIN_FOOTER = new Insets(10, 10, 0, 10);
-		public static final Insets MARGIN_ELEM = new Insets(10, 10, 0, 10);
-		public static final Insets MARGIN_TASKVIEW = new Insets(0, 0, 0, 0);
-
 		public static final int HEIGHT_MAINFRAME = 700;
 		public static final int WIDTH_MAINFRAME = 750;
 
-		public static final int MAX_VIEWABLE_TASK = 5;
-
-		public static final int GRIDWIDTH_NAVIG = 1;
-		public static final int GRIDWIDTH_BUTTON = GRIDWIDTH_NAVIG * 4;
-		public static final int GRIDWIDTH_HEADER = GRIDWIDTH_BUTTON * 3;
-		public static final int GRIDWIDTH_CONSOLE = GRIDWIDTH_BUTTON * 3;
-		public static final int GRIDWIDTH_INPUT = GRIDWIDTH_NAVIG * 6;
-		public static final int GRIDWIDTH_LOGGER = GRIDWIDTH_BUTTON * 3;
-		public static final int GRIDWIDTH_FOOTER = GRIDWIDTH_BUTTON * 3;
-		public static final int GRIDWIDTH_TASK = GRIDWIDTH_BUTTON * 3;
-
-		public static final int GRIDHEIGHT_INDEX = 2;
-		public static final int GRIDHEIGHT_TASKNAME = 1;
-		public static final int GRIDHEIGHT_TIMING = 1;
-		public static final int GRIDHEIGHT_DELETE_BTN = 1;
-		public static final int GRIDHEIGHT_MARK_BTN = 1;
-
-		public static final int GRIDX_HEADER = 0;
-		public static final int GRIDX_UNDO = 0;
-		public static final int GRIDX_FIRST = GRIDX_UNDO + GRIDWIDTH_BUTTON;
-		public static final int GRIDX_PREV = GRIDX_FIRST + GRIDWIDTH_NAVIG;
-		public static final int GRIDX_NEXT = GRIDX_PREV + GRIDWIDTH_NAVIG;
-		public static final int GRIDX_LAST = GRIDX_NEXT + GRIDWIDTH_NAVIG;
-		public static final int GRIDX_CLEAR = GRIDX_LAST + GRIDWIDTH_NAVIG;
-		public static final int GRIDX_ADD_TASK_TEXTFIELD = 0;
-		public static final int GRIDX_ADD_TASK_BTN = GRIDX_ADD_TASK_TEXTFIELD
-				+ GRIDWIDTH_INPUT;
-		public static final int GRIDX_SORT_DEADLINE = GRIDX_ADD_TASK_BTN
-				+ GRIDWIDTH_NAVIG + 1;
-		public static final int GRIDX_SORT_ALPHA = GRIDX_SORT_DEADLINE
-				+ GRIDWIDTH_NAVIG;
-		public static final int GRIDX_CONSOLE = 0;
-		public static final int GRIDX_LOGGER = 0;
-		public static final int GRIDX_FOOTER = 0;
-		public static final int GRIDX_TASK = 0;
-		public static final int GRIDX_INDEX = 0;
-		public static final int GRIDX_TASKNAME = 1;
-		public static final int GRIDX_TIMING = 1;
-		public static final int GRIDX_DELETE_BTN = 2;
-		public static final int GRIDX_MARK_BTN = 2;
-
-		public static final int GRIDY_HEADER = 0;
-		public static final int GRIDY_MENU = GRIDY_HEADER + 1;
-		public static final int GRIDY_TASK_START = GRIDY_MENU + 1;
-		public static final int GRIDY_BUTTON = GRIDY_TASK_START
-				+ MAX_VIEWABLE_TASK + 1;
-		public static final int GRIDY_CONSOLE = GRIDY_BUTTON + 1;
-		public static final int GRIDY_LOGGER = GRIDY_CONSOLE + 1;
-		public static final int GRIDY_FOOTER = GRIDY_LOGGER + 1;
-		public static final int GRIDY_INDEX = 0;
-		public static final int GRIDY_TASKNAME = 0;
-		public static final int GRIDY_TIMING = 1;
-		public static final int GRIDY_DELETE_BTN = 0;
-		public static final int GRIDY_MARK_BTN = 1;
-
-		public static final int IPADY_HEADER = 0;
-		public static final int IPADY_BUTTON = 5;
-		public static final int IPADY_CONSOLE = 10;
-		public static final int IPADY_LOGGER = 10;
-		public static final int IPADY_FOOTER = 0;
-		public static final int IPADY_TASK = 0;
-
-		public static final float WEIGHTX_INDEX = (float) 1.0 / 9;
-		public static final float WEIGHTX_TASKNAME = (float) 7.0 / 9;
-		public static final float WEIGHTX_TIMING = (float) 7.0 / 9;
-		public static final float WEIGHTX_DELETE_BTN = (float) 1.0 / 9;
-		public static final float WEIGHTX_MARK_BTN = (float) 1.0 / 9;
+		public static final int MAX_VIEWABLE_TASK = 7;
+		
+		public static final int HEIGHT_TASKPANEL = 50;
+		public static final int HEIGHT_CONSOLE = 32;
+		public static final int COMPONENT_WIDTH = 700;
+		public static final int WIDTH_INDEX = 80;
+		public static final int MARGIN_COMPONENT = 10;
+		public static final int MARGIN_SIDE = 25;
 
 		public static final String BTN_FIRST = "<<";
 		public static final String BTN_PREV = "<";

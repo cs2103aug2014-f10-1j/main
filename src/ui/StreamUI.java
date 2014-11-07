@@ -99,7 +99,7 @@ public class StreamUI {
 		// addMenu();
 		setUpView();
 		// addUndoButton();
-		addNavigationButtons();
+		// addNavigationButtons();
 		// addClearSearchButton();
 		addConsole();
 		addAutocomplete();
@@ -235,7 +235,6 @@ public class StreamUI {
 	 */
 	private void addContentPanel() {
 		contentPanel = new JPanel();
-		contentPanel.setBorder(StreamConstants.UI.MARGIN_MAINFRAME);
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setLayout(null);
 		mainFrame.setContentPane(contentPanel);
@@ -249,7 +248,7 @@ public class StreamUI {
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			addComponent(taskPanel, 25, 100 + i * 80, 700, 70);
+			addComponent(taskPanel, StreamConstants.UI.MARGIN_SIDE, 70 + i * (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT), StreamConstants.UI.HEIGHT_TASKPANEL);
 			shownTasks[i] = taskPanel;
 			taskPanel.setVisible(false);
 		}
@@ -263,77 +262,7 @@ public class StreamUI {
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(StreamConstants.UI.FONT_TITLE);
 		title.setForeground(StreamConstants.UI.COLOR_HEADER);
-		addComponent(title, 25, 25, 700, 50);
-	}
-
-	/**
-	 * Constructs the usable buttons of Stream's User Interface.
-	 */
-	private void addNavigationButtons() {
-		addFirstPageButton();
-		addPrevPageButton();
-		addNextPageButton();
-		addLastPageButton();
-		buttons.add(firstPageButton);
-		buttons.add(prevPageButton);
-		buttons.add(nextPageButton);
-		buttons.add(lastPageButton);
-	}
-
-	/**
-	 * Constructs the navigate-to-first-page button.
-	 */
-	private void addFirstPageButton() {
-		firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
-		firstPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("first");
-			}
-		});
-		addComponent(firstPageButton, 25, 500, 160, 32);
-	}
-
-	/**
-	 * Constructs the navigate-to-previous-page button.
-	 */
-	private void addPrevPageButton() {
-		prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
-		prevPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("prev");
-			}
-		});
-		addComponent(prevPageButton, 205, 500, 160, 32);
-	}
-
-	/**
-	 * Constructs the navigate-to-next-page button.
-	 */
-	private void addNextPageButton() {
-		nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
-		nextPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("next");
-			}
-		});
-		addComponent(nextPageButton, 385, 500, 160, 32);
-	}
-
-	/**
-	 * Constructs the navigate-to-last-page button.
-	 */
-	private void addLastPageButton() {
-		lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
-		lastPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("last");
-			}
-		});
-		addComponent(lastPageButton, 565, 500, 160, 32);
+		addComponent(title, 25, 10, 50);
 	}
 
 	/**
@@ -342,7 +271,7 @@ public class StreamUI {
 	private void addConsole() {
 		console = new StreamUIConsole();
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(console, 25, 545, 700, 32);
+		addComponent(console, 25, 545, 32);
 	}
 
 	/**
@@ -351,7 +280,7 @@ public class StreamUI {
 	private void addLogger() {
 		logger = new StreamUILogger();
 		logger.setFont(StreamConstants.UI.FONT_LOGGER);
-		addComponent(logger, 25, 590, 700, 32);
+		addComponent(logger, 25, 590, 32);
 	}
 
 	/**
@@ -361,7 +290,7 @@ public class StreamUI {
 		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
 		footer.setFont(StreamConstants.UI.FONT_FOOTER);
 		footer.setHorizontalAlignment(SwingConstants.RIGHT);
-		addComponent(footer, 25, 625, 700, 32);
+		addComponent(footer, 25, 625, 32);
 	}
 
 	/**
@@ -379,9 +308,9 @@ public class StreamUI {
 	 * @param width
 	 *            - the width of the component
 	 */
-	private void addComponent(Component comp, int x, int y, int width,
+	private void addComponent(Component comp, int x, int y,
 			int height) {
-		comp.setBounds(x, y, width, height);
+		comp.setBounds(x, y, StreamConstants.UI.COMPONENT_WIDTH, height);
 		contentPanel.add(comp);
 	}
 
@@ -406,11 +335,13 @@ public class StreamUI {
 	 *            - the target command
 	 */
 	private void empowerKeyboardShortcuts(char key, String cmd) {
+		/*
 		for (JButton b : buttons) {
 			b.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
 			b.getActionMap().put(cmd,
 					new StreamUIKeyboardShortcut(console, cmd));
 		}
+		*/
 		logger.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
 		logger.getActionMap().put(cmd,
 				new StreamUIKeyboardShortcut(console, cmd));
@@ -425,11 +356,13 @@ public class StreamUI {
 	 *            - the target command
 	 */
 	private void empowerNavigationShortcuts(String dir, String cmd) {
+		/*
 		for (JButton b : buttons) {
 			b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
 			b.getActionMap().put(cmd,
 					new StreamUINavigationShortcut(stream, logger, cmd));
 		}
+		*/
 		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
 		logger.getActionMap().put(cmd,
 				new StreamUINavigationShortcut(stream, logger, cmd));
@@ -455,26 +388,7 @@ public class StreamUI {
 				taskPanel.hideView();
 			}
 		}
-		determineClickableNavigators();
-	}
-
-	/**
-	 * Determines which navigator buttons are clickable based on the current
-	 * page shown and total pages available.
-	 */
-	private void determineClickableNavigators() {
-		firstPageButton.setEnabled(true);
-		prevPageButton.setEnabled(true);
-		nextPageButton.setEnabled(true);
-		lastPageButton.setEnabled(true);
-		if (pageShown == 1) {
-			firstPageButton.setEnabled(false);
-			prevPageButton.setEnabled(false);
-		}
-		if (pageShown == totalPage) {
-			nextPageButton.setEnabled(false);
-			lastPageButton.setEnabled(false);
-		}
+		// determineClickableNavigators();
 	}
 
 	/**
@@ -605,6 +519,87 @@ public class StreamUI {
 	}
 
 	/**
+	 * Constructs the usable buttons of Stream's User Interface.
+	 * 
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void addNavigationButtons() {
+		addFirstPageButton();
+		addPrevPageButton();
+		addNextPageButton();
+		addLastPageButton();
+		buttons.add(firstPageButton);
+		buttons.add(prevPageButton);
+		buttons.add(nextPageButton);
+		buttons.add(lastPageButton);
+	}
+
+	/**
+	 * Constructs the navigate-to-first-page button.
+	 * 
+	 * @deprecated
+	 */
+	private void addFirstPageButton() {
+		firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
+		firstPageButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput("first");
+			}
+		});
+		// addComponent(firstPageButton, 25, 500, 160, 32);
+	}
+
+	/**
+	 * Constructs the navigate-to-previous-page button.
+	 * 
+	 * @deprecated
+	 */
+	private void addPrevPageButton() {
+		prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
+		prevPageButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput("prev");
+			}
+		});
+		// addComponent(prevPageButton, 205, 500, 160, 32);
+	}
+
+	/**
+	 * Constructs the navigate-to-next-page button.
+	 * 
+	 * @deprecated
+	 */
+	private void addNextPageButton() {
+		nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
+		nextPageButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput("next");
+			}
+		});
+		// addComponent(nextPageButton, 385, 500, 160, 32);
+	}
+
+	/**
+	 * Constructs the navigate-to-last-page button.
+	 * 
+	 * @deprecated
+	 */
+	private void addLastPageButton() {
+		lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
+		lastPageButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stream.filterAndProcessInput("last");
+			}
+		});
+		// addComponent(lastPageButton, 565, 500, 160, 32);
+	}
+	
+	/**
 	 * Constructs the undo button.
 	 * 
 	 * @deprecated
@@ -636,7 +631,30 @@ public class StreamUI {
 		});
 	}
 
+	/**
+	 * Determines which navigator buttons are clickable based on the current
+	 * page shown and total pages available.
+	 * 
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void determineClickableNavigators() {
+		firstPageButton.setEnabled(true);
+		prevPageButton.setEnabled(true);
+		nextPageButton.setEnabled(true);
+		lastPageButton.setEnabled(true);
+		if (pageShown == 1) {
+			firstPageButton.setEnabled(false);
+			prevPageButton.setEnabled(false);
+		}
+		if (pageShown == totalPage) {
+			nextPageButton.setEnabled(false);
+			lastPageButton.setEnabled(false);
+		}
+	}
+
 	//@author A0096529N
+	
 	/**
 	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
 	 * etc.

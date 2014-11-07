@@ -66,7 +66,7 @@ public class StreamTaskView extends JPanel {
 		index = new JLabel();
 		index.setHorizontalAlignment(SwingConstants.CENTER);
 		index.setFont(StreamConstants.UI.FONT_INDEX);
-		addComponent(index, 0, 0, 100, 70);
+		addComponent(index, 0, 0, StreamConstants.UI.WIDTH_INDEX, StreamConstants.UI.HEIGHT_TASKPANEL);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class StreamTaskView extends JPanel {
 		taskName = new JLabel();
 		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(taskName, 100, 0, 530, 35);
+		addComponent(taskName, StreamConstants.UI.WIDTH_INDEX, 0, 530, StreamConstants.UI.HEIGHT_TASKPANEL/2);
 	}
 
 	/**
@@ -85,7 +85,8 @@ public class StreamTaskView extends JPanel {
 	private void addTimingLabel() {
 		timing = new JLabel();
 		timing.setFont(StreamConstants.UI.FONT_TASK);
-		addComponent(timing, 100, 35, 530, 35);
+		addComponent(timing, StreamConstants.UI.WIDTH_INDEX, StreamConstants.UI.HEIGHT_TASKPANEL/2,
+				530, StreamConstants.UI.HEIGHT_TASKPANEL/2);
 	}
 
 	/**
