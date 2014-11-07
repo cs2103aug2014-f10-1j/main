@@ -289,7 +289,7 @@ public class Stream {
 	private void executeAdd(String taskNameWithParams)
 			throws StreamModificationException {
 
-		assertNull(taskNameWithParams);
+		assertNotNull(taskNameWithParams);
 		String[] contents = taskNameWithParams.split(" ");
 		String taskName = "";
 		ArrayList<String> modifyParams = new ArrayList<String>();
@@ -350,7 +350,7 @@ public class Stream {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		stackLogic.pushPlaceholderInput();
 
-		assertNull(taskName);
+		assertNotNull(taskName);
 		streamLogic.deleteTask(taskName);
 		assertNoTask(taskName);
 
@@ -375,11 +375,11 @@ public class Stream {
 			throws StreamModificationException {
 		int taskIndex = Integer.parseInt(content);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		assertNull(taskName);
+		assertNotNull(taskName);
 		StreamTask deletedTask = streamLogic.getTask(taskName);
 		ArrayList<String> order = streamLogic.getTaskList();
 
-		assertNull(taskName);
+		assertNotNull(taskName);
 		streamLogic.deleteTask(taskName);
 		assertNoTask(taskName);
 
@@ -407,7 +407,7 @@ public class Stream {
 	 * @param taskName
 	 *            - the task name to be chekced whether it is null
 	 */
-	private void assertNull(String taskName) {
+	private void assertNotNull(String taskName) {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 	}
 
@@ -443,7 +443,7 @@ public class Stream {
 		int taskIndex = Integer.parseInt(content);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 
-		assertNull(taskName);
+		assertNotNull(taskName);
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		stui.displayDetails(currentTask);
 
@@ -829,7 +829,7 @@ public class Stream {
 	 * @author Steven Khong
 	 */
 	private ArrayList<Integer> executeSearch(String content) {
-		assertNull(content);
+		assertNotNull(content);
 		ArrayList<Integer> searchResult = streamLogic.findTasks(content);
 
 		String result = String.format(StreamConstants.LogMessage.SEARCH,
@@ -841,7 +841,7 @@ public class Stream {
 
 	// @author A0093874N
 	private ArrayList<Integer> executeFilter(String content) {
-		assertNull(content);
+		assertNotNull(content);
 		ArrayList<Integer> filterResult = streamLogic.filterTasks(content);
 
 		String result = String.format(StreamConstants.LogMessage.FILTER,
