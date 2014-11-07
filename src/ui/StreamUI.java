@@ -142,39 +142,39 @@ public class StreamUI {
 	 */
 	private void addAutocomplete() {
 		HashMap<String, String> helpTexts = new HashMap<String, String>();
-		helpTexts.put("add ",
+		helpTexts.put("add",
 				"add (task name) (properties): Add a new task here");
 		helpTexts
-				.put("due ",
+				.put("due",
 						"due (index) (time): Set the deadline for a task based on index number");
 		helpTexts
-				.put("start ",
+				.put("start",
 						"start (index) (time): Set the start time for a task based on index number");
 		helpTexts
-				.put("search ",
+				.put("search",
 						"search (keyphrase): Searches tasks by its name, description, or tags");
-		helpTexts.put("delete ", "delete (index): Delete based on index number");
-		helpTexts.put("filter ",
+		helpTexts.put("delete", "delete (index): Delete based on index number");
+		helpTexts.put("filter",
 				"filter (criteria): Filters tasks by dates or ranks");
-		helpTexts.put("mark ",
+		helpTexts.put("mark",
 				"mark (index) (mark type): Marks task as done or ongoing");
-		helpTexts.put("modify ",
+		helpTexts.put("modify",
 				"Modifies multiple parameters of a task in one go");
-		helpTexts.put("view ", "view (index): Views the details of a task");
+		helpTexts.put("view", "view (index): Views the details of a task");
 		helpTexts
-				.put("sort ",
+				.put("sort",
 						"sort (criteria): Sorts tasks by alphabetical or chronological order");
 		helpTexts.put("clear", "Clears all added tasks");
 		helpTexts
 				.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
 		helpTexts
-				.put("rank ",
+				.put("rank",
 						"rank (index) (rank type): Change the rank of a certain task based on index number");
 		helpTexts.put("first ", "Go to the first page");
 		helpTexts.put("last", "Go to the last page");
 		helpTexts.put("next", "Go to the next page");
 		helpTexts.put("prev", "Go to the previous page");
-		helpTexts.put("page ", "page (page): Go to a specific page");
+		helpTexts.put("page", "page (page): Go to a specific page");
 		helpTexts.put("undo", "Undo the last action");
 		helpTexts.put("exit", "Exits the program");
 		for (String h : helpTexts.keySet()) {
