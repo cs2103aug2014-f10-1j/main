@@ -131,6 +131,7 @@ public class Stream {
 				logCommand("ADD");
 				executeAdd(content);
 				refreshUI();
+				stui.goToLastPage(); // issue 56
 				break;
 
 			case DEL:

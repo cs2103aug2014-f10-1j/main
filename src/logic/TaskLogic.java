@@ -152,9 +152,12 @@ public class TaskLogic extends BaseLogic {
 			task.setDeadline(null);
 		} else {
 			contents = StreamUtil.parseWithChronic(contents);
-			Calendar due = StreamUtil.parseCalendar(contents);
-			// TODO if content is not parseable, don't update
-			task.setDeadline(due);
+			try {
+				Calendar due = StreamUtil.parseCalendar(contents);
+				task.setDeadline(due);				
+			} catch (Exception e) {
+				
+			}
 		}
 	}
 
@@ -164,9 +167,12 @@ public class TaskLogic extends BaseLogic {
 			task.setStartTime(null);
 		} else {
 			contents = StreamUtil.parseWithChronic(contents);
-			Calendar start = StreamUtil.parseCalendar(contents);
-			// TODO if content is not parseable, don't update
-			task.setStartTime(start);
+			try {
+				Calendar start = StreamUtil.parseCalendar(contents);
+				task.setStartTime(start);				
+			} catch (Exception e) {
+				
+			}
 		}
 	}
 

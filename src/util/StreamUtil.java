@@ -192,7 +192,7 @@ public class StreamUtil {
 			due = StreamUtil.stripCalendarChars(calendarWriteUp);
 		} catch (NullPointerException e) {
 			System.out.println("\"" + due + "\" cannot be parsed");
-			//change to logging... show to user?
+			// TODO change to logging... show to user?
 		}
 		return due;
 	}
