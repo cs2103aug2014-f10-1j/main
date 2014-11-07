@@ -70,17 +70,17 @@ public class Stream {
 	// @author A0093874N
 	private void initializeExtFiles() {
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
-				"/img/done.png"));
+				"/img/taskDoneIcon40.png"));
 		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
-				"/img/notdone.png"));
+				"/img/taskOngoingIcon40.png"));
 		ImageIcon overdueIcon = new ImageIcon(getClass().getResource(
-				"/img/overdue.png"));
+				"/img/taskOverdueIcon40.png"));
 		ImageIcon hiRankIcon = new ImageIcon(getClass().getResource(
-				"/img/high.png"));
+				"/img/taskHighPriority.png"));
 		ImageIcon medRankIcon = new ImageIcon(getClass().getResource(
-				"/img/medium.png"));
+				"/img/taskNormalPriority.png"));
 		ImageIcon lowRankIcon = new ImageIcon(getClass().getResource(
-				"/img/low.png"));
+				"/img/taskLowPriority.png"));
 		ImageIcon calIcon = new ImageIcon(getClass().getResource(
 				"/img/calicon.png"));
 		ImageIcon nullCalIcon = new ImageIcon(getClass().getResource(
