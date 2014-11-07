@@ -141,7 +141,14 @@ public class StreamUI {
 					"/img/notdone.png"));
 			ImageIcon overdueImage = new ImageIcon(getClass().getResource(
 					"/img/overdue.png"));
-			StreamTaskView.initImages(doneImage, notdoneImage, overdueImage);
+			ImageIcon hiRankImage = new ImageIcon(getClass().getResource(
+					"/img/high.png"));
+			ImageIcon medRankImage = new ImageIcon(getClass().getResource(
+					"/img/medium.png"));
+			ImageIcon lowRankImage = new ImageIcon(getClass().getResource(
+					"/img/low.png"));
+			StreamTaskView.initImages(doneImage, notdoneImage, overdueImage,
+					hiRankImage, medRankImage, lowRankImage);
 		} catch (Exception e) {
 
 		}

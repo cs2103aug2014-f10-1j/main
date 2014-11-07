@@ -47,11 +47,15 @@ public class StreamTaskView extends JPanel {
 	private JLabel timing;
 	private JButton delButton;
 	private JButton markButton;
+	private JLabel rankImage;
 	private JLabel statusImage;
 
 	private static ImageIcon doneImage;
 	private static ImageIcon notdoneImage;
 	private static ImageIcon overdueImage;
+	private static ImageIcon hiRankImage;
+	private static ImageIcon medRankImage;
+	private static ImageIcon lowRankImage;
 	private static final long serialVersionUID = 1L;
 
 	StreamTaskView(Stream stream) {
@@ -61,17 +65,21 @@ public class StreamTaskView extends JPanel {
 		addIndexNumber();
 		addTaskNameLabel();
 		addTimingLabel();
+		addRankImage();
 		addStatusImage();
 		// addDeleteButton();
 		// addMarkButton();
 	}
 
 	public static void initImages(ImageIcon done, ImageIcon notdone,
-			ImageIcon overdue) {
+			ImageIcon overdue, ImageIcon high, ImageIcon med, ImageIcon low) {
 		try {
 			doneImage = done;
 			notdoneImage = notdone;
 			overdueImage = overdue;
+			hiRankImage = high;
+			medRankImage = med;
+			lowRankImage = low;
 		} catch (Exception e) {
 
 		}
@@ -108,6 +116,12 @@ public class StreamTaskView extends JPanel {
 		addComponent(timing, StreamConstants.UI.WIDTH_INDEX,
 				StreamConstants.UI.HEIGHT_TASKPANEL / 2, 530,
 				StreamConstants.UI.HEIGHT_TASKPANEL / 2);
+	}
+
+	private void addRankImage() {
+		rankImage = new JLabel();
+		addComponent(rankImage, 600, 0, StreamConstants.UI.HEIGHT_TASKPANEL,
+				StreamConstants.UI.HEIGHT_TASKPANEL);
 	}
 
 	private void addStatusImage() {
@@ -195,6 +209,19 @@ public class StreamTaskView extends JPanel {
 			statusImage.setIcon(overdueImage);
 		} else {
 			statusImage.setIcon(notdoneImage);
+		}
+		switch (task.getRank()) {
+			case "high":
+				rankImage.setIcon(hiRankImage);
+				break;
+			case "medium":
+				rankImage.setIcon(medRankImage);
+				break;
+			case "low":
+				rankImage.setIcon(lowRankImage);
+				break;
+			default:
+
 		}
 		/*
 		 * if (task.isDone()) { markButtonNotDone(); } else { markButtonDone();

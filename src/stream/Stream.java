@@ -172,6 +172,7 @@ public class Stream {
 			case RANK:
 				logCommand("RANK");
 				executeRank(content);
+				refreshUI();
 				break;
 
 			case MARK:
