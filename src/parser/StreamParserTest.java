@@ -8,6 +8,10 @@ import org.junit.Test;
 
 import exception.StreamParserException;
 
+// @author A0119401U
+
+//Note: for test not focusing on the range problem (number of tasks type)
+//remember to set the second param of interpretCommand as a reasonable positive integer
 
 public class StreamParserTest {
 
@@ -37,7 +41,7 @@ public class StreamParserTest {
 	public void parserDescTest() {
 		
 		try{
-			stparser.interpretCommand("desc -1 ok", 0);
+			stparser.interpretCommand("desc -1 ok", 1);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = StreamParser.ERROR_INVALID_INDEX;
@@ -45,7 +49,7 @@ public class StreamParserTest {
 		}
 		
 		try{
-			stparser.interpretCommand("desc newcq ok", 0);
+			stparser.interpretCommand("desc newcq ok", 3);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = StreamParser.ERROR_INVALID_INDEX;
@@ -53,7 +57,7 @@ public class StreamParserTest {
 		}
 		
 		try{
-			stparser.interpretCommand("desc 300 ok", 0);
+			stparser.interpretCommand("desc 50 ok", 45);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = StreamParser.ERROR_INDEX_OUT_OF_BOUNDS;
@@ -61,7 +65,7 @@ public class StreamParserTest {
 		}
 		
 		try{
-			stparser.interpretCommand("desc 1", 0);
+			stparser.interpretCommand("desc 1", 2);
 			fail();
 		}catch (Exception e) {
 			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
@@ -75,7 +79,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("del ", 0);
+			stparser.interpretCommand("del ", 1);
 			fail();
 			
 		}catch (StreamParserException e) {
@@ -85,7 +89,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("del as", 0);
+			stparser.interpretCommand("del as", 5);
 			fail();
 			
 		}catch (StreamParserException e) {
@@ -100,7 +104,7 @@ public class StreamParserTest {
 		
 		try{
 			
-			stparser.interpretCommand("done tutorial", 0);
+			stparser.interpretCommand("done tutorial", 3);
 			fail();
 			
 		}catch (StreamParserException e) {
@@ -108,6 +112,58 @@ public class StreamParserTest {
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
+	}
+	
+	@Test
+	public void parserRankTest() {
+		
+		try{
+			
+			stparser.interpretCommand("rank as high", 5);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INVALID_INDEX;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		//This test and the following one demonstrate the ranking type and 
+		//the boundary: you cannot modify a task whose index is not real
+		try{
+			
+			stparser.interpretCommand("rank 1 small", 1);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INVALID_RANK;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		try{
+			stparser.interpretCommand("rank 1 high",0);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INDEX_OUT_OF_BOUNDS;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+	}
+	
+	@Test
+	public void parserTagTest() {
+		
+		try{
+			stparser.interpretCommand("tag 1", 3);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
+			assertEquals(expectedMessage, e.getMessage());
+		}
+		
+		try{
+			stparser.interpretCommand("tag 80 home", 78);
+			fail();
+		}catch (StreamParserException e) {
+			final String expectedMessage = StreamParser.ERROR_INDEX_OUT_OF_BOUNDS;
+			assertEquals(expectedMessage, e.getMessage());
+		}
 	}
 	
 
