@@ -123,18 +123,9 @@ public class StreamUI {
 	private void initFonts() {
 		InputStream titleFont = getClass().getResourceAsStream(
 				"/fonts/Awesome Java.ttf");
-		InputStream indexFont = getClass().getResourceAsStream(
-				"/fonts/Awesome Java.ttf");
 		InputStream consoleFont = getClass().getResourceAsStream(
 				"/fonts/Ubuntu.ttf");
-		InputStream loggerFont = getClass().getResourceAsStream(
-				"/fonts/Ubuntu.ttf");
-		InputStream footerFont = getClass().getResourceAsStream(
-				"/fonts/Ubuntu.ttf");
-		InputStream taskFont = getClass().getResourceAsStream(
-				"/fonts/Ubuntu.ttf");
-		StreamConstants.UI.initFonts(titleFont, indexFont, consoleFont,
-				loggerFont, footerFont, taskFont);
+		StreamConstants.UI.initFonts(titleFont, consoleFont);
 	}
 
 	/**
@@ -248,7 +239,9 @@ public class StreamUI {
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView(stream);
 			taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			addComponent(taskPanel, StreamConstants.UI.MARGIN_SIDE, 70 + i * (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT), StreamConstants.UI.HEIGHT_TASKPANEL);
+			addComponent(taskPanel,
+					70 + i * (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
+					StreamConstants.UI.HEIGHT_TASKPANEL);
 			shownTasks[i] = taskPanel;
 			taskPanel.setVisible(false);
 		}
@@ -262,7 +255,7 @@ public class StreamUI {
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(StreamConstants.UI.FONT_TITLE);
 		title.setForeground(StreamConstants.UI.COLOR_HEADER);
-		addComponent(title, 25, 10, 50);
+		addComponent(title, 10, 50);
 	}
 
 	/**
@@ -271,7 +264,7 @@ public class StreamUI {
 	private void addConsole() {
 		console = new StreamUIConsole();
 		console.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addComponent(console, 25, 545, 32);
+		addComponent(console, 530, 32);
 	}
 
 	/**
@@ -280,7 +273,7 @@ public class StreamUI {
 	private void addLogger() {
 		logger = new StreamUILogger();
 		logger.setFont(StreamConstants.UI.FONT_LOGGER);
-		addComponent(logger, 25, 590, 32);
+		addComponent(logger, 575, 45);
 	}
 
 	/**
@@ -290,7 +283,7 @@ public class StreamUI {
 		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
 		footer.setFont(StreamConstants.UI.FONT_FOOTER);
 		footer.setHorizontalAlignment(SwingConstants.RIGHT);
-		addComponent(footer, 25, 625, 32);
+		addComponent(footer, 625, 32);
 	}
 
 	/**
@@ -299,18 +292,14 @@ public class StreamUI {
 	 * 
 	 * @param comp
 	 *            - the component to be added
-	 * @param x
-	 *            - the absolute horizontal position
 	 * @param y
 	 *            - the absolute vertical position
-	 * @param height
-	 *            - the height of the component
 	 * @param width
 	 *            - the width of the component
 	 */
-	private void addComponent(Component comp, int x, int y,
-			int height) {
-		comp.setBounds(x, y, StreamConstants.UI.COMPONENT_WIDTH, height);
+	private void addComponent(Component comp, int y, int height) {
+		comp.setBounds(StreamConstants.UI.MARGIN_SIDE, y,
+				StreamConstants.UI.COMPONENT_WIDTH, height);
 		contentPanel.add(comp);
 	}
 
@@ -336,12 +325,11 @@ public class StreamUI {
 	 */
 	private void empowerKeyboardShortcuts(char key, String cmd) {
 		/*
-		for (JButton b : buttons) {
-			b.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
-			b.getActionMap().put(cmd,
-					new StreamUIKeyboardShortcut(console, cmd));
-		}
-		*/
+		 * for (JButton b : buttons) {
+		 * b.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
+		 * b.getActionMap().put(cmd, new StreamUIKeyboardShortcut(console,
+		 * cmd)); }
+		 */
 		logger.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
 		logger.getActionMap().put(cmd,
 				new StreamUIKeyboardShortcut(console, cmd));
@@ -357,12 +345,11 @@ public class StreamUI {
 	 */
 	private void empowerNavigationShortcuts(String dir, String cmd) {
 		/*
-		for (JButton b : buttons) {
-			b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
-			b.getActionMap().put(cmd,
-					new StreamUINavigationShortcut(stream, logger, cmd));
-		}
-		*/
+		 * for (JButton b : buttons) {
+		 * b.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+		 * b.getActionMap().put(cmd, new StreamUINavigationShortcut(stream,
+		 * logger, cmd)); }
+		 */
 		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
 		logger.getActionMap().put(cmd,
 				new StreamUINavigationShortcut(stream, logger, cmd));
@@ -541,7 +528,7 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addFirstPageButton() {
-		firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
+		// firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
 		firstPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -557,7 +544,7 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addPrevPageButton() {
-		prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
+		// prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
 		prevPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -573,7 +560,7 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addNextPageButton() {
-		nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
+		// nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
 		nextPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -589,7 +576,7 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addLastPageButton() {
-		lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
+		// lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
 		lastPageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -598,7 +585,7 @@ public class StreamUI {
 		});
 		// addComponent(lastPageButton, 565, 500, 160, 32);
 	}
-	
+
 	/**
 	 * Constructs the undo button.
 	 * 
@@ -606,7 +593,7 @@ public class StreamUI {
 	 */
 	@SuppressWarnings("unused")
 	private void addUndoButton() {
-		undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
+		// undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
 		undoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -622,7 +609,7 @@ public class StreamUI {
 	 */
 	@SuppressWarnings("unused")
 	private void addClearSearchButton() {
-		clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
+		// clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
 		clearSearchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -653,8 +640,8 @@ public class StreamUI {
 		}
 	}
 
-	//@author A0096529N
-	
+	// @author A0096529N
+
 	/**
 	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
 	 * etc.
@@ -676,7 +663,7 @@ public class StreamUI {
 	private void addMenu() {
 		newTaskTextField = new JTextField();
 		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
-		addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
+		// addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
 		addTaskButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -694,7 +681,7 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addSortAlphaButton() {
-		sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
+		// sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
 		sortAlphaButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -707,7 +694,7 @@ public class StreamUI {
 	 * @deprecated
 	 */
 	private void addSortDeadlineButton() {
-		sortDeadlineButton = new JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
+		// sortDeadlineButton = new JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
 		sortDeadlineButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

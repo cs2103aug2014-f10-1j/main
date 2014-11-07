@@ -176,7 +176,7 @@ public class StreamTaskView extends JPanel {
 	 */
 	@SuppressWarnings("unused")
 	private void addDeleteButton() {
-		delButton = new JButton(StreamConstants.UI.BTN_DELETE);
+		// delButton = new JButton(StreamConstants.UI.BTN_DELETE);
 		delButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -204,7 +204,7 @@ public class StreamTaskView extends JPanel {
 	 */
 	@SuppressWarnings("unused")
 	private void markButtonDone() {
-		markButton.setText(StreamConstants.UI.BTN_MARK_DONE);
+		// markButton.setText(StreamConstants.UI.BTN_MARK_DONE);
 		StreamUtil.clearAllActionListeners(markButton,
 				markButton.getActionListeners());
 		markButton.addActionListener(new ActionListener() {
@@ -224,7 +224,7 @@ public class StreamTaskView extends JPanel {
 	 */
 	@SuppressWarnings("unused")
 	private void markButtonNotDone() {
-		markButton.setText(StreamConstants.UI.BTN_MARK_NOT_DONE);
+		// markButton.setText(StreamConstants.UI.BTN_MARK_NOT_DONE);
 		StreamUtil.clearAllActionListeners(markButton,
 				markButton.getActionListeners());
 		markButton.addActionListener(new ActionListener() {

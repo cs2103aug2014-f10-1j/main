@@ -1,6 +1,6 @@
 package ui;
 
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 
 import util.StreamConstants;
 import util.StreamUtil;
@@ -25,12 +25,14 @@ import util.StreamUtil;
  * @version V0.4
  * @author Wilson Kurniawan
  */
-public class StreamUILogger extends JTextField {
+public class StreamUILogger extends JTextArea {
 
 	private static final long serialVersionUID = 1L;
 
 	StreamUILogger() {
 		super();
+		setBackground(StreamConstants.UI.COLOR_LOGGER);
+		setMargin(StreamConstants.UI.MARGIN_LOGGER);
 		setEditable(false);
 	}
 

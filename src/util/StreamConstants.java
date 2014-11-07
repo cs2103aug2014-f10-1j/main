@@ -2,6 +2,7 @@ package util;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Insets;
 import java.io.InputStream;
 
 public class StreamConstants {
@@ -163,6 +164,7 @@ public class StreamConstants {
 				(float) 208.52 / 360, (float) 0.5728, (float) 0.8353);
 		public static final Color COLOR_LOG_MSG = Color.BLACK;
 		public static final Color COLOR_ERR_MSG = Color.RED;
+		public static final Color COLOR_LOGGER = Color.GRAY.brighter();
 
 		public static Font FONT_TITLE;
 		public static Font FONT_CONSOLE;
@@ -175,7 +177,7 @@ public class StreamConstants {
 		public static final int WIDTH_MAINFRAME = 750;
 
 		public static final int MAX_VIEWABLE_TASK = 7;
-		
+
 		public static final int HEIGHT_TASKPANEL = 50;
 		public static final int HEIGHT_CONSOLE = 32;
 		public static final int COMPONENT_WIDTH = 700;
@@ -183,36 +185,19 @@ public class StreamConstants {
 		public static final int MARGIN_COMPONENT = 10;
 		public static final int MARGIN_SIDE = 25;
 
-		public static final String BTN_FIRST = "<<";
-		public static final String BTN_PREV = "<";
-		public static final String BTN_NEXT = ">";
-		public static final String BTN_LAST = ">>";
-		public static final String BTN_SORT_ALPHA = "A";
-		public static final String BTN_SORT_DEADLINE = "T";
-		public static final String BTN_ADD_TASK = "+";
-		public static final String BTN_CLEAR = "Clear search result";
-		public static final String BTN_UNDO = "Undo last action";
-		public static final String BTN_DELETE = "Delete";
-		public static final String BTN_MARK_DONE = "Mark as done";
-		public static final String BTN_MARK_NOT_DONE = "Mark as ongoing";
+		public static final Insets MARGIN_LOGGER = new Insets(5, 5, 5, 5);
 
 		public static void initFonts(InputStream titleFont,
-				InputStream indexFont, InputStream consoleFont,
-				InputStream loggerFont, InputStream footerFont,
-				InputStream taskFont) {
+				InputStream consoleFont) {
 			try {
 				FONT_TITLE = Font.createFont(Font.TRUETYPE_FONT, titleFont)
 						.deriveFont(Font.PLAIN, 100);
-				FONT_INDEX = Font.createFont(Font.TRUETYPE_FONT, indexFont)
-						.deriveFont(Font.PLAIN, 70);
+				FONT_INDEX = FONT_TITLE.deriveFont(Font.PLAIN, 70);
 				FONT_CONSOLE = Font.createFont(Font.TRUETYPE_FONT, consoleFont)
 						.deriveFont(Font.PLAIN, 13);
-				FONT_LOGGER = Font.createFont(Font.TRUETYPE_FONT, loggerFont)
-						.deriveFont(Font.PLAIN, 13);
-				FONT_FOOTER = Font.createFont(Font.TRUETYPE_FONT, footerFont)
-						.deriveFont(Font.PLAIN, 12);
-				FONT_TASK = Font.createFont(Font.TRUETYPE_FONT, taskFont)
-						.deriveFont(Font.PLAIN, 13);
+				FONT_LOGGER = FONT_CONSOLE.deriveFont(Font.PLAIN, 13);
+				FONT_FOOTER = FONT_CONSOLE.deriveFont(Font.PLAIN, 12);
+				FONT_TASK = FONT_CONSOLE.deriveFont(Font.PLAIN, 13);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
