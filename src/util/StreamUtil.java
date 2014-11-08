@@ -471,4 +471,14 @@ public class StreamUtil {
 			return isAfterStartTime;
 		}
 	}
+	
+	// @author A0118007R
+		public static boolean isValidStartTime(Calendar deadline, Calendar startTime) {
+			if (deadline == null) {
+				return true;
+			} else {
+				boolean isBeforeDeadline = startTime.compareTo(deadline) == -1;
+				return isBeforeDeadline;
+			}
+		}
 }

@@ -172,7 +172,10 @@ public class TaskLogic extends BaseLogic {
 			contents = StreamUtil.parseWithChronic(contents);
 			try {
 				Calendar start = StreamUtil.parseCalendar(contents);
-				task.setStartTime(start);				
+				Calendar deadline = task.getDeadline();
+				if (StreamUtil.isValidStartTime(deadline, start)) {
+					task.setStartTime(start);				
+				}
 			} catch (Exception e) {
 				
 			}
