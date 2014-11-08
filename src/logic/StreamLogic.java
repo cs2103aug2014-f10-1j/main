@@ -101,7 +101,7 @@ public class StreamLogic extends BaseLogic {
 					} else if (o2.getStartTime() == null) {
 						return 1;
 					} else {
-						return o1.getStartTime().compareTo(o2.getStartTime());
+						return o2.getStartTime().compareTo(o1.getStartTime());
 					}
 				}
 			});
@@ -116,7 +116,7 @@ public class StreamLogic extends BaseLogic {
 					} else if (o2.getStartTime() == null) {
 						return -1;
 					} else {
-						return o2.getStartTime().compareTo(o1.getStartTime());
+						return o1.getStartTime().compareTo(o2.getStartTime());
 					}
 				}
 			});
@@ -138,7 +138,7 @@ public class StreamLogic extends BaseLogic {
 					} else if (o2.getDeadline() == null) {
 						return -1;
 					} else {
-						return o1.getDeadline().compareTo(o2.getDeadline());
+						return o2.getDeadline().compareTo(o1.getDeadline());
 					}
 				}
 			});
@@ -153,7 +153,7 @@ public class StreamLogic extends BaseLogic {
 					} else if (o2.getDeadline() == null) {
 						return -1;
 					} else {
-						return o2.getDeadline().compareTo(o1.getDeadline());
+						return o1.getDeadline().compareTo(o2.getDeadline());
 					}
 				}
 			});
