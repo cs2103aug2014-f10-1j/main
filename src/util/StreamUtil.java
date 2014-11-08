@@ -464,14 +464,11 @@ public class StreamUtil {
 
 	// @author A0118007R
 	public static boolean isValidDeadline(Calendar deadline, Calendar startTime) {
-		Span x = Chronic.parse("now");
-		Calendar currentTime = x.getBeginCalendar();
-		boolean isAfterCurrentTime = deadline.compareTo(currentTime) == 1;
 		if (startTime == null) {
-			return isAfterCurrentTime;
+			return true;
 		} else {
 			boolean isAfterStartTime = deadline.compareTo(startTime) == 1;
-			return isAfterStartTime && isAfterCurrentTime;
+			return isAfterStartTime;
 		}
 	}
 }

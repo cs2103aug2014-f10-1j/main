@@ -154,7 +154,10 @@ public class TaskLogic extends BaseLogic {
 			contents = StreamUtil.parseWithChronic(contents);
 			try {
 				Calendar due = StreamUtil.parseCalendar(contents);
-				task.setDeadline(due);				
+				Calendar startTime = task.getStartTime();
+				if (StreamUtil.isValidDeadline(due, startTime)) {
+					task.setDeadline(due);				
+				}
 			} catch (Exception e) {
 				
 			}
