@@ -72,6 +72,7 @@ public class Stream {
 
 	// @author A0093874N
 	private void initializeExtFiles() {
+		
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
 				"/img/taskDoneIcon.png"));
 		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
