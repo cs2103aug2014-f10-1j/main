@@ -161,6 +161,9 @@ public class StreamUI {
 		helpTexts.put("modify",
 				"Modifies multiple parameters of a task in one go");
 		helpTexts.put("view", "view (index): Views the details of a task");
+		helpTexts.put("tag", "tag (index) (tag1) ... (tagN): Add tags to a task based on index number.");
+		helpTexts.put("name", "name (index) (new name): Changes a task's name based on index number.");
+		helpTexts.put("untag", "tag (index) (tag1) ... (tagN): Remove tags of a task based on index number.");
 		helpTexts
 				.put("sort",
 						"sort (criteria): Sorts tasks by alphabetical or chronological order");
