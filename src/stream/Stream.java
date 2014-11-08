@@ -8,9 +8,6 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-import com.mdimension.jchronic.Chronic;
-import com.mdimension.jchronic.utils.Span;
-
 import logic.StackLogic;
 import logic.StreamLogic;
 import logic.TaskLogic;

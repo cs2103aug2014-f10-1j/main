@@ -24,14 +24,16 @@ Currently, **STREAM** is capable of basic CRUD (Create, Read, Update, Delete) op
 * **untag** *indexNo* *tags*: removes tags from a task
 * **search** *keyphrase*: searches tasks that match the keyphrase
 * **filter** *(criteria)*: filters the tasks that fulfills the criteria
-* **sort** *(alphabetical|deadline)* *[ascending/descending]*: sorts tasks according to the category
+* **sort** *(alphabetical|deadline|starttime)* *[ascending/descending]*: sorts tasks according to the category
 * **clrsrc**: clears search result
+* **first**, **prev**, **next**, **last**: navigates to another page
+* **page** *pageNo*: navigates immediately to the chosen page
 * **undo**: undoes the last operation
 * **exit**: exits **STREAM**
 
 We support multiple, integrated commands such as
 
-**add** *some task* **due** *28/11* **desc** *buy Pokemon Omega Ruby* **tag** *#awesome #newgame #whatisfinals*
+**add** *some task* **-due** *28/11* **-desc** *buy Pokemon Omega Ruby* **-tag** *#awesome #newgame #whatisfinals* **-rank** *high*
 
 We also support keyboard shortcuts, as follows:
 * *a*: **add**
@@ -42,6 +44,7 @@ We also support keyboard shortcuts, as follows:
 * *t*: **sort**
 * *s*: **search**
 * *f*: **filter**
+* *p*: **page**
 * *u*: **undo**
 * *e*: **exit**
 

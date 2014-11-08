@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import util.StreamConstants;
-import util.StreamUtil;
 
 /**
  * Some documentation.

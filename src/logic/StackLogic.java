@@ -32,7 +32,7 @@ public class StackLogic extends BaseLogic {
 					taskIndex, "null");
 		} else {
 			inverseCommand = String.format(StreamConstants.Commands.DUE,
-					taskIndex, StreamUtil.getCalendarWriteUpForUndo(currentDeadline));
+					taskIndex, StreamUtil.getCalendarWriteUp(currentDeadline));
 		}
 		pushInput(inverseCommand);
 	}
@@ -45,7 +45,7 @@ public class StackLogic extends BaseLogic {
 					taskIndex, "null");
 		} else {
 			inverseCommand = String.format(StreamConstants.Commands.START,
-					taskIndex, getInputDate(currentStartTime));
+					taskIndex, StreamUtil.getCalendarWriteUp(currentStartTime));
 		}
 		pushInput(inverseCommand);
 	}
@@ -243,6 +243,10 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * @deprecated use StreamUtil's getCalendarWriteUp
+	 */
+	@SuppressWarnings("unused")
 	private String getInputDate(Calendar currentDeadline) {
 		return currentDeadline.get(Calendar.MONTH + 1) + "/"
 				+ (currentDeadline.get(Calendar.DATE) + "/"

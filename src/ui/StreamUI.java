@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
