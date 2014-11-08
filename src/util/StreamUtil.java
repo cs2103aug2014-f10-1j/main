@@ -177,18 +177,6 @@ public class StreamUtil {
 				+ addZeroToTime(calendar.get(Calendar.SECOND));
 	}
 
-	
-	// @author A0118007R
-	public static String getCalendarWriteUpForUndo(Calendar calendar) {
-		return addZeroToTime(calendar.get(Calendar.MONTH) + 1) +  StreamConstants.DATE_DELIMITER
-				+ addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
-				+ StreamConstants.DATE_DELIMITER + calendar.get(Calendar.YEAR) + " "
-				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
-				+ StreamConstants.TIME_DELIMITER
-				+ addZeroToTime(calendar.get(Calendar.MINUTE))
-				+ StreamConstants.TIME_DELIMITER
-				+ addZeroToTime(calendar.get(Calendar.SECOND));
-	}
 	/**
 	 * Converts a dd MONTHNAME yyyy hh:mm:ss calendar to dd MONTHNAME yyyy hh mm
 	 * ss.
@@ -356,6 +344,34 @@ public class StreamUtil {
 		return false;
 	}
 
+	/**
+	 * Checks whether the <i>deadline</i> entered is after <i>startTime</i>
+	 * 
+	 * @return <b>boolean</b> - indicates whether <i>deadline</i> is after
+	 *         <i>startTime</i>
+	 */
+	public static boolean isValidDeadline(Calendar deadline, Calendar startTime) {
+		if (deadline == null || startTime == null) {
+			return true;
+		} else {
+			return deadline.after(startTime);
+		}
+	}
+
+	/**
+	 * Checks whether the <i>startTime</i> entered is before <i>deadline</i>
+	 * 
+	 * @return <b>boolean</b> - indicates whether <i>startTime</i> is before
+	 *         <i>deadline</i>
+	 */
+	public static boolean isValidStartTime(Calendar deadline, Calendar startTime) {
+		if (deadline == null || startTime == null) {
+			return true;
+		} else {
+			return startTime.before(deadline);
+		}
+	}
+
 	//@author A0119401U
 
 	/**
@@ -374,24 +390,20 @@ public class StreamUtil {
 		}
 		return size > 0;
 	}
-	
 
 	/**
 	 * 
-	 * A utility function to check whether the given index is within the
-	 * range of the whole list of tasks
+	 * A utility function to check whether the given index is within the range
+	 * of the whole list of tasks
 	 * 
 	 * @param index
 	 * @param numOfTasks
-	 * @return boolean value whether it's within the range or not
-	 * 
-	 * Moved from StreamParser since it's more suitable to put here.
+	 * @return <b>boolean</b> - indicates whether it's within the range or not
 	 */
-	
+
 	public static boolean isWithinRange(int index, int numOfTasks) {
 		return index >= 1 && index <= numOfTasks;
 	}
-
 
 	//@author A0118007R-unused
 
@@ -462,16 +474,18 @@ public class StreamUtil {
 		return year;
 	}
 
-	// @author A0118007R
-	public static boolean isValidDeadline(Calendar deadline, Calendar startTime) {
-		Span x = Chronic.parse("now");
-		Calendar currentTime = x.getBeginCalendar();
-		boolean isAfterCurrentTime = deadline.compareTo(currentTime) == 1;
-		if (startTime == null) {
-			return isAfterCurrentTime;
-		} else {
-			boolean isAfterStartTime = deadline.compareTo(startTime) == 1;
-			return isAfterStartTime && isAfterCurrentTime;
-		}
+	/**
+	 * @deprecated not needed
+	 */
+	public static String getCalendarWriteUpForUndo(Calendar calendar) {
+		return addZeroToTime(calendar.get(Calendar.MONTH) + 1)
+				+ StreamConstants.DATE_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
+				+ StreamConstants.DATE_DELIMITER + calendar.get(Calendar.YEAR)
+				+ " " + addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.MINUTE))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.SECOND));
 	}
 }

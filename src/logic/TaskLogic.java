@@ -13,6 +13,8 @@ import util.StreamConstants;
 import util.StreamUtil;
 
 public class TaskLogic extends BaseLogic {
+	
+	private ArrayList<String> failedModifications;
 
 	public static TaskLogic init() {
 		return new TaskLogic();
@@ -100,10 +102,9 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	// @author A0118007R
-	// updated by A0119401U
 	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
-
+		
 		switch (attribute) {
 			case "-desc":
 				description(task, contents);
@@ -124,7 +125,7 @@ public class TaskLogic extends BaseLogic {
 				removeTags(task, contents.split(" "));
 				break;
 			case "-settags":
-				settags(task, contents);
+				setTags(task, contents);
 				break;
 			case "-rank":
 				rank(task, contents);
@@ -154,7 +155,10 @@ public class TaskLogic extends BaseLogic {
 			contents = StreamUtil.parseWithChronic(contents);
 			try {
 				Calendar due = StreamUtil.parseCalendar(contents);
-				task.setDeadline(due);				
+				Calendar startTime = task.getStartTime();
+				if (StreamUtil.isValidDeadline(due, startTime)) {
+					task.setDeadline(due);				
+				} 
 			} catch (Exception e) {
 				
 			}
@@ -169,7 +173,10 @@ public class TaskLogic extends BaseLogic {
 			contents = StreamUtil.parseWithChronic(contents);
 			try {
 				Calendar start = StreamUtil.parseCalendar(contents);
-				task.setStartTime(start);				
+				Calendar deadline = task.getDeadline();
+				if (StreamUtil.isValidStartTime(deadline, start)) {
+					task.setStartTime(start);				
+				}
 			} catch (Exception e) {
 				
 			}
@@ -177,7 +184,7 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
-	private void settags(StreamTask task, String contents) {
+	private void setTags(StreamTask task, String contents) {
 		task.getTags().clear();
 		if (!contents.trim().isEmpty()) {
 			addTags(task, contents.split(" "));

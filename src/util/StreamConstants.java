@@ -183,9 +183,10 @@ public class StreamConstants {
 		public static final Color COLOR_LOG_MSG = Color.BLACK;
 		public static final Color COLOR_ERR_MSG = Color.RED;
 		public static final Color COLOR_HELP_MSG = Color.GRAY;
-		public static final Color COLOR_LOGGER = Color.GRAY.brighter();
+		public static final Color COLOR_LOGGER = new Color(228, 228, 228);
 		public static final Color COLOR_FEEDBACK = Color.WHITE;
 		public static final Color COLOR_MONTH = Color.WHITE;
+		public static final Color COLOR_TASKPANEL = new Color(228, 228, 228);
 
 		public static Font FONT_TITLE = StreamExternals.FONT_TITLE.deriveFont(
 				Font.PLAIN, 100);

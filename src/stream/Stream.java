@@ -8,9 +8,6 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-import com.mdimension.jchronic.Chronic;
-import com.mdimension.jchronic.utils.Span;
-
 import logic.StackLogic;
 import logic.StreamLogic;
 import logic.TaskLogic;
@@ -72,6 +69,7 @@ public class Stream {
 
 	// @author A0093874N
 	private void initializeExtFiles() {
+		
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
 				"/img/taskDoneIcon.png"));
 		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
@@ -959,12 +957,16 @@ public class Stream {
 	 * @throws StreamModificationException
 	 */
 	private String setStartDate(String taskName, int taskIndex,
-			Calendar calendar) throws StreamModificationException {
+			Calendar newStartTime) throws StreamModificationException {
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		Calendar currentStartTime = currentTask.getStartTime();
-		stackLogic.pushInverseStartCommand(taskIndex, currentStartTime);
-		return taskLogic.setStartTime(currentTask, calendar);
-
+		Calendar deadline = currentTask.getDeadline();
+		if (StreamUtil.isValidStartTime(deadline, newStartTime)) {
+			stackLogic.pushInverseStartCommand(taskIndex, currentStartTime);
+			return taskLogic.setStartTime(currentTask, newStartTime);
+		} else {
+			return StreamConstants.ExceptionMessage.ERR_STARTTIME_AFTER_DEADLINE;
+		}
 	}
 
 	// @author A0119401U
