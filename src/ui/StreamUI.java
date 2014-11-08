@@ -153,6 +153,10 @@ public class StreamUI {
 				.put("search",
 						"search (keyphrase): Searches tasks by its name, description, or tags");
 		helpTexts.put("delete", "delete (index): Delete based on index number");
+		helpTexts.put("del", "del (index): Delete based on index number");
+
+		helpTexts.put("desc", "desc (index) (description): Sets a description to a task based on index number");
+
 		helpTexts.put("describe", "describe (index) (description): Sets a description to a task based on index number");
 		helpTexts.put("filter",
 				"filter (criteria): Filters tasks by dates or ranks");
