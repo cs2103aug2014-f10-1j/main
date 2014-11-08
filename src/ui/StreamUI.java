@@ -550,9 +550,8 @@ public class StreamUI {
 	/**
 	 * Navigates to a specific page.
 	 */
-	public void goToPage(String content) {
-		String[] contents = content.split(" ");
-		repopulateTaskView(Integer.parseInt(contents[0]));
+	public void goToPage(Integer page) {
+		repopulateTaskView(page);
 	}
 
 	//@author A0093874N-unused

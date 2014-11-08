@@ -6,13 +6,12 @@ import util.StreamLogger.LogLevel;
 import util.StreamUtil;
 import exception.StreamParserException;
 
-// @author A0119401U
+//@author A0119401U
 /**
  * Parser is used to interpret the user input to a pack of information and later
  * on pass it to the Logic part
  * 
- * @version V0.4
- * @author Jiang Shenhao
+ * @version V0.5
  */
 public class StreamParser {
 
@@ -41,6 +40,7 @@ public class StreamParser {
 	}
 
 	private CommandType commandKey;
+	private Integer commandIndex;
 	private String commandContent;
 
 	private static final StreamLogger logger = StreamLogger
@@ -59,14 +59,21 @@ public class StreamParser {
 	static final String ERROR_UNKNOWN_COMMAND = "Unknown command type!";
 
 	private static final int PARAM_POS_KEYWORD = 0;
+	private static final int PARAM_POS_CONTENTS = 1;
 	private static final int PARAM_POS_INDEX = 1;
-	private static final int PARAM_POS_CONTENT = 2;
+	private static final int PARAM_POS_ARGS = 2;
 	private static final int PARAM_POS_FILTERTYPE = 1;
 	private static final int PARAM_POS_SORTTYPE = 1;
 	private static final int PARAM_POS_SORTORDER = 2;
 
+	private static final int ARGS_LENGTH_TYPE_ONE = 2;
+	private static final int ARGS_LENGTH_TYPE_TWO = 2;
+	private static final int ARGS_LENGTH_TYPE_THREE = 3;
+	private static final int ARGS_LENGTH_TYPE_FOUR = 3;
+	
 	public StreamParser() {
 		this.commandKey = CommandType.INIT;
+		this.commandIndex = null;
 		this.commandContent = null;
 	}
 
@@ -97,6 +104,7 @@ public class StreamParser {
 			break;
 
 		case "due":
+		case "end":
 			checkTypeFourValidity(contentsSplitWithIndex, numOfTasks);
 			this.commandKey = CommandType.DUE;
 			break;
@@ -151,7 +159,7 @@ public class StreamParser {
 			break;
 
 		case "sort":
-			checkSortValidity(contentsSplitWithIndex);
+			checkSortValidity(contents, contentsSplitWithIndex);
 			this.commandKey = CommandType.SORT;
 			break;
 
@@ -179,10 +187,12 @@ public class StreamParser {
 
 		case "recover":
 			this.commandKey = CommandType.RECOVER;
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
 			break;
 
 		case "dismiss":
 			this.commandKey = CommandType.DISMISS;
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
 			break;
 
 		case "exit":
@@ -208,7 +218,8 @@ public class StreamParser {
 
 		case "page":
 		case "goto":
-			checkTypeTwoValidity(contents, 1 + numOfTasks/StreamConstants.UI.MAX_VIEWABLE_TASK);
+			checkTypeTwoValidity(contents, 1 + numOfTasks
+					/ StreamConstants.UI.MAX_VIEWABLE_TASK);
 			this.commandKey = CommandType.PAGE;
 			break;
 
@@ -217,127 +228,161 @@ public class StreamParser {
 			throw new StreamParserException(ERROR_UNKNOWN_COMMAND);
 
 		}
-		this.commandContent = executeCommand(contents);
+		logCommand(contents, contentsSplitWithIndex);
 	}
 
 	private void checkIndexValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
 		if (!StreamUtil.isInteger(contents[PARAM_POS_INDEX])) {
 			throw new StreamParserException(ERROR_INVALID_INDEX);
-		} else if (!StreamUtil.isWithinRange(Integer.parseInt(contents[PARAM_POS_INDEX]), numOfTasks)) {
+		} else if (!StreamUtil.isWithinRange(
+				Integer.parseInt(contents[PARAM_POS_INDEX]), numOfTasks)) {
 			throw new StreamParserException(
 					ERROR_INDEX_OUT_OF_BOUNDS);
 		}
 	}
 
-	/**
+	/*
 	 * Type one command: commands with format (CommandWord) (String arguments of
 	 * any length)
 	 */
 	private void checkTypeOneValidity(String[] contents)
 			throws StreamParserException {
-		if (contents.length < 2) {
+		if (contents.length < ARGS_LENGTH_TYPE_ONE) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		}
+		this.commandContent = contents[PARAM_POS_CONTENTS];
 	}
 
-	/**
+	/*
 	 * Type two command: commands with format (CommandWord) (index number)
 	 */
 	private void checkTypeTwoValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 2) {
+		if (contents.length < ARGS_LENGTH_TYPE_TWO) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INDEX);
 		} else {
 			checkIndexValidity(contents, numOfTasks);
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
 		}
 	}
 
-	/**
+	/*
 	 * Type three command: commands with format (CommandWord) (index number)
 	 * (String arguments of any length)
 	 */
 	private void checkTypeThreeValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 3) {
+		if (contents.length < ARGS_LENGTH_TYPE_THREE) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		} else {
 			checkIndexValidity(contents, numOfTasks);
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
+			this.commandContent = contents[PARAM_POS_ARGS];
 		}
 	}
 
-	/**
+	/*
 	 * Type four command: commands with format (CommandWord) (index number)
 	 * (date String to be parsed)
 	 */
 	private void checkTypeFourValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 3) {
+		if (contents.length < ARGS_LENGTH_TYPE_FOUR) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		} else {
 			checkIndexValidity(contents, numOfTasks);
-			if (!StreamUtil.isParseableDate(contents[PARAM_POS_CONTENT])) {
+			if (!StreamUtil.isParseableDate(contents[PARAM_POS_ARGS])) {
 				throw new StreamParserException(ERROR_DATE_NOT_PARSEABLE);
 			}
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
+			this.commandContent = contents[PARAM_POS_ARGS];
 		}
 	}
 
 	private void checkRankValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 3) {
+		if (contents.length < ARGS_LENGTH_TYPE_THREE) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		} else {
 			checkIndexValidity(contents, numOfTasks);
-			if (!checkRanking(contents[PARAM_POS_CONTENT])) {
+			if (!checkRanking(contents[PARAM_POS_ARGS])) {
 				throw new StreamParserException(ERROR_INVALID_RANK);
 			}
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
+			this.commandContent = contents[PARAM_POS_ARGS];
 		}
 	}
 
 	private void checkMarkValidity(String[] contents, int numOfTasks)
 			throws StreamParserException {
-		if (contents.length < 3) {
+		if (contents.length < ARGS_LENGTH_TYPE_THREE) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		} else {
 			checkIndexValidity(contents, numOfTasks);
-			if (!checkMarking(contents[PARAM_POS_CONTENT])) {
+			if (!checkMarking(contents[PARAM_POS_ARGS])) {
 				throw new StreamParserException(ERROR_INVALID_MARK);
 			}
+			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
+			this.commandContent = contents[PARAM_POS_ARGS];
 		}
 	}
 
 	private void checkFilterValidity(String[] contents)
 			throws StreamParserException {
-		if (contents.length < 2) {
+		if (contents.length < ARGS_LENGTH_TYPE_ONE) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
 		} else if (!checkFilter(contents[PARAM_POS_FILTERTYPE].trim())) {
 			throw new StreamParserException(ERROR_INVALID_FILTER);
 		}
+		this.commandContent = contents[PARAM_POS_CONTENTS];
 	}
 
-	private static String executeCommand(String[] contents) {
-		String content = null;
-		if (contents.length > 1) {
-			content = contents[1];
-			logger.log(LogLevel.DEBUG, "Command consists of multiple words.");
+	private void logCommand(String[] contents, String[] contentsWithIndex) {
+		if (contentsWithIndex.length >= 3
+				&& StreamUtil.isInteger(contentsWithIndex[PARAM_POS_INDEX])) {
+			logger.log(LogLevel.DEBUG, "Command received: "
+					+ contents[PARAM_POS_KEYWORD] + ". Index number "
+					+ contentsWithIndex[PARAM_POS_INDEX] + ". Argument: "
+					+ contentsWithIndex[PARAM_POS_ARGS]);
+		} else if (contents.length == 2) {
+			logger.log(LogLevel.DEBUG, "Command received: "
+					+ contents[PARAM_POS_KEYWORD] + ". Argument: "
+					+ contents[PARAM_POS_CONTENTS]);
 		} else {
-			content = "";
-			logger.log(LogLevel.DEBUG, "No content for the command.");
+			logger.log(LogLevel.DEBUG, "Command received: "
+					+ contents[PARAM_POS_KEYWORD] + ". No arguments supplied.");
 		}
-
-		return content;
 	}
 
+	/**
+	 * @return <b>CommandType</b> - the parsed command type
+	 */
 	public CommandType getCommandType() {
 		return this.commandKey;
 	}
+	
+	/**
+	 * @return <b>Integer</b> - the parsed index number, if applicable
+	 */
+	public Integer getCommandIndex() {
+		return this.commandIndex;
+	}
 
+	/**
+	 * @return <b>Integer</b> - the parsed arguments/contents, if applicable
+	 */
 	public String getCommandContent() {
 		return this.commandContent;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 
+	/**
+	 * Parses a supplied sorting type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>SortType</b> - the parsed sorting type
+	 */
 	public static SortType parseSorting(String sortType) {
 		switch (sortType) {
 		case "d":
@@ -361,7 +406,16 @@ public class StreamParser {
 		}
 	}
 
-	public static boolean getSortingOrder(String order) {
+	/**
+	 * Translates a supplied sorting order into boolean value, indicating
+	 * whether the intended order is descending or not.
+	 * 
+	 * @return <b>boolean</b> - indicates if descending or not
+	 * @throws StreamParserException
+	 *             if <i>order</i> is not recognizable
+	 */
+	public static boolean getSortingOrder(String order)
+			throws StreamParserException {
 		switch (order) {
 		case "":
 		case "a":
@@ -373,10 +427,15 @@ public class StreamParser {
 		case "descending":
 			return true;
 		default:
-			return false;
+			throw new StreamParserException();
 		}
 	}
 
+	/**
+	 * Parses a supplied rank type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>RankType</b> - the parsed ranking type
+	 */
 	public static RankType parseRanking(String rankInput) {
 		switch (rankInput) {
 		case "high":
@@ -395,6 +454,11 @@ public class StreamParser {
 		}		
 	}
 
+	/**
+	 * Translates an internal ranking format to readable <b>String</b>.
+	 * 
+	 * @return <b>String</b> - the translated ranking type
+	 */
 	public static String translateRanking(RankType parsedRank) {
 		switch (parsedRank) {
 		case HI:
@@ -408,6 +472,11 @@ public class StreamParser {
 		}
 	}
 
+	/**
+	 * Parses a supplied marking type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>MarkType</b> - the parsed marking type
+	 */
 	public static MarkType parseMarking(String markInput) {
 		switch (markInput) {
 		case "done":
@@ -423,6 +492,12 @@ public class StreamParser {
 		}		
 	}
 
+	/**
+	 * Parses a boolean value of is done or not into <b>STREAM</b>-recognizable 
+	 * format for marking.
+	 * 
+	 * @return <b>MarkType</b> - the parsed marking type
+	 */
 	public static MarkType parseMarking(Boolean isDone) {
 		if (isDone) {
 			return MarkType.DONE;
@@ -431,6 +506,11 @@ public class StreamParser {
 		}
 	}
 
+	/**
+	 * Translates an internal marking format to readable <b>String</b>.
+	 * 
+	 * @return <b>String</b> - the translated marking type
+	 */
 	public static String translateMarking(MarkType parsedMark) {
 		switch (parsedMark) {
 		case DONE:
@@ -442,6 +522,11 @@ public class StreamParser {
 		}
 	}
 
+	/**
+	 * Parses a supplied filter type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>FilterType</b> - the parsed filter type
+	 */
 	public static FilterType parseFilterType(String filterInput) {
 		String[] contents = filterInput.split(" ", 2);
 		MarkType parsedMark = parseMarking(contents[0]);
@@ -514,15 +599,16 @@ public class StreamParser {
 		}
 	}
 
-	private void checkSortValidity(String[] contents)
+	private void checkSortValidity(String[] contents, String[] contentsWithIndex)
 			throws StreamParserException {
-		String order = contents.length > 2 ? contents[PARAM_POS_SORTORDER] : "";
-		
+		String order = contentsWithIndex.length > 2 ? contentsWithIndex[PARAM_POS_SORTORDER]
+				: "";
 		if (contents.length < 2) {
 			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
-		} else if (!checkSort(contents[PARAM_POS_SORTTYPE], order)) {
+		} else if (!checkSort(contentsWithIndex[PARAM_POS_SORTTYPE], order)) {
 			throw new StreamParserException(ERROR_INVALID_SORT);
 		}
+		this.commandContent = contents[PARAM_POS_CONTENTS];
 	}
 
 	private boolean checkRanking(String rankInput) {
@@ -560,22 +646,15 @@ public class StreamParser {
 		case START:
 		case END:
 		case ALPHA:
-			switch (order) {
-			case "":
-			case "d":
-			case "desc":
-			case "descending":
-			case "a":
-			case "asc":
-			case "ascending":
+			try {
+				getSortingOrder(order);
 				return true;
-			default:
+			} catch (StreamParserException e) {
 				return false;
 			}
 		default:
 			return false;
 		}
 	}
-
 
 }

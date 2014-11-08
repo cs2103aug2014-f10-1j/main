@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import exception.StreamParserException;
 
-// @author A0119401U
+//@author A0119401U
 
 //Note: for test not focusing on the range problem (number of tasks type)
 //remember to set the second param of interpretCommand as a reasonable positive integer

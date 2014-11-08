@@ -163,7 +163,7 @@ public class Stream {
 	}
 
 	// @author A0118007R
-	private void executeInput(CommandType command, String content)
+	private void executeInput(CommandType command, Integer index, String content)
 			throws StreamModificationException, StreamIOException {
 		switch (command) {
 			case ADD:
@@ -175,59 +175,59 @@ public class Stream {
 
 			case DEL:
 				logCommand("DELETE");
-				executeDelete(content);
+				executeDelete(index);
 				refreshUI();
 				break;
 
 			case DESC:
 				logCommand("DESCRIBE");
-				executeDescribe(content);
+				executeDescribe(index, content);
 				break;
 
 			case DUE:
 				logCommand("DUE");
-				executeDue(content);
+				executeDue(index, content);
 				refreshUI();
 				break;
 
 			case START:
 				logCommand("START");
-				executeStartTime(content);
+				executeStartTime(index, content);
 				refreshUI();
 				break;
 
 			case MODIFY:
 				logCommand("MODIFY");
-				executeModify(content);
+				executeModify(index, content);
 				refreshUI();
 				break;
 
 			case NAME:
 				logCommand("NAME");
-				executeName(content);
+				executeName(index, content);
 				refreshUI();
 				break;
 
 			case RANK:
 				logCommand("RANK");
-				executeRank(content);
+				executeRank(index, content);
 				refreshUI();
 				break;
 
 			case MARK:
 				logCommand("MARK");
-				executeMark(content);
+				executeMark(index, content.trim());
 				refreshUI();
 				break;
 
 			case TAG:
 				logCommand("TAG");
-				executeTag(content);
+				executeTag(index, content);
 				break;
 
 			case UNTAG:
 				logCommand("UNTAG");
-				executeUntag(content);
+				executeUntag(index, content);
 				break;
 
 			case FILTER:
@@ -255,7 +255,7 @@ public class Stream {
 
 			case VIEW:
 				logCommand("VIEW");
-				executeView(content);
+				executeView(index);
 				break;
 
 			case CLEAR:
@@ -271,13 +271,13 @@ public class Stream {
 
 			case RECOVER:
 				logCommand("RECOVER");
-				executeRecover(content);
+				executeRecover(index);
 				refreshUI();
 				break;
 
 			case DISMISS:
 				logCommand("DISMISS");
-				executeDismiss(content);
+				executeDismiss(index);
 				refreshUI();
 				break;
 
@@ -304,7 +304,7 @@ public class Stream {
 				break;
 				
 			case PAGE:
-				stui.goToPage(content);
+				stui.goToPage(index);
 				break;
 
 			case EXIT:
@@ -389,9 +389,8 @@ public class Stream {
 	 *            - the task name
 	 * @throws StreamModificationException
 	 */
-	private void executeDismiss(String content)
+	private void executeDismiss(Integer taskIndex)
 			throws StreamModificationException {
-		int taskIndex = Integer.parseInt(content);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		stackLogic.pushPlaceholderInput();
 
@@ -416,9 +415,8 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeDelete(String content)
+	private void executeDelete(Integer taskIndex)
 			throws StreamModificationException {
-		int taskIndex = Integer.parseInt(content);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		assertNotNull(taskName);
 		StreamTask deletedTask = streamLogic.getTask(taskName);
@@ -484,8 +482,7 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeView(String content) throws StreamModificationException {
-		int taskIndex = Integer.parseInt(content);
+	private void executeView(Integer taskIndex) throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 
 		assertNotNull(taskName);
@@ -509,12 +506,9 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeDescribe(String content)
+	private void executeDescribe(Integer taskIndex, String description)
 			throws StreamModificationException {
-		String[] contents = content.split(" ", 2);
-		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		String description = contents[1];
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		String oldDescription = currentTask.getDescription();
 		currentTask.setDescription(description.equals("null") ? null
@@ -537,11 +531,8 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeRank(String content) throws StreamModificationException {
-		String[] contents = content.split(" ", 2);
-		int taskIndex = Integer.parseInt(contents[0]);
+	private void executeRank(Integer taskIndex, String taskRank) throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		String taskRank = contents[1];
 		taskRank = StreamParser.translateRanking(StreamParser
 				.parseRanking(taskRank));
 		StreamTask currentTask = streamLogic.getTask(taskName);
@@ -565,11 +556,8 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeName(String content) throws StreamModificationException {
-		String[] contents = content.split(" ", 2);
-		int taskIndex = Integer.parseInt(contents[0]);
+	private void executeName(Integer taskIndex, String newTaskName) throws StreamModificationException {
 		String oldTaskName = streamLogic.getTaskNumber(taskIndex);
-		String newTaskName = contents[1];
 		streamLogic.updateTaskName(oldTaskName, newTaskName);
 
 		stackLogic.pushInverseSetNameCommand(taskIndex, oldTaskName);
@@ -590,18 +578,16 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeModify(String content)
+	private void executeModify(Integer taskIndex, String content)
 			throws StreamModificationException {
 		String[] contents = content.split(" ");
-		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		StreamTask currTask = streamLogic.getTask(taskName);
 
 		String inverseCommand = stackLogic.prepareInverseModifyCommand(
 				taskName, taskIndex, currTask);
 
-		String[] params = Arrays.copyOfRange(contents, 1, contents.length);
-		streamLogic.modifyTaskWithParams(taskName, Arrays.asList(params));
+		streamLogic.modifyTaskWithParams(taskName, Arrays.asList(contents));
 
 		stackLogic.pushInverseModifyCommand(inverseCommand);
 
@@ -621,19 +607,12 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeUntag(String content)
+	private void executeUntag(Integer taskIndex, String content)
 			throws StreamModificationException {
-		String[] tags;
-		ArrayList<String> processedTags;
-		String taskName;
-		StreamTask task;
-		int taskIndex;
-		tags = content.split(" ");
-		taskIndex = Integer.parseInt(tags[0]);
-		taskName = streamLogic.getTaskNumber(taskIndex);
-		task = streamLogic.getTask(taskName);
-
-		processedTags = taskLogic.removeTags(task, tags);
+		String[] tags = content.split(" ");
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		StreamTask task = streamLogic.getTask(taskName);
+		ArrayList<String> processedTags = taskLogic.removeTags(task, tags);
 		stackLogic.pushInverseUntagCommand(taskIndex, processedTags);
 		logRemovedTags(taskName, processedTags);
 	}
@@ -649,29 +628,13 @@ public class Stream {
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
-	private void executeTag(String content) throws StreamModificationException {
-		String[] tags;
-		
-		ArrayList<String> processedTags;
-		String taskName;
-		StreamTask task;
-		int taskIndex;
-		tags = content.split(" ");
-		String[] tagsToBeAdded = new String[tags.length-1];
-		taskIndex = Integer.parseInt(tags[0]);
-		taskName = streamLogic.getTaskNumber(taskIndex);
-		task = streamLogic.getTask(taskName);
-		removeIndex(tags, tagsToBeAdded);
-		processedTags = taskLogic.addTags(task, tagsToBeAdded);
+	private void executeTag(Integer taskIndex, String content) throws StreamModificationException {
+		String[] tags = content.split(" ");
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		StreamTask task = streamLogic.getTask(taskName);
+		ArrayList<String> processedTags = taskLogic.addTags(task, tags);
 		stackLogic.pushInverseAddTagCommand(taskIndex, processedTags);
 		logAddedTags(taskName, processedTags);
-	}
-
-	// @author A0118007R
-	private void removeIndex(String[] tags, String[] tagsToBeAdded) {
-		for (int i = 1; i < tags.length; i++) {
-			tagsToBeAdded[i-1] = tags[i];
-		}
 	}
 
 	// @author A0093874N
@@ -694,8 +657,7 @@ public class Stream {
 	 * @param content
 	 *            - the criteria for sorting
 	 */
-	private void executeRecover(String content) {
-		int noOfTasksToRecover = Integer.parseInt(content);
+	private void executeRecover(Integer noOfTasksToRecover) {
 		stackLogic.pushPlaceholderInput();
 
 		for (int i = 0; i < noOfTasksToRecover; i++) {
@@ -740,11 +702,8 @@ public class Stream {
 	 *            - the category to be used for marking
 	 * @throws StreamModificationException
 	 */
-	private void executeMark(String content) throws StreamModificationException {
-		String[] contents = content.split(" ", 2);
-		int taskIndex = Integer.parseInt(contents[0]);
+	private void executeMark(Integer taskIndex, String markType) throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		String markType = contents[1].trim();
 		MarkType parsedMarkType = StreamParser.parseMarking(markType);
 		StreamTask task = streamLogic.getTask(taskName);
 		String result = null;
@@ -763,26 +722,22 @@ public class Stream {
 	}
 
 	// @author A0118007R
-	private void executeDue(String content) throws StreamModificationException {
-		String[] contents = content.split(" ", 2);
-
-		int taskIndex = Integer.parseInt(contents[0]);
+	private void executeDue(Integer taskIndex, String content) throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String result = null;
-		result = processDue(contents, taskIndex, taskName);
+		result = processDue(content, taskIndex, taskName);
 		showAndLogResult(result);
 	}
 
 	// @author A0118007R
-	private String processDue(String[] contents, int taskIndex, String taskName)
+	private String processDue(String content, int taskIndex, String taskName)
 			throws StreamModificationException {
 		String result;
-		if (contents[1].trim().equals("null")) {
+		if (content.trim().equals("null")) {
 			result = setDueDate(taskName, taskIndex, null);
 		} else {
-			String due = contents[1];
+			String due = content;
 			due = StreamUtil.parseWithChronic(due);
-			
 			Calendar calendar = StreamUtil.parseCalendar(due);
 			result = setDueDate(taskName, taskIndex, calendar);
 		}
@@ -790,25 +745,22 @@ public class Stream {
 	}
 
 	// @author A0118007R
-	private void executeStartTime(String content)
+	private void executeStartTime(Integer taskIndex, String content)
 			throws StreamModificationException {
-		String[] contents = content.split(" ", 2);
-
-		int taskIndex = Integer.parseInt(contents[0]);
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String result = null;
-		result = processStartTime(contents, taskIndex, taskName);
+		result = processStartTime(content, taskIndex, taskName);
 		showAndLogResult(result);
 	}
 
 	// @author A0118007R
-	private String processStartTime(String[] contents, int taskIndex,
+	private String processStartTime(String content, int taskIndex,
 			String taskName) throws StreamModificationException {
 		String result;
-		if (contents[1].trim().equals("null")) {
+		if (content.trim().equals("null")) {
 			result = setStartDate(taskName, taskIndex, null);
 		} else {
-			String start = contents[1];
+			String start = content;
 			start = StreamUtil.parseWithChronic(start);
 			Calendar calendar = StreamUtil.parseCalendar(start);
 			result = setStartDate(taskName, taskIndex, calendar);
@@ -833,7 +785,11 @@ public class Stream {
 			order = "";
 		}
 		SortType type = StreamParser.parseSorting(sortBy);
-		descending = StreamParser.getSortingOrder(order);
+		try {
+			descending = StreamParser.getSortingOrder(order);			
+		} catch (StreamParserException e) {
+			// ignore exception
+		}
 
 		switch (type) {
 			case ALPHA:
@@ -1094,8 +1050,9 @@ public class Stream {
 		try {
 			parser.interpretCommand(input, streamLogic.getNumberOfTasks());
 			CommandType command = parser.getCommandType();
+			Integer index = parser.getCommandIndex();
 			String content = parser.getCommandContent();
-			executeInput(command, content);
+			executeInput(command, index, content);
 		} catch (AssertionError e) {
 			log(String.format(StreamConstants.LogMessage.ERRORS,
 					"AssertionError", e.getMessage()));
@@ -1178,7 +1135,7 @@ public class Stream {
 	@SuppressWarnings("unused")
 	private void clear(int noOfTasks) throws StreamModificationException {
 		for (int i = 0; i < noOfTasks; i++) {
-			executeDelete(streamLogic.getTaskNumber(1));
+			// executeDelete(streamLogic.getTaskNumber(1));
 			/*
 			 * This is because we don't want the "recover 1". Rather, we'll
 			 * replace with "recover noOfTasks" at the end of the process.
@@ -1226,7 +1183,7 @@ public class Stream {
 	@SuppressWarnings("unused")
 	private void changeDescription(String task, int index, String newDescription) {
 		try {
-			executeDescribe(newDescription);
+			// executeDescribe(newDescription);
 		} catch (Exception e) {
 
 		}
@@ -1256,4 +1213,14 @@ public class Stream {
 		return String.format(StreamConstants.LogMessage.NAME, oldName, newName);
 	}
 
+	// @author A0118007R
+	/**
+	 * @deprecated the powered-up parser now handles this already
+	 */
+	@SuppressWarnings("unused")
+	private void removeIndex(String[] tags, String[] tagsToBeAdded) {
+		for (int i = 1; i < tags.length; i++) {
+			tagsToBeAdded[i-1] = tags[i];
+		}
+	}
 }

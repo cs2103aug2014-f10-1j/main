@@ -30,33 +30,34 @@ import exception.StreamIOException;
 
 //@author A0096529N
 /**
- * <h1>StreamIO - Stream file IO component</h1>
- * 
  * <p>
  * File management component responsible for saving to and loading from storage
  * file containing application state.
  * </p>
  * 
- * <h2>Storage Format</h2>
+ * <h3>Storage Format</h3>
  * <p>
  * Application state is serialized into JSON format.
  * </p>
  * 
- * <h2>Storage Location</h2>
+ * <h3>Storage Location</h3>
  * <p>
  * Save location defaults to "stream.json", and may not be modified.
  * </p>
  * 
- * <h2>API</h2> 
- * StreamIO.save(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) <br/>
- * StreamIO.load(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) <br/>
- * StreamIO.saveLogFile(List&lt;String&gt; logStack, String filename) <br/>
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamIO.save(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) </li>
+ * <li>StreamIO.load(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) </li>
+ * <li>StreamIO.getSaveLocation() </li>
+ * <li>StreamIO.setSaveLocation(String saveLocation) </li>
+ * <li>StreamIO.saveLogFile(List&lt;String&gt; logMessages, String logFileName) </li>
+ * </ul>
  * <p>
  * Refer to method documentation for details.
  * </p>
  * 
- * @version V0.4
- * @author Steven Khong
+ * @version V0.5
  */
 public class StreamIO {
 	
@@ -67,13 +68,9 @@ public class StreamIO {
 	private static final TaskLogic taskLogic = TaskLogic.init();
 	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMIO);
 
-	//@author A0096529N
 	/**
 	 * Reads and inflate the contents of serialized storage file into
 	 * StreamObject.
-	 * 
-	 * @return <strong>StreamObject</strong> with previous state 
-	 * if the storage file is present, nothing modified if storage file not found.
 	 * 
 	 * @throws StreamIOException
 	 *             when JSON conversion fail due file corruption or IO failures
@@ -89,13 +86,10 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	/**
 	 * Serializes and write the contents of StreamObject into
 	 * storage file.
 	 * 
-	 * @param streamObject
-	 *            - state of StreamObject to be saved
 	 * @throws StreamIOException
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
@@ -123,33 +117,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0093874N
-	/**
-	 * Saves the log file upon exiting.
-	 * 
-	 * @author Wilson Kurniawan
-	 * @throws StreamIOException 
-	 */
-	public static void saveLogFile(List<String> logMessages, String logFileName) 
-			throws StreamIOException {
-		try {
-			FileWriter fwriter = new FileWriter(getLogsStorageFile(logFileName), true);
-			BufferedWriter bw = new BufferedWriter(fwriter);
-			try {
-				for (int i = 0; i < logMessages.size(); i++) {
-					bw.write(logMessages.get(i));
-					bw.newLine();
-				}
-			} finally {
-				bw.close();
-			}
-		} catch (IOException e) {
-			throw new StreamIOException(
-					StreamConstants.ExceptionMessage.ERR_SAVE_LOG, e);
-		}
-	}
-
-	//@author A0096529N
 	/**
 	 * @param saveLocation file path of storage file to save.
 	 */
@@ -157,7 +124,6 @@ public class StreamIO {
 		STREAM_FILENAME = saveLocation;
 	}
 
-	//@author A0093874N
 	/**
 	 * @return file path of the save location.
 	 * @throws StreamIOException 
@@ -167,7 +133,6 @@ public class StreamIO {
 		return new File(getStorageFile(STREAM_FILENAME)).getAbsolutePath();
 	}
 
-	//@author A0096529N
 	private static void loadAndInflate(File file, Map<String, StreamTask> taskMap, List<String> taskList) 
 			throws StreamIOException {
 		JSONObject tasksJson = loadFromFile(file);
@@ -180,7 +145,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	private static void loadLegacyStorage(Map<String, StreamTask> taskMap, List<String> taskList) 
 			throws StreamIOException {
 		File streamFile = new File(STREAM_FILENAME);
@@ -190,7 +154,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static void loadTaskList(List<String> taskList, JSONObject tasksJson) throws StreamIOException {
 		try {
 			JSONObject orderListJson = tasksJson.getJSONObject(TaskKey.TASKLIST);
@@ -203,7 +166,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static void loadMap(Map<String, StreamTask> taskMap, JSONObject tasksJson) throws StreamIOException {
 		try {
 			JSONArray taskMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
@@ -216,7 +178,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static JSONObject taskListToJson(List<String> taskList) throws StreamIOException {
 		try {
 			JSONObject orderListJson = new JSONObject();
@@ -230,7 +191,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static List<String> jsonToTaskList(JSONObject orderListJson) throws StreamIOException {
 		try {
 			List<String> taskList = new ArrayList<String>();
@@ -245,7 +205,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static void writeToFile(File destin, JSONObject tasksJson)
 			throws IOException {
 		FileWriter fwriter = new FileWriter(destin, false);
@@ -262,7 +221,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static JSONObject loadFromFile(File file) throws StreamIOException {
 		StringBuilder stringBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -286,7 +244,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static JSONArray mapToJson(Map<String, StreamTask> map)
 			throws StreamIOException {
 		JSONArray mapJson = new JSONArray();
@@ -297,7 +254,6 @@ public class StreamIO {
 		return mapJson;
 	}
 
-	//@author A0096529N
 	static HashMap<String, StreamTask> jsonToMap(JSONArray tasksJson)
 			throws StreamIOException {
 		try {
@@ -313,7 +269,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static JSONObject taskToJson(StreamTask task) throws StreamIOException {
 		try {
 			JSONObject taskJson = new JSONObject();
@@ -331,7 +286,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static StreamTask jsonToTask(JSONObject taskJson) throws StreamIOException {
 		try {
 			String taskName = taskJson.getString(TaskKey.NAME);
@@ -380,7 +334,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static String formatDate(Calendar calendar) {
 		if (calendar == null) {
 			return null;
@@ -389,7 +342,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	static String formatDate(Date date) {
 		if (date == null) {
 			return null;
@@ -398,7 +350,6 @@ public class StreamIO {
 		}
 	}
 
-	//@author A0096529N
 	private static String getUserHomeDirectory() {
 		String dir = null;
 		try {
@@ -411,7 +362,6 @@ public class StreamIO {
 		return dir == null ? "" : dir + File.separator;
 	}
 
-	//@author A0096529N
 	private static String getStreamDirectory() throws StreamIOException {
 		String dir = getUserHomeDirectory() + "Documents" + File.separator + "Stream" + File.separator;
 		File streamDirectory = new File(dir);
@@ -423,13 +373,11 @@ public class StreamIO {
 		return dir;
 	}
 
-	//@author A0096529N
 	private static String getStorageFile(String filename) 
 			throws StreamIOException {
 		return getStreamDirectory() + filename;
 	}
 
-	//@author A0096529N
 	private static String getLogsDirectory() 
 			throws StreamIOException {
 		String dir = getStreamDirectory() + "Logs" + File.separator;
@@ -442,7 +390,6 @@ public class StreamIO {
 		return dir;
 	}
 
-	//@author A0096529N
 	private static String getLogsStorageFile(String logFileName) 
 			throws StreamIOException {
 		return getLogsDirectory() + logFileName;
@@ -458,5 +405,35 @@ public class StreamIO {
 		static final String TAGS = "tags";
 		static final String DONE = "done";
 		static final String RANK = "rank";
+	}
+	
+	//@author A0093874N
+	/**
+	 * Saves the log file upon exiting.
+	 * 
+	 * @param logMessages
+	 *            - the list of log messages to be stored
+	 * @param logFileName
+	 *            - the name of the log file
+	 * @throws StreamIOException
+	 *             if IO failures encountered during accessing of log file.
+	 */
+	public static void saveLogFile(List<String> logMessages, String logFileName) 
+			throws StreamIOException {
+		try {
+			FileWriter fwriter = new FileWriter(getLogsStorageFile(logFileName), true);
+			BufferedWriter bw = new BufferedWriter(fwriter);
+			try {
+				for (int i = 0; i < logMessages.size(); i++) {
+					bw.write(logMessages.get(i));
+					bw.newLine();
+				}
+			} finally {
+				bw.close();
+			}
+		} catch (IOException e) {
+			throw new StreamIOException(
+					StreamConstants.ExceptionMessage.ERR_SAVE_LOG, e);
+		}
 	}
 }
