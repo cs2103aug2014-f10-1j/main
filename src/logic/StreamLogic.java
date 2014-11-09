@@ -226,6 +226,20 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * Compare the ranks of two tasks.
+	 * <p>Values:</p>
+	 * <ul>
+	 * <li>HI: 2</li>
+	 * <li>MED: 1</li>
+	 * <li>LO: 0</li>
+	 * <li>NULL: -1</li>
+	 * </ul>
+	 * 
+	 * @param task1 the first task to compare
+	 * @param task2 the second task to be compared to
+	 * @return 0 if tasks' ranks are equal, or the rank of task2 - rank of task1.
+	 */
 	private int compareRank(StreamTask task1, StreamTask task2) {
 		return valueRank(task2.getRank()) - valueRank(task1.getRank());
 	}
@@ -242,13 +256,13 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
-	private int compareDeadline(StreamTask task1, StreamTask task2, boolean descending) {
+	private int compareDeadline(StreamTask task1, StreamTask task2, boolean reverse) {
 		if (task1.getDeadline() == null && task2.getDeadline() == null) {
 			return 0;
 		} else if (task1.getDeadline() == null) {
-			return descending ? 1 : -1;
+			return reverse ? 1 : -1;
 		} else if (task2.getDeadline() == null) {
-			return descending ? -1 : 1;
+			return reverse ? -1 : 1;
 		} else {
 			return task2.getDeadline().compareTo(task1.getDeadline());
 		}
@@ -260,13 +274,13 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
-	private int compareStartTime(StreamTask task1, StreamTask task2, boolean descending) {
+	private int compareStartTime(StreamTask task1, StreamTask task2, boolean reverse) {
 		if (task1.getStartTime() == null && task2.getStartTime() == null) {
 			return 0;
 		} else if (task1.getStartTime() == null) {
-			return descending ? 1 : -1;
+			return reverse ? 1 : -1;
 		} else if (task2.getStartTime() == null) {
-			return descending ? -1 : 1;
+			return reverse ? -1 : 1;
 		} else {
 			return task2.getStartTime().compareTo(task1.getStartTime());
 		}
