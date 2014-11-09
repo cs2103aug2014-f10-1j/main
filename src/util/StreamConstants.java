@@ -98,7 +98,7 @@ public class StreamConstants {
 		public static final String PARSER_ERROR = "Could not understand your command, "
 				+ "please refer to the manual for list of commands.\nDetails: %1$s";
 		public static final String EMPTY_INPUT_ERROR = "Please enter a command!";
-		public static final String UNEXPECTED_ERROR = "Opps! An unexpected error occured, please retry.\nDetails: %1$s";
+		public static final String UNEXPECTED_ERROR = "Oops! An unexpected error occured, please retry.\nDetails: %1$s";
 		public static final String LOADED_USER_HOME = "Loaded user home dir: %1$s";
 		public static final String LOAD_FAIL_USER_HOME = "Could not load user home dir.";
 	}
@@ -153,12 +153,12 @@ public class StreamConstants {
 		public static final String TEXT_TITLE = "STREAM " + VERSION
 				+ ": Simple Task Reader and Manager";
 		public static final String TEXT_HEADER = "<html>S<font color=\"#ed7d31\">T</font>RE<font color=\"#ed7d31\">A</font>M</html>";
-		public static final String TEXT_FOOTER = "Copyright \u00a9 2014 CS2013AUG2014-F10-01J. All rights reserved.";
+		public static final String TEXT_FOOTER = "Copyright \u00a9 2014 CS2103AUG2014-F10-01J. All rights reserved.";
 		public static final String TEXT_INDEX = "#%1$s";
 		public static final String TEXT_PAGE_NUM = "Page %1$s/%2$s";
 
 		public static final String DETAILS_HEADER = "Details for %1$s";
-		public static final String DETAILS_CONTENT = "Task name: %1$s \nStatus: %2$s\nTiming: %3$s\nDescription: %4$s \nTags: %5$s\nRank: %6$s";
+		public static final String DETAILS_CONTENT = "<html><body width='400'><p>Task name: %1$s</p><p>Status: %2$s</p><p>Timing: %3$s</p><p>Description: %4$s</p><p>Tags: %5$s</p><p>Rank: %6$s</p>";
 	}
 
 	public static class ExceptionMessage {
@@ -245,6 +245,10 @@ public class StreamConstants {
 		public static final Rectangle BOUNDS_TASK_NAME = new Rectangle(
 				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL, 0, COMPONENT_WIDTH
 						- WIDTH_INDEX - 4 * HEIGHT_TASKPANEL,
+				HEIGHT_TASKPANEL / 2);
+		public static final Rectangle BOUNDS_TASK_DESC = new Rectangle(
+				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL, HEIGHT_TASKPANEL / 2,
+				COMPONENT_WIDTH - WIDTH_INDEX - 4 * HEIGHT_TASKPANEL,
 				HEIGHT_TASKPANEL / 2);
 		public static final Rectangle BOUNDS_RANK_ICON = new Rectangle(
 				COMPONENT_WIDTH - 2 * HEIGHT_TASKPANEL, 0, HEIGHT_TASKPANEL,

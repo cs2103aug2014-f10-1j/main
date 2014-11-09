@@ -223,6 +223,21 @@ public class StreamUtil {
 			return false;
 		}
 	}
+	
+	/**
+	 * Trims the task description displayed to user if too long. Currently
+	 * the max. characters supported is 50.
+	 * 
+	 * @return <b>String</b> - the trimmed description.
+	 */
+	public static String trimDescription(String desc) {
+		desc = displayDescription(desc);
+		if (desc.length() > 50) {
+			return desc.substring(0, 50) + "...";
+		} else {
+			return desc;
+		}
+	}
 
 	//@author A0096529N
 

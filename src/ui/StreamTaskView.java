@@ -9,6 +9,7 @@ import javax.swing.SwingConstants;
 import model.StreamTask;
 import util.StreamConstants;
 import util.StreamExternals;
+import util.StreamUtil;
 
 //@author A0093874N
 
@@ -36,6 +37,7 @@ public class StreamTaskView extends JPanel {
 	private StreamUICalendarIcon startCal;
 	private StreamUICalendarIcon endCal;
 	private JLabel taskName;
+	private JLabel descLabel;
 	private JLabel rankImage;
 	private JLabel statusImage;
 	private static final long serialVersionUID = 1L;
@@ -47,6 +49,7 @@ public class StreamTaskView extends JPanel {
 		addStartCalendar();
 		addEndCalendar();
 		addTaskNameLabel();
+		addDescLabel();
 		addRankImage();
 		addStatusImage();
 	}
@@ -90,10 +93,19 @@ public class StreamTaskView extends JPanel {
 	 */
 	private void addTaskNameLabel() {
 		taskName = new JLabel();
-		taskName.setHorizontalAlignment(SwingConstants.CENTER);
 		taskName.setFont(StreamConstants.UI.FONT_TASK);
 		taskName.setBounds(StreamConstants.UI.BOUNDS_TASK_NAME);
 		add(taskName);
+	}
+
+	/**
+	 * Adds the description label to the task view.
+	 */
+	private void addDescLabel() {
+		descLabel = new JLabel();
+		descLabel.setFont(StreamConstants.UI.FONT_TASK);
+		descLabel.setBounds(StreamConstants.UI.BOUNDS_TASK_DESC);
+		add(descLabel);
 	}
 
 	/**
@@ -156,10 +168,11 @@ public class StreamTaskView extends JPanel {
 		}
 	}
 	
-	private void updateBasicParams(Integer ind, String name) {
+	private void updateBasicParams(Integer ind, String name, String desc) {
 		index.setText(String.format(StreamConstants.Message.TEXT_INDEX,
 				ind.toString()));
 		taskName.setText(name);
+		descLabel.setText(StreamUtil.trimDescription(desc));
 		setVisible(true);
 	}
 	
@@ -186,6 +199,6 @@ public class StreamTaskView extends JPanel {
 		updateEndTime(task.getDeadline());
 		updateRank(task.getRank());
 		updateDoneStatus(task);
-		updateBasicParams(ind, task.getTaskName());
+		updateBasicParams(ind, task.getTaskName(), task.getDescription());
 	}
 }

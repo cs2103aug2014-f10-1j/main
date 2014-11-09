@@ -133,7 +133,6 @@ public class StreamUI {
 		isTaskHighlighted = false;
 	}
 	
-	//@author A0096529N
 	/**
 	 * Highlights the task view containing the active task
 	 */
@@ -146,9 +145,7 @@ public class StreamUI {
 		isTaskHighlighted = true;
 	}
 
-	//@author A0096529N
 	/**
-	 * 
 	 * Fades the border by setting the alpha value.
 	 * <p>Starts a daemon background thread to alter border</p>
 	 * 
@@ -184,8 +181,6 @@ public class StreamUI {
 			}
 		}.start();
 	}
-
-	//@author A0096529N
 
 	/**
 	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,

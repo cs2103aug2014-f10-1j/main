@@ -155,7 +155,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 			String subGuess = drawGuess.substring(entered.length(),
 					drawGuess.length());
 			g.setColor(Color.GRAY);
-			g.drawString(subGuess, (int) (enteredBounds.getWidth()) + 7, 20);
+			g.drawString(subGuess, (int) (enteredBounds.getWidth()) + 6, 20);
 			String[] typed = entered.trim().split(" ");
 			if (helpTextMap.containsKey(typed[0])) {
 				feedback.showFeedbackMessage(helpTextMap.get(typed[0]));

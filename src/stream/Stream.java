@@ -171,6 +171,7 @@ public class Stream {
 
 		case DESC:
 			executeDescribe(index, content);
+			refreshUI();
 			break;
 
 		case DUE:
