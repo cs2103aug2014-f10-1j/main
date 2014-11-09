@@ -30,7 +30,7 @@ public class StreamParser {
 	}
 
 	public enum SortType {
-		ALPHA, START, END, NULL;
+		ALPHA, START, END, TIME, NULL;
 	}
 
 	public enum FilterType {
@@ -377,6 +377,7 @@ public class StreamParser {
 	}
 
 	//@author A0093874N
+	//updated by A0119401U
 
 	/**
 	 * Parses a supplied sorting type into <b>STREAM</b>-recognizable format.
@@ -401,6 +402,8 @@ public class StreamParser {
 		case "alphabetical":
 		case "alphabetically":
 			return SortType.ALPHA;
+		case "time":
+			return SortType.TIME;
 		default:
 			return SortType.NULL;
 		}
@@ -646,6 +649,7 @@ public class StreamParser {
 		case START:
 		case END:
 		case ALPHA:
+		case TIME:
 			try {
 				getSortingOrder(order);
 				return true;

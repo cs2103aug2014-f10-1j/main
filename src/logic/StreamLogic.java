@@ -161,6 +161,66 @@ public class StreamLogic extends BaseLogic {
 		return "Sort by deadline "
 				+ (descending ? "descending." : "ascending.");
 	}
+	
+	//@author A0119401U
+	
+	//Sort the task based on the time given, if start time is known, then 
+	//sort based on start time, if not, then sort based on deadline
+	public String sortTime(boolean descending) {
+		if (descending) {
+			sort(new Comparator<StreamTask>() {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
+					if (o1.getStartTime() == null && o2.getStartTime() == null) {
+						if (o1.getDeadline() == null && o2.getDeadline() == null) {
+							return 0;
+						} else if (o1.getDeadline() == null) {
+							return 1;
+						} else if (o2.getDeadline() == null) {
+							return -1;
+						} else {
+							return o2.getDeadline().compareTo(o1.getDeadline());
+						}
+					} else {
+						if (o1.getStartTime() == null) {
+							return -1;
+						} else if (o2.getStartTime() == null) {
+							return 1;
+						} else {
+							return o2.getStartTime().compareTo(o1.getStartTime());
+						}
+					}
+				}
+			});
+		} else {
+			sort(new Comparator<StreamTask>() {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
+					if (o1.getStartTime() == null && o2.getStartTime() == null) {
+						if (o1.getDeadline() == null && o2.getDeadline() == null) {
+							return 0;
+						} else if (o1.getDeadline() == null) {
+							return 1;
+						} else if (o2.getDeadline() == null) {
+							return -1;
+						} else {
+							return o1.getDeadline().compareTo(o2.getDeadline());
+						}
+					} else {
+						if (o1.getStartTime() == null) {
+							return 1;
+						} else if (o2.getStartTime() == null) {
+							return -1;
+						} else {
+							return o1.getStartTime().compareTo(o2.getStartTime());
+						}
+					}
+				}
+			});
+		}
+		return "Sort by time "
+		+ (descending ? "descending." : "ascending.");
+	}
 
 	// @author A0096529N
 	private void sort(Comparator<StreamTask> comparator) {
