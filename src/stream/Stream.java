@@ -769,6 +769,7 @@ public class Stream {
 	}
 
 	// @author A0096529N
+	// updated by A0119401U
 	private void executeSort(String content) {
 		ArrayList<String> oldOrdering = streamLogic.getTaskList();
 		stackLogic.pushInverseSortCommand(oldOrdering);
@@ -801,6 +802,8 @@ public class Stream {
 			case START:
 				result = streamLogic.sortStartTime(descending);
 				break;
+			case TIME:
+				result = streamLogic.sortTime(descending);
 			default:
 				// also to play safe
 				result = "Unknown sort category \"" + sortBy + "\"";
