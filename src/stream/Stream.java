@@ -69,7 +69,7 @@ public class Stream {
 
 	// @author A0093874N
 	private void initializeExtFiles() {
-		
+
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
 				"/img/taskDoneIcon.png"));
 		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
@@ -166,154 +166,154 @@ public class Stream {
 	private void executeInput(CommandType command, Integer index, String content)
 			throws StreamModificationException, StreamIOException {
 		switch (command) {
-			case ADD:
-				logCommand("ADD");
-				executeAdd(content);
-				refreshUI();
-				stui.highlightActiveTaskView();
-				break;
+		case ADD:
+			logCommand("ADD");
+			executeAdd(content);
+			refreshUI();
+			break;
 
-			case DEL:
-				logCommand("DELETE");
-				executeDelete(index);
-				refreshUI();
-				break;
+		case DEL:
+			logCommand("DELETE");
+			executeDelete(index);
+			refreshUI();
+			break;
 
-			case DESC:
-				logCommand("DESCRIBE");
-				executeDescribe(index, content);
-				break;
+		case DESC:
+			logCommand("DESCRIBE");
+			executeDescribe(index, content);
+			break;
 
-			case DUE:
-				logCommand("DUE");
-				executeDue(index, content);
-				refreshUI();
-				break;
+		case DUE:
+			logCommand("DUE");
+			executeDue(index, content);
+			refreshUI();
+			break;
 
-			case START:
-				logCommand("START");
-				executeStartTime(index, content);
-				refreshUI();
-				break;
+		case START:
+			logCommand("START");
+			executeStartTime(index, content);
+			refreshUI();
+			break;
 
-			case MODIFY:
-				logCommand("MODIFY");
-				executeModify(index, content);
-				refreshUI();
-				stui.highlightActiveTaskView();
-				break;
+		case MODIFY:
+			logCommand("MODIFY");
+			executeModify(index, content);
+			refreshUI();
+			break;
 
-			case NAME:
-				logCommand("NAME");
-				executeName(index, content);
-				refreshUI();
-				break;
+		case NAME:
+			logCommand("NAME");
+			executeName(index, content);
+			refreshUI();
+			break;
 
-			case RANK:
-				logCommand("RANK");
-				executeRank(index, content);
-				refreshUI();
-				break;
+		case RANK:
+			logCommand("RANK");
+			executeRank(index, content);
+			refreshUI();
+			break;
 
-			case MARK:
-				logCommand("MARK");
-				executeMark(index, content.trim());
-				refreshUI();
-				break;
+		case MARK:
+			logCommand("MARK");
+			executeMark(index, content.trim());
+			refreshUI();
+			break;
 
-			case TAG:
-				logCommand("TAG");
-				executeTag(index, content);
-				break;
+		case TAG:
+			logCommand("TAG");
+			executeTag(index, content);
+			refreshUI();
+			break;
 
-			case UNTAG:
-				logCommand("UNTAG");
-				executeUntag(index, content);
-				break;
+		case UNTAG:
+			logCommand("UNTAG");
+			executeUntag(index, content);
+			refreshUI();
+			break;
 
-			case FILTER:
-				logCommand("FILTER");
-				ArrayList<Integer> filterResult = executeFilter(content);
-				refreshUI(filterResult, true, true);
-				break;
+		case FILTER:
+			logCommand("FILTER");
+			ArrayList<Integer> filterResult = executeFilter(content);
+			refreshUI(filterResult, true, true);
+			break;
 
-			case CLRSRC:
-				logCommand("CLRSRC");
-				refreshUI();
-				break;
+		case CLRSRC:
+			logCommand("CLRSRC");
+			refreshUI();
+			break;
 
-			case SEARCH:
-				logCommand("SEARCH");
-				ArrayList<Integer> searchResult = executeSearch(content);
-				refreshUI(searchResult, true, true);
-				break;
+		case SEARCH:
+			logCommand("SEARCH");
+			ArrayList<Integer> searchResult = executeSearch(content);
+			refreshUI(searchResult, true, true);
+			break;
 
-			case SORT:
-				logCommand("SORT");
-				executeSort(content);
-				refreshUI();
-				break;
+		case SORT:
+			logCommand("SORT");
+			executeSort(content);
+			refreshUI();
+			break;
 
-			case VIEW:
-				logCommand("VIEW");
-				executeView(index);
-				break;
+		case VIEW:
+			logCommand("VIEW");
+			executeView(index);
+			break;
 
-			case CLEAR:
-				logCommand("CLEAR");
-				executeClear();
-				refreshUI();
-				break;
+		case CLEAR:
+			logCommand("CLEAR");
+			executeClear();
+			refreshUI();
+			break;
 
-			case UNDO:
-				logCommand("UNDO");
-				executeUndo();
-				break;
+		case UNDO:
+			logCommand("UNDO");
+			executeUndo();
+			break;
 
-			case RECOVER:
-				logCommand("RECOVER");
-				executeRecover(index);
-				refreshUI();
-				break;
+		case RECOVER:
+			logCommand("RECOVER");
+			executeRecover(index);
+			refreshUI();
+			break;
 
-			case DISMISS:
-				logCommand("DISMISS");
-				executeDismiss(index);
-				refreshUI();
-				break;
+		case DISMISS:
+			logCommand("DISMISS");
+			executeDismiss(index);
+			refreshUI();
+			break;
 
-			case UNSORT:
-				logCommand("UNSORT");
-				executeUnsort();
-				refreshUI();
-				break;
+		case UNSORT:
+			logCommand("UNSORT");
+			executeUnsort();
+			refreshUI();
+			break;
 
-			case FIRST:
-				stui.goToFirstPage();
-				break;
+		case FIRST:
+			stui.goToFirstPage();
+			break;
 
-			case PREV:
-				stui.goToPrevPage();
-				break;
+		case PREV:
+			stui.goToPrevPage();
+			break;
 
-			case NEXT:
-				stui.goToNextPage();
-				break;
+		case NEXT:
+			stui.goToNextPage();
+			break;
 
-			case LAST:
-				stui.goToLastPage();
-				break;
-				
-			case PAGE:
-				stui.goToPage(index);
-				break;
+		case LAST:
+			stui.goToLastPage();
+			break;
 
-			case EXIT:
-				logCommand("EXIT");
-				executeExit();
+		case PAGE:
+			stui.goToPage(index);
+			break;
 
-			default:
-				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
+		case EXIT:
+			logCommand("EXIT");
+			executeExit();
+
+		default:
+			showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
 		}
 	}
 
@@ -352,7 +352,7 @@ public class Stream {
 
 		taskName = taskName.trim(); // this is the solution to the bug
 		addTaskWithParams(taskName, modifyParams);
-		
+
 		StreamTask task = streamLogic.getTask(taskName);
 		stui.setActiveTask(task);
 
@@ -396,12 +396,12 @@ public class Stream {
 	private void executeDismiss(Integer taskIndex)
 			throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		stackLogic.pushPlaceholderInput();
 
 		assertNotNull(taskName);
 		streamLogic.deleteTask(taskName);
 		assertNoTask(taskName);
 
+		stackLogic.pushPlaceholderInput();
 		String result = String.format(StreamConstants.LogMessage.DELETE,
 				taskName);
 		showAndLogResult(result);
@@ -492,6 +492,7 @@ public class Stream {
 		assertNotNull(taskName);
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		stui.displayDetails(currentTask);
+		stui.setActiveTask(currentTask);
 
 		// This section is contributed by A0093874N
 		String result = String
@@ -517,6 +518,7 @@ public class Stream {
 		String oldDescription = currentTask.getDescription();
 		currentTask.setDescription(description.equals("null") ? null
 				: description);
+		stui.setActiveTask(currentTask);
 
 		stackLogic.pushInverseSetDescriptionCommand(taskIndex, oldDescription);
 		String result = String.format(StreamConstants.LogMessage.DESC,
@@ -542,6 +544,7 @@ public class Stream {
 		StreamTask currentTask = streamLogic.getTask(taskName);
 		String oldRank = currentTask.getRank();
 		currentTask.setRank(taskRank);
+		stui.setActiveTask(currentTask);
 
 		stackLogic.pushInverseSetRankingCommand(taskIndex, oldRank);
 		String result = String.format(StreamConstants.LogMessage.RANK,
@@ -563,6 +566,8 @@ public class Stream {
 	private void executeName(Integer taskIndex, String newTaskName) throws StreamModificationException {
 		String oldTaskName = streamLogic.getTaskNumber(taskIndex);
 		streamLogic.updateTaskName(oldTaskName, newTaskName);
+		StreamTask task = streamLogic.getTask(newTaskName);
+		stui.setActiveTask(task);
 
 		stackLogic.pushInverseSetNameCommand(taskIndex, oldTaskName);
 
@@ -592,9 +597,7 @@ public class Stream {
 				taskName, taskIndex, currTask);
 
 		streamLogic.modifyTaskWithParams(taskName, Arrays.asList(contents));
-
 		stackLogic.pushInverseModifyCommand(inverseCommand);
-
 		stui.setActiveTask(currTask);
 
 		String result = String.format(StreamConstants.LogMessage.MODIFY,
@@ -620,6 +623,7 @@ public class Stream {
 		StreamTask task = streamLogic.getTask(taskName);
 		ArrayList<String> processedTags = taskLogic.removeTags(task, tags);
 		stackLogic.pushInverseUntagCommand(taskIndex, processedTags);
+		stui.setActiveTask(task);
 		logRemovedTags(taskName, processedTags);
 	}
 
@@ -640,6 +644,7 @@ public class Stream {
 		StreamTask task = streamLogic.getTask(taskName);
 		ArrayList<String> processedTags = taskLogic.addTags(task, tags);
 		stackLogic.pushInverseAddTagCommand(taskIndex, processedTags);
+		stui.setActiveTask(task);
 		logAddedTags(taskName, processedTags);
 	}
 
@@ -714,16 +719,17 @@ public class Stream {
 		StreamTask task = streamLogic.getTask(taskName);
 		String result = null;
 		switch (parsedMarkType) {
-			case DONE:
-				result = markAsDone(task, taskIndex);
-				break;
-			case NOT:
-				result = markAsOngoing(task, taskIndex);
-				break;
-			default:
-				// should not happen, but let's play safe
-				result = "Unknown marking type: " + markType;
+		case DONE:
+			result = markAsDone(task, taskIndex);
+			break;
+		case NOT:
+			result = markAsOngoing(task, taskIndex);
+			break;
+		default:
+			// should not happen, but let's play safe
+			result = "Unknown marking type: " + markType;
 		}
+		stui.setActiveTask(task);
 		showAndLogResult(result);
 	}
 
@@ -732,6 +738,8 @@ public class Stream {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String result = null;
 		result = processDue(content, taskIndex, taskName);
+		StreamTask task = streamLogic.getTask(taskName);
+		stui.setActiveTask(task);
 		showAndLogResult(result);
 	}
 
@@ -754,8 +762,9 @@ public class Stream {
 	private void executeStartTime(Integer taskIndex, String content)
 			throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
-		String result = null;
-		result = processStartTime(content, taskIndex, taskName);
+		String result = processStartTime(content, taskIndex, taskName);
+		StreamTask task = streamLogic.getTask(taskName);
+		stui.setActiveTask(task);
 		showAndLogResult(result);
 	}
 
@@ -798,19 +807,19 @@ public class Stream {
 		}
 
 		switch (type) {
-			case ALPHA:
-				result = streamLogic.sortAlpha(descending);
-				break;
-			case END:
-				result = streamLogic.sortDeadline(descending);
-				break;
-			case START:
-				result = streamLogic.sortStartTime(descending);
-				break;
-			default:
-				// also to play safe
-				result = "Unknown sort category \"" + sortBy + "\"";
-				break;
+		case ALPHA:
+			result = streamLogic.sortAlpha(descending);
+			break;
+		case END:
+			result = streamLogic.sortDeadline(descending);
+			break;
+		case START:
+			result = streamLogic.sortStartTime(descending);
+			break;
+		default:
+			// also to play safe
+			result = "Unknown sort category \"" + sortBy + "\"";
+			break;
 		}
 		showAndLogResult(result);
 	}
@@ -906,10 +915,10 @@ public class Stream {
 		} else {
 			return StreamConstants.ExceptionMessage.ERR_DEADLINE_BEFORE_STARTTIME;
 		}
-		
+
 	}
 
-	
+
 
 	// @author A0119401U
 	/**
@@ -1075,14 +1084,14 @@ public class Stream {
 			} else {
 				showAndLogError(String.format(
 						StreamConstants.LogMessage.PARSER_ERROR, e.getClass()
-								.getSimpleName() + " " + e.getMessage()));
+						.getSimpleName() + " " + e.getMessage()));
 			}
 		} catch (Exception e) {
 			log(String.format(StreamConstants.LogMessage.ERRORS, e.getClass()
 					.getSimpleName(), e.getMessage()));
 			showAndLogError(String.format(
 					StreamConstants.LogMessage.UNEXPECTED_ERROR, e.getClass()
-							.getSimpleName() + " " + e.getMessage()));
+					.getSimpleName() + " " + e.getMessage()));
 		}
 	}
 

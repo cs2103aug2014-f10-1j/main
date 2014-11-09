@@ -80,7 +80,7 @@ public class StreamUI {
 	private JButton addTaskButton;
 	private ArrayList<JButton> buttons = new ArrayList<JButton>();
 
-	private boolean isSearch;
+	private boolean isSearch, isTaskHighlighted;
 	private int pageShown;
 	private int totalPage;
 	private StreamTaskView[] shownTasks;
@@ -120,8 +120,13 @@ public class StreamUI {
 		availIndices = new ArrayList<Integer>();
 	}
 
+	//@author A0096529N
+	/**
+	 * Sets the active task for highlighting
+	 */
 	public void setActiveTask(StreamTask task) {
 		activeTask = task;
+		isTaskHighlighted = false;
 	}
 	
 	//@author A0096529N
@@ -134,6 +139,7 @@ public class StreamUI {
 		int page = index / StreamConstants.UI.MAX_VIEWABLE_TASK + 1;
 		repopulateTaskView(page);
 		fadeBorder(shownTasks[index % StreamConstants.UI.MAX_VIEWABLE_TASK]);
+		isTaskHighlighted = true;
 	}
 
 	//@author A0096529N
@@ -518,6 +524,9 @@ public class StreamUI {
 			} else {
 				repopulateTaskView(pageShown);
 			}
+		}
+		if (activeTask != null && !isTaskHighlighted) {
+			highlightActiveTaskView();
 		}
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG,
 				"Task viewer refreshed with " + indices.size() + " new tasks");
