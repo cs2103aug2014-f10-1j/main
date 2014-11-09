@@ -216,7 +216,7 @@ public class StreamUndoTest {
 		String[] chronoSorted = { "Task D", "Task A", "Task C", "Task B" };
 		String[] unsorted = { "Task D", "Task A", "Task C", "Task B" };
 		assertTrue("Unsorted", compare(st.streamLogic.getTaskList(), unsorted));
-		in("sort a");
+		in("sort a asc");
 		assertTrue("Sorted alphabetically",
 				compare(st.streamLogic.getTaskList(), alphaSorted));
 		in("sort d desc");
