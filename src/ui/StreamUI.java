@@ -81,7 +81,8 @@ public class StreamUI {
 	private JButton addTaskButton;
 	private ArrayList<JButton> buttons = new ArrayList<JButton>();
 
-	private boolean isSearch, isTaskHighlighted;
+	private boolean isSearch;
+	private boolean isTaskHighlighted;
 	private int pageShown;
 	private int totalPage;
 	private StreamTaskView[] shownTasks;
