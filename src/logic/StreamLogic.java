@@ -311,7 +311,11 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0093874N
-
+	/**
+	 * Adds the given task back into storage
+	 * 
+	 * @param task to be added
+	 */
 	public void recoverTask(StreamTask task) {
 		streamObject.put(task.getTaskName(), task);
 		logDebug(String.format(StreamConstants.LogMessage.RECOVERED_TASK,
@@ -319,7 +323,10 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
-
+	/**
+	 * Clears the storage of all tasks.
+	 * 
+	 */
 	public void clear() {
 		streamObject.clear();
 		logDebug(StreamConstants.LogMessage.CLEARED_TASKS);
@@ -327,10 +334,8 @@ public class StreamLogic extends BaseLogic {
 
 	// @author A0093874N
 	/**
-	 * <p>
 	 * Checks whether a specific task is already included in the tasks list.
 	 * Only for testing.
-	 * </p>
 	 * <p>
 	 * Pre-condition: <i>taskName</i> is not null
 	 * </p>
@@ -724,6 +729,7 @@ public class StreamLogic extends BaseLogic {
 		return tasks;
 	}
 
+	// @author generated
 	@Override
 	protected String getLoggerComponentName() {
 		return StreamConstants.ComponentTag.STREAMLOGIC;

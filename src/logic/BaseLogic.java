@@ -21,7 +21,7 @@ public abstract class BaseLogic {
 	protected StreamLogger logger = StreamLogger.init(getLoggerComponentName());
 	
 	/**
-	 * to set up logging infrastructure.
+	 * For setting up logging infrastructure.
 	 * 
 	 * @return componentTag the inherited logic
 	 * class' log tag.

@@ -123,6 +123,10 @@ public class StreamUI {
 	//@author A0096529N
 	/**
 	 * Sets the active task for highlighting
+	 * 
+	 * @param task the task to be highlighted on next
+	 * UI update
+	 * 
 	 */
 	public void setActiveTask(StreamTask task) {
 		activeTask = task;
@@ -145,7 +149,7 @@ public class StreamUI {
 	//@author A0096529N
 	/**
 	 * 
-	 * fades the border by setting the alpha value.
+	 * Fades the border by setting the alpha value.
 	 * <p>Starts a daemon background thread to alter border</p>
 	 * 
 	 * @param taskView to execute the fade effect on

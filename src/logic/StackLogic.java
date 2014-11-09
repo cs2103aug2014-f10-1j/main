@@ -25,6 +25,12 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0118007R
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param currentDeadline time to be reverted to
+	 */
 	public void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
 		String inverseCommand = null;
 		if (currentDeadline == null) {
@@ -38,6 +44,12 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0119401U
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param currentStartTime time to be reverted to
+	 */
 	public void pushInverseStartCommand(int taskIndex, Calendar currentStartTime) {
 		String inverseCommand = null;
 		if (currentStartTime == null) {
@@ -51,12 +63,23 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was added
+	 */
 	public void pushInverseAddCommand(int index) {
 		pushInput(String.format(StreamConstants.Commands.DISMISS,
 				index));
 	}
 
 	//@author A0093874N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param deletedTask task that was deleted
+	 * @param order order of tasks to be reverted to
+	 */
 	public void pushInverseDeleteCommand(StreamTask deletedTask, ArrayList<String> order) {
 		pushOrder(order);
 		pushDumpedTask(deletedTask);
@@ -64,6 +87,12 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param originalOrder order of tasks to be reverted to
+	 * @param deletedTasks tasks that were deleted
+	 */
 	public void pushInverseClearCommand(ArrayList<String> originalOrder, ArrayList<StreamTask> deletedTasks) {
 		pushOrder(originalOrder);
 		for (StreamTask task:deletedTasks) {
@@ -74,16 +103,34 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0093874N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param oldRank rank to be reverted to 
+	 */
 	public void pushInverseSetRankingCommand(int index, String oldRank) {
 		pushInput(String.format(StreamConstants.Commands.RANK, index, oldRank));
 	}
 
 	//@author A0093874N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param oldDescription description to be reverted to
+	 */
 	public void pushInverseSetDescriptionCommand(int index, String oldDescription) {
 		pushInput(String.format(StreamConstants.Commands.DESC, index, oldDescription));
 	}
 
 	//@author A0118007R
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param wasDone boolean state to be reverted to
+	 * @param taskIndex index of task that was modified
+	 */
 	public void pushInverseSetDoneCommand(boolean wasDone, int index) {
 		String inverseCommand = null;
 		if (wasDone) {
@@ -95,22 +142,45 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param oldTaskName
+	 */
 	public void pushInverseSetNameCommand(int taskIndex, String oldTaskName) {
 		pushInput(String.format(StreamConstants.Commands.NAME, taskIndex, oldTaskName));
 	}
 
 	//@author A0096529N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param inverseCommand entire command for reversion of action
+	 */
 	public void pushInverseModifyCommand(String inverseCommand) {
 		pushInput(inverseCommand.trim());
 	}
 
 	//@author A0096529N
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param oldOrdering order of tasks to be reverted to
+	 */
 	public void pushInverseSortCommand(ArrayList<String> oldOrdering) {
 		pushOrder(oldOrdering);
 		pushInput("unsort");
 	}
 
 	//@author A0118007R
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param tagsRemoved tags removed during modification
+	 * to be added back on reversion
+	 */
 	public void pushInverseUntagCommand(int taskIndex, ArrayList<String> tagsRemoved) {
 		if (tagsRemoved.size() > 0) {
 			pushInput(String.format(StreamConstants.Commands.TAG, taskIndex,
@@ -119,6 +189,13 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0118007R
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param tagsAdded tags added during modification
+	 * to be removed on reversion
+	 */
 	public void pushInverseAddTagCommand(int taskIndex, ArrayList<String> tagsAdded) {
 		if (tagsAdded.size() > 0) {
 			pushInput(String.format(StreamConstants.Commands.UNTAG, taskIndex,
