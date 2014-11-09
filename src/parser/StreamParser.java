@@ -18,7 +18,7 @@ public class StreamParser {
 	public enum CommandType {
 		INIT, ADD, DEL, DESC, DUE, START, VIEW, RANK, MODIFY, NAME, MARK,
 		TAG, UNTAG, SEARCH, SORT, UNSORT, FILTER, CLRSRC, CLEAR, UNDO, EXIT,
-		ERROR, RECOVER, DISMISS, FIRST, PREV, NEXT, LAST, PAGE;
+		ERROR, RECOVER, DISMISS, FIRST, PREV, NEXT, LAST, PAGE, HELP;
 	}
 
 	public enum MarkType {
@@ -221,6 +221,10 @@ public class StreamParser {
 			checkTypeTwoValidity(contents, 1 + numOfTasks
 					/ StreamConstants.UI.MAX_VIEWABLE_TASK);
 			this.commandKey = CommandType.PAGE;
+			break;
+			
+		case "help":
+			this.commandKey = CommandType.HELP;
 			break;
 
 		default:

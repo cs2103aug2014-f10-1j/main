@@ -285,6 +285,10 @@ public class Stream {
 		case PAGE:
 			stui.goToPage(index);
 			break;
+			
+		case HELP:
+			stui.openHelpBox();
+			break;
 
 		case EXIT:
 			executeExit();

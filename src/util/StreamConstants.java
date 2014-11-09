@@ -158,6 +158,13 @@ public class StreamConstants {
 
 		public static final String DETAILS_HEADER = "Details for %1$s";
 		public static final String DETAILS_CONTENT = "<html><body width='400'><p>Task name: %1$s</p><p>Status: %2$s</p><p>Timing: %3$s</p><p>Description: %4$s</p><p>Tags: %5$s</p><p>Rank: %6$s</p>";
+		public static final Object UI_HELP = "<html><body width='400'><h2>" + WELCOME
+				+ "</h2><p>Here are some keywords that you can use:</p>"
+				+ "<p>add, delete, name, rank, start, due, tag, mark, modify,"
+				+ "view, search, sort, filter, clrsrc, page, undo, exit</p><p>"
+				+ "Our smart helper will tell you what each command does and assist you "
+				+ "in syntax suggestion.</p><p>Visit our page at https://github.com/cs2103aug2014-f10-1j/main "
+				+ "for more comprehensive user guide!";
 	}
 
 	public static class ExceptionMessage {

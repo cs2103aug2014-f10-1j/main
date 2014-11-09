@@ -29,6 +29,7 @@ Currently, **STREAM** is capable of basic CRUD (Create, Read, Update, Delete) op
 * **first**, **prev**, **next**, **last**: navigates to another page
 * **page** *pageNo*: navigates immediately to the chosen page
 * **undo**: undoes the last operation
+* **help**: gets some help
 * **exit**: exits **STREAM**
 
 We support multiple, integrated commands such as
@@ -45,6 +46,7 @@ We also support keyboard shortcuts, as follows:
 * *s*: **search**
 * *f*: **filter**
 * *p*: **page**
+* *h*: **help**
 * *u*: **undo**
 * *e*: **exit**
 

@@ -246,6 +246,7 @@ public class StreamUI {
 		helpTexts.put("prev", "Go to the previous page");
 		helpTexts.put("page", "page (page): Go to a specific page");
 		helpTexts.put("undo", "Undo the last action");
+		helpTexts.put("help", "Opens the help dialog box");
 		helpTexts.put("exit", "Exits the program");
 		for (String h : helpTexts.keySet()) {
 			console.addPossibility(h, helpTexts.get(h));
@@ -267,6 +268,7 @@ public class StreamUI {
 		shortcut.put('t', "sort ");
 		shortcut.put('u', "undo");
 		shortcut.put('p', "page ");
+		shortcut.put('h', "help");
 		shortcut.put('e', "exit");
 		shortcut.put('c', "");
 		for (Character c : shortcut.keySet()) {
@@ -617,6 +619,13 @@ public class StreamUI {
 	 */
 	public void goToPage(Integer page) {
 		repopulateTaskView(page);
+	}
+
+	/**
+	 * Opens the help dialog panel.
+	 */
+	public void openHelpBox() {
+		JOptionPane.showMessageDialog(mainFrame, StreamConstants.Message.UI_HELP);
 	}
 
 	//@author A0093874N-unused
