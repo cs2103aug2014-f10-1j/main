@@ -68,7 +68,7 @@ public class StreamLoadTest {
 				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
 				+ "\"taskName\":\"Build IoT\"," + "\"taskDescription\":\"Internet of Things\"}]}";
 		try {
-			StreamIO.setSaveLocation(TEST_SAVE_FILENAME);
+			StreamIO.setFilename(TEST_SAVE_FILENAME);
 			testFile = new File(StreamIO.getSaveLocation());
 			
 			if (testFile.exists()) {

@@ -35,7 +35,7 @@ public class StreamSaveTest {
 	// @author A0096529N
 	@Before
 	public void setUp() throws Exception {
-		StreamIO.setSaveLocation(TEST_SAVE_FILENAME);
+		StreamIO.setFilename(TEST_SAVE_FILENAME);
 		testFile = new File(StreamIO.getSaveLocation());
 
 		if (testFile.exists()) {

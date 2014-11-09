@@ -111,7 +111,7 @@ public class Stream {
 		} else {
 			filename = file;
 		}
-		StreamIO.setSaveLocation(filename);
+		StreamIO.setFilename(filename);
 	}
 
 	/**
