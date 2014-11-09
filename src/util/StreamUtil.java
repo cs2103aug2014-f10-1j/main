@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import parser.StreamParser;
+
 import com.mdimension.jchronic.Chronic;
 import com.mdimension.jchronic.utils.Span;
 
@@ -48,7 +50,7 @@ public class StreamUtil {
 	 */
 	public static String displayDescription(String desc) {
 		if (desc == null) {
-			return "No description provided";
+			return "no description provided";
 		} else {
 			return desc;
 		}
@@ -63,7 +65,7 @@ public class StreamUtil {
 	 */
 	public static String displayTags(ArrayList<String> tags) {
 		if (tags.size() == 0) {
-			return "No tags added";
+			return "no tags added";
 		} else {
 			return listDownArrayContent(tags, ", ");
 		}
@@ -77,11 +79,7 @@ public class StreamUtil {
 	 * @return <b>String</b> - the task status
 	 */
 	public static String displayStatus(Boolean isDone) {
-		if (isDone) {
-			return "Done";
-		} else {
-			return "Ongoing";
-		}
+		return StreamParser.translateMarking(StreamParser.parseMarking(isDone));
 	}
 
 	/**
@@ -149,14 +147,14 @@ public class StreamUtil {
 	 */
 	public static String getWrittenTime(Calendar startTime, Calendar endTime) {
 		if (startTime == null && endTime == null) {
-			return "No timing specified";
+			return "no timing specified";
 		} else if (startTime == null) {
-			return "By " + getCalendarWriteUp(endTime);
+			return "by " + getCalendarWriteUp(endTime);
 		} else if (endTime == null) {
 			// is there a task like this?
-			return "From " + getCalendarWriteUp(startTime);
+			return "from " + getCalendarWriteUp(startTime);
 		} else {
-			return "From " + getCalendarWriteUp(startTime) + " to "
+			return "from " + getCalendarWriteUp(startTime) + " to "
 					+ getCalendarWriteUp(endTime);
 		}
 	}

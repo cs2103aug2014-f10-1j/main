@@ -33,11 +33,8 @@ import fileio.StreamIO;
  * all different components from different packages, namely <b>StreamUI</b>,
  * <b>StreamObject</b>, <b>StreamIO</b>, and <b>StreamParser</b>.
  * 
- * @version V0.4
- * @author Wilson Kurniawan, John Kevin Tjahjadi, Steven Khong Wai How, Jiang
- *         Shenhao
+ * @version V0.5
  */
-
 public class Stream {
 
 	StreamObject streamObject = StreamObject.getInstance();
@@ -52,7 +49,7 @@ public class Stream {
 
 	private String filename;
 
-	// @author A0118007R
+	//@author A0118007R
 	public Stream(String file) {
 		initializeExtFiles();
 		initStreamIO(file);
@@ -61,13 +58,12 @@ public class Stream {
 		refreshUI();
 	}
 
-	// @author A0118007R
 	private void initializeStream() {
 		stui = new StreamUI(this);
 		parser = new StreamParser();
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private void initializeExtFiles() {
 
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
@@ -101,7 +97,14 @@ public class Stream {
 				consoleFont);
 	}
 
-	// @author A0096529N
+	private void saveLogFile() throws StreamIOException {
+		Calendar now = Calendar.getInstance();
+		String logFileName = String.format(StreamConstants.LOGFILE_FORMAT,
+				StreamUtil.getDateString(now));
+		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
+	}
+
+	//@author A0096529N
 	private void initStreamIO(String file) {
 		if (!file.endsWith(StreamConstants.SAVEFILE_EXTENSION)) {
 			filename = String.format(StreamConstants.SAVEFILE_FORMAT, file);
@@ -111,7 +114,6 @@ public class Stream {
 		StreamIO.setSaveLocation(filename);
 	}
 
-	// @author A0096529N
 	/**
 	 * Loads the StreamObject state from a saved file, into the current
 	 * streamObject instance. No new instance of StreamObject is created.
@@ -131,7 +133,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0096529N
 	/**
 	 * Saves the current StreamObject state using StreamIO
 	 * 
@@ -154,136 +155,107 @@ public class Stream {
 		return result;
 	}
 
-	// @author A0093874N
-	private void saveLogFile() throws StreamIOException {
-		Calendar now = Calendar.getInstance();
-		String logFileName = String.format(StreamConstants.LOGFILE_FORMAT,
-				StreamUtil.getDateString(now));
-		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
-	}
-
-	// @author A0118007R
+	//@author A0118007R
 	private void executeInput(CommandType command, Integer index, String content)
 			throws StreamModificationException, StreamIOException {
 		switch (command) {
 		case ADD:
-			logCommand("ADD");
 			executeAdd(content);
 			refreshUI();
 			break;
 
 		case DEL:
-			logCommand("DELETE");
 			executeDelete(index);
 			refreshUI();
 			break;
 
 		case DESC:
-			logCommand("DESCRIBE");
 			executeDescribe(index, content);
 			break;
 
 		case DUE:
-			logCommand("DUE");
 			executeDue(index, content);
 			refreshUI();
 			break;
 
 		case START:
-			logCommand("START");
 			executeStartTime(index, content);
 			refreshUI();
 			break;
 
 		case MODIFY:
-			logCommand("MODIFY");
 			executeModify(index, content);
 			refreshUI();
 			break;
 
 		case NAME:
-			logCommand("NAME");
 			executeName(index, content);
 			refreshUI();
 			break;
 
 		case RANK:
-			logCommand("RANK");
 			executeRank(index, content);
 			refreshUI();
 			break;
 
 		case MARK:
-			logCommand("MARK");
 			executeMark(index, content.trim());
 			refreshUI();
 			break;
 
 		case TAG:
-			logCommand("TAG");
 			executeTag(index, content);
 			refreshUI();
 			break;
 
 		case UNTAG:
-			logCommand("UNTAG");
 			executeUntag(index, content);
 			refreshUI();
 			break;
 
 		case FILTER:
-			logCommand("FILTER");
 			ArrayList<Integer> filterResult = executeFilter(content);
 			refreshUI(filterResult, true, true);
 			break;
 
 		case CLRSRC:
-			logCommand("CLRSRC");
 			refreshUI();
 			break;
 
 		case SEARCH:
-			logCommand("SEARCH");
 			ArrayList<Integer> searchResult = executeSearch(content);
 			refreshUI(searchResult, true, true);
 			break;
 
 		case SORT:
-			logCommand("SORT");
 			executeSort(content);
 			refreshUI();
 			break;
 
 		case VIEW:
-			logCommand("VIEW");
 			executeView(index);
 			break;
 
 		case CLEAR:
-			logCommand("CLEAR");
 			executeClear();
 			refreshUI();
 			break;
 
 		case UNDO:
-			logCommand("UNDO");
 			executeUndo();
 			break;
 
 		case RECOVER:
-			logCommand("RECOVER");
 			executeRecover(index);
 			refreshUI();
 			break;
 
 		case DISMISS:
-			logCommand("DISMISS");
 			executeDismiss(index);
 			refreshUI();
 			break;
 
 		case UNSORT:
-			logCommand("UNSORT");
 			executeUnsort();
 			refreshUI();
 			break;
@@ -309,7 +281,6 @@ public class Stream {
 			break;
 
 		case EXIT:
-			logCommand("EXIT");
 			executeExit();
 
 		default:
@@ -317,7 +288,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0118007R
 	/**
 	 * Adds a new task to the tasks list.
 	 * <p>
@@ -326,7 +296,6 @@ public class Stream {
 	 * 
 	 * @param taskNameWithParams
 	 *            - the task name
-	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 *             - if a <b>StreamTask<b> named <i>taskName</i> is already
 	 *             present.
@@ -360,7 +329,6 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
 	/**
 	 * Appends all trailing strings that are not part of a task's name to be
 	 * modified as parameters.
@@ -371,8 +339,6 @@ public class Stream {
 	 *            - the storage for parameter modification
 	 * @param i
 	 *            - the starting index
-	 * 
-	 * @author John Kevin Tjahjadi
 	 */
 	private void appendEverything(String[] contents,
 			ArrayList<String> modifyParams, int i) {
@@ -381,33 +347,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0093874N
-	/**
-	 * Deletes a task from the tasks list permanently.
-	 * <p>
-	 * Pre-condition: <i>taskName</i> is not null.
-	 * </p>
-	 * 
-	 * @author Wilson Kurniawan
-	 * @param taskName
-	 *            - the task name
-	 * @throws StreamModificationException
-	 */
-	private void executeDismiss(Integer taskIndex)
-			throws StreamModificationException {
-		String taskName = streamLogic.getTaskNumber(taskIndex);
-
-		assertNotNull(taskName);
-		streamLogic.deleteTask(taskName);
-		assertNoTask(taskName);
-
-		stackLogic.pushPlaceholderInput();
-		String result = String.format(StreamConstants.LogMessage.DELETE,
-				taskName);
-		showAndLogResult(result);
-	}
-
-	// @author A0118007R
 	/**
 	 * Deletes a task from the tasks list and then archives it so it can be
 	 * recovered by undo process.
@@ -415,7 +354,6 @@ public class Stream {
 	 * Pre-condition: <i>taskName</i> is not null.
 	 * </p>
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -436,9 +374,8 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
 	/**
-	 * Asserts if the given task name does not exists
+	 * Asserts if the given task name does not exists.
 	 * 
 	 * @param taskName
 	 *            - the task name to be checked whether it exists or not
@@ -447,9 +384,8 @@ public class Stream {
 		assert (!streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_DELETED;
 	}
 
-	// @author A0118007R
 	/**
-	 * Asserts if the task name is null
+	 * Asserts if the task name is null.
 	 * 
 	 * @param taskName
 	 *            - the task name to be chekced whether it is null
@@ -458,11 +394,29 @@ public class Stream {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
+	/**
+	 * Deletes a task from the tasks list permanently.
+	 * 
+	 * @throws StreamModificationException
+	 */
+	private void executeDismiss(Integer taskIndex)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+
+		assertNotNull(taskName);
+		streamLogic.deleteTask(taskName);
+		assertNoTask(taskName);
+
+		stackLogic.pushPlaceholderInput();
+		String result = String.format(StreamConstants.LogMessage.DELETE,
+				taskName);
+		showAndLogResult(result);
+	}
+
 	/**
 	 * Clears all tasks upon receiving the command "clear".
 	 * 
-	 * @author Wilson Kurniawan
 	 * @throws StreamModificationException
 	 */
 	private void executeClear() throws StreamModificationException {
@@ -473,18 +427,11 @@ public class Stream {
 		showAndLogResult(StreamConstants.LogMessage.CLEAR);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Prints the task details.
-	 * <p>
-	 * Pre-condition: <i>taskName</i> is not null
-	 * </p>
 	 * 
-	 * @author John Kevin Tjahjadi
-	 * @param taskName
-	 *            - the task name
 	 * @throws StreamModificationException
-	 * @return <strong>String</strong> - the log message
 	 */
 	private void executeView(Integer taskIndex) throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
@@ -500,14 +447,12 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
 	/**
 	 * Adds a description to a task.
 	 * <p>
 	 * Pre-condition: <i>task, index, description</i> not null
 	 * </p>
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -526,14 +471,13 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	/**
-	 * Adds a rank to a task
+	 * Adds a rank to a task.
 	 * <p>
 	 * Pre-condition: <i>task, index, description</i> not null
 	 * </p>
 	 * 
-	 * @author Jiang Shenhao
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -552,14 +496,13 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
-	 * Changes the name of a task
+	 * Changes the name of a task.
 	 * <p>
 	 * Pre-condition: <i>task, index, name</i> not null
 	 * </p>
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -576,14 +519,12 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
 	/**
-	 * Modify various parameters of a task
+	 * Modifies various parameters of a task.
 	 * <p>
 	 * Pre-condition: <i>task, index, specified params</i> not null
 	 * </p>
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -605,14 +546,13 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * Untags some tags that are specified in the input.
 	 * <p>
 	 * Pre-condition: <i>task, index, tags</i> not null
 	 * </p>
 	 * 
-	 * @author Wilson Kurniawan
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -627,14 +567,12 @@ public class Stream {
 		logRemovedTags(taskName, processedTags);
 	}
 
-	// @author A0093874N
 	/**
 	 * Tag some tags that are specified in the input.
 	 * <p>
 	 * Pre-condition: <i>task, index, tags</i> not null
 	 * </p>
 	 * 
-	 * @author Wilson Kurniawan
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 */
@@ -648,11 +586,9 @@ public class Stream {
 		logAddedTags(taskName, processedTags);
 	}
 
-	// @author A0093874N
 	/**
 	 * Reverts ordering after being sorted.
 	 * 
-	 * @author Wilson Kurniawan
 	 * @return <strong>String</strong> - the log message
 	 */
 	private void executeUnsort() {
@@ -661,12 +597,8 @@ public class Stream {
 		showAndLogResult(StreamConstants.LogMessage.UNSORT);
 	}
 
-	// @author A0093874N
 	/**
-	 * Sorts based on the criteria specified
-	 * 
-	 * @param content
-	 *            - the criteria for sorting
+	 * Recovers deleted task from the archive.
 	 */
 	private void executeRecover(Integer noOfTasksToRecover) {
 		stackLogic.pushPlaceholderInput();
@@ -682,10 +614,8 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0093874N
 	/**
 	 * Execute the undo operation for the last user action
-	 * 
 	 */
 	private void executeUndo() {
 		if (!stackLogic.hasInverseInput()) {
@@ -705,11 +635,12 @@ public class Stream {
 		}
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Marks the category as the specified category
 	 * 
-	 * @param content
+	 * @param taskIndex
+	 * @param markType
 	 *            - the category to be used for marking
 	 * @throws StreamModificationException
 	 */
@@ -733,7 +664,7 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void executeDue(Integer taskIndex, String content) throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
 		String result = null;
@@ -743,7 +674,6 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
 	private String processDue(String content, int taskIndex, String taskName)
 			throws StreamModificationException {
 		String result;
@@ -758,7 +688,6 @@ public class Stream {
 		return result;
 	}
 
-	// @author A0118007R
 	private void executeStartTime(Integer taskIndex, String content)
 			throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
@@ -768,7 +697,6 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
 	private String processStartTime(String content, int taskIndex,
 			String taskName) throws StreamModificationException {
 		String result;
@@ -783,7 +711,7 @@ public class Stream {
 		return result;
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	// updated by A0119401U
 	private void executeSort(String content) {
 		ArrayList<String> oldOrdering = streamLogic.getTaskList();
@@ -831,7 +759,6 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0096529N
 	private void executeExit() {
 		showAndLogResult(StreamConstants.Message.THANK_YOU);
 		save();
@@ -844,8 +771,6 @@ public class Stream {
 		System.exit(0);
 	}
 
-	// @author A0096529N
-	// modified by A0093874N
 	/**
 	 * Search for tasks with specified key phrase, in the task name, description
 	 * and tags.
@@ -859,7 +784,6 @@ public class Stream {
 	 * </p>
 	 * 
 	 * @return tasks - a list of tasks containing the key phrase.
-	 * @author Steven Khong
 	 */
 	private ArrayList<Integer> executeSearch(String content) {
 		assertNotNull(content);
@@ -872,7 +796,7 @@ public class Stream {
 		return searchResult;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private ArrayList<Integer> executeFilter(String content) {
 		assertNotNull(content);
 		ArrayList<Integer> filterResult = streamLogic.filterTasks(content);
@@ -884,7 +808,7 @@ public class Stream {
 		return filterResult;
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void addTaskWithParams(String taskName,
 			ArrayList<String> modifyParams) throws StreamModificationException {
 
@@ -894,7 +818,6 @@ public class Stream {
 		processParameterAddition(taskName, modifyParams);
 	}
 
-	// @author A0118007R
 	private void processParameterAddition(String taskName,
 			ArrayList<String> modifyParams) throws StreamModificationException {
 		if (modifyParams.size() > 0) {
@@ -902,11 +825,10 @@ public class Stream {
 		}
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	/**
 	 * Set the due date of the selected task
 	 * 
-	 * @author Jiang Shenhao
 	 * @throws StreamModificationException
 	 */
 	private String setDueDate(String taskName, int taskIndex,
@@ -925,13 +847,9 @@ public class Stream {
 
 	}
 
-
-
-	// @author A0119401U
 	/**
 	 * Set the start date of the selected task
 	 * 
-	 * @author Jiang Shenhao
 	 * @throws StreamModificationException
 	 */
 	private String setStartDate(String taskName, int taskIndex,
@@ -947,11 +865,9 @@ public class Stream {
 		}
 	}
 
-	// @author A0119401U
 	/**
 	 * Mark the selected task as done
 	 * 
-	 * @author Jiang Shenhao
 	 * @return <strong>String</strong> - the log message
 	 */
 	private String markAsDone(StreamTask task, int index) {
@@ -965,11 +881,10 @@ public class Stream {
 		//
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Mark the selected task as ongoing
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @return <strong>String</strong> - the log message
 	 */
 	private String markAsOngoing(StreamTask task, int index) {
@@ -983,26 +898,24 @@ public class Stream {
 		//
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	private void refreshUI() {
 		refreshUI(false, false);
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private void refreshUI(boolean isReset, boolean isSearching) {
 		stui.resetAvailableTasks(streamLogic.getIndex(),
 				streamLogic.getStreamTaskList(streamLogic.getIndex()), isReset,
 				isSearching);
 	}
 
-	// @author A0093874N
 	private void refreshUI(ArrayList<Integer> index, boolean isReset,
 			boolean isSearching) {
 		stui.resetAvailableTasks(index, streamLogic.getStreamTaskList(index),
 				isReset, isSearching);
 	}
 
-	// @author A0093874N
 	private void logAddedTags(String taskName, ArrayList<String> tagsAdded) {
 		if (!tagsAdded.isEmpty()) {
 			showAndLogResult(String.format(
@@ -1013,7 +926,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0093874N
 	private void logRemovedTags(String taskName, ArrayList<String> tagsRemoved) {
 		if (!tagsRemoved.isEmpty()) {
 			showAndLogResult(String.format(
@@ -1024,15 +936,11 @@ public class Stream {
 		}
 	}
 
-	// @author A0093874N
-	/**
-	 * 
-	 */
 	private void showAndLogResult(String logMessage) {
 		showAndLogResult(logMessage, logMessage);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void showAndLogError(String errorMessage) {
 		showAndLogError(errorMessage, errorMessage);
 	}
@@ -1042,32 +950,25 @@ public class Stream {
 	 * displayed are different (especially for exception/error messages)
 	 */
 
-	// @author A0093874N
+	//@author A0093874N
 	private void showAndLogResult(String logMessageForDoc,
 			String logMessageForUser) {
 		stui.log(logMessageForUser, false);
 		log(StreamUtil.showAsTerminalResponse(logMessageForDoc));
 	}
 
-	// @author A0093874N
 	private void showAndLogError(String errorMessageForDoc,
 			String errorMessageForUser) {
 		stui.log(errorMessageForUser, true);
 		log(StreamUtil.showAsTerminalResponse(errorMessageForDoc));
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	private void log(String message) {
 		logger.log(LogLevel.DEBUG, message);
 	}
 
-	// @author A0093874N
-	private void logCommand(String cmd) {
-		log(StreamUtil.showAsTerminalResponse(String.format(
-				StreamConstants.LogMessage.CMD_RECEIVED, cmd)));
-	}
-
-	// @author A0093874N
+	//@author A0093874N
 	private void processInput(String input) {
 		try {
 			parser.interpretCommand(input, streamLogic.getNumberOfTasks());
@@ -1094,7 +995,6 @@ public class Stream {
 						.getSimpleName() + " " + e.getMessage()));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(String.format(StreamConstants.LogMessage.ERRORS, e.getClass()
 					.getSimpleName(), e.getMessage()));
 			showAndLogError(String.format(
@@ -1103,7 +1003,10 @@ public class Stream {
 		}
 	}
 
-	// @author A0093874N
+	/*
+	 * Inputs like unsort, recover, and dismiss cannot be triggered by user;
+	 * only can be triggered by the machine as part of undo.
+	 */
 	private Boolean isRestrictedInput(String input) {
 		if (input.length() >= 6) {
 			if (input.substring(0, 6).equals("unsort")) {
@@ -1118,7 +1021,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0093874N
 	public void filterAndProcessInput(String input) {
 		assert (input != null) : String.format(
 				StreamConstants.LogMessage.ERRORS, "AssertionError",
@@ -1137,7 +1039,7 @@ public class Stream {
 		new Stream(StreamConstants.FILENAME);
 	}
 
-	// @author A0118007R
+	//@author A0118007R-unused
 	/**
 	 * @deprecated - use resetUI instead
 	 */
@@ -1148,27 +1050,6 @@ public class Stream {
 				false);
 	}
 
-	// @author A0093874N
-	/**
-	 * 
-	 * @param noOfTasks
-	 * @throws StreamModificationException
-	 * @deprecated by A0096529N - undo handling moved to StackLogic
-	 */
-	@SuppressWarnings("unused")
-	private void clear(int noOfTasks) throws StreamModificationException {
-		for (int i = 0; i < noOfTasks; i++) {
-			// executeDelete(streamLogic.getTaskNumber(1));
-			/*
-			 * This is because we don't want the "recover 1". Rather, we'll
-			 * replace with "recover noOfTasks" at the end of the process.
-			 */
-			// inputStack.pop();
-			// orderingStack.pop();
-		}
-	}
-
-	// @author A0118007R
 	/**
 	 * @deprecated
 	 */
@@ -1183,7 +1064,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0118007R
 	/**
 	 * @deprecated for now
 	 */
@@ -1195,12 +1075,10 @@ public class Stream {
 		log(StreamUtil.showAsTerminalResponse(commandReceived));
 	}
 
-	// @author A0118007R
 	/**
 	 * Modify a task's description This method is just to differentiate the set
 	 * new description and modify description part
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @deprecated by A0093874N. Can be un-deprecated if we find a use for it.
 	 */
 	@SuppressWarnings("unused")
@@ -1212,7 +1090,6 @@ public class Stream {
 		}
 	}
 
-	// @author A0118007R
 	/**
 	 * <p>
 	 * Changes a task's name.
@@ -1221,7 +1098,6 @@ public class Stream {
 	 * Pre-condition: <i>oldName, newName, index</i> not null
 	 * </p>
 	 * 
-	 * @author John Kevin Tjahjadi
 	 * @throws StreamModificationException
 	 * @return <strong>String</strong> - the log message
 	 * @deprecated by A0096529N merged into StreamLogic.updateTaskName
@@ -1236,7 +1112,6 @@ public class Stream {
 		return String.format(StreamConstants.LogMessage.NAME, oldName, newName);
 	}
 
-	// @author A0118007R
 	/**
 	 * @deprecated the powered-up parser now handles this already
 	 */
