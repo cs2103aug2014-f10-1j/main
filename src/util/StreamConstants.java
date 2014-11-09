@@ -152,7 +152,6 @@ public class StreamConstants {
 
 		public static final String TEXT_TITLE = "STREAM " + VERSION
 				+ ": Simple Task Reader and Manager";
-		public static final String TEXT_HEADER = "<html>S<font color=\"#ed7d31\">T</font>RE<font color=\"#ed7d31\">A</font>M</html>";
 		public static final String TEXT_FOOTER = "Copyright \u00a9 2014 CS2103AUG2014-F10-01J. All rights reserved.";
 		public static final String TEXT_INDEX = "#%1$s";
 		public static final String TEXT_PAGE_NUM = "Page %1$s/%2$s";
@@ -179,8 +178,6 @@ public class StreamConstants {
 	}
 
 	public static class UI {
-		public static final Color COLOR_HEADER = Color.getHSBColor(
-				(float) 208.52 / 360, (float) 0.5728, (float) 0.8353);
 		public static final Color COLOR_LOG_MSG = Color.BLACK;
 		public static final Color COLOR_ERR_MSG = Color.RED;
 		public static final Color COLOR_HELP_MSG = Color.GRAY;
@@ -200,6 +197,8 @@ public class StreamConstants {
 		public static Font FONT_FOOTER = StreamExternals.FONT_CONSOLE
 				.deriveFont(Font.PLAIN, 13);
 		public static Font FONT_TASK = StreamExternals.FONT_CONSOLE.deriveFont(
+				Font.BOLD, 13);
+		public static Font FONT_DESC = StreamExternals.FONT_CONSOLE.deriveFont(
 				Font.PLAIN, 13);
 		public static Font FONT_MONTH = StreamExternals.FONT_CONSOLE
 				.deriveFont(Font.PLAIN, 13);
@@ -243,12 +242,12 @@ public class StreamConstants {
 				WIDTH_INDEX + HEIGHT_TASKPANEL, 0, HEIGHT_TASKPANEL,
 				HEIGHT_TASKPANEL);
 		public static final Rectangle BOUNDS_TASK_NAME = new Rectangle(
-				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL, 0, COMPONENT_WIDTH
-						- WIDTH_INDEX - 4 * HEIGHT_TASKPANEL,
+				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL + 10, 0, COMPONENT_WIDTH
+						- WIDTH_INDEX - 4 * HEIGHT_TASKPANEL - 10,
 				HEIGHT_TASKPANEL / 2);
 		public static final Rectangle BOUNDS_TASK_DESC = new Rectangle(
-				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL, HEIGHT_TASKPANEL / 2,
-				COMPONENT_WIDTH - WIDTH_INDEX - 4 * HEIGHT_TASKPANEL,
+				WIDTH_INDEX + 2 * HEIGHT_TASKPANEL + 10, HEIGHT_TASKPANEL / 2,
+				COMPONENT_WIDTH - WIDTH_INDEX - 4 * HEIGHT_TASKPANEL - 10,
 				HEIGHT_TASKPANEL / 2);
 		public static final Rectangle BOUNDS_RANK_ICON = new Rectangle(
 				COMPONENT_WIDTH - 2 * HEIGHT_TASKPANEL, 0, HEIGHT_TASKPANEL,

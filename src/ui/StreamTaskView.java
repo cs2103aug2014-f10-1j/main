@@ -103,7 +103,7 @@ public class StreamTaskView extends JPanel {
 	 */
 	private void addDescLabel() {
 		descLabel = new JLabel();
-		descLabel.setFont(StreamConstants.UI.FONT_TASK);
+		descLabel.setFont(StreamConstants.UI.FONT_DESC);
 		descLabel.setBounds(StreamConstants.UI.BOUNDS_TASK_DESC);
 		add(descLabel);
 	}

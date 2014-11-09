@@ -24,6 +24,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import model.StreamTask;
 import stream.Stream;
 import util.StreamConstants;
+import util.StreamExternals;
 import util.StreamLogger;
 import util.StreamLogger.LogLevel;
 import util.StreamUtil;
@@ -347,10 +348,9 @@ public class StreamUI {
 	 * Constructs the header portion.
 	 */
 	private void addHeader() {
-		JLabel title = new JLabel(StreamConstants.Message.TEXT_HEADER);
+		JLabel title = new JLabel();
+		title.setIcon(StreamExternals.HEADER);
 		title.setHorizontalAlignment(SwingConstants.CENTER);
-		title.setFont(StreamConstants.UI.FONT_TITLE);
-		title.setForeground(StreamConstants.UI.COLOR_HEADER);
 		title.setBounds(StreamConstants.UI.BOUNDS_HEADER);
 		contentPanel.add(title);
 	}

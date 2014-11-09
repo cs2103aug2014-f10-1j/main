@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
  */
 public class StreamExternals {
 
+	public static ImageIcon HEADER;
 	public static ImageIcon ICON_DONE;
 	public static ImageIcon ICON_NOT_DONE;
 	public static ImageIcon ICON_OVERDUE;
@@ -22,10 +23,11 @@ public class StreamExternals {
 	public static Font FONT_TITLE;
 	public static Font FONT_CONSOLE;
 
-	public static void init(ImageIcon doneIcon, ImageIcon notDoneIcon,
-			ImageIcon overdueIcon, ImageIcon hiRankIcon, ImageIcon medRankIcon,
-			ImageIcon lowRankIcon, ImageIcon calIcon, ImageIcon nullCalIcon,
-			Font titleFont, Font consoleFont) {
+	public static void init(ImageIcon header, ImageIcon doneIcon,
+			ImageIcon notDoneIcon, ImageIcon overdueIcon, ImageIcon hiRankIcon,
+			ImageIcon medRankIcon, ImageIcon lowRankIcon, ImageIcon calIcon,
+			ImageIcon nullCalIcon, Font titleFont, Font consoleFont) {
+		HEADER = header;
 		ICON_DONE = doneIcon;
 		ICON_NOT_DONE = notDoneIcon;
 		ICON_OVERDUE = overdueIcon;

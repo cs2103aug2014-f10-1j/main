@@ -65,7 +65,8 @@ public class Stream {
 
 	//@author A0093874N
 	private void initializeExtFiles() {
-
+		ImageIcon headerText = new ImageIcon(getClass().getResource(
+				"/img/header.png"));
 		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
 				"/img/taskDoneIcon.png"));
 		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
@@ -79,7 +80,7 @@ public class Stream {
 		ImageIcon lowRankIcon = new ImageIcon(getClass().getResource(
 				"/img/taskLowPriority.png"));
 		ImageIcon calIcon = new ImageIcon(getClass().getResource(
-				"/img/calicon2.png"));
+				"/img/calicon.png"));
 		ImageIcon nullCalIcon = new ImageIcon(getClass().getResource(
 				"/img/nullcal.png"));
 		Font titleFont = null;
@@ -92,9 +93,9 @@ public class Stream {
 		} catch (Exception e) {
 
 		}
-		StreamExternals.init(doneIcon, notDoneIcon, overdueIcon, hiRankIcon,
-				medRankIcon, lowRankIcon, calIcon, nullCalIcon, titleFont,
-				consoleFont);
+		StreamExternals.init(headerText, doneIcon, notDoneIcon, overdueIcon,
+				hiRankIcon, medRankIcon, lowRankIcon, calIcon, nullCalIcon,
+				titleFont, consoleFont);
 	}
 
 	private void saveLogFile() throws StreamIOException {

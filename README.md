@@ -33,7 +33,7 @@ Currently, **STREAM** is capable of basic CRUD (Create, Read, Update, Delete) op
 
 We support multiple, integrated commands such as
 
-**add** *some task* **-due** *28/11* **-desc** *buy Pokemon Omega Ruby* **-tag** *#awesome #newgame #whatisfinals* **-rank** *high*
+**add** *some task* **-due** *nov 28* **-desc** *buy Pokemon Omega Ruby* **-tag** *#awesome #newgame #whatisfinals* **-rank** *high*
 
 We also support keyboard shortcuts, as follows:
 * *a*: **add**
