@@ -5,11 +5,11 @@ import java.util.Calendar;
 
 import util.StreamConstants;
 
+//@author A0118007R
 /**
  * Some documentation.
  * 
- * @version V0.4
- * @author John Kevin Tjahjadi
+ * @version V0.5
  */
 public class StreamTask {
 
@@ -32,70 +32,33 @@ public class StreamTask {
 		this.rank = "low";
 	}
 
-
 	// Getters and Setters
 
-	// @author A0118007R
 	public String getTaskName() {
 		return this.taskName;
 	}
 
-	// @author A0118007R
 	public void setTaskName(String newTaskName) {
 		this.taskName = newTaskName;
 	}
 
-	// @author A0118007R
 	public String getDescription() {
 		return this.taskDescription;
 	}
 
-	// @author A0118007R
 	public void setDescription(String description) {
 		this.taskDescription = description;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	public Calendar getStartTime() {
 		return this.startTime;
 	}
 
-	// @author A0093874N
 	public void setStartTime(Calendar startTime) {
 		this.startTime = startTime;
 	}
 
-	// @author A0119401U
-	public Calendar getDeadline() {
-		return this.deadline;
-	}
-
-	// @author A0119401U
-	public void setDeadline(Calendar deadline) {
-		this.deadline = deadline;
-	}
-
-	// @author A0119401U
-	public ArrayList<String> getTags() {
-		return tags;
-	}
-
-	// @author A0119401U
-	public String getRank() {
-		return this.rank;
-	}
-
-	// @author A0119401U
-	public void setRank(String newRank) {
-		this.rank = newRank;
-	}
-
-	// @author A0119401U
-	public boolean isDone() {
-		return this.done;
-	}
-
-	// @author A0093874N
 	public boolean isOverdue() {
 		if (this.getDeadline() == null) {
 			return false;
@@ -104,44 +67,60 @@ public class StreamTask {
 		}
 	}
 
-	// @author A0096529N
-	public void setDone(boolean done) {
-		this.done = done;
+	//@author A0119401U
+	public Calendar getDeadline() {
+		return this.deadline;
 	}
 
-	// Delegate methods
-
-	// @author A0096529N
-	public boolean isTimedTask() {
-		return startTime != null;
+	public void setDeadline(Calendar deadline) {
+		this.deadline = deadline;
 	}
 
-	// @author A0096529N
-	public boolean isDeadlineTask() {
-		return deadline != null;
+	public ArrayList<String> getTags() {
+		return tags;
 	}
 
-	// @author A0096529N
-	public boolean isFloatingTask() {
-		return startTime == null && deadline == null;
+	public String getRank() {
+		return this.rank;
 	}
 
-	// @author A0119401U
+	public void setRank(String newRank) {
+		this.rank = newRank;
+	}
+
+	public boolean isDone() {
+		return this.done;
+	}
+
 	public void markAsDone() {
 		setDone(true);
 	}
 
-	// @author A0119401U
 	public void markAsOngoing() {
 		setDone(false);
 	}
 
-	// @author A0096529N
+	//@author A0096529N
+	public void setDone(boolean done) {
+		this.done = done;
+	}
+
+	public boolean isTimedTask() {
+		return startTime != null;
+	}
+
+	public boolean isDeadlineTask() {
+		return deadline != null;
+	}
+
+	public boolean isFloatingTask() {
+		return startTime == null && deadline == null;
+	}
+
 	public boolean hasTag(String tag) {
 		return tags.contains(tag.toUpperCase());
 	}
 
-	// @author A0096529N
 	public boolean hasTag(String[] tags) {
 		for (String tag : tags) {
 			if (this.hasTag(tag)) {
@@ -154,7 +133,7 @@ public class StreamTask {
 
 	// Depreciated methods
 
-	// @author A0118007R
+	//@author A0118007R-unused
 	/**
 	 * @deprecated - same as setDeadline(null)
 	 */
@@ -162,15 +141,6 @@ public class StreamTask {
 		this.deadline = null;
 	}
 
-	// @author A0093874N
-	/**
-	 * @deprecated - same as setStartTime(null)
-	 */
-	public void setNullStartTime() {
-		this.startTime = null;
-	}
-
-	// @author A0118007R
 	// updated by A0119401U
 	/**
 	 * @deprecated by A0093874N, since we're implementing UI-based task details
@@ -211,7 +181,6 @@ public class StreamTask {
 		}
 	}
 
-	// @author A0118007R
 	/**
 	 * @deprecated
 	 */
@@ -219,7 +188,6 @@ public class StreamTask {
 		this.tags = new ArrayList<String>();
 	}
 
-	// @author A0118007R
 	/**
 	 * @deprecated by A0093874N, we don't use methods to get tags by index
 	 *             number
@@ -232,7 +200,6 @@ public class StreamTask {
 		}
 	}
 
-	// @author A0118007R
 	/**
 	 * @deprecated
 	 */
@@ -242,8 +209,7 @@ public class StreamTask {
 		this.tags = new ArrayList<String>();
 	}
 
-	// @author A0119401U
-	// improved by A0093874N
+	//@author A0119401U-unused
 	// This one needs to be checked later
 	/**
 	 * @deprecated

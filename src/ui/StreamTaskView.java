@@ -9,7 +9,6 @@ import javax.swing.SwingConstants;
 import model.StreamTask;
 import util.StreamConstants;
 import util.StreamExternals;
-import util.StreamUtil;
 
 //@author A0093874N
 
@@ -174,7 +173,7 @@ public class StreamTaskView extends JPanel {
 		index.setText(String.format(StreamConstants.Message.TEXT_INDEX,
 				ind.toString()));
 		taskName.setText(name);
-		descLabel.setText(StreamUtil.trimDescription(desc));
+		descLabel.setText(desc);
 		setVisible(true);
 	}
 	

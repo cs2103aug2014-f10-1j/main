@@ -52,7 +52,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	private HashMap<String, String> helpTextMap;
 	private StreamUIFeedback feedback;
 
-	private static final String DEFAULT_HELP_TEXT = "Press right arrow to fill";
+	private static final String DEFAULT_HELP_TEXT = "Press space to fill";
 	private static final String UNKNOWN_COMMAND = "Warning: unknown command";
 
 	StreamUIConsole(StreamUIFeedback fdb) {
@@ -178,7 +178,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 			if (this.isGuessing) {
 				this.setText(this.getCurrentGuess());
 				this.isGuessing = false;
