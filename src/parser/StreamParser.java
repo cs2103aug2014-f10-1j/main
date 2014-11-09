@@ -424,11 +424,11 @@ public class StreamParser {
 	public static boolean getSortingOrder(String order)
 			throws StreamParserException {
 		switch (order) {
-		case "":
 		case "a":
 		case "asc":
 		case "ascending":
 			return false;
+		case "":
 		case "d":
 		case "desc":
 		case "descending":

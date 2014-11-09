@@ -752,7 +752,6 @@ public class Stream {
 			result = streamLogic.sortImportance(descending);
 			break;
 		default:
-			// shall never happen...
 			result = "Unknown sort category \"" + sortBy + "\"";
 			break;
 		}
