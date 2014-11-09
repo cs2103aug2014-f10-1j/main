@@ -68,6 +68,12 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * Sorts by task name, lexicographically.
+	 * 
+	 * @param descending true to reverse the order
+	 * @return result of the sort
+	 */
 	public String sortAlpha(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
@@ -89,6 +95,12 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * Sorts by start time, earliest first
+	 * 
+	 * @param descending true to reverse the order
+	 * @return result of the sort
+	 */
 	public String sortStartTime(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
@@ -110,6 +122,12 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * Sorts by deadline, earliest first
+	 * 
+	 * @param descending true to reverse the order
+	 * @return result of the sort
+	 */
 	public String sortDeadline(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
@@ -131,6 +149,23 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * 
+	 * Sorts base on importance.
+	 * 
+	 * <p>Sort algorithm</p>
+	 * <ul>
+	 * <li>Level 1: not done first</li>
+	 * <li>Level 2: overdue first (only applicable to not-done tasks)</li>
+	 * <li>Level 3: rank highest first</li>
+	 * <li>Level 4: deadline earliest first</li>
+	 * <li>Level 5: starttime earliest first</li>
+	 * <li>Level 6: task name alphanumeric</li>
+	 * </ul>
+	 * 
+	 * @param descending true to reverse the order
+	 * @return result of the sort
+	 */
 	public String sortImportance(boolean descending) {
 		if (descending) {
 			sort(new Comparator<StreamTask>() {
@@ -185,67 +220,6 @@ public class StreamLogic extends BaseLogic {
 		}
 		return "Sort by importance "
 		+ (descending ? "descending." : "ascending.");
-	}
-
-	// @author A0096529N
-	private int compareRank(StreamTask task1, StreamTask task2) {
-		return valueRank(task2.getRank()) - valueRank(task1.getRank());
-	}
-
-	// @author A0096529N
-	private int compareDone(StreamTask task1, StreamTask task2) {
-		if (task1.isDone() == task2.isDone()) {
-			return 0;
-		} else if (task1.isDone() && !task2.isDone()) {
-			return 1;
-		} else {
-			return -1;
-		}
-	}
-
-	// @author A0096529N
-	private int compareDeadline(StreamTask task1, StreamTask task2, boolean descending) {
-		if (task1.getDeadline() == null && task2.getDeadline() == null) {
-			return 0;
-		} else if (task1.getDeadline() == null) {
-			return descending ? 1 : -1;
-		} else if (task2.getDeadline() == null) {
-			return descending ? -1 : 1;
-		} else {
-			return task2.getDeadline().compareTo(task1.getDeadline());
-		}
-	}
-
-	// @author A0096529N
-	private int compareName(StreamTask task1, StreamTask task2) {
-		return task2.getTaskName().compareTo(task1.getTaskName());
-	}
-	
-	// @author A0096529N
-	private int compareStartTime(StreamTask task1, StreamTask task2, boolean descending) {
-		if (task1.getStartTime() == null && task2.getStartTime() == null) {
-			return 0;
-		} else if (task1.getStartTime() == null) {
-			return descending ? 1 : -1;
-		} else if (task2.getStartTime() == null) {
-			return descending ? -1 : 1;
-		} else {
-			return task2.getStartTime().compareTo(task1.getStartTime());
-		}
-	}
-
-	// @author A0096529N
-	private int valueRank(String rank) {
-		switch (StreamParser.parseRanking(rank)) {
-		case HI:
-			return 2;
-		case MED:
-			return 1;
-		case LO:
-			return 0;
-		default:
-			return -1;
-		}
 	}
 
 	//@author A0119401U
@@ -308,10 +282,77 @@ public class StreamLogic extends BaseLogic {
 	}
 
 	// @author A0096529N
+	/**
+	 * Sorts tasks based on given comparator.
+	 * 
+	 * @param comparator for sorting tasks
+	 */
 	private void sort(Comparator<StreamTask> comparator) {
+		assert(comparator != null);
 		List<StreamTask> tempList = getStreamTaskList();
 		Collections.sort(tempList, comparator);
 		setOrderingWithTasks(tempList);
+	}
+
+	// @author A0096529N
+	private int compareRank(StreamTask task1, StreamTask task2) {
+		return valueRank(task2.getRank()) - valueRank(task1.getRank());
+	}
+
+	// @author A0096529N
+	private int compareDone(StreamTask task1, StreamTask task2) {
+		if (task1.isDone() == task2.isDone()) {
+			return 0;
+		} else if (task1.isDone() && !task2.isDone()) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+	// @author A0096529N
+	private int compareDeadline(StreamTask task1, StreamTask task2, boolean descending) {
+		if (task1.getDeadline() == null && task2.getDeadline() == null) {
+			return 0;
+		} else if (task1.getDeadline() == null) {
+			return descending ? 1 : -1;
+		} else if (task2.getDeadline() == null) {
+			return descending ? -1 : 1;
+		} else {
+			return task2.getDeadline().compareTo(task1.getDeadline());
+		}
+	}
+
+	// @author A0096529N
+	private int compareName(StreamTask task1, StreamTask task2) {
+		return task2.getTaskName().compareTo(task1.getTaskName());
+	}
+
+	// @author A0096529N
+	private int compareStartTime(StreamTask task1, StreamTask task2, boolean descending) {
+		if (task1.getStartTime() == null && task2.getStartTime() == null) {
+			return 0;
+		} else if (task1.getStartTime() == null) {
+			return descending ? 1 : -1;
+		} else if (task2.getStartTime() == null) {
+			return descending ? -1 : 1;
+		} else {
+			return task2.getStartTime().compareTo(task1.getStartTime());
+		}
+	}
+
+	// @author A0096529N
+	private int valueRank(String rank) {
+		switch (StreamParser.parseRanking(rank)) {
+		case HI:
+			return 2;
+		case MED:
+			return 1;
+		case LO:
+			return 0;
+		default:
+			return -1;
+		}
 	}
 
 	/**
