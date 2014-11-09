@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -79,12 +80,13 @@ public class StreamUI {
 	private JButton addTaskButton;
 	private ArrayList<JButton> buttons = new ArrayList<JButton>();
 
-	private boolean isSearch;
+	private boolean isSearch, isTaskHighlighted;
 	private int pageShown;
 	private int totalPage;
 	private StreamTaskView[] shownTasks;
 	private ArrayList<StreamTask> availTasks;
 	private ArrayList<Integer> availIndices;
+	private StreamTask activeTask;
 
 	public StreamUI(Stream str) {
 
@@ -119,6 +121,67 @@ public class StreamUI {
 	}
 
 	//@author A0096529N
+	/**
+	 * Sets the active task for highlighting
+	 */
+	public void setActiveTask(StreamTask task) {
+		activeTask = task;
+		isTaskHighlighted = false;
+	}
+	
+	//@author A0096529N
+	/**
+	 * Highlights the task view containing the active task
+	 */
+	public void highlightActiveTaskView() {
+		int index = availTasks.indexOf(activeTask);
+		assert(index >= 0) : StreamConstants.Assertion.TASK_TAG_NOTFOUND;
+		int page = index / StreamConstants.UI.MAX_VIEWABLE_TASK + 1;
+		repopulateTaskView(page);
+		fadeBorder(shownTasks[index % StreamConstants.UI.MAX_VIEWABLE_TASK]);
+		isTaskHighlighted = true;
+	}
+
+	//@author A0096529N
+	/**
+	 * 
+	 * fades the border by setting the alpha value.
+	 * <p>Starts a daemon background thread to alter border</p>
+	 * 
+	 * @param taskView to execute the fade effect on
+	 */
+	private void fadeBorder(final StreamTaskView taskView) {
+		new Thread() {
+			@Override public void run() {
+				try {
+					for (int i=255; i>0; i-=10) {
+						taskView.setBorder(
+								BorderFactory.createLineBorder(
+										new Color(48, 111, 163, i))); //#2d6ea3
+						Thread.sleep(10);
+					}
+					for (int i=0; i<255; i+=10) {
+						taskView.setBorder(
+								BorderFactory.createLineBorder(
+										new Color(48, 111, 163, i)));
+						Thread.sleep(10);
+					}
+					for (int i=255; i>0; i-=2) {
+						taskView.setBorder(
+								BorderFactory.createLineBorder(
+										new Color(48, 111, 163, i)));
+						Thread.sleep(10);
+					}
+					taskView.setBorder(null);
+				} catch (Exception e) {
+					loggerDoc.log(LogLevel.ERROR, String.format(StreamConstants.ExceptionMessage.ERR_UI_FADE_THREAD, 
+							e.getClass().getSimpleName(), e.getMessage()));
+				}
+			}
+		}.start();
+	}
+
+	//@author A0096529N
 
 	/**
 	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
@@ -144,14 +207,14 @@ public class StreamUI {
 		helpTexts.put("add",
 				"add (task name) (properties): Add a new task here");
 		helpTexts
-				.put("due",
-						"due (index) (time): Set the deadline for a task based on index number");
+		.put("due",
+				"due (index) (time): Set the deadline for a task based on index number");
 		helpTexts
-				.put("start",
-						"start (index) (time): Set the start time for a task based on index number");
+		.put("start",
+				"start (index) (time): Set the start time for a task based on index number");
 		helpTexts
-				.put("search",
-						"search (keyphrase): Searches tasks by its name, description, or tags");
+		.put("search",
+				"search (keyphrase): Searches tasks by its name, description, or tags");
 		helpTexts.put("delete", "delete (index): Delete based on index number");
 		helpTexts.put("del", "del (index): Delete based on index number");
 
@@ -169,14 +232,14 @@ public class StreamUI {
 		helpTexts.put("name", "name (index) (new name): Changes a task's name based on index number.");
 		helpTexts.put("untag", "tag (index) (tag1) ... (tagN): Remove tags of a task based on index number.");
 		helpTexts
-				.put("sort",
-						"sort (criteria): Sorts tasks by alphabetical or chronological order");
+		.put("sort",
+				"sort (criteria): Sorts tasks by alphabetical or chronological order");
 		helpTexts.put("clear", "Clears all added tasks");
 		helpTexts
-				.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
+		.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
 		helpTexts
-				.put("rank",
-						"rank (index) (rank type): Change the rank of a certain task based on index number");
+		.put("rank",
+				"rank (index) (rank type): Change the rank of a certain task based on index number");
 		helpTexts.put("first ", "Go to the first page");
 		helpTexts.put("last", "Go to the last page");
 		helpTexts.put("next", "Go to the next page");
@@ -264,17 +327,17 @@ public class StreamUI {
 		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView();
-		//	taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			//	taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			taskPanel
-					.setBounds(
-							StreamConstants.UI.MARGIN_SIDE,
-							StreamConstants.UI.MARGIN_COMPONENT
-									* 2
-									+ StreamConstants.UI.HEIGHT_HEADER
-									+ i
-									* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
-							StreamConstants.UI.COMPONENT_WIDTH,
-							StreamConstants.UI.HEIGHT_TASKPANEL);
+			.setBounds(
+					StreamConstants.UI.MARGIN_SIDE,
+					StreamConstants.UI.MARGIN_COMPONENT
+					* 2
+					+ StreamConstants.UI.HEIGHT_HEADER
+					+ i
+					* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
+					StreamConstants.UI.COMPONENT_WIDTH,
+					StreamConstants.UI.HEIGHT_TASKPANEL);
 			contentPanel.add(taskPanel);
 			shownTasks[i] = taskPanel;
 			taskPanel.hideView();
@@ -462,6 +525,9 @@ public class StreamUI {
 				repopulateTaskView(pageShown);
 			}
 		}
+		if (activeTask != null && !isTaskHighlighted) {
+			highlightActiveTaskView();
+		}
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG,
 				"Task viewer refreshed with " + indices.size() + " new tasks");
 	}
@@ -497,10 +563,10 @@ public class StreamUI {
 				StreamUtil.displayStatus(task.isDone()),
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
-				StreamUtil.displayDescription(task.getDescription()),
-				StreamUtil.displayTags(task.getTags()), task.getRank()), String
-				.format(StreamConstants.Message.DETAILS_HEADER,
-						task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
+						StreamUtil.displayDescription(task.getDescription()),
+						StreamUtil.displayTags(task.getTags()), task.getRank()), String
+						.format(StreamConstants.Message.DETAILS_HEADER,
+								task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
 	}
@@ -546,7 +612,7 @@ public class StreamUI {
 	public void goToLastPage() {
 		repopulateTaskView(totalPage);
 	}
-	
+
 	/**
 	 * Navigates to a specific page.
 	 */
