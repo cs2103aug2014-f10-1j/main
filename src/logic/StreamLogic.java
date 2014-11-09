@@ -73,19 +73,19 @@ public class StreamLogic extends BaseLogic {
 			sort(new Comparator<StreamTask>() {
 				@Override
 				public int compare(StreamTask o1, StreamTask o2) {
-					return o2.getTaskName().compareTo(o1.getTaskName());
+					return compareName(o1, o2);
 				}
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
 				@Override
 				public int compare(StreamTask o1, StreamTask o2) {
-					return o1.getTaskName().compareTo(o2.getTaskName());
+					return compareName(o2, o1);
 				}
 			});
 		}
 		return "Sort by alphabetical order, "
-				+ (descending ? "descending." : "ascending.");
+		+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
@@ -94,35 +94,19 @@ public class StreamLogic extends BaseLogic {
 			sort(new Comparator<StreamTask>() {
 				@Override
 				public int compare(StreamTask o1, StreamTask o2) {
-					if (o1.getStartTime() == null && o2.getStartTime() == null) {
-						return 0;
-					} else if (o1.getStartTime() == null) {
-						return -1;
-					} else if (o2.getStartTime() == null) {
-						return 1;
-					} else {
-						return o2.getStartTime().compareTo(o1.getStartTime());
-					}
+					return compareStartTime(o1, o2, true);
 				}
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
 				@Override
 				public int compare(StreamTask o1, StreamTask o2) {
-					if (o1.getStartTime() == null && o2.getStartTime() == null) {
-						return 0;
-					} else if (o1.getStartTime() == null) {
-						return 1;
-					} else if (o2.getStartTime() == null) {
-						return -1;
-					} else {
-						return o1.getStartTime().compareTo(o2.getStartTime());
-					}
+					return compareStartTime(o2, o1, false);
 				}
 			});
 		}
 		return "Sort by start time "
-				+ (descending ? "descending." : "ascending.");
+		+ (descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
@@ -131,39 +115,140 @@ public class StreamLogic extends BaseLogic {
 			sort(new Comparator<StreamTask>() {
 				@Override
 				public int compare(StreamTask o1, StreamTask o2) {
-					if (o1.getDeadline() == null && o2.getDeadline() == null) {
-						return 0;
-					} else if (o1.getDeadline() == null) {
-						return 1;
-					} else if (o2.getDeadline() == null) {
-						return -1;
-					} else {
-						return o2.getDeadline().compareTo(o1.getDeadline());
-					}
+					return compareDeadline(o1, o2, true);
 				}
 			});
 		} else {
 			sort(new Comparator<StreamTask>() {
 				@Override
 				public int compare(StreamTask o1, StreamTask o2) {
-					if (o1.getDeadline() == null && o2.getDeadline() == null) {
-						return 0;
-					} else if (o1.getDeadline() == null) {
-						return 1;
-					} else if (o2.getDeadline() == null) {
-						return -1;
-					} else {
-						return o1.getDeadline().compareTo(o2.getDeadline());
-					}
+					return compareDeadline(o2, o1, false);
 				}
 			});
 		}
 		return "Sort by deadline "
-				+ (descending ? "descending." : "ascending.");
+		+ (descending ? "descending." : "ascending.");
+	}
+
+	// @author A0096529N
+	public String sortImportance(boolean descending) {
+		if (descending) {
+			sort(new Comparator<StreamTask>() {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
+					int comparison = compareDone(o2, o1);
+					if (comparison == 0 && 
+							!o1.isDone() && 
+							o1.isOverdue() != o2.isOverdue()) {
+						comparison = o1.isOverdue() ? 1 : -1;
+					}
+					if (comparison == 0) {
+						comparison = compareRank(o2, o1);
+					}
+					if (comparison == 0) {
+						comparison = compareDeadline(o2, o1, true);
+					}
+					if (comparison == 0) {
+						comparison = compareStartTime(o2, o1, true);
+					}
+					if (comparison == 0) {
+						return compareName(o2, o1);
+					}
+					return comparison;
+				}
+			});
+		} else {
+			sort(new Comparator<StreamTask>() {
+				@Override
+				public int compare(StreamTask o1, StreamTask o2) {
+					int comparison = compareDone(o1, o2);
+					if (comparison == 0 && 
+							!o1.isDone() && 
+							o1.isOverdue() != o2.isOverdue()) {
+						comparison = o2.isOverdue() ? 1 : -1;
+					}
+					if (comparison == 0) {
+						comparison = compareRank(o1, o2);
+					}
+					if (comparison == 0) {
+						comparison = compareDeadline(o1, o2, false);
+					}
+					if (comparison == 0) {
+						comparison = compareStartTime(o1, o2, false);
+					}
+					if (comparison == 0) {
+						return compareName(o1, o2);
+					}
+					return comparison;
+				}
+			});
+		}
+		return "Sort by importance "
+		+ (descending ? "descending." : "ascending.");
+	}
+
+	// @author A0096529N
+	private int compareRank(StreamTask task1, StreamTask task2) {
+		return valueRank(task2.getRank()) - valueRank(task1.getRank());
+	}
+
+	// @author A0096529N
+	private int compareDone(StreamTask task1, StreamTask task2) {
+		if (task1.isDone() == task2.isDone()) {
+			return 0;
+		} else if (task1.isDone() && !task2.isDone()) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+	// @author A0096529N
+	private int compareDeadline(StreamTask task1, StreamTask task2, boolean descending) {
+		if (task1.getDeadline() == null && task2.getDeadline() == null) {
+			return 0;
+		} else if (task1.getDeadline() == null) {
+			return descending ? 1 : -1;
+		} else if (task2.getDeadline() == null) {
+			return descending ? -1 : 1;
+		} else {
+			return task2.getDeadline().compareTo(task1.getDeadline());
+		}
+	}
+
+	// @author A0096529N
+	private int compareName(StreamTask task1, StreamTask task2) {
+		return task2.getTaskName().compareTo(task1.getTaskName());
 	}
 	
+	// @author A0096529N
+	private int compareStartTime(StreamTask task1, StreamTask task2, boolean descending) {
+		if (task1.getStartTime() == null && task2.getStartTime() == null) {
+			return 0;
+		} else if (task1.getStartTime() == null) {
+			return descending ? 1 : -1;
+		} else if (task2.getStartTime() == null) {
+			return descending ? -1 : 1;
+		} else {
+			return task2.getStartTime().compareTo(task1.getStartTime());
+		}
+	}
+
+	// @author A0096529N
+	private int valueRank(String rank) {
+		switch (StreamParser.parseRanking(rank)) {
+		case HI:
+			return 2;
+		case MED:
+			return 1;
+		case LO:
+			return 0;
+		default:
+			return -1;
+		}
+	}
+
 	//@author A0119401U
-	
 	//Sort the task based on the time given, if start time is known, then 
 	//sort based on start time, if not, then sort based on deadline
 	public String sortTime(boolean descending) {
@@ -481,7 +566,7 @@ public class StreamLogic extends BaseLogic {
 			// check if task description contains key phrase
 			if (task.getDescription() != null
 					&& task.getDescription().toLowerCase()
-							.contains(keyphrase.toLowerCase())) {
+					.contains(keyphrase.toLowerCase())) {
 				tasks.add(i + 1);
 				continue;
 			}
@@ -514,86 +599,86 @@ public class StreamLogic extends BaseLogic {
 		for (int i = 1; i <= streamObject.size(); i++) {
 			StreamTask task = streamObject.get(streamObject.get(i - 1));
 			switch (type) {
-				case DONE:
-					if (task.isDone()) {
-						tasks.add(i);
-					}
-					break;
-				case NOT:
-					if (!task.isDone()) {
-						tasks.add(i);
-					}
-					break;
-				case HIRANK:
-					if (StreamParser.parseRanking(task.getRank()) == RankType.HI) {
-						tasks.add(i);
-					}
-					break;
-				case MEDRANK:
-					if (StreamParser.parseRanking(task.getRank()) == RankType.MED) {
-						tasks.add(i);
-					}
-					break;
-				case LORANK:
-					if (StreamParser.parseRanking(task.getRank()) == RankType.LO) {
-						tasks.add(i);
-					}
-					break;
-				case STARTBEF:
-					contents = criteria.split(" ", 3);
-					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
-					if (task.getStartTime() != null
-							&& task.getStartTime().before(dueDate)) {
-						tasks.add(i);
-					}
-					break;					
-				case STARTAFT:
-					contents = criteria.split(" ", 3);
-					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
-					if (task.getStartTime() != null
-							&& task.getStartTime().after(dueDate)) {
-						tasks.add(i);
-					}
-					break;					
-				case DUEBEF:
-					contents = criteria.split(" ", 3);
-					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
-					if (task.getDeadline() != null
-							&& task.getDeadline().before(dueDate)) {
-						tasks.add(i);
-					}
-					break;
-				case DUEAFT:
-					contents = criteria.split(" ", 3);
-					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
-					if (task.getDeadline() != null
-							&& task.getDeadline().after(dueDate)) {
-						tasks.add(i);
-					}
-					break;
-				case NOTIMING:
-					if (task.isFloatingTask()) {
-						tasks.add(i);
-					}
-					break;
-				case DEADLINED:
-					if (task.isDeadlineTask()) {
-						tasks.add(i);
-					}
-					break;
-				case EVENT:
-					if (task.isTimedTask()) {
-						tasks.add(i);
-					}
-					break;
-				case STARTON:
-				case DUEON:
-					// TODO think on how to implement this
-				default:
-					// shouldn't happen, but in case it happens, pretend
-					// that there is no filter
+			case DONE:
+				if (task.isDone()) {
 					tasks.add(i);
-					break;
+				}
+				break;
+			case NOT:
+				if (!task.isDone()) {
+					tasks.add(i);
+				}
+				break;
+			case HIRANK:
+				if (StreamParser.parseRanking(task.getRank()) == RankType.HI) {
+					tasks.add(i);
+				}
+				break;
+			case MEDRANK:
+				if (StreamParser.parseRanking(task.getRank()) == RankType.MED) {
+					tasks.add(i);
+				}
+				break;
+			case LORANK:
+				if (StreamParser.parseRanking(task.getRank()) == RankType.LO) {
+					tasks.add(i);
+				}
+				break;
+			case STARTBEF:
+				contents = criteria.split(" ", 3);
+				dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+				if (task.getStartTime() != null
+						&& task.getStartTime().before(dueDate)) {
+					tasks.add(i);
+				}
+				break;					
+			case STARTAFT:
+				contents = criteria.split(" ", 3);
+				dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+				if (task.getStartTime() != null
+						&& task.getStartTime().after(dueDate)) {
+					tasks.add(i);
+				}
+				break;					
+			case DUEBEF:
+				contents = criteria.split(" ", 3);
+				dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+				if (task.getDeadline() != null
+						&& task.getDeadline().before(dueDate)) {
+					tasks.add(i);
+				}
+				break;
+			case DUEAFT:
+				contents = criteria.split(" ", 3);
+				dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+				if (task.getDeadline() != null
+						&& task.getDeadline().after(dueDate)) {
+					tasks.add(i);
+				}
+				break;
+			case NOTIMING:
+				if (task.isFloatingTask()) {
+					tasks.add(i);
+				}
+				break;
+			case DEADLINED:
+				if (task.isDeadlineTask()) {
+					tasks.add(i);
+				}
+				break;
+			case EVENT:
+				if (task.isTimedTask()) {
+					tasks.add(i);
+				}
+				break;
+			case STARTON:
+			case DUEON:
+				// TODO think on how to implement this
+			default:
+				// shouldn't happen, but in case it happens, pretend
+				// that there is no filter
+				tasks.add(i);
+				break;
 			}
 		}
 		logDebug(String.format(StreamConstants.LogMessage.FILTERED_TASKS,

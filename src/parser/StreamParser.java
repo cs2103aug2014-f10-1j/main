@@ -30,7 +30,7 @@ public class StreamParser {
 	}
 
 	public enum SortType {
-		ALPHA, START, END, TIME, NULL;
+		ALPHA, START, END, TIME, IMPORTANCE;
 	}
 
 	public enum FilterType {
@@ -404,8 +404,12 @@ public class StreamParser {
 			return SortType.ALPHA;
 		case "time":
 			return SortType.TIME;
+		case "impt":
+		case "importance":
+		case "priority":
+			return SortType.IMPORTANCE;
 		default:
-			return SortType.NULL;
+			return SortType.IMPORTANCE;
 		}
 	}
 
@@ -604,14 +608,15 @@ public class StreamParser {
 
 	private void checkSortValidity(String[] contents, String[] contentsWithIndex)
 			throws StreamParserException {
-		String order = contentsWithIndex.length > 2 ? contentsWithIndex[PARAM_POS_SORTORDER]
-				: "";
-		if (contents.length < 2) {
-			throw new StreamParserException(ERROR_INCOMPLETE_INPUT);
-		} else if (!checkSort(contentsWithIndex[PARAM_POS_SORTTYPE], order)) {
+		String order = contentsWithIndex.length > 2 ? 
+				contentsWithIndex[PARAM_POS_SORTORDER] : "";
+		if (contents.length > 2 && !checkSort(contentsWithIndex[PARAM_POS_SORTTYPE], order)) {
 			throw new StreamParserException(ERROR_INVALID_SORT);
+		} else if (contents.length > 1) {
+			this.commandContent = contents[PARAM_POS_CONTENTS];
+		} else {
+			this.commandContent = null;
 		}
-		this.commandContent = contents[PARAM_POS_CONTENTS];
 	}
 
 	private boolean checkRanking(String rankInput) {

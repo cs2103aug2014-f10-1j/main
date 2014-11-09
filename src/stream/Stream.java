@@ -792,12 +792,12 @@ public class Stream {
 		String result = null;
 		String sortBy = null;
 		String order = null;
-		boolean descending = false;
-		if (content.contains(" ")) {
+		boolean descending = true;
+		if (content != null && content.contains(" ")) {
 			sortBy = content.split(" ")[0];
 			order = content.split(" ")[1];
 		} else {
-			sortBy = content;
+			sortBy = content == null ? "" : content;
 			order = "";
 		}
 		SortType type = StreamParser.parseSorting(sortBy);
@@ -819,8 +819,12 @@ public class Stream {
 			break;
 		case TIME:
 			result = streamLogic.sortTime(descending);
+			break;
+		case IMPORTANCE:
+			result = streamLogic.sortImportance(descending);
+			break;
 		default:
-			// also to play safe
+			// shall never happen...
 			result = "Unknown sort category \"" + sortBy + "\"";
 			break;
 		}
@@ -1090,6 +1094,7 @@ public class Stream {
 						.getSimpleName() + " " + e.getMessage()));
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			log(String.format(StreamConstants.LogMessage.ERRORS, e.getClass()
 					.getSimpleName(), e.getMessage()));
 			showAndLogError(String.format(

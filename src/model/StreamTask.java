@@ -100,8 +100,7 @@ public class StreamTask {
 		if (this.getDeadline() == null) {
 			return false;
 		} else {
-			Calendar dead = this.getDeadline();
-			return dead.before(Calendar.getInstance());
+			return deadline.before(Calendar.getInstance());
 		}
 	}
 
