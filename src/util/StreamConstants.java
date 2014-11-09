@@ -174,6 +174,7 @@ public class StreamConstants {
 		public static final String ERR_CREATE_LOG_DIR = "Could not create Logs directory";
 		public static final String ERR_DEADLINE_BEFORE_STARTTIME = "Error: deadline is not changed. Ensure that you have entered a valid deadline";
 		public static final String ERR_STARTTIME_AFTER_DEADLINE = "Error: start time is not changed. Ensure that you have entered a valid start time";
+		public static final String ERR_UI_FADE_THREAD = "Error on UI fade, %1$s: %2$s";
 
 	}
 

@@ -170,7 +170,7 @@ public class Stream {
 				logCommand("ADD");
 				executeAdd(content);
 				refreshUI();
-				stui.goToLastPage(); // issue 56
+				stui.highlightActiveTaskView();
 				break;
 
 			case DEL:
@@ -200,6 +200,7 @@ public class Stream {
 				logCommand("MODIFY");
 				executeModify(index, content);
 				refreshUI();
+				stui.highlightActiveTaskView();
 				break;
 
 			case NAME:
@@ -351,6 +352,9 @@ public class Stream {
 
 		taskName = taskName.trim(); // this is the solution to the bug
 		addTaskWithParams(taskName, modifyParams);
+		
+		StreamTask task = streamLogic.getTask(taskName);
+		stui.setActiveTask(task);
 
 		String result = String.format(StreamConstants.LogMessage.ADD, taskName);
 		showAndLogResult(result);
@@ -590,6 +594,8 @@ public class Stream {
 		streamLogic.modifyTaskWithParams(taskName, Arrays.asList(contents));
 
 		stackLogic.pushInverseModifyCommand(inverseCommand);
+
+		stui.setActiveTask(currTask);
 
 		String result = String.format(StreamConstants.LogMessage.MODIFY,
 				taskName);
