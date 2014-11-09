@@ -74,22 +74,13 @@ public class StreamLogic extends BaseLogic {
 	 * @param descending true to reverse the order
 	 * @return result of the sort
 	 */
-	public String sortAlpha(boolean descending) {
-		if (descending) {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					return compareName(o1, o2);
-				}
-			});
-		} else {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					return compareName(o2, o1);
-				}
-			});
-		}
+	public String sortAlpha(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				return descending ? compareName(o1, o2) : compareName(o2, o1);
+			}
+		});
 		return "Sort by alphabetical order, "
 		+ (descending ? "descending." : "ascending.");
 	}
@@ -101,22 +92,14 @@ public class StreamLogic extends BaseLogic {
 	 * @param descending true to reverse the order
 	 * @return result of the sort
 	 */
-	public String sortStartTime(boolean descending) {
-		if (descending) {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					return compareStartTime(o1, o2, true);
-				}
-			});
-		} else {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					return compareStartTime(o2, o1, false);
-				}
-			});
-		}
+	public String sortStartTime(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				return descending ? compareStartTime(o1, o2, true) 
+						: compareStartTime(o2, o1, false);
+			}
+		});
 		return "Sort by start time "
 		+ (descending ? "descending." : "ascending.");
 	}
@@ -128,22 +111,14 @@ public class StreamLogic extends BaseLogic {
 	 * @param descending true to reverse the order
 	 * @return result of the sort
 	 */
-	public String sortDeadline(boolean descending) {
-		if (descending) {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					return compareDeadline(o1, o2, true);
-				}
-			});
-		} else {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					return compareDeadline(o2, o1, false);
-				}
-			});
-		}
+	public String sortDeadline(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				return descending ? compareDeadline(o1, o2, true) 
+						: compareDeadline(o2, o1, false);
+			}
+		});
 		return "Sort by deadline "
 		+ (descending ? "descending." : "ascending.");
 	}
@@ -166,58 +141,40 @@ public class StreamLogic extends BaseLogic {
 	 * @param descending true to reverse the order
 	 * @return result of the sort
 	 */
-	public String sortImportance(boolean descending) {
-		if (descending) {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					int comparison = compareDone(o2, o1);
-					if (comparison == 0 && 
-							!o1.isDone() && 
-							o1.isOverdue() != o2.isOverdue()) {
+	public String sortImportance(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				int comparison = descending ? compareDone(o1, o2) 
+						: compareDone(o2, o1);
+				if (comparison == 0 && 
+						!o1.isDone() && 
+						o1.isOverdue() != o2.isOverdue()) {
+					if (descending) {
+						comparison = o2.isOverdue() ? 1 : -1;
+					} else {
 						comparison = o1.isOverdue() ? 1 : -1;
 					}
-					if (comparison == 0) {
-						comparison = compareRank(o2, o1);
-					}
-					if (comparison == 0) {
-						comparison = compareDeadline(o2, o1, true);
-					}
-					if (comparison == 0) {
-						comparison = compareStartTime(o2, o1, true);
-					}
-					if (comparison == 0) {
-						return compareName(o2, o1);
-					}
-					return comparison;
 				}
-			});
-		} else {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					int comparison = compareDone(o1, o2);
-					if (comparison == 0 && 
-							!o1.isDone() && 
-							o1.isOverdue() != o2.isOverdue()) {
-						comparison = o2.isOverdue() ? 1 : -1;
-					}
-					if (comparison == 0) {
-						comparison = compareRank(o1, o2);
-					}
-					if (comparison == 0) {
-						comparison = compareDeadline(o1, o2, false);
-					}
-					if (comparison == 0) {
-						comparison = compareStartTime(o1, o2, false);
-					}
-					if (comparison == 0) {
-						return compareName(o1, o2);
-					}
-					return comparison;
+				if (comparison == 0) {
+					comparison = descending ? compareRank(o1, o2) 
+							: compareRank(o2, o1);
 				}
-			});
-		}
+				if (comparison == 0) {
+					comparison = descending ? compareDeadline(o2, o1, false) 
+							: compareDeadline(o1, o2, false);
+				}
+				if (comparison == 0) {
+					comparison = descending ? compareStartTime(o2, o1, false) 
+							: compareStartTime(o1, o2, false);
+				}
+				if (comparison == 0) {
+					return descending ? compareName(o1, o2) 
+							: compareName(o2, o1);
+				}
+				return comparison;
+			}
+		});
 		return "Sort by importance "
 		+ (descending ? "descending." : "ascending.");
 	}
@@ -225,60 +182,34 @@ public class StreamLogic extends BaseLogic {
 	//@author A0119401U
 	//Sort the task based on the time given, if start time is known, then 
 	//sort based on start time, if not, then sort based on deadline
-	public String sortTime(boolean descending) {
-		if (descending) {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					if (o1.getStartTime() == null && o2.getStartTime() == null) {
-						if (o1.getDeadline() == null && o2.getDeadline() == null) {
-							return 0;
-						} else if (o1.getDeadline() == null) {
-							return 1;
-						} else if (o2.getDeadline() == null) {
-							return -1;
-						} else {
-							return o2.getDeadline().compareTo(o1.getDeadline());
-						}
-					} else {
-						if (o1.getStartTime() == null) {
-							return -1;
-						} else if (o2.getStartTime() == null) {
-							return 1;
-						} else {
-							return o2.getStartTime().compareTo(o1.getStartTime());
-						}
-					}
+	public String sortTime(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				if (o1.getStartTime() == null && o1.getDeadline() == null 
+						&& o2.getStartTime() == null && o2.getDeadline() == null) {
+					return 0;
+				} else if (o1.getStartTime() == null && o1.getDeadline() == null) {
+					return 1;
+				} else if (o2.getStartTime() == null && o2.getDeadline() == null) {
+					return -1;
+				} else if (o1.getStartTime() == null && o2.getStartTime() == null) {
+					return descending ? o2.getDeadline().compareTo(o1.getDeadline()) :
+						o1.getDeadline().compareTo(o2.getDeadline()) ;
+				} else if (o1.getStartTime() == null) {
+					return descending ? o2.getStartTime().compareTo(o1.getDeadline()) :
+						o1.getDeadline().compareTo(o2.getStartTime()) ;						
+				} else if (o2.getStartTime() == null) {
+					return descending ? o2.getDeadline().compareTo(o1.getStartTime()) :
+						o1.getStartTime().compareTo(o2.getDeadline()) ;
+				} else {
+					return descending ? o2.getStartTime().compareTo(o1.getStartTime()) :
+						o1.getStartTime().compareTo(o2.getStartTime());
 				}
-			});
-		} else {
-			sort(new Comparator<StreamTask>() {
-				@Override
-				public int compare(StreamTask o1, StreamTask o2) {
-					if (o1.getStartTime() == null && o2.getStartTime() == null) {
-						if (o1.getDeadline() == null && o2.getDeadline() == null) {
-							return 0;
-						} else if (o1.getDeadline() == null) {
-							return 1;
-						} else if (o2.getDeadline() == null) {
-							return -1;
-						} else {
-							return o1.getDeadline().compareTo(o2.getDeadline());
-						}
-					} else {
-						if (o1.getStartTime() == null) {
-							return 1;
-						} else if (o2.getStartTime() == null) {
-							return -1;
-						} else {
-							return o1.getStartTime().compareTo(o2.getStartTime());
-						}
-					}
-				}
-			});
-		}
-		return "Sort by time "
-		+ (descending ? "descending." : "ascending.");
+			}
+		});
+		return "Sort by time " + 
+			(descending ? "descending." : "ascending.");
 	}
 
 	// @author A0096529N
@@ -712,8 +643,8 @@ public class StreamLogic extends BaseLogic {
 					tasks.add(i);
 				}
 				break;
-			case STARTON:
-			case DUEON:
+			//case STARTON:
+			//case DUEON:
 				// TODO think on how to implement this
 			default:
 				// shouldn't happen, but in case it happens, pretend

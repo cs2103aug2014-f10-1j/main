@@ -30,7 +30,7 @@ public class StreamParser {
 	}
 
 	public enum SortType {
-		ALPHA, START, END, TIME, IMPORTANCE;
+		ALPHA, START, END, TIME, IMPORTANCE, NULL;
 	}
 
 	public enum FilterType {
@@ -53,7 +53,7 @@ public class StreamParser {
 	static final String ERROR_INVALID_SORT = "Please enter a valid sorting type!";
 	static final String ERROR_INVALID_MARK = "Please enter a valid marking type!";
 	static final String ERROR_INVALID_RANK = "Please enter a valid input rank!";
-	static final String ERROR_EMPTY_INPUT = "Empty input detected!";
+	public static final String ERROR_EMPTY_INPUT = "Empty input detected!";
 	static final String ERROR_INDEX_OUT_OF_BOUNDS = "The index you entered is out of range!";
 	static final String ERROR_DATE_NOT_PARSEABLE = "Date cannot be understood!";
 	static final String ERROR_UNKNOWN_COMMAND = "Unknown command type!";
@@ -339,19 +339,18 @@ public class StreamParser {
 	}
 
 	private void logCommand(String[] contents, String[] contentsWithIndex) {
+		String commandKey = contents[PARAM_POS_KEYWORD].toUpperCase();
 		if (contentsWithIndex.length >= 3
 				&& StreamUtil.isInteger(contentsWithIndex[PARAM_POS_INDEX])) {
-			logger.log(LogLevel.DEBUG, "Command received: "
-					+ contents[PARAM_POS_KEYWORD] + ". Index number "
-					+ contentsWithIndex[PARAM_POS_INDEX] + ". Argument: "
-					+ contentsWithIndex[PARAM_POS_ARGS]);
+			logger.log(LogLevel.DEBUG, "Command received: " + commandKey
+					+ ". Index number " + contentsWithIndex[PARAM_POS_INDEX]
+					+ ". Arguments: " + contentsWithIndex[PARAM_POS_ARGS]);
 		} else if (contents.length == 2) {
-			logger.log(LogLevel.DEBUG, "Command received: "
-					+ contents[PARAM_POS_KEYWORD] + ". Argument: "
-					+ contents[PARAM_POS_CONTENTS]);
+			logger.log(LogLevel.DEBUG, "Command received: " + commandKey
+					+ ". Arguments: " + contents[PARAM_POS_CONTENTS]);
 		} else {
-			logger.log(LogLevel.DEBUG, "Command received: "
-					+ contents[PARAM_POS_KEYWORD] + ". No arguments supplied.");
+			logger.log(LogLevel.DEBUG, "Command received: " + commandKey
+					+ ". No arguments supplied.");
 		}
 	}
 
@@ -377,7 +376,6 @@ public class StreamParser {
 	}
 
 	//@author A0093874N
-	//updated by A0119401U
 
 	/**
 	 * Parses a supplied sorting type into <b>STREAM</b>-recognizable format.
@@ -402,14 +400,16 @@ public class StreamParser {
 		case "alphabetical":
 		case "alphabetically":
 			return SortType.ALPHA;
+		case "t":
 		case "time":
 			return SortType.TIME;
+		case "":
 		case "impt":
 		case "importance":
 		case "priority":
 			return SortType.IMPORTANCE;
 		default:
-			return SortType.IMPORTANCE;
+			return SortType.NULL;
 		}
 	}
 
@@ -577,7 +577,7 @@ public class StreamParser {
 				}
 			} else {
 				contents = filterInput.split(" ", 2);
-				if (contents.length == 2 && StreamUtil.isParseableDate(contents[1])) {
+				/* if (contents.length == 2 && StreamUtil.isParseableDate(contents[1])) {
 					switch (contents[0]) {
 					case "due":
 						return FilterType.DUEON;
@@ -586,7 +586,9 @@ public class StreamParser {
 					default:
 						return FilterType.NULL;
 					}
-				} else if (contents.length == 2) {
+				} else*/
+				// 	Not implemented until we know how to.
+				if (contents.length == 2) {
 					switch (contents[0] + " " + contents[1]) {
 					case "no timing":
 						return FilterType.NOTIMING;
@@ -608,12 +610,14 @@ public class StreamParser {
 
 	private void checkSortValidity(String[] contents, String[] contentsWithIndex)
 			throws StreamParserException {
-		String order = contentsWithIndex.length > 2 ? 
-				contentsWithIndex[PARAM_POS_SORTORDER] : "";
-		if (contents.length > 2 && !checkSort(contentsWithIndex[PARAM_POS_SORTTYPE], order)) {
+		String sortBy = contents.length > 1 ? contentsWithIndex[PARAM_POS_SORTTYPE]
+				: "";
+		String order = contentsWithIndex.length > 2 ? contentsWithIndex[PARAM_POS_SORTORDER]
+				: "";
+		if (!checkSort(sortBy, order)) {
 			throw new StreamParserException(ERROR_INVALID_SORT);
 		} else if (contents.length > 1) {
-			this.commandContent = contents[PARAM_POS_CONTENTS];
+			this.commandContent = contents[PARAM_POS_SORTTYPE];
 		} else {
 			this.commandContent = null;
 		}
@@ -651,18 +655,15 @@ public class StreamParser {
 
 	private boolean checkSort(String sortBy, String order) {
 		switch (parseSorting(sortBy)) {
-		case START:
-		case END:
-		case ALPHA:
-		case TIME:
+		case NULL:
+			return false;
+		default:
 			try {
 				getSortingOrder(order);
 				return true;
 			} catch (StreamParserException e) {
 				return false;
 			}
-		default:
-			return false;
 		}
 	}
 
