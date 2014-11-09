@@ -24,7 +24,7 @@ Currently, **STREAM** is capable of basic CRUD (Create, Read, Update, Delete) op
 * **untag** *indexNo* *tags*: removes tags from a task
 * **search** *keyphrase*: searches tasks that match the keyphrase
 * **filter** *(criteria)*: filters the tasks that fulfills the criteria
-* **sort** *(alphabetical|deadline|starttime)* *[ascending/descending]*: sorts tasks according to the category
+* **sort** *(alphabetical|deadline|starttime|time)* *[ascending/descending]*: sorts tasks according to the category
 * **clrsrc**: clears search result
 * **first**, **prev**, **next**, **last**: navigates to another page
 * **page** *pageNo*: navigates immediately to the chosen page
