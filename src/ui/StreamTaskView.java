@@ -74,7 +74,8 @@ public class StreamTaskView extends JPanel {
 	 * Adds the start calendar icon.
 	 */
 	private void addStartCalendar() {
-		startCal = new StreamUICalendarIcon();
+		startCal = new StreamUICalendarIcon(StreamExternals.ICON_START_CAL,
+				StreamExternals.ICON_NULL_START_CAL);
 		startCal.setBounds(StreamConstants.UI.BOUNDS_START_CAL);
 		add(startCal);
 	}
@@ -83,7 +84,8 @@ public class StreamTaskView extends JPanel {
 	 * Adds the end calendar icon.
 	 */
 	private void addEndCalendar() {
-		endCal = new StreamUICalendarIcon();
+		endCal = new StreamUICalendarIcon(StreamExternals.ICON_END_CAL,
+				StreamExternals.ICON_NULL_END_CAL);
 		endCal.setBounds(StreamConstants.UI.BOUNDS_END_CAL);
 		add(endCal);
 	}

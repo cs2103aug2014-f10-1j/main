@@ -79,10 +79,14 @@ public class Stream {
 				"/img/taskNormalPriority.png"));
 		ImageIcon lowRankIcon = new ImageIcon(getClass().getResource(
 				"/img/taskLowPriority.png"));
-		ImageIcon calIcon = new ImageIcon(getClass().getResource(
-				"/img/calicon.png"));
-		ImageIcon nullCalIcon = new ImageIcon(getClass().getResource(
-				"/img/nullcal.png"));
+		ImageIcon startCalIcon = new ImageIcon(getClass().getResource(
+				"/img/startdate.png"));
+		ImageIcon nullStartCalIcon = new ImageIcon(getClass().getResource(
+				"/img/nostartdate.png"));
+		ImageIcon endCalIcon = new ImageIcon(getClass().getResource(
+				"/img/enddate.png"));
+		ImageIcon nullEndCalIcon = new ImageIcon(getClass().getResource(
+				"/img/noenddate.png"));
 		Font titleFont = null;
 		Font consoleFont = null;
 		try {
@@ -94,8 +98,8 @@ public class Stream {
 
 		}
 		StreamExternals.init(headerText, doneIcon, notDoneIcon, overdueIcon,
-				hiRankIcon, medRankIcon, lowRankIcon, calIcon, nullCalIcon,
-				titleFont, consoleFont);
+				hiRankIcon, medRankIcon, lowRankIcon, startCalIcon, nullStartCalIcon,
+				endCalIcon, nullEndCalIcon,	titleFont, consoleFont);
 	}
 
 	private void saveLogFile() throws StreamIOException {

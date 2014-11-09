@@ -2,12 +2,12 @@ package ui;
 
 import java.util.Calendar;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingConstants;
 
 import util.StreamConstants;
-import util.StreamExternals;
 import util.StreamUtil;
 
 //@author A0093874N
@@ -31,20 +31,24 @@ import util.StreamUtil;
 public class StreamUICalendarIcon extends JLayeredPane {
 
 	private static final long serialVersionUID = 1L;
+	ImageIcon nullCalIcon;
+	ImageIcon calIcon;
 	JLabel imageUsed;
 	JLabel month;
 	JLabel date;
 	JLabel time;
 
-	public StreamUICalendarIcon() {
-		setParams();
+	public StreamUICalendarIcon(ImageIcon cal, ImageIcon nullCal) {
+		setParams(cal, nullCal);
 		setBackgroundImage();
 		setMonthView();
 		setDateView();
 		setTimeView();
 	}
 
-	private void setParams() {
+	private void setParams(ImageIcon cal, ImageIcon nullCal) {
+		calIcon = cal;
+		nullCalIcon = nullCal;
 		setSize(StreamConstants.UI.HEIGHT_TASKPANEL,
 				StreamConstants.UI.HEIGHT_TASKPANEL);
 		setLayout(null);
@@ -102,7 +106,7 @@ public class StreamUICalendarIcon extends JLayeredPane {
 	 * calendar assigned to it.
 	 */
 	public void hideView() {
-		imageUsed.setIcon(StreamExternals.ICON_NULL_CALENDAR);
+		imageUsed.setIcon(nullCalIcon);
 		month.setVisible(false);
 		date.setVisible(false);
 		time.setVisible(false);
@@ -116,7 +120,7 @@ public class StreamUICalendarIcon extends JLayeredPane {
 	 *            - the calendar from which the information is obtained from
 	 */
 	public void updateView(Calendar cal) {
-		imageUsed.setIcon(StreamExternals.ICON_CALENDAR);
+		imageUsed.setIcon(calIcon);
 		updateMonthView(cal.get(Calendar.MONTH));
 		updateDateView(cal.get(Calendar.DAY_OF_MONTH));
 		updateTimeView(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
