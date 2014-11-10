@@ -445,6 +445,7 @@ public class StreamParser {
 	 * @return <b>RankType</b> - the parsed ranking type
 	 */
 	public static RankType parseRanking(String rankInput) {
+		rankInput = rankInput.toLowerCase();
 		switch (rankInput) {
 			case "high":
 			case "hi":
