@@ -18,7 +18,8 @@ import util.StreamConstants;
 public class StreamTask {
 
 	// Attributes
-	private String taskName, taskDescription;
+	private String taskName;
+	private String taskDescription;
 	private Calendar startTime, deadline;
 	private ArrayList<String> tags;
 	private boolean done;
