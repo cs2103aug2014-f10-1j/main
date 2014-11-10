@@ -486,6 +486,7 @@ public class StreamParser {
 	 * @return <b>MarkType</b> - the parsed marking type
 	 */
 	public static MarkType parseMarking(String markInput) {
+		markInput = markInput.toLowerCase();
 		switch (markInput) {
 			case "done":
 			case "finished":
