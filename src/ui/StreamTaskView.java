@@ -165,6 +165,8 @@ public class StreamTaskView extends JPanel {
 			statusImage.setIcon(StreamExternals.ICON_DONE);
 		} else if (task.isOverdue()) {
 			statusImage.setIcon(StreamExternals.ICON_OVERDUE);
+		} else if (task.isInactive()) {
+			statusImage.setIcon(StreamExternals.ICON_INACTIVE);
 		} else {
 			statusImage.setIcon(StreamExternals.ICON_NOT_DONE);
 		}

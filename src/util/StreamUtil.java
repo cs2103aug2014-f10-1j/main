@@ -75,15 +75,17 @@ public class StreamUtil {
 	/**
 	 * Displays the status of a task to user.
 	 * 
-	 * @param isDone
-	 *            - whether the task is done or not
+	 * @param task
 	 * @return <b>String</b> - the task status
 	 */
 	public static String displayStatus(StreamTask task) {
 		if (task.isOverdue()) {
 			return "overdue";
+		} else if (task.isInactive()) {
+			return "inactive";
 		} else {
-			return StreamParser.translateMarking(StreamParser.parseMarking(task.isDone()));			
+			return StreamParser.translateMarking(StreamParser.parseMarking(task
+					.isDone()));
 		}
 	}
 

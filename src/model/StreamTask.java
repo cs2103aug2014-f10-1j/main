@@ -59,10 +59,18 @@ public class StreamTask {
 	}
 
 	public boolean isOverdue() {
-		if (this.getDeadline() == null) {
+		if (deadline == null) {
 			return false;
 		} else {
 			return deadline.before(Calendar.getInstance());
+		}
+	}
+	
+	public boolean isInactive() {
+		if (startTime == null) {
+			return false;
+		} else {
+			return startTime.after(Calendar.getInstance());
 		}
 	}
 
