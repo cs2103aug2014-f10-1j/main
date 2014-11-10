@@ -25,7 +25,7 @@ import exception.StreamModificationException;
  * @version V0.5
  */
 
-// @author A0118007R
+//@author A0118007R
 public class StreamLogic extends BaseLogic {
 
 	private StreamObject streamObject;
@@ -47,7 +47,7 @@ public class StreamLogic extends BaseLogic {
 		return logic;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * Returns the indices of all tasks.
 	 * 
@@ -62,7 +62,6 @@ public class StreamLogic extends BaseLogic {
 		return indices;
 	}
 
-	// @author A0093874N
 	/**
 	 * Sets the ordering of a task list.
 	 * 
@@ -76,7 +75,7 @@ public class StreamLogic extends BaseLogic {
 				Arrays.toString(anotherTaskList.toArray())));
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Sets the ordering with tasks.
 	 * 
@@ -91,7 +90,6 @@ public class StreamLogic extends BaseLogic {
 		setOrdering(orderList);
 	}
 
-	// @author A0096529N
 	/**
 	 * Sorts by task name, lexicographically.
 	 * 
@@ -110,7 +108,6 @@ public class StreamLogic extends BaseLogic {
 				+ (descending ? "descending." : "ascending.");
 	}
 
-	// @author A0096529N
 	/**
 	 * Sorts by start time, earliest first
 	 * 
@@ -130,7 +127,6 @@ public class StreamLogic extends BaseLogic {
 				+ (descending ? "descending." : "ascending.");
 	}
 
-	// @author A0096529N
 	/**
 	 * Sorts by deadline, earliest first
 	 * 
@@ -150,10 +146,8 @@ public class StreamLogic extends BaseLogic {
 				+ (descending ? "descending." : "ascending.");
 	}
 
-	// @author A0096529N
 	/**
-	 * 
-	 * Sorts base on importance.
+	 * Sorts based on importance.
 	 * 
 	 * <p>
 	 * Sort algorithm
@@ -208,7 +202,7 @@ public class StreamLogic extends BaseLogic {
 				+ (descending ? "descending." : "ascending.");
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	/**
 	 * Sorts the tasks based on the time given. First we sort by start time, and
 	 * then sort by deadline.
@@ -255,7 +249,7 @@ public class StreamLogic extends BaseLogic {
 		return "Sort by time " + (descending ? "descending." : "ascending.");
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Sorts tasks based on given comparator.
 	 * 
@@ -269,7 +263,6 @@ public class StreamLogic extends BaseLogic {
 		setOrderingWithTasks(tempList);
 	}
 
-	// @author A0096529N
 	/**
 	 * Compare the ranks of two tasks.
 	 * <p>
@@ -293,7 +286,6 @@ public class StreamLogic extends BaseLogic {
 		return valueRank(task2.getRank()) - valueRank(task1.getRank());
 	}
 
-	// @author A0096529N
 	private int compareDone(StreamTask task1, StreamTask task2) {
 		if (task1.isDone() == task2.isDone()) {
 			return 0;
@@ -304,7 +296,6 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0096529N
 	private int compareDeadline(StreamTask task1, StreamTask task2,
 			boolean reverse) {
 		if (task1.getDeadline() == null && task2.getDeadline() == null) {
@@ -318,12 +309,10 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0096529N
 	private int compareName(StreamTask task1, StreamTask task2) {
 		return task2.getTaskName().compareTo(task1.getTaskName());
 	}
 
-	// @author A0096529N
 	private int compareStartTime(StreamTask task1, StreamTask task2,
 			boolean reverse) {
 		if (task1.getStartTime() == null && task2.getStartTime() == null) {
@@ -337,7 +326,6 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0096529N
 	private int valueRank(String rank) {
 		switch (StreamParser.parseRanking(rank)) {
 			case HI:
@@ -351,6 +339,15 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
+	/**
+	 * Clears the storage of all tasks.
+	 */
+	public void clear() {
+		streamObject.clear();
+		logDebug(StreamConstants.LogMessage.CLEARED_TASKS);
+	}
+
+	//@author A0093874N
 	/**
 	 * Adds a new task to StreamObject
 	 * 
@@ -375,7 +372,6 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0093874N
 	/**
 	 * Adds the given task back into storage
 	 * 
@@ -388,17 +384,6 @@ public class StreamLogic extends BaseLogic {
 				task.getTaskName()));
 	}
 
-	// @author A0096529N
-	/**
-	 * Clears the storage of all tasks.
-	 * 
-	 */
-	public void clear() {
-		streamObject.clear();
-		logDebug(StreamConstants.LogMessage.CLEARED_TASKS);
-	}
-
-	// @author A0093874N
 	/**
 	 * Checks whether a specific task is already included in the tasks list.
 	 * Only for testing.
@@ -417,7 +402,7 @@ public class StreamLogic extends BaseLogic {
 		return streamObject.containsKey(taskName);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Gets a specific task
 	 * 
@@ -442,7 +427,6 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0118007R
 	/**
 	 * Deletes a specific task
 	 * 
@@ -466,7 +450,7 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Change task name of the task
 	 * 
@@ -509,7 +493,7 @@ public class StreamLogic extends BaseLogic {
 				newTaskName);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Modifies the various specified parameters of a task.
 	 * 
@@ -544,7 +528,7 @@ public class StreamLogic extends BaseLogic {
 		modifyTask(task, attribute, contents);
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Modify an attribute of a task
 	 * 
@@ -567,7 +551,6 @@ public class StreamLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0096529N
 	/**
 	 * Search for tasks with specified key phrase, in the task name, description
 	 * and tags.
@@ -583,7 +566,6 @@ public class StreamLogic extends BaseLogic {
 	 * @return tasks - a list of tasks containing the key phrase, empty list if
 	 *         nothing matches
 	 */
-	// modified by A0093874N
 	public ArrayList<Integer> findTasks(String keyphrase) {
 		// Split key phrase into keywords
 		String[] keywords = null;
@@ -623,7 +605,7 @@ public class StreamLogic extends BaseLogic {
 		return tasks;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * Filter tasks by various categories
 	 * 
@@ -736,7 +718,6 @@ public class StreamLogic extends BaseLogic {
 		return tasks;
 	}
 
-	// @author A0093874N
 	/**
 	 * Gets the number of tasks added.
 	 * 
@@ -745,7 +726,7 @@ public class StreamLogic extends BaseLogic {
 		return streamObject.size();
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Retrieves the task name by index
 	 * 
@@ -760,7 +741,6 @@ public class StreamLogic extends BaseLogic {
 		return streamObject.getTaskList().get(index - 1);
 	}
 
-	// @author A0096529N
 	/**
 	 * @return taskMap a copy of the task map.
 	 */
@@ -768,7 +748,6 @@ public class StreamLogic extends BaseLogic {
 		return new HashMap<String, StreamTask>(streamObject.getTaskMap());
 	}
 
-	// @author A0096529N
 	/**
 	 * @return taskList a copy of the task list.
 	 */
@@ -776,7 +755,6 @@ public class StreamLogic extends BaseLogic {
 		return new ArrayList<String>(streamObject.getTaskList());
 	}
 
-	// @author A0096529N
 	/**
 	 * @return taskList a copy of the task list.
 	 */
@@ -789,7 +767,7 @@ public class StreamLogic extends BaseLogic {
 		return taskList;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 
 	public ArrayList<StreamTask> getStreamTaskList(ArrayList<Integer> indices) {
 		ArrayList<StreamTask> tasks = new ArrayList<StreamTask>();
@@ -801,13 +779,13 @@ public class StreamLogic extends BaseLogic {
 		return tasks;
 	}
 
-	// @author generated
+	//@author generated
 	@Override
 	protected String getLoggerComponentName() {
 		return StreamConstants.ComponentTag.STREAMLOGIC;
 	}
 
-	// @author A0096529N
+	//@author A0096529N-unused
 	/**
 	 * @deprecated not really used...
 	 */
@@ -821,7 +799,6 @@ public class StreamLogic extends BaseLogic {
 		return timedTaskList;
 	}
 
-	// @author A0096529N
 	/**
 	 * @deprecated not really used...
 	 */
@@ -835,7 +812,6 @@ public class StreamLogic extends BaseLogic {
 		return timedTaskList;
 	}
 
-	// @author A0096529N
 	/**
 	 * @deprecated not really used...
 	 */
@@ -849,8 +825,6 @@ public class StreamLogic extends BaseLogic {
 		return timedTaskList;
 	}
 
-	// Depreciated methods
-
 	/**
 	 * @deprecated
 	 */
@@ -858,9 +832,8 @@ public class StreamLogic extends BaseLogic {
 		return streamObject.getTaskList();
 	}
 
-	// @author A0119401U
+	//@author A0119401U-unused
 	/**
-	 * 
 	 * Mark the selected task as done
 	 * 
 	 * <p>
@@ -878,7 +851,6 @@ public class StreamLogic extends BaseLogic {
 		task.markAsDone();
 	}
 
-	// @author A0119401U
 	/**
 	 * @deprecated
 	 * 
@@ -889,9 +861,7 @@ public class StreamLogic extends BaseLogic {
 		task.markAsOngoing();
 	}
 
-	// @author A0119401U
 	/**
-	 * 
 	 * Set the due time of the selected task
 	 * 
 	 * @param taskName
@@ -912,9 +882,7 @@ public class StreamLogic extends BaseLogic {
 		task.setDeadline(calendar);
 	}
 
-	// @author A0119401U
 	/**
-	 * 
 	 * @deprecated
 	 */
 	public void setNullDeadline(String taskName)
@@ -923,7 +891,6 @@ public class StreamLogic extends BaseLogic {
 		currentTask.setNullDeadline();
 	}
 
-	// @author A0119401U
 	/**
 	 * Set the rank of the selected task
 	 * <p>
@@ -947,9 +914,7 @@ public class StreamLogic extends BaseLogic {
 
 	}
 
-	// @author A0119401U
 	/**
-	 * 
 	 * @param taskName
 	 * @return the actual index of a given task
 	 * @deprecated not really needed, can be un-deprecated if we find a use
@@ -958,7 +923,7 @@ public class StreamLogic extends BaseLogic {
 		return (streamObject.indexOf(taskName) + 1);
 	}
 
-	// @author A0118007R
+	//@author A0118007R-unused
 	/**
 	 * get task description
 	 * 
@@ -971,7 +936,6 @@ public class StreamLogic extends BaseLogic {
 		return myTask.getDescription();
 	}
 
-	// @author A0118007R
 	/**
 	 * get task deadline
 	 * 

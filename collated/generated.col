@@ -1,0 +1,88 @@
+//@author: generated
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	@Override 
+	protected String getLoggerComponentName() {
+		return StreamConstants.ComponentTag.STREAMSTACK;
+	}
+
+
+	// Depreciated methods
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	@Override
+	protected String getLoggerComponentName() {
+		return StreamConstants.ComponentTag.STREAMLOGIC;
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamObject.java
+	 */
+
+	/**
+	 * Gets the hashmap of the current state of tasks stored as StreamTask
+	 * objects.
+	 * 
+	 * @return taskMap - the hashmap containing all current tasks
+	 */
+	public HashMap<String, StreamTask> getTaskMap() {
+		return taskMap;
+	}
+
+	/**
+	 * Sets the hashmap of the current tasks to be the one that is inputted. For
+	 * loading purposes.
+	 * 
+	 * @param taskMap
+	 *            - the new hashmap containing all new tasks
+	 */
+	public void setTaskMap(HashMap<String, StreamTask> taskMap) {
+		this.taskMap = taskMap;
+	}
+
+	/**
+	 * Gets the ArrayList containing all current tasks stored as task names.
+	 * 
+	 * @return taskList - the ArrayList containing all current tasks
+	 */
+	public ArrayList<String> getTaskList() {
+		return taskList;
+	}
+
+	/**
+	 * Sets the arraylist of the current tasks to be the one that is inputted.
+	 * For loading purposes.
+	 * 
+	 * @param taskList
+	 *            - the new arraylist containing all new tasks
+	 */
+	public void setTaskList(ArrayList<String> taskList) {
+		this.taskList = taskList;
+	}
+
+	// End of segment: src\model\StreamObject.java
+
+
+
+
+

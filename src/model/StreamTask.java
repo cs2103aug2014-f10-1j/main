@@ -74,7 +74,7 @@ public class StreamTask {
 		this.taskDescription = description;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * Gets the start time of a task
 	 * 
@@ -119,7 +119,7 @@ public class StreamTask {
 		}
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	/**
 	 * Gets the deadline of a task
 	 * 
@@ -190,7 +190,7 @@ public class StreamTask {
 		setDone(false);
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	/**
 	 * Sets a task ask done or not
 	 * 
@@ -254,7 +254,7 @@ public class StreamTask {
 
 	// Depreciated methods
 
-	// @author A0118007R-unused
+	//@author A0118007R-unused
 	/**
 	 * @deprecated - same as setDeadline(null)
 	 */
@@ -332,7 +332,7 @@ public class StreamTask {
 		this.tags = new ArrayList<String>();
 	}
 
-	// @author A0119401U-unused
+	//@author A0119401U-unused
 	// This one needs to be checked later
 	/**
 	 * @deprecated

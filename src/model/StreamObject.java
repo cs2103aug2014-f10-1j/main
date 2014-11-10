@@ -45,7 +45,7 @@ public class StreamObject {
 		return new StreamObject(taskMap, taskList);
 	}
 
-	// @author generated
+	//@author generated
 	/**
 	 * Gets the hashmap of the current state of tasks stored as StreamTask
 	 * objects.
@@ -87,7 +87,7 @@ public class StreamObject {
 		this.taskList = taskList;
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 
 	// Delegate methods
 

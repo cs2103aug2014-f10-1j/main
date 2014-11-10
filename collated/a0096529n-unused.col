@@ -1,0 +1,121 @@
+//@author: a0096529n-unused
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * @deprecated not really used...
+	 */
+	public ArrayList<String> getTimedTaskList() {
+		ArrayList<String> timedTaskList = new ArrayList<String>();
+		for (String taskName : streamObject.keySet()) {
+			if (streamObject.get(taskName).isTimedTask()) {
+				timedTaskList.add(taskName);
+			}
+		}
+		return timedTaskList;
+	}
+
+	/**
+	 * @deprecated not really used...
+	 */
+	public ArrayList<String> getDeadlineTaskList() {
+		ArrayList<String> timedTaskList = new ArrayList<String>();
+		for (String taskName : streamObject.keySet()) {
+			if (streamObject.get(taskName).isDeadlineTask()) {
+				timedTaskList.add(taskName);
+			}
+		}
+		return timedTaskList;
+	}
+
+	/**
+	 * @deprecated not really used...
+	 */
+	public ArrayList<String> getFloatingTaskList() {
+		ArrayList<String> timedTaskList = new ArrayList<String>();
+		for (String taskName : streamObject.keySet()) {
+			if (streamObject.get(taskName).isFloatingTask()) {
+				timedTaskList.add(taskName);
+			}
+		}
+		return timedTaskList;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public ArrayList<String> getTaskNames() {
+		return streamObject.getTaskList();
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUI.java
+	 */
+
+
+	/**
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void addMenu() {
+		// newTaskTextField = new JTextField();
+		// newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
+		// addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
+		/*
+		 * addTaskButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { String params
+		 * = newTaskTextField.getText(); newTaskTextField.setText("");
+		 * stream.filterAndProcessInput(String.format(
+		 * StreamConstants.Commands.ADD_TASK, params)); } });
+		 */
+		addSortDeadlineButton();
+		addSortAlphaButton();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private void addSortAlphaButton() {
+		// sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
+		/*
+		 * sortAlphaButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA); }
+		 * });
+		 */
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private void addSortDeadlineButton() {
+		// sortDeadlineButton = new
+		// JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
+		/*
+		 * sortDeadlineButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
+		 * } });
+		 */
+	}
+
+}
+	// End of segment: src\ui\StreamUI.java
+
+
+
+
+

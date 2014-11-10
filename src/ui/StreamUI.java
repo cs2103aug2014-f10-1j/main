@@ -2,20 +2,16 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -33,9 +29,10 @@ import util.StreamUtil;
 
 /**
  * <p>
- * The GUI for Stream, featuring graphical view of user's added tasks, console
- * for user input, and logger for terminal feedback. Also equipped with some
- * keyboard shortcuts for user's convenience.
+ * StreamUI is the GUI for STREAM, featuring graphical view of user's added
+ * tasks, console for user input, logger for terminal feedback, and helper box
+ * for user assistance. Also equipped with some keyboard shortcuts and simple
+ * auto-completion for user's convenience.
  * </p>
  * 
  * <h3>API</h3>
@@ -64,22 +61,10 @@ public class StreamUI {
 	private JPanel contentPanel;
 	private StreamUIConsole console;
 	private StreamUIFeedback feedback;
-	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private JLabel pageNumber;
 	private static final StreamLogger loggerDoc = StreamLogger
 			.init(StreamConstants.ComponentTag.STREAMUI);
-
-	private JButton undoButton;
-	private JButton clearSearchButton;
-	private JButton firstPageButton;
-	private JButton prevPageButton;
-	private JButton nextPageButton;
-	private JButton lastPageButton;
-	private JButton sortAlphaButton;
-	private JButton sortDeadlineButton;
-	private JButton addTaskButton;
-	private ArrayList<JButton> buttons = new ArrayList<JButton>();
 
 	private boolean isSearch;
 	private boolean isTaskHighlighted;
@@ -108,7 +93,6 @@ public class StreamUI {
 		addPageNumber();
 		addFooter();
 		setFocusTraversal();
-		// TODO here log saved file loaded or new saved file created instead
 		log(StreamConstants.Message.WELCOME, false);
 		presentToUser();
 	}
@@ -345,7 +329,6 @@ public class StreamUI {
 		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView();
-			// taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			taskPanel
 					.setBounds(
 							StreamConstants.UI.MARGIN_SIDE,
@@ -658,10 +641,10 @@ public class StreamUI {
 		addPrevPageButton();
 		addNextPageButton();
 		addLastPageButton();
-		buttons.add(firstPageButton);
-		buttons.add(prevPageButton);
-		buttons.add(nextPageButton);
-		buttons.add(lastPageButton);
+		/*
+		 * buttons.add(firstPageButton); buttons.add(prevPageButton);
+		 * buttons.add(nextPageButton); buttons.add(lastPageButton);
+		 */
 	}
 
 	/**
@@ -671,12 +654,12 @@ public class StreamUI {
 	 */
 	private void addFirstPageButton() {
 		// firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
-		firstPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("first");
-			}
-		});
+		/*
+		 * firstPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("first"); } });
+		 */
 		// addComponent(firstPageButton, 25, 500, 160, 32);
 	}
 
@@ -687,12 +670,12 @@ public class StreamUI {
 	 */
 	private void addPrevPageButton() {
 		// prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
-		prevPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("prev");
-			}
-		});
+		/*
+		 * prevPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("prev"); } });
+		 */
 		// addComponent(prevPageButton, 205, 500, 160, 32);
 	}
 
@@ -703,12 +686,12 @@ public class StreamUI {
 	 */
 	private void addNextPageButton() {
 		// nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
-		nextPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("next");
-			}
-		});
+		/*
+		 * nextPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("next"); } });
+		 */
 		// addComponent(nextPageButton, 385, 500, 160, 32);
 	}
 
@@ -719,12 +702,12 @@ public class StreamUI {
 	 */
 	private void addLastPageButton() {
 		// lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
-		lastPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("last");
-			}
-		});
+		/*
+		 * lastPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("last"); } });
+		 */
 		// addComponent(lastPageButton, 565, 500, 160, 32);
 	}
 
@@ -736,12 +719,12 @@ public class StreamUI {
 	@SuppressWarnings("unused")
 	private void addUndoButton() {
 		// undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
-		undoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.UNDO);
-			}
-		});
+		/*
+		 * undoButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.UNDO); } });
+		 */
 	}
 
 	/**
@@ -752,12 +735,12 @@ public class StreamUI {
 	@SuppressWarnings("unused")
 	private void addClearSearchButton() {
 		// clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
-		clearSearchButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC);
-			}
-		});
+		/*
+		 * clearSearchButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC); } });
+		 */
 	}
 
 	/**
@@ -768,18 +751,13 @@ public class StreamUI {
 	 */
 	@SuppressWarnings("unused")
 	private void determineClickableNavigators() {
-		firstPageButton.setEnabled(true);
-		prevPageButton.setEnabled(true);
-		nextPageButton.setEnabled(true);
-		lastPageButton.setEnabled(true);
-		if (pageShown == 1) {
-			firstPageButton.setEnabled(false);
-			prevPageButton.setEnabled(false);
-		}
-		if (pageShown == totalPage) {
-			nextPageButton.setEnabled(false);
-			lastPageButton.setEnabled(false);
-		}
+		/*
+		 * firstPageButton.setEnabled(true); prevPageButton.setEnabled(true);
+		 * nextPageButton.setEnabled(true); lastPageButton.setEnabled(true); if
+		 * (pageShown == 1) { firstPageButton.setEnabled(false);
+		 * prevPageButton.setEnabled(false); } if (pageShown == totalPage) {
+		 * nextPageButton.setEnabled(false); lastPageButton.setEnabled(false); }
+		 */
 	}
 
 	//@author A0096529N-unused
@@ -789,18 +767,17 @@ public class StreamUI {
 	 */
 	@SuppressWarnings("unused")
 	private void addMenu() {
-		newTaskTextField = new JTextField();
-		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
+		// newTaskTextField = new JTextField();
+		// newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
 		// addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
-		addTaskButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String params = newTaskTextField.getText();
-				newTaskTextField.setText("");
-				stream.filterAndProcessInput(String.format(
-						StreamConstants.Commands.ADD_TASK, params));
-			}
-		});
+		/*
+		 * addTaskButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { String params
+		 * = newTaskTextField.getText(); newTaskTextField.setText("");
+		 * stream.filterAndProcessInput(String.format(
+		 * StreamConstants.Commands.ADD_TASK, params)); } });
+		 */
 		addSortDeadlineButton();
 		addSortAlphaButton();
 	}
@@ -810,12 +787,13 @@ public class StreamUI {
 	 */
 	private void addSortAlphaButton() {
 		// sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
-		sortAlphaButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA);
-			}
-		});
+		/*
+		 * sortAlphaButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA); }
+		 * });
+		 */
 	}
 
 	/**
@@ -824,12 +802,13 @@ public class StreamUI {
 	private void addSortDeadlineButton() {
 		// sortDeadlineButton = new
 		// JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
-		sortDeadlineButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
-			}
-		});
+		/*
+		 * sortDeadlineButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
+		 * } });
+		 */
 	}
 
 }
