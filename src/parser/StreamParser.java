@@ -104,7 +104,6 @@ public class StreamParser {
 				break;
 
 			case "due":
-			case "end":
 				checkTypeFourValidity(contentsSplitWithIndex, numOfTasks);
 				this.commandKey = CommandType.DUE;
 				break;
