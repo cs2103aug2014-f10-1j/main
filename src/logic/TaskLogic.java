@@ -19,6 +19,13 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	//@author A0093874N
+	/**
+	 * Process the addition of tags to the task object.
+	 * 
+	 * @param task
+	 * @param tags
+	 * @return tagsAdded - the ArrayList consisting of added tags to the task object
+	 */
 	public ArrayList<String> addTags(StreamTask task, String... tags) {
 		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_ADD,
 				task.getTaskName(), Arrays.toString(tags)));
@@ -42,6 +49,13 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	//@author A0093874N
+	/**
+	 * Process the removal of tags to the task object.
+	 * 
+	 * @param task
+	 * @param tags
+	 * @return tagsRemoved - the ArrayList consisting of removed tags from the task object
+	 */
 	public ArrayList<String> removeTags(StreamTask task, String... tags) {
 		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_REMOVE,
 				task.getTaskName(), Arrays.toString(tags)));
@@ -61,6 +75,13 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	//@author A0093874N
+	/**
+	 * Sets the deadline of a task to the task object
+	 * 
+	 * @param task
+	 * @param calendar
+	 * @return result - the string consisting of the final deadline assigned to the task.
+	 */
 	public String setDeadline(StreamTask task, Calendar calendar) {
 		String result = null;
 		String parsedCalendar = null;
@@ -80,6 +101,13 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	//@author A0119401U
+	/**
+	 * Sets the start time of a task to the task object
+	 * 
+	 * @param task
+	 * @param calendar
+	 * @return result - the string consisting of the final start time assigned to the task.
+	 */
 	public String setStartTime(StreamTask task, Calendar calendar) {
 		String result = null;
 		String parsedCalendar = null;
@@ -100,6 +128,15 @@ public class TaskLogic extends BaseLogic {
 	}
 
 	//@author A0118007R
+	/**
+	 * The logic behind task modification for multi-add and multi-modify commands.
+	 * 
+	 * The "-" symbol is added to avoid confusion with parameters of each keywords.
+	 * 
+	 * @param task
+	 * @param attribute
+	 * @param contents
+	 */
 	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
 		

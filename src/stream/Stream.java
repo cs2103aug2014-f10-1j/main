@@ -50,6 +50,9 @@ public class Stream {
 	private String filename;
 
 	//@author A0118007R
+	/**
+	 * Stream Constructor to initialize the program.
+	 */
 	public Stream(String file) {
 		initializeExtFiles();
 		initStreamIO(file);
@@ -952,8 +955,8 @@ public class Stream {
 
 	//@author A0093874N
 	private void refreshUI(boolean isReset, boolean isSearching) {
-		stui.resetAvailableTasks(streamLogic.getIndex(),
-				streamLogic.getStreamTaskList(streamLogic.getIndex()), isReset,
+		stui.resetAvailableTasks(streamLogic.getIndices(),
+				streamLogic.getStreamTaskList(streamLogic.getIndices()), isReset,
 				isSearching);
 	}
 
@@ -1112,8 +1115,8 @@ public class Stream {
 	 */
 	@SuppressWarnings("unused")
 	private void resetTasks() {
-		stui.resetAvailableTasks(streamLogic.getIndex(),
-				streamLogic.getStreamTaskList(streamLogic.getIndex()), true,
+		stui.resetAvailableTasks(streamLogic.getIndices(),
+				streamLogic.getStreamTaskList(streamLogic.getIndices()), true,
 				false);
 	}
 

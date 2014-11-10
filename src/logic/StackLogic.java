@@ -208,20 +208,33 @@ public class StackLogic extends BaseLogic {
 			StreamTask currTask) {
 		String inverseCommand = "modify " + taskIndex + " -name " + taskName
 				+ " ";
-		// TODO help to refactor these
 		// added by A0093874N
 		Boolean isDone = currTask.isDone();
+		inverseCommand = buildInverseModifyRank(currTask, inverseCommand,
+				isDone);
+		 //end of addition by A0093874N //
+		inverseCommand = buildInverseModifyDescription(currTask, inverseCommand);
+		inverseCommand = buildInverseModifyDeadline(currTask, inverseCommand);
+		inverseCommand = buildInverseModifyTag(currTask, inverseCommand);
+		return inverseCommand;
+	}
+
+	//@author A0093874N
+	private String buildInverseModifyRank(StreamTask currTask,
+			String inverseCommand, Boolean isDone) {
+		inverseCommand = determineStatus(inverseCommand, isDone);
+		String oldRank = currTask.getRank();
+		inverseCommand += "-rank " + oldRank + " ";
+		return inverseCommand;
+	}
+
+	//@author A0093874N
+	private String determineStatus(String inverseCommand, Boolean isDone) {
 		if (isDone) {
 			inverseCommand += "-mark done ";
 		} else {
 			inverseCommand += "-mark ongoing ";
 		}
-		String oldRank = currTask.getRank();
-		inverseCommand += "-rank " + oldRank + " ";
-		//
-		inverseCommand = buildInverseModifyDescription(currTask, inverseCommand);
-		inverseCommand = buildInverseModifyDeadline(currTask, inverseCommand);
-		inverseCommand = buildInverseModifyTag(currTask, inverseCommand);
 		return inverseCommand;
 	}
 
@@ -285,6 +298,11 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * Pops the inverse command for undoing purposes.
+	 * 
+	 * @return inverseCommand - the string consisting of the inverse command.
+	 */
 	public String popInverseCommand() {
 		String inverseCommand = inputStack.pop();
 		logDebug(String.format(StreamConstants.LogMessage.POP_INVERSE_COMMAND, 
@@ -293,11 +311,21 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * Checks whether there exists an inverse input inside the input stack. 
+	 * If it is empty then there is nothing to undo.
+	 * 
+	 * @return isEmpty - true if the stack is empty.
+	 */
 	public boolean hasInverseInput() {
 		return !inputStack.isEmpty();
 	}
 
 	//@author A0096529N
+	/**
+	 * pushes the place holder for undo
+	 * 
+	 */
 	public void pushPlaceholderInput() {
 		pushInput("placeholderforundo");
 	}
@@ -312,6 +340,11 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0096529N
+	/**
+	 * what does this do?
+	 * 
+	 * @return
+	 */
 	public ArrayList<String> popOrder() {
 		ArrayList<String> order = orderingStack.pop();
 		logDebug(String.format(StreamConstants.LogMessage.POP_ORDER, 
