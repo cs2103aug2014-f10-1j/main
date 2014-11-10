@@ -1789,10 +1789,10 @@ public class StreamTaskView extends JPanel {
 
 /**
  * <p>
- * StreamUI is the GUI for STREAM, featuring graphical view of user’s added
+ * StreamUI is the GUI for STREAM, featuring graphical view of user's added
  * tasks, console for user input, logger for terminal feedback, and helper box
  * for user assistance. Also equipped with some keyboard shortcuts and simple
- * auto-completion for user’s convenience.
+ * auto-completion for user's convenience.
  * </p>
  * 
  * <h3>API</h3>

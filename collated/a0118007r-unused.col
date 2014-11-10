@@ -82,7 +82,7 @@
 		} else {
 			System.out.println(strTags.substring(2));
 		}
-		if (done) {
+		if (isDone) {
 			System.out.println("Status: Done");
 		} else {
 			System.out.println("Status: Not finished");

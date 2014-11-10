@@ -669,10 +669,12 @@ public class StreamObject {
 public class StreamTask {
 
 	// Attributes
-	private String taskName, taskDescription;
-	private Calendar startTime, deadline;
+	private String taskName;
+	private String taskDescription;
+	private Calendar startTime;
+	private Calendar deadline;
 	private ArrayList<String> tags;
-	private boolean done;
+	private boolean isDone;
 	private String rank;
 
 	// Constructor
@@ -682,7 +684,7 @@ public class StreamTask {
 		this.startTime = null;
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
-		this.done = false;
+		this.isDone = false;
 		this.rank = "low";
 	}
 

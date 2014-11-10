@@ -1961,7 +1961,7 @@ public class StreamSearchTest {
 	 * @param done
 	 */
 	public void setDone(boolean done) {
-		this.done = done;
+		this.isDone = done;
 	}
 
 	/**

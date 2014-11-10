@@ -223,7 +223,7 @@ public class StreamParserException extends Exception {
 	 * @return true if done, false otherwise
 	 */
 	public boolean isDone() {
-		return this.done;
+		return this.isDone;
 	}
 
 	/**
