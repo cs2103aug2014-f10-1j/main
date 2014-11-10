@@ -108,7 +108,9 @@ public class StreamParserTest {
 			fail();
 			
 		}catch (StreamParserException e) {
-			final String expectedMessage = StreamParser.ERROR_INCOMPLETE_INPUT;
+			final String expectedMessage = StreamParser.ERROR_UNKNOWN_COMMAND;
+			System.out.println(expectedMessage);
+			System.out.println(e.getMessage());
 			assertEquals(expectedMessage, e.getMessage());
 		}
 			
