@@ -136,8 +136,6 @@ public class StreamParser {
 				break;
 
 			case "mark":
-			case "done":
-			case "finished":
 				checkMarkValidity(contentsSplitWithIndex, numOfTasks);
 				this.commandKey = CommandType.MARK;
 				break;
@@ -447,6 +445,7 @@ public class StreamParser {
 	 * @return <b>RankType</b> - the parsed ranking type
 	 */
 	public static RankType parseRanking(String rankInput) {
+		rankInput = rankInput.toLowerCase();
 		switch (rankInput) {
 			case "high":
 			case "hi":
@@ -488,6 +487,7 @@ public class StreamParser {
 	 * @return <b>MarkType</b> - the parsed marking type
 	 */
 	public static MarkType parseMarking(String markInput) {
+		markInput = markInput.toLowerCase();
 		switch (markInput) {
 			case "done":
 			case "finished":

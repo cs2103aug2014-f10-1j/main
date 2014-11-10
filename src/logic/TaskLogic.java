@@ -13,8 +13,6 @@ import util.StreamConstants;
 import util.StreamUtil;
 
 public class TaskLogic extends BaseLogic {
-	
-	private ArrayList<String> failedModifications;
 
 	public static TaskLogic init() {
 		return new TaskLogic();
