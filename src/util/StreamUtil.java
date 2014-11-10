@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import model.StreamTask;
 import parser.StreamParser;
 
 import com.mdimension.jchronic.Chronic;
@@ -78,8 +79,12 @@ public class StreamUtil {
 	 *            - whether the task is done or not
 	 * @return <b>String</b> - the task status
 	 */
-	public static String displayStatus(Boolean isDone) {
-		return StreamParser.translateMarking(StreamParser.parseMarking(isDone));
+	public static String displayStatus(StreamTask task) {
+		if (task.isOverdue()) {
+			return "overdue";
+		} else {
+			return StreamParser.translateMarking(StreamParser.parseMarking(task.isDone()));			
+		}
 	}
 
 	/**

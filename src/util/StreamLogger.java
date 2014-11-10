@@ -14,15 +14,16 @@ import java.util.Locale;
  * Stores logs in a synchronized list for various components.
  * </p>
  * 
- * <h2>Example</h2> 
+ * <h2>Example</h2>
  * 
  * <pre>
- * {@code
- * //Initialize logger, similar to Object.getInstance() taught.
- * StreamLogger logger = StreamLogger.init(componentName);
+ * {
+ * 	&#064;code
+ * 	// Initialize logger, similar to Object.getInstance() taught.
+ * 	StreamLogger logger = StreamLogger.init(componentName);
  * 
- * //Use logger to add log to log stack
- * logger.log(LogLevel.DEBUG, logMessage);
+ * 	// Use logger to add log to log stack
+ * 	logger.log(LogLevel.DEBUG, logMessage);
  * }
  * </pre>
  * 

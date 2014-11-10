@@ -55,6 +55,8 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	private static final String DEFAULT_HELP_TEXT = "Press space to fill";
 	private static final String UNKNOWN_COMMAND = "Warning: unknown command";
 	private static final String COMMAND_PROMPT = "Enter your command here";
+	private static final String HELP_TEXT_EMPTY = StreamConstants.Message.WELCOME
+			+ " Type \"help\" and press enter to get some assistance!";
 
 	private static final int GUESS_NOT_FOUND = -1;
 	private static final int COORD_X = 5;
@@ -176,7 +178,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 			g2.setColor(Color.GRAY);
 			g2.drawString(COMMAND_PROMPT, COORD_X, COORD_Y);
 			g2.dispose();
-			feedback.showFeedbackMessage(StreamConstants.Message.WELCOME);
+			feedback.showFeedbackMessage(HELP_TEXT_EMPTY);
 		}
 	}
 

@@ -49,7 +49,7 @@ public class Stream {
 
 	private String filename;
 
-	// @author A0118007R
+	//@author A0118007R
 	public Stream(String file) {
 		initializeExtFiles();
 		initStreamIO(file);
@@ -63,7 +63,7 @@ public class Stream {
 		parser = new StreamParser();
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private void initializeExtFiles() {
 		ImageIcon headerText = new ImageIcon(getClass().getResource(
 				"/img/header.png"));
@@ -89,18 +89,6 @@ public class Stream {
 				"/img/noenddate.png"));
 		Font titleFont = null;
 		Font consoleFont = null;
-		initializeImagesAndFonts(headerText, doneIcon, notDoneIcon,
-				overdueIcon, hiRankIcon, medRankIcon, lowRankIcon,
-				startCalIcon, nullStartCalIcon, endCalIcon, nullEndCalIcon,
-				titleFont, consoleFont);
-	}
-
-	private void initializeImagesAndFonts(ImageIcon headerText,
-			ImageIcon doneIcon, ImageIcon notDoneIcon, ImageIcon overdueIcon,
-			ImageIcon hiRankIcon, ImageIcon medRankIcon, ImageIcon lowRankIcon,
-			ImageIcon startCalIcon, ImageIcon nullStartCalIcon,
-			ImageIcon endCalIcon, ImageIcon nullEndCalIcon, Font titleFont,
-			Font consoleFont) {
 		try {
 			titleFont = Font.createFont(Font.TRUETYPE_FONT, getClass()
 					.getResourceAsStream("/fonts/Awesome Java.ttf"));
@@ -122,7 +110,7 @@ public class Stream {
 		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	private void initStreamIO(String file) {
 		if (!file.endsWith(StreamConstants.SAVEFILE_EXTENSION)) {
 			filename = String.format(StreamConstants.SAVEFILE_FORMAT, file);
@@ -173,7 +161,7 @@ public class Stream {
 		return result;
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void executeInput(CommandType command, Integer index, String content)
 			throws StreamModificationException, StreamIOException {
 		switch (command) {
@@ -417,7 +405,7 @@ public class Stream {
 		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * Deletes a task from the tasks list permanently.
 	 * 
@@ -450,7 +438,7 @@ public class Stream {
 		showAndLogResult(StreamConstants.LogMessage.CLEAR);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Prints the task details.
 	 * 
@@ -495,7 +483,7 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	/**
 	 * Adds a rank to a task.
 	 * <p>
@@ -521,7 +509,7 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Changes the name of a task.
 	 * <p>
@@ -572,7 +560,7 @@ public class Stream {
 		showAndLogResult(result);
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	/**
 	 * Untags some tags that are specified in the input.
 	 * <p>
@@ -662,7 +650,7 @@ public class Stream {
 		}
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Marks the category as the specified category
 	 * 
@@ -699,7 +687,7 @@ public class Stream {
 		return result;
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void executeDue(Integer taskIndex, String content)
 			throws StreamModificationException {
 		String taskName = streamLogic.getTaskNumber(taskIndex);
@@ -747,7 +735,7 @@ public class Stream {
 		return result;
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	// updated by A0119401U
 	private void executeSort(String content) {
 		ArrayList<String> oldOrdering = streamLogic.getTaskList();
@@ -838,7 +826,7 @@ public class Stream {
 		return searchResult;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private ArrayList<Integer> executeFilter(String content) {
 		assertNotNull(content);
 		ArrayList<Integer> filterResult = streamLogic.filterTasks(content);
@@ -850,7 +838,7 @@ public class Stream {
 		return filterResult;
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void addTaskWithParams(String taskName,
 			ArrayList<String> modifyParams) throws StreamModificationException {
 
@@ -867,7 +855,7 @@ public class Stream {
 		}
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	/**
 	 * Set the due date of the selected task
 	 * 
@@ -934,7 +922,7 @@ public class Stream {
 		//
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	/**
 	 * Mark the selected task as ongoing
 	 * 
@@ -951,12 +939,12 @@ public class Stream {
 		//
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	private void refreshUI() {
 		refreshUI(false, false);
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private void refreshUI(boolean isReset, boolean isSearching) {
 		stui.resetAvailableTasks(streamLogic.getIndex(),
 				streamLogic.getStreamTaskList(streamLogic.getIndex()), isReset,
@@ -993,7 +981,7 @@ public class Stream {
 		showAndLogResult(logMessage, logMessage);
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void showAndLogError(String errorMessage) {
 		showAndLogError(errorMessage, errorMessage);
 	}
@@ -1003,7 +991,7 @@ public class Stream {
 	 * displayed are different (especially for exception/error messages)
 	 */
 
-	// @author A0093874N
+	//@author A0093874N
 	private void showAndLogResult(String logMessageForDoc,
 			String logMessageForUser) {
 		stui.log(logMessageForUser, false);
@@ -1016,12 +1004,12 @@ public class Stream {
 		log(StreamUtil.showAsTerminalResponse(errorMessageForDoc));
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	private void log(String message) {
 		logger.log(LogLevel.DEBUG, message);
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	private void processInput(String input) {
 		try {
 			executeUserInput(input);
@@ -1047,8 +1035,8 @@ public class Stream {
 	private void processAndShowParserExceptionMessage(StreamParserException e) {
 		if (e.getMessage().equals("Empty Input")) {
 			showAndLogError(String.format(
-					StreamConstants.LogMessage.EMPTY_INPUT_ERROR,
-					e.getClass().getSimpleName() + " " + e.getMessage()));
+					StreamConstants.LogMessage.EMPTY_INPUT_ERROR, e.getClass()
+							.getSimpleName() + " " + e.getMessage()));
 		} else {
 			showAndLogError(String.format(
 					StreamConstants.LogMessage.PARSER_ERROR, e.getClass()
@@ -1057,11 +1045,10 @@ public class Stream {
 	}
 
 	private void processAssertionError(AssertionError e) {
-		log(String.format(StreamConstants.LogMessage.ERRORS,
-				"AssertionError", e.getMessage()));
-		showAndLogError(String
-				.format(StreamConstants.LogMessage.UNEXPECTED_ERROR,
-						e.getMessage()));
+		log(String.format(StreamConstants.LogMessage.ERRORS, "AssertionError",
+				e.getMessage()));
+		showAndLogError(String.format(
+				StreamConstants.LogMessage.UNEXPECTED_ERROR, e.getMessage()));
 	}
 
 	private void executeUserInput(String input) throws StreamParserException,
@@ -1113,7 +1100,7 @@ public class Stream {
 		new Stream(StreamConstants.FILENAME);
 	}
 
-	// @author A0118007R-unused
+	//@author A0118007R-unused
 	/**
 	 * @deprecated - use resetUI instead
 	 */
