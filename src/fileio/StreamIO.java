@@ -92,6 +92,8 @@ public class StreamIO {
 	 * Serializes and write the contents of StreamObject into
 	 * storage file.
 	 * 
+	 * @param taskMap map of tasks to be saved
+	 * @param taskList list of task names
 	 * @throws StreamIOException
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
