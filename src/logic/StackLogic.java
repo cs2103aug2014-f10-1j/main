@@ -349,9 +349,10 @@ public class StackLogic extends BaseLogic {
 
 	//@author A0096529N
 	/**
-	 * what does this do?
+	 * Pops the order on the top of the ordering stack
 	 * 
-	 * @return
+	 * @return taskList List of taskNames in the order
+	 * that was pushed previously
 	 */
 	public ArrayList<String> popOrder() {
 		ArrayList<String> order = orderingStack.pop();
