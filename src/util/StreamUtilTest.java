@@ -1,111 +1,107 @@
 package util;
 
+//@author A0118007R
+
 import static org.junit.Assert.*;
+
+import java.util.Calendar;
+
+import model.StreamTask;
 
 import org.junit.Test;
 
-/**
- * this whole test is now obsolete...
- */
-@SuppressWarnings("deprecation")
 public class StreamUtilTest {
-
-	// The test cases below are written by A0118007R for demo during tutorial 09
-	// which follows partitioning and boundary cases
-	// @author A0118007R
-
-	// Tests for isValidMonth. Input range 1-12. Test cases = 5, 1, 12, 50, -50
-	@Test
-	// this is an input in the middle of the valid input range
-	public void testIsValidMonthOne() throws Exception {
-		int input = 5;
-		assertTrue(StreamUtil.isValidMonth(input));
-	}
-
-	@Test
-	// this is an input that is the lower boundary
-	public void testIsValidMonthTwo() throws Exception {
-		int input = 1;
-		assertTrue(StreamUtil.isValidMonth(input));
-	}
-
-	@Test
-	// this is an input that is the upper boundary
-	public void testIsValidMonthThree() throws Exception {
-		int input = 12;
-		assertTrue(StreamUtil.isValidMonth(input));
-	}
-
-	@Test
-	// this is an input that is above / larger than the upper bound
-	public void testIsValidMonthFour() throws Exception {
-		int input = 50;
-		assertFalse(StreamUtil.isValidMonth(input));
-	}
-
-	@Test
-	// this is an input that is smaller than the lower bound
-	public void testIsValidMonthFive() throws Exception {
-		int input = -50;
-		assertFalse(StreamUtil.isValidMonth(input));
-	}
-
-	// Tests for isValidDate. Input range 1-31. Test cases = 20, -4, 1, 31, 50
-	@Test
-	// this is an input in the middle of the valid input range
-	public void testIsValidDateOne() throws Exception {
-		int input = 20;
-		assertTrue(StreamUtil.isValidDate(input, 1, 2100));
-	}
-
-	@Test
-	// this is an input that is the lower boundary
-	public void testIsValidDateTwo() throws Exception {
-		int input = 1;
-		assertTrue(StreamUtil.isValidDate(input, 1, 2100));
-	}
-
-	@Test
-	// this is an input that is the upper boundary
-	public void testIsValidDateThree() throws Exception {
-		int input = 31;
-		assertTrue(StreamUtil.isValidDate(input, 1, 2100));
-	}
-
-	@Test
-	// this is an input that is above / larger than the upper bound
-	public void testIsValidDateFour() throws Exception {
-		int input = 50;
-		assertFalse(StreamUtil.isValidDate(input, 1, 2100));
-	}
-
-	@Test
-	// this is an input that is smaller than the lower bound
-	public void testIsValidDateFive() throws Exception {
-		int input = -4;
-		assertFalse(StreamUtil.isValidDate(input, 1, 2100));
+	
+	//Tests for display description
+	@Test //null input value
+	public void displayDescriptionTest1() {
+		String description = StreamUtil.displayDescription(null);
+		assertEquals("no description provided", description);
 	}
 	
-	//Test for is valid year
+	@Test //some random input, already covers boundary cases / partitioning
+	public void displayDescriptionTest2() {
+		String description = StreamUtil.displayDescription("task description");
+		assertEquals("task description", description);
+	}
 	
+	//Tests for displayStatus
 	@Test
-	public void testIsValidYearOne(){
-		int input = 2013;
-		assertFalse(StreamUtil.isValidYear(input));
+	public void displayStatusTest1() {
+		StreamTask myTask = new StreamTask("my task");
+		myTask.markAsDone();
+		String status = StreamUtil.displayStatus(myTask);
+		assertEquals(status, "done");
 	}
 	
 	@Test
-	public void testIsValidYearTwo(){
-		int input = 2014;
-		assertTrue(StreamUtil.isValidYear(input));
+	public void displayStatusTest2() {
+		StreamTask myTask = new StreamTask("my task");
+		String status = StreamUtil.displayStatus(myTask);
+		assertEquals(status, "ongoing");
+	}
+	
+	//Tests parseWithChronic
+	@Test
+	public void parseWithChronicTest1() {
+		String date = "now";
+		Calendar now = Calendar.getInstance();
+		String parsedDate = StreamUtil.parseWithChronic(date);
+		Calendar parsedCalendar = StreamUtil.parseCalendar(parsedDate);
+		String nowCalendar = StreamUtil.getCalendarWriteUp(now);
+		String calendarWriteUp = StreamUtil.getCalendarWriteUp(parsedCalendar);
+		assertEquals(nowCalendar, calendarWriteUp);
+	}
+	
+	//Tests getMonthIndex
+	@Test
+	public void getMonthIndexTest1() {
+		String month = "January";
+		assertEquals(1, StreamUtil.getMonthIndex(month));
 	}
 	
 	@Test
-	public void testIsValidYearThree(){
-		int input = 2015;
-		assertTrue(StreamUtil.isValidYear(input));
+	public void getMonthIndexTest2() {
+		String month = "Some weird month";
+		assertEquals(0, StreamUtil.getMonthIndex(month));
 	}
 	
-
-
+	@Test
+	public void getMonthIndexTest3() {
+		String month = "5";
+		assertEquals(0, StreamUtil.getMonthIndex(month));
+	}
+	
+	//Tests isValidAttribute
+	@Test
+	public void isValidAttributeTest1() {
+		String att = "-desc";
+		assertTrue(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest2() {
+		String att = "-due";
+		assertTrue(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest3() {
+		String att = "-name";
+		assertTrue(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest4() {
+		String att = "-weirdAttribute";
+		assertFalse(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest5() {
+		String att = null;
+		assertFalse(StreamUtil.isValidAttribute(att));
+	}
+	
+	
 }

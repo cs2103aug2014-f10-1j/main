@@ -335,7 +335,7 @@ public class Stream {
 			}
 		}
 
-		taskName = taskName.trim(); // this is the solution to the bug
+		taskName = taskName.trim();
 		addTaskWithParams(taskName, modifyParams);
 
 		StreamTask task = streamLogic.getTask(taskName);
@@ -381,6 +381,7 @@ public class Stream {
 		ArrayList<String> order = streamLogic.getTaskList();
 
 		assertNotNull(taskName);
+		
 		streamLogic.deleteTask(taskName);
 		assertNoTask(taskName);
 
