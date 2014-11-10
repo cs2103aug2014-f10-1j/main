@@ -136,8 +136,6 @@ public class StreamParser {
 				break;
 
 			case "mark":
-			case "done":
-			case "finished":
 				checkMarkValidity(contentsSplitWithIndex, numOfTasks);
 				this.commandKey = CommandType.MARK;
 				break;
