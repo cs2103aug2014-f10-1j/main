@@ -593,6 +593,12 @@ public class StreamParser {
 						case "no timing":
 							return FilterType.NOTIMING;
 						case "has deadline":
+							return FilterType.DEADLINED;
+						default:
+							return FilterType.NULL;
+					}
+				} else {
+					switch (contents[0]) {
 						case "deadlined":
 							return FilterType.DEADLINED;
 						case "event":
@@ -601,8 +607,6 @@ public class StreamParser {
 						default:
 							return FilterType.NULL;
 					}
-				} else {
-					return FilterType.NULL;
 				}
 			}
 		}
