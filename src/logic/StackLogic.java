@@ -204,6 +204,14 @@ public class StackLogic extends BaseLogic {
 	}
 
 	//@author A0118007R
+	/**
+	 * Prepares the inverse modify command to be used as undo command for the multi-modify command
+	 * 
+	 * @param taskName
+	 * @param taskIndex
+	 * @param currTask
+	 * @return inverseCommand - the inverse command for multi-modify input
+	 */
 	public String prepareInverseModifyCommand(String taskName, int taskIndex,
 			StreamTask currTask) {
 		String inverseCommand = "modify " + taskIndex + " -name " + taskName
