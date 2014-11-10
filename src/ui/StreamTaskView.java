@@ -9,6 +9,7 @@ import javax.swing.SwingConstants;
 import model.StreamTask;
 import util.StreamConstants;
 import util.StreamExternals;
+import util.StreamUtil;
 
 //@author A0093874N
 
@@ -134,7 +135,7 @@ public class StreamTaskView extends JPanel {
 			startCal.updateView(startTime);
 		}
 	}
-	
+
 	private void updateEndTime(Calendar endTime) {
 		if (endTime == null) {
 			endCal.hideView();
@@ -142,7 +143,7 @@ public class StreamTaskView extends JPanel {
 			endCal.updateView(endTime);
 		}
 	}
-	
+
 	private void updateRank(String rank) {
 		switch (rank) {
 			case "high":
@@ -158,7 +159,7 @@ public class StreamTaskView extends JPanel {
 
 		}
 	}
-	
+
 	private void updateDoneStatus(StreamTask task) {
 		if (task.isDone()) {
 			statusImage.setIcon(StreamExternals.ICON_DONE);
@@ -168,15 +169,15 @@ public class StreamTaskView extends JPanel {
 			statusImage.setIcon(StreamExternals.ICON_NOT_DONE);
 		}
 	}
-	
+
 	private void updateBasicParams(Integer ind, String name, String desc) {
 		index.setText(String.format(StreamConstants.Message.TEXT_INDEX,
 				ind.toString()));
 		taskName.setText(name);
-		descLabel.setText(desc);
+		descLabel.setText(StreamUtil.displayDescription(desc));
 		setVisible(true);
 	}
-	
+
 	/**
 	 * Hides the task from the user view. Invoked if the view object has no task
 	 * assigned to it.

@@ -223,7 +223,7 @@ public class StreamUtil {
 			return false;
 		}
 	}
-	
+
 	//@author A0096529N
 
 	public static final SimpleDateFormat cleanDateFormat = new SimpleDateFormat(

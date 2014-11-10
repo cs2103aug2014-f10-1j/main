@@ -15,21 +15,23 @@ public class StreamObject {
 	private HashMap<String, StreamTask> taskMap;
 	private ArrayList<String> taskList;
 
-	private StreamObject(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
+	private StreamObject(HashMap<String, StreamTask> taskMap,
+			ArrayList<String> taskList) {
 		this.taskMap = taskMap;
 		this.taskList = taskList;
 	}
-	
+
 	private StreamObject() {
 		this.taskMap = new HashMap<String, StreamTask>();
 		this.taskList = new ArrayList<String>();
 	}
-	
+
 	public static StreamObject getInstance() {
 		return new StreamObject();
 	}
-	
-	public static StreamObject getInstance(HashMap<String, StreamTask> taskMap, ArrayList<String> taskList) {
+
+	public static StreamObject getInstance(HashMap<String, StreamTask> taskMap,
+			ArrayList<String> taskList) {
 		return new StreamObject(taskMap, taskList);
 	}
 
@@ -51,9 +53,9 @@ public class StreamObject {
 	}
 
 	//@author A0096529N
-	
+
 	// Delegate methods
-	
+
 	public int size() {
 		return taskList.size();
 	}
@@ -75,23 +77,23 @@ public class StreamObject {
 		taskList.add(index, taskName);
 		return taskMap.put(taskName.toLowerCase(), task);
 	}
-	
+
 	public Set<String> keySet() {
 		return taskMap.keySet();
 	}
-	
+
 	public boolean containsKey(String taskName) {
 		return taskMap.containsKey(taskName.toLowerCase());
 	}
-	
+
 	public boolean containsValue(StreamTask task) {
 		return taskMap.containsValue(task);
 	}
-	
+
 	public int indexOf(String taskName) {
 		return taskList.indexOf(taskName);
 	}
-	
+
 	public boolean contains(String taskName) {
 		return taskList.contains(taskName);
 	}

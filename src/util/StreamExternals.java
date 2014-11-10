@@ -28,7 +28,7 @@ public class StreamExternals {
 	public static void init(ImageIcon header, ImageIcon doneIcon,
 			ImageIcon notDoneIcon, ImageIcon overdueIcon, ImageIcon hiRankIcon,
 			ImageIcon medRankIcon, ImageIcon lowRankIcon, ImageIcon startCal,
-			ImageIcon nullStartCal, ImageIcon endCal, ImageIcon nullEndCal, 
+			ImageIcon nullStartCal, ImageIcon endCal, ImageIcon nullEndCal,
 			Font titleFont, Font consoleFont) {
 		HEADER = header;
 		ICON_DONE = doneIcon;

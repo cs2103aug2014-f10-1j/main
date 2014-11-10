@@ -70,7 +70,7 @@ public class StreamParser {
 	private static final int ARGS_LENGTH_TYPE_TWO = 2;
 	private static final int ARGS_LENGTH_TYPE_THREE = 3;
 	private static final int ARGS_LENGTH_TYPE_FOUR = 3;
-	
+
 	public StreamParser() {
 		this.commandKey = CommandType.INIT;
 		this.commandIndex = null;
@@ -86,150 +86,150 @@ public class StreamParser {
 		String[] contentsSplitWithIndex = input.trim().split(" ", 3);
 		String key = contents[PARAM_POS_KEYWORD].toLowerCase();
 		switch (key) {
-		case "add":
-			checkTypeOneValidity(contents);
-			this.commandKey = CommandType.ADD;
-			break;
+			case "add":
+				checkTypeOneValidity(contents);
+				this.commandKey = CommandType.ADD;
+				break;
 
-		case "del":
-		case "delete":
-			checkTypeTwoValidity(contents, numOfTasks);
-			this.commandKey = CommandType.DEL;
-			break;
+			case "del":
+			case "delete":
+				checkTypeTwoValidity(contents, numOfTasks);
+				this.commandKey = CommandType.DEL;
+				break;
 
-		case "desc":
-		case "describe":
-			checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.DESC;
-			break;
+			case "desc":
+			case "describe":
+				checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.DESC;
+				break;
 
-		case "due":
-		case "end":
-			checkTypeFourValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.DUE;
-			break;
+			case "due":
+			case "end":
+				checkTypeFourValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.DUE;
+				break;
 
-		case "start":
-			checkTypeFourValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.START;
-			break;
+			case "start":
+				checkTypeFourValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.START;
+				break;
 
-		case "view":
-			checkTypeTwoValidity(contents, numOfTasks);
-			this.commandKey = CommandType.VIEW;
-			break;
+			case "view":
+				checkTypeTwoValidity(contents, numOfTasks);
+				this.commandKey = CommandType.VIEW;
+				break;
 
-		case "rank":
-			checkRankValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.RANK;
-			break;
+			case "rank":
+				checkRankValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.RANK;
+				break;
 
-		case "mod":
-		case "modify":
-			checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.MODIFY;
-			break;
+			case "mod":
+			case "modify":
+				checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.MODIFY;
+				break;
 
-		case "name":
-			checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.NAME;
-			break;
+			case "name":
+				checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.NAME;
+				break;
 
-		case "mark":
-		case "done":
-		case "finished":
-			checkMarkValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.MARK;
-			break;
+			case "mark":
+			case "done":
+			case "finished":
+				checkMarkValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.MARK;
+				break;
 
-		case "tag":
-			checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.TAG;
-			break;
+			case "tag":
+				checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.TAG;
+				break;
 
-		case "untag":
-			checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
-			this.commandKey = CommandType.UNTAG;
-			break;
+			case "untag":
+				checkTypeThreeValidity(contentsSplitWithIndex, numOfTasks);
+				this.commandKey = CommandType.UNTAG;
+				break;
 
-		case "search":
-		case "find":
-			checkTypeOneValidity(contents);
-			this.commandKey = CommandType.SEARCH;
-			break;
+			case "search":
+			case "find":
+				checkTypeOneValidity(contents);
+				this.commandKey = CommandType.SEARCH;
+				break;
 
-		case "sort":
-			checkSortValidity(contents, contentsSplitWithIndex);
-			this.commandKey = CommandType.SORT;
-			break;
+			case "sort":
+				checkSortValidity(contents, contentsSplitWithIndex);
+				this.commandKey = CommandType.SORT;
+				break;
 
-		case "unsort":
-			this.commandKey = CommandType.UNSORT;
-			break;
+			case "unsort":
+				this.commandKey = CommandType.UNSORT;
+				break;
 
-		case "filter":
-			checkFilterValidity(contents);
-			this.commandKey = CommandType.FILTER;
-			break;
+			case "filter":
+				checkFilterValidity(contents);
+				this.commandKey = CommandType.FILTER;
+				break;
 
-		case "clrsrc":
-			this.commandKey = CommandType.CLRSRC;
-			break;
+			case "clrsrc":
+				this.commandKey = CommandType.CLRSRC;
+				break;
 
-		case "clear":
-		case "clr":
-			this.commandKey = CommandType.CLEAR;
-			break;
+			case "clear":
+			case "clr":
+				this.commandKey = CommandType.CLEAR;
+				break;
 
-		case "undo":
-			this.commandKey = CommandType.UNDO;
-			break;
+			case "undo":
+				this.commandKey = CommandType.UNDO;
+				break;
 
-		case "recover":
-			this.commandKey = CommandType.RECOVER;
-			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
-			break;
+			case "recover":
+				this.commandKey = CommandType.RECOVER;
+				this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
+				break;
 
-		case "dismiss":
-			this.commandKey = CommandType.DISMISS;
-			this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
-			break;
+			case "dismiss":
+				this.commandKey = CommandType.DISMISS;
+				this.commandIndex = Integer.parseInt(contents[PARAM_POS_INDEX]);
+				break;
 
-		case "exit":
-			this.commandKey = CommandType.EXIT;
-			break;
+			case "exit":
+				this.commandKey = CommandType.EXIT;
+				break;
 
-		case "first":
-			this.commandKey = CommandType.FIRST;
-			break;
+			case "first":
+				this.commandKey = CommandType.FIRST;
+				break;
 
-		case "prev":
-		case "previous":
-			this.commandKey = CommandType.PREV;
-			break;
+			case "prev":
+			case "previous":
+				this.commandKey = CommandType.PREV;
+				break;
 
-		case "next":
-			this.commandKey = CommandType.NEXT;
-			break;
+			case "next":
+				this.commandKey = CommandType.NEXT;
+				break;
 
-		case "last":
-			this.commandKey = CommandType.LAST;
-			break;
+			case "last":
+				this.commandKey = CommandType.LAST;
+				break;
 
-		case "page":
-		case "goto":
-			checkTypeTwoValidity(contents, 1 + numOfTasks
-					/ StreamConstants.UI.MAX_VIEWABLE_TASK);
-			this.commandKey = CommandType.PAGE;
-			break;
-			
-		case "help":
-			this.commandKey = CommandType.HELP;
-			break;
+			case "page":
+			case "goto":
+				checkTypeTwoValidity(contents, 1 + numOfTasks
+						/ StreamConstants.UI.MAX_VIEWABLE_TASK);
+				this.commandKey = CommandType.PAGE;
+				break;
 
-		default:
-			logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
-			throw new StreamParserException(ERROR_UNKNOWN_COMMAND);
+			case "help":
+				this.commandKey = CommandType.HELP;
+				break;
+
+			default:
+				logger.log(LogLevel.DEBUG, "Input cannot be interpreted.");
+				throw new StreamParserException(ERROR_UNKNOWN_COMMAND);
 
 		}
 		logCommand(contents, contentsSplitWithIndex);
@@ -241,8 +241,7 @@ public class StreamParser {
 			throw new StreamParserException(ERROR_INVALID_INDEX);
 		} else if (!StreamUtil.isWithinRange(
 				Integer.parseInt(contents[PARAM_POS_INDEX]), numOfTasks)) {
-			throw new StreamParserException(
-					ERROR_INDEX_OUT_OF_BOUNDS);
+			throw new StreamParserException(ERROR_INDEX_OUT_OF_BOUNDS);
 		}
 	}
 
@@ -364,7 +363,7 @@ public class StreamParser {
 	public CommandType getCommandType() {
 		return this.commandKey;
 	}
-	
+
 	/**
 	 * @return <b>Integer</b> - the parsed index number, if applicable
 	 */
@@ -388,32 +387,32 @@ public class StreamParser {
 	 */
 	public static SortType parseSorting(String sortType) {
 		switch (sortType) {
-		case "d":
-		case "due":
-		case "deadline":
-		case "end":
-		case "endtime":
-			return SortType.END;
-		case "s":
-		case "start":
-		case "begin":
-		case "starttime":
-			return SortType.START;
-		case "a":
-		case "alpha":
-		case "alphabetical":
-		case "alphabetically":
-			return SortType.ALPHA;
-		case "t":
-		case "time":
-			return SortType.TIME;
-		case "":
-		case "impt":
-		case "importance":
-		case "priority":
-			return SortType.IMPORTANCE;
-		default:
-			return SortType.NULL;
+			case "d":
+			case "due":
+			case "deadline":
+			case "end":
+			case "endtime":
+				return SortType.END;
+			case "s":
+			case "start":
+			case "begin":
+			case "starttime":
+				return SortType.START;
+			case "a":
+			case "alpha":
+			case "alphabetical":
+			case "alphabetically":
+				return SortType.ALPHA;
+			case "t":
+			case "time":
+				return SortType.TIME;
+			case "":
+			case "impt":
+			case "importance":
+			case "priority":
+				return SortType.IMPORTANCE;
+			default:
+				return SortType.NULL;
 		}
 	}
 
@@ -428,17 +427,17 @@ public class StreamParser {
 	public static boolean getSortingOrder(String order)
 			throws StreamParserException {
 		switch (order) {
-		case "a":
-		case "asc":
-		case "ascending":
-			return false;
-		case "":
-		case "d":
-		case "desc":
-		case "descending":
-			return true;
-		default:
-			throw new StreamParserException();
+			case "a":
+			case "asc":
+			case "ascending":
+				return false;
+			case "":
+			case "d":
+			case "desc":
+			case "descending":
+				return true;
+			default:
+				throw new StreamParserException();
 		}
 	}
 
@@ -449,20 +448,20 @@ public class StreamParser {
 	 */
 	public static RankType parseRanking(String rankInput) {
 		switch (rankInput) {
-		case "high":
-		case "hi":
-		case "h":
-			return RankType.HI;
-		case "medium":
-		case "med":
-		case "m":
-			return RankType.MED;
-		case "low":
-		case "l":
-			return RankType.LO;
-		default:
-			return RankType.NULL;
-		}		
+			case "high":
+			case "hi":
+			case "h":
+				return RankType.HI;
+			case "medium":
+			case "med":
+			case "m":
+				return RankType.MED;
+			case "low":
+			case "l":
+				return RankType.LO;
+			default:
+				return RankType.NULL;
+		}
 	}
 
 	/**
@@ -472,14 +471,14 @@ public class StreamParser {
 	 */
 	public static String translateRanking(RankType parsedRank) {
 		switch (parsedRank) {
-		case HI:
-			return "high";
-		case MED:
-			return "medium";
-		case LO:
-			return "low";
-		default:
-			return null;
+			case HI:
+				return "high";
+			case MED:
+				return "medium";
+			case LO:
+				return "low";
+			default:
+				return null;
 		}
 	}
 
@@ -490,21 +489,21 @@ public class StreamParser {
 	 */
 	public static MarkType parseMarking(String markInput) {
 		switch (markInput) {
-		case "done":
-		case "finished":
-		case "over":
-			return MarkType.DONE;
-		case "not done":
-		case "not finished":
-		case "ongoing":
-			return MarkType.NOT;
-		default:
-			return MarkType.NULL;
-		}		
+			case "done":
+			case "finished":
+			case "over":
+				return MarkType.DONE;
+			case "not done":
+			case "not finished":
+			case "ongoing":
+				return MarkType.NOT;
+			default:
+				return MarkType.NULL;
+		}
 	}
 
 	/**
-	 * Parses a boolean value of is done or not into <b>STREAM</b>-recognizable 
+	 * Parses a boolean value of is done or not into <b>STREAM</b>-recognizable
 	 * format for marking.
 	 * 
 	 * @return <b>MarkType</b> - the parsed marking type
@@ -524,12 +523,12 @@ public class StreamParser {
 	 */
 	public static String translateMarking(MarkType parsedMark) {
 		switch (parsedMark) {
-		case DONE:
-			return "done";
-		case NOT:
-			return "ongoing";
-		default:
-			return null;
+			case DONE:
+				return "done";
+			case NOT:
+				return "ongoing";
+			default:
+				return null;
 		}
 	}
 
@@ -542,24 +541,24 @@ public class StreamParser {
 		String[] contents = filterInput.split(" ", 2);
 		MarkType parsedMark = parseMarking(contents[0]);
 		switch (parsedMark) {
-		case DONE:
-			return FilterType.DONE;
-		case NOT:
-			return FilterType.NOT;
-		default:
+			case DONE:
+				return FilterType.DONE;
+			case NOT:
+				return FilterType.NOT;
+			default:
 		}
 		if (contents[0].equals("rank")) {
 			if (contents.length == 2) {
 				RankType parsedRank = parseRanking(contents[1]);
 				switch (parsedRank) {
-				case HI:
-					return FilterType.HIRANK;
-				case MED:
-					return FilterType.MEDRANK;
-				case LO:
-					return FilterType.LORANK;
-				default:
-					return FilterType.NULL;
+					case HI:
+						return FilterType.HIRANK;
+					case MED:
+						return FilterType.MEDRANK;
+					case LO:
+						return FilterType.LORANK;
+					default:
+						return FilterType.NULL;
 				}
 			} else {
 				return FilterType.NULL;
@@ -568,42 +567,39 @@ public class StreamParser {
 			contents = filterInput.split(" ", 3);
 			if (contents.length == 3 && StreamUtil.isParseableDate(contents[2])) {
 				switch (contents[0] + " " + contents[1]) {
-				case "due before":
-					return FilterType.DUEBEF;
-				case "due after":
-					return FilterType.DUEAFT;
-				case "start before":
-					return FilterType.STARTBEF;
-				case "start after":
-					return FilterType.STARTAFT;
-				default:
-					return FilterType.NULL;
+					case "due before":
+						return FilterType.DUEBEF;
+					case "due after":
+						return FilterType.DUEAFT;
+					case "start before":
+						return FilterType.STARTBEF;
+					case "start after":
+						return FilterType.STARTAFT;
+					default:
+						return FilterType.NULL;
 				}
 			} else {
 				contents = filterInput.split(" ", 2);
-				/* if (contents.length == 2 && StreamUtil.isParseableDate(contents[1])) {
-					switch (contents[0]) {
-					case "due":
-						return FilterType.DUEON;
-					case "start":
-						return FilterType.STARTON;
-					default:
-						return FilterType.NULL;
-					}
-				} else*/
-				// 	Not implemented until we know how to.
+				/*
+				 * if (contents.length == 2 &&
+				 * StreamUtil.isParseableDate(contents[1])) { switch
+				 * (contents[0]) { case "due": return FilterType.DUEON; case
+				 * "start": return FilterType.STARTON; default: return
+				 * FilterType.NULL; } } else
+				 */
+				// Not implemented until we know how to.
 				if (contents.length == 2) {
 					switch (contents[0] + " " + contents[1]) {
-					case "no timing":
-						return FilterType.NOTIMING;
-					case "has deadline":
-					case "deadlined":
-						return FilterType.DEADLINED;
-					case "event":
-					case "timed":
-						return FilterType.EVENT;
-					default:
-						return FilterType.NULL;
+						case "no timing":
+							return FilterType.NOTIMING;
+						case "has deadline":
+						case "deadlined":
+							return FilterType.DEADLINED;
+						case "event":
+						case "timed":
+							return FilterType.EVENT;
+						default:
+							return FilterType.NULL;
 					}
 				} else {
 					return FilterType.NULL;
@@ -630,44 +626,44 @@ public class StreamParser {
 	private boolean checkRanking(String rankInput) {
 		RankType parsedRank = parseRanking(rankInput);
 		switch (parsedRank) {
-		case NULL:
-			return false;
-		default:
-			return true;
+			case NULL:
+				return false;
+			default:
+				return true;
 		}
 	}
 
 	private boolean checkMarking(String markInput) {
 		MarkType parsedMark = parseMarking(markInput);
 		switch (parsedMark) {
-		case NULL:
-			return false;
-		default:
-			return true;
+			case NULL:
+				return false;
+			default:
+				return true;
 		}
 	}
 
 	private boolean checkFilter(String type) {
 		FilterType parsedFilter = parseFilterType(type);
 		switch (parsedFilter) {
-		case NULL:
-			return false;
-		default:
-			return true;
+			case NULL:
+				return false;
+			default:
+				return true;
 		}
 	}
 
 	private boolean checkSort(String sortBy, String order) {
 		switch (parseSorting(sortBy)) {
-		case NULL:
-			return false;
-		default:
-			try {
-				getSortingOrder(order);
-				return true;
-			} catch (StreamParserException e) {
+			case NULL:
 				return false;
-			}
+			default:
+				try {
+					getSortingOrder(order);
+					return true;
+				} catch (StreamParserException e) {
+					return false;
+				}
 		}
 	}
 

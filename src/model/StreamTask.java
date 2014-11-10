@@ -20,7 +20,6 @@ public class StreamTask {
 	private boolean done;
 	private String rank;
 
-
 	// Constructor
 	public StreamTask(String taskName) {
 		this.taskName = taskName;
@@ -130,7 +129,6 @@ public class StreamTask {
 		return false;
 	}
 
-
 	// Depreciated methods
 
 	//@author A0118007R-unused
@@ -159,8 +157,10 @@ public class StreamTask {
 		if (deadline == null) {
 			strDeadline = "Not specified";
 		} else {
-			strDeadline = deadline.get(Calendar.DATE) + " "
-					+ StreamConstants.Calendar.MONTHS[(deadline.get(Calendar.MONTH))] + " "
+			strDeadline = deadline.get(Calendar.DATE)
+					+ " "
+					+ StreamConstants.Calendar.MONTHS[(deadline
+							.get(Calendar.MONTH))] + " "
 					+ deadline.get(Calendar.YEAR);
 		}
 		System.out.println("Deadline = " + strDeadline);

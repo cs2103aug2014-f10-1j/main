@@ -86,7 +86,7 @@ public class StreamIOTest {
 			throw new IOException(String.format(CHECKFILE_EXCEPTION_MESSAGE,
 					e.getMessage()), e);
 		}
-		
+
 		StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
 		File saveFile = new File(StreamIO.getSaveLocation());
 		if (saveFile.exists() && !saveFile.delete()) {
@@ -109,8 +109,8 @@ public class StreamIOTest {
 	}
 
 	/*
-	 * Use case testing - applies the save case and 
-	 * tests the entire component for this purpose
+	 * Use case testing - applies the save case and tests the entire component
+	 * for this purpose
 	 */
 	@Test
 	public void saveTest() {
@@ -137,8 +137,8 @@ public class StreamIOTest {
 	}
 
 	/*
-	 * Use case testing - applies the load case and 
-	 * tests the entire component for this purpose
+	 * Use case testing - applies the load case and tests the entire component
+	 * for this purpose
 	 */
 	@Test
 	public void loadTest() {
@@ -186,7 +186,7 @@ public class StreamIOTest {
 				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
 						+ "\"taskName\":\"Code Jarvis\","
 						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}",
-						task1);
+				task1);
 	}
 
 	@Test

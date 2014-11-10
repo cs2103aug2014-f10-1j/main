@@ -40,5 +40,5 @@ public class StreamUIFeedback extends JTextField {
 	public void showFeedbackMessage(String msg) {
 		setText(msg);
 	}
-	
+
 }
