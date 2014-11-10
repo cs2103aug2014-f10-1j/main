@@ -20,9 +20,10 @@ public class StreamTask {
 	// Attributes
 	private String taskName;
 	private String taskDescription;
-	private Calendar startTime, deadline;
+	private Calendar startTime;
+	private Calendar deadline;
 	private ArrayList<String> tags;
-	private boolean done;
+	private boolean isDone;
 	private String rank;
 
 	// Constructor
@@ -32,7 +33,7 @@ public class StreamTask {
 		this.startTime = null;
 		this.deadline = null;
 		this.tags = new ArrayList<String>();
-		this.done = false;
+		this.isDone = false;
 		this.rank = "low";
 	}
 
@@ -171,7 +172,7 @@ public class StreamTask {
 	 * @return true if done, false otherwise
 	 */
 	public boolean isDone() {
-		return this.done;
+		return this.isDone;
 	}
 
 	/**
@@ -197,7 +198,7 @@ public class StreamTask {
 	 * @param done
 	 */
 	public void setDone(boolean done) {
-		this.done = done;
+		this.isDone = done;
 	}
 
 	/**
@@ -297,7 +298,7 @@ public class StreamTask {
 		} else {
 			System.out.println(strTags.substring(2));
 		}
-		if (done) {
+		if (isDone) {
 			System.out.println("Status: Done");
 		} else {
 			System.out.println("Status: Not finished");
