@@ -2,20 +2,16 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -33,9 +29,10 @@ import util.StreamUtil;
 
 /**
  * <p>
- * The GUI for Stream, featuring graphical view of user's added tasks, console
- * for user input, and logger for terminal feedback. Also equipped with some
- * keyboard shortcuts for user's convenience.
+ * StreamUI is the GUI for STREAM, featuring graphical view of user's added
+ * tasks, console for user input, logger for terminal feedback, and helper box
+ * for user assistance. Also equipped with some keyboard shortcuts and simple
+ * auto-completion for user's convenience.
  * </p>
  * 
  * <h3>API</h3>
@@ -64,22 +61,10 @@ public class StreamUI {
 	private JPanel contentPanel;
 	private StreamUIConsole console;
 	private StreamUIFeedback feedback;
-	private JTextField newTaskTextField;
 	private StreamUILogger logger;
 	private JLabel pageNumber;
 	private static final StreamLogger loggerDoc = StreamLogger
 			.init(StreamConstants.ComponentTag.STREAMUI);
-
-	private JButton undoButton;
-	private JButton clearSearchButton;
-	private JButton firstPageButton;
-	private JButton prevPageButton;
-	private JButton nextPageButton;
-	private JButton lastPageButton;
-	private JButton sortAlphaButton;
-	private JButton sortDeadlineButton;
-	private JButton addTaskButton;
-	private ArrayList<JButton> buttons = new ArrayList<JButton>();
 
 	private boolean isSearch;
 	private boolean isTaskHighlighted;
@@ -108,7 +93,6 @@ public class StreamUI {
 		addPageNumber();
 		addFooter();
 		setFocusTraversal();
-		// TODO here log saved file loaded or new saved file created instead
 		log(StreamConstants.Message.WELCOME, false);
 		presentToUser();
 	}
@@ -126,21 +110,21 @@ public class StreamUI {
 	/**
 	 * Sets the active task for highlighting
 	 * 
-	 * @param task the task to be highlighted on next
-	 * UI update
+	 * @param task
+	 *            the task to be highlighted on next UI update
 	 * 
 	 */
 	public void setActiveTask(StreamTask task) {
 		activeTask = task;
 		isTaskHighlighted = false;
 	}
-	
+
 	/**
 	 * Highlights the task view containing the active task
 	 */
 	public void highlightActiveTaskView() {
 		int index = availTasks.indexOf(activeTask);
-		assert(index >= 0) : StreamConstants.Assertion.TASK_TAG_NOTFOUND;
+		assert (index >= 0) : StreamConstants.Assertion.TASK_TAG_NOTFOUND;
 		int page = index / StreamConstants.UI.MAX_VIEWABLE_TASK + 1;
 		repopulateTaskView(page);
 		fadeBorder(shownTasks[index % StreamConstants.UI.MAX_VIEWABLE_TASK]);
@@ -149,36 +133,41 @@ public class StreamUI {
 
 	/**
 	 * Fades the border by setting the alpha value.
-	 * <p>Starts a daemon background thread to alter border</p>
+	 * <p>
+	 * Starts a daemon background thread to alter border
+	 * </p>
 	 * 
-	 * @param taskView to execute the fade effect on
+	 * @param taskView
+	 *            to execute the fade effect on
 	 */
 	private void fadeBorder(final StreamTaskView taskView) {
 		new Thread() {
-			@Override public void run() {
+			@Override
+			public void run() {
 				try {
-					for (int i=255; i>0; i-=10) {
-						taskView.setBorder(
-								BorderFactory.createLineBorder(
-										new Color(48, 111, 163, i))); //#2d6ea3
+					for (int i = 255; i > 0; i -= 10) {
+						taskView.setBorder(BorderFactory
+								.createLineBorder(new Color(48, 111, 163, i))); // #2d6ea3
 						Thread.sleep(10);
 					}
-					for (int i=0; i<255; i+=10) {
-						taskView.setBorder(
-								BorderFactory.createLineBorder(
-										new Color(48, 111, 163, i)));
+					for (int i = 0; i < 255; i += 10) {
+						taskView.setBorder(BorderFactory
+								.createLineBorder(new Color(48, 111, 163, i)));
 						Thread.sleep(10);
 					}
-					for (int i=255; i>0; i-=2) {
-						taskView.setBorder(
-								BorderFactory.createLineBorder(
-										new Color(48, 111, 163, i)));
+					for (int i = 255; i > 0; i -= 2) {
+						taskView.setBorder(BorderFactory
+								.createLineBorder(new Color(48, 111, 163, i)));
 						Thread.sleep(10);
 					}
 					taskView.setBorder(null);
 				} catch (Exception e) {
-					loggerDoc.log(LogLevel.ERROR, String.format(StreamConstants.ExceptionMessage.ERR_UI_FADE_THREAD, 
-							e.getClass().getSimpleName(), e.getMessage()));
+					loggerDoc
+							.log(LogLevel.ERROR,
+									String.format(
+											StreamConstants.ExceptionMessage.ERR_UI_FADE_THREAD,
+											e.getClass().getSimpleName(),
+											e.getMessage()));
 				}
 			}
 		}.start();
@@ -208,20 +197,24 @@ public class StreamUI {
 		helpTexts.put("add",
 				"add (task name) (properties): Add a new task here");
 		helpTexts
-		.put("due",
-				"due (index) (time): Set the deadline for a task based on index number");
+				.put("due",
+						"due (index) (time): Set the deadline for a task based on index number");
 		helpTexts
-		.put("start",
-				"start (index) (time): Set the start time for a task based on index number");
+				.put("start",
+						"start (index) (time): Set the start time for a task based on index number");
 		helpTexts
-		.put("search",
-				"search (keyphrase): Searches tasks by its name, description, or tags");
+				.put("search",
+						"search (keyphrase): Searches tasks by its name, description, or tags");
 		helpTexts.put("delete", "delete (index): Delete based on index number");
 		helpTexts.put("del", "del (index): Delete based on index number");
 
-		helpTexts.put("desc", "desc (index) (description): Sets a description to a task based on index number");
+		helpTexts
+				.put("desc",
+						"desc (index) (description): Sets a description to a task based on index number");
 
-		helpTexts.put("describe", "describe (index) (description): Sets a description to a task based on index number");
+		helpTexts
+				.put("describe",
+						"describe (index) (description): Sets a description to a task based on index number");
 		helpTexts.put("filter",
 				"filter (criteria): Filters tasks by dates or ranks");
 		helpTexts.put("mark",
@@ -229,18 +222,24 @@ public class StreamUI {
 		helpTexts.put("modify",
 				"Modifies multiple parameters of a task in one go");
 		helpTexts.put("view", "view (index): Views the details of a task");
-		helpTexts.put("tag", "tag (index) (tag1) ... (tagN): Add tags to a task based on index number.");
-		helpTexts.put("name", "name (index) (new name): Changes a task's name based on index number.");
-		helpTexts.put("untag", "tag (index) (tag1) ... (tagN): Remove tags of a task based on index number.");
 		helpTexts
-		.put("sort",
-				"sort (criteria): Sorts tasks by alphabetical or chronological order");
+				.put("tag",
+						"tag (index) (tag1) ... (tagN): Add tags to a task based on index number.");
+		helpTexts
+				.put("name",
+						"name (index) (new name): Changes a task's name based on index number.");
+		helpTexts
+				.put("untag",
+						"tag (index) (tag1) ... (tagN): Remove tags of a task based on index number.");
+		helpTexts
+				.put("sort",
+						"sort (criteria): Sorts tasks by alphabetical or chronological order");
 		helpTexts.put("clear", "Clears all added tasks");
 		helpTexts
-		.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
+				.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
 		helpTexts
-		.put("rank",
-				"rank (index) (rank type): Change the rank of a certain task based on index number");
+				.put("rank",
+						"rank (index) (rank type): Change the rank of a certain task based on index number");
 		helpTexts.put("first ", "Go to the first page");
 		helpTexts.put("last", "Go to the last page");
 		helpTexts.put("next", "Go to the next page");
@@ -330,17 +329,16 @@ public class StreamUI {
 		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
 		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
 			StreamTaskView taskPanel = new StreamTaskView();
-			//	taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			taskPanel
-			.setBounds(
-					StreamConstants.UI.MARGIN_SIDE,
-					StreamConstants.UI.MARGIN_COMPONENT
-					* 2
-					+ StreamConstants.UI.HEIGHT_HEADER
-					+ i
-					* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
-					StreamConstants.UI.COMPONENT_WIDTH,
-					StreamConstants.UI.HEIGHT_TASKPANEL);
+					.setBounds(
+							StreamConstants.UI.MARGIN_SIDE,
+							StreamConstants.UI.MARGIN_COMPONENT
+									* 2
+									+ StreamConstants.UI.HEIGHT_HEADER
+									+ i
+									* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
+							StreamConstants.UI.COMPONENT_WIDTH,
+							StreamConstants.UI.HEIGHT_TASKPANEL);
 			contentPanel.add(taskPanel);
 			shownTasks[i] = taskPanel;
 			taskPanel.hideView();
@@ -562,13 +560,13 @@ public class StreamUI {
 		JOptionPane.showMessageDialog(mainFrame, String.format(
 				StreamConstants.Message.DETAILS_CONTENT,
 				task.getTaskName(),
-				StreamUtil.displayStatus(task.isDone()),
+				StreamUtil.displayStatus(task),
 				StreamUtil.getWrittenTime(task.getStartTime(),
 						task.getDeadline()),
-						StreamUtil.displayDescription(task.getDescription()),
-						StreamUtil.displayTags(task.getTags()), task.getRank()), String
-						.format(StreamConstants.Message.DETAILS_HEADER,
-								task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
+				StreamUtil.displayDescription(task.getDescription()),
+				StreamUtil.displayTags(task.getTags()), task.getRank()), String
+				.format(StreamConstants.Message.DETAILS_HEADER,
+						task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
 		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
 				+ task.getTaskName());
 	}
@@ -626,7 +624,8 @@ public class StreamUI {
 	 * Opens the help dialog panel.
 	 */
 	public void openHelpBox() {
-		JOptionPane.showMessageDialog(mainFrame, StreamConstants.Message.UI_HELP);
+		JOptionPane.showMessageDialog(mainFrame,
+				StreamConstants.Message.UI_HELP);
 	}
 
 	//@author A0093874N-unused
@@ -642,10 +641,10 @@ public class StreamUI {
 		addPrevPageButton();
 		addNextPageButton();
 		addLastPageButton();
-		buttons.add(firstPageButton);
-		buttons.add(prevPageButton);
-		buttons.add(nextPageButton);
-		buttons.add(lastPageButton);
+		/*
+		 * buttons.add(firstPageButton); buttons.add(prevPageButton);
+		 * buttons.add(nextPageButton); buttons.add(lastPageButton);
+		 */
 	}
 
 	/**
@@ -655,12 +654,12 @@ public class StreamUI {
 	 */
 	private void addFirstPageButton() {
 		// firstPageButton = new JButton(StreamConstants.UI.BTN_FIRST);
-		firstPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("first");
-			}
-		});
+		/*
+		 * firstPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("first"); } });
+		 */
 		// addComponent(firstPageButton, 25, 500, 160, 32);
 	}
 
@@ -671,12 +670,12 @@ public class StreamUI {
 	 */
 	private void addPrevPageButton() {
 		// prevPageButton = new JButton(StreamConstants.UI.BTN_PREV);
-		prevPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("prev");
-			}
-		});
+		/*
+		 * prevPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("prev"); } });
+		 */
 		// addComponent(prevPageButton, 205, 500, 160, 32);
 	}
 
@@ -687,12 +686,12 @@ public class StreamUI {
 	 */
 	private void addNextPageButton() {
 		// nextPageButton = new JButton(StreamConstants.UI.BTN_NEXT);
-		nextPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("next");
-			}
-		});
+		/*
+		 * nextPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("next"); } });
+		 */
 		// addComponent(nextPageButton, 385, 500, 160, 32);
 	}
 
@@ -703,12 +702,12 @@ public class StreamUI {
 	 */
 	private void addLastPageButton() {
 		// lastPageButton = new JButton(StreamConstants.UI.BTN_LAST);
-		lastPageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput("last");
-			}
-		});
+		/*
+		 * lastPageButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput("last"); } });
+		 */
 		// addComponent(lastPageButton, 565, 500, 160, 32);
 	}
 
@@ -720,12 +719,12 @@ public class StreamUI {
 	@SuppressWarnings("unused")
 	private void addUndoButton() {
 		// undoButton = new JButton(StreamConstants.UI.BTN_UNDO);
-		undoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.UNDO);
-			}
-		});
+		/*
+		 * undoButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.UNDO); } });
+		 */
 	}
 
 	/**
@@ -736,12 +735,12 @@ public class StreamUI {
 	@SuppressWarnings("unused")
 	private void addClearSearchButton() {
 		// clearSearchButton = new JButton(StreamConstants.UI.BTN_CLEAR);
-		clearSearchButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC);
-			}
-		});
+		/*
+		 * clearSearchButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.CLRSRC); } });
+		 */
 	}
 
 	/**
@@ -752,18 +751,13 @@ public class StreamUI {
 	 */
 	@SuppressWarnings("unused")
 	private void determineClickableNavigators() {
-		firstPageButton.setEnabled(true);
-		prevPageButton.setEnabled(true);
-		nextPageButton.setEnabled(true);
-		lastPageButton.setEnabled(true);
-		if (pageShown == 1) {
-			firstPageButton.setEnabled(false);
-			prevPageButton.setEnabled(false);
-		}
-		if (pageShown == totalPage) {
-			nextPageButton.setEnabled(false);
-			lastPageButton.setEnabled(false);
-		}
+		/*
+		 * firstPageButton.setEnabled(true); prevPageButton.setEnabled(true);
+		 * nextPageButton.setEnabled(true); lastPageButton.setEnabled(true); if
+		 * (pageShown == 1) { firstPageButton.setEnabled(false);
+		 * prevPageButton.setEnabled(false); } if (pageShown == totalPage) {
+		 * nextPageButton.setEnabled(false); lastPageButton.setEnabled(false); }
+		 */
 	}
 
 	//@author A0096529N-unused
@@ -773,18 +767,17 @@ public class StreamUI {
 	 */
 	@SuppressWarnings("unused")
 	private void addMenu() {
-		newTaskTextField = new JTextField();
-		newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
+		// newTaskTextField = new JTextField();
+		// newTaskTextField.setFont(StreamConstants.UI.FONT_CONSOLE);
 		// addTaskButton = new JButton(StreamConstants.UI.BTN_ADD_TASK);
-		addTaskButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String params = newTaskTextField.getText();
-				newTaskTextField.setText("");
-				stream.filterAndProcessInput(String.format(
-						StreamConstants.Commands.ADD_TASK, params));
-			}
-		});
+		/*
+		 * addTaskButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { String params
+		 * = newTaskTextField.getText(); newTaskTextField.setText("");
+		 * stream.filterAndProcessInput(String.format(
+		 * StreamConstants.Commands.ADD_TASK, params)); } });
+		 */
 		addSortDeadlineButton();
 		addSortAlphaButton();
 	}
@@ -794,12 +787,13 @@ public class StreamUI {
 	 */
 	private void addSortAlphaButton() {
 		// sortAlphaButton = new JButton(StreamConstants.UI.BTN_SORT_ALPHA);
-		sortAlphaButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA);
-			}
-		});
+		/*
+		 * sortAlphaButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.SORT_ALPHA); }
+		 * });
+		 */
 	}
 
 	/**
@@ -808,12 +802,13 @@ public class StreamUI {
 	private void addSortDeadlineButton() {
 		// sortDeadlineButton = new
 		// JButton(StreamConstants.UI.BTN_SORT_DEADLINE);
-		sortDeadlineButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
-			}
-		});
+		/*
+		 * sortDeadlineButton.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * stream.filterAndProcessInput(StreamConstants.Commands.SORT_DEADLINE);
+		 * } });
+		 */
 	}
 
 }

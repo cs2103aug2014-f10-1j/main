@@ -1,0 +1,127 @@
+//@author: a0119401u-unused
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Mark the selected task as done
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 * 
+	 * @throws StreamModificationException
+	 * @deprecated
+	 */
+	public void markTaskAsDone(String taskName)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		task.markAsDone();
+	}
+
+	/**
+	 * @deprecated
+	 * 
+	 */
+	public void markTaskAsOngoing(String taskName)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		task.markAsOngoing();
+	}
+
+	/**
+	 * Set the due time of the selected task
+	 * 
+	 * @param taskName
+	 *            , calendar
+	 * 
+	 * @throws StreamModificationException
+	 * 
+	 *             <p>
+	 *             Precondition: taskName != null
+	 *             </p>
+	 * 
+	 *             The case "calendar is null" will be dealt with by Task.java
+	 * @deprecated
+	 */
+	public void setDueTime(String taskName, Calendar calendar)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		task.setDeadline(calendar);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void setNullDeadline(String taskName)
+			throws StreamModificationException {
+		StreamTask currentTask = this.getTask(taskName);
+		currentTask.setNullDeadline();
+	}
+
+	/**
+	 * Set the rank of the selected task
+	 * <p>
+	 * Key info is the newly entered rank of the selected task
+	 * </p>
+	 * 
+	 * <p>
+	 * Preconditions: new rank is one of the followings: high, medium, low
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            , newRank
+	 * 
+	 * @throws StreamModificationException
+	 * @deprecated
+	 */
+	public void setNewRank(String taskName, String newRank)
+			throws StreamModificationException {
+		StreamTask task = this.getTask(taskName);
+		task.setRank(newRank);
+
+	}
+
+	/**
+	 * @param taskName
+	 * @return the actual index of a given task
+	 * @deprecated not really needed, can be un-deprecated if we find a use
+	 */
+	public int getTaskIndex(String taskName) {
+		return (streamObject.indexOf(taskName) + 1);
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamTask.java
+	 */
+
+	// This one needs to be checked later
+	/**
+	 * @deprecated
+	 */
+	public boolean isDue() {
+		if (deadline != null) {
+			return deadline.before(Calendar.getInstance());
+		} else {
+			return false;
+		}
+	}
+
+}
+	// End of segment: src\model\StreamTask.java
+
+
+
+
+

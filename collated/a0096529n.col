@@ -1,0 +1,2686 @@
+//@author: a0096529n
+
+
+
+	/**
+	 * origin: src\exception\StreamIOException.java
+	 */
+
+/**
+ * IO-related exceptions, e.g file corruption, loading or saving failures.
+ * 
+ * @version V0.5
+ */
+public class StreamIOException extends Exception {
+
+	private static final long serialVersionUID = -824071103853366825L;
+
+	public StreamIOException() {
+		super();
+	}
+
+	public StreamIOException(String message) {
+		super(message);
+	}
+
+	public StreamIOException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}
+	// End of segment: src\exception\StreamIOException.java
+
+
+
+
+
+	/**
+	 * origin: src\exception\StreamModificationException.java
+	 */
+
+/**
+ * Task modification failures, e.g duplicate names, task with specified name not
+ * found, ...
+ * 
+ * @version V0.5
+ */
+public class StreamModificationException extends Exception {
+
+	private static final long serialVersionUID = 5826059852221730368L;
+
+	public StreamModificationException() {
+		super();
+	}
+
+	public StreamModificationException(String message) {
+		super(message);
+	}
+
+	public StreamModificationException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}
+	// End of segment: src\exception\StreamModificationException.java
+
+
+
+
+
+	/**
+	 * origin: src\fileio\StreamIO.java
+	 */
+
+/**
+ * <p>
+ * File management component responsible for saving to and loading from storage
+ * file containing application state.
+ * </p>
+ * 
+ * <h3>Storage Format</h3>
+ * <p>
+ * Application state is serialized into JSON format.
+ * </p>
+ * 
+ * <h3>Storage Location</h3>
+ * <p>
+ * Save location defaults to user's home directory, and may not be modified.
+ * However, the file name can be changed to support multiple states.
+ * </p>
+ * 
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamIO.save(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt;
+ * taskList)</li>
+ * <li>StreamIO.load(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt;
+ * taskList)</li>
+ * <li>StreamIO.setFilename()</li>
+ * <li>StreamIO.setSaveLocation(String saveLocation)</li>
+ * <li>StreamIO.saveLogFile(List&lt;String&gt; logMessages, String logFileName)</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamIO {
+
+	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
+			"yyyyMMddHHmmss", Locale.ENGLISH);
+	static String STREAM_FILENAME = "default.json";
+	private static final TaskLogic taskLogic = TaskLogic.init();
+	private static final StreamLogger logger = StreamLogger
+			.init(StreamConstants.ComponentTag.STREAMIO);
+
+	/**
+	 * Reads and inflate the contents of serialized storage file into
+	 * StreamObject.
+	 * 
+	 * @throws StreamIOException
+	 *             when JSON conversion fail due file corruption or IO failures
+	 *             when loading/accessing storage file.
+	 */
+	public static void load(Map<String, StreamTask> taskMap,
+			List<String> taskList) throws StreamIOException {
+		assert (taskMap != null && taskList != null);
+		File streamFile = new File(getStorageFile(STREAM_FILENAME));
+		if (streamFile.exists()) {
+			loadAndInflate(streamFile, taskMap, taskList);
+		} else {
+			loadLegacyStorage(taskMap, taskList);
+		}
+	}
+
+	/**
+	 * Serializes and write the contents of StreamObject into storage file.
+	 * 
+	 * @throws StreamIOException
+	 *             when JSON conversion fail due file corruption or IO failures
+	 *             when loading/accessing storage file.
+	 */
+	public static void save(Map<String, StreamTask> taskMap,
+			List<String> taskList) throws StreamIOException {
+		assert (taskMap != null && taskList != null);
+		try {
+			File streamFile = new File(getStorageFile(STREAM_FILENAME));
+
+			JSONArray taskMapJson = mapToJson(taskMap);
+			JSONObject orderListJson = taskListToJson(taskList);
+			JSONObject tasksJson = new JSONObject();
+			tasksJson.put(TaskKey.TASKMAP, taskMapJson);
+			tasksJson.put(TaskKey.TASKLIST, orderListJson);
+			writeToFile(streamFile, tasksJson);
+			logger.log(LogLevel.DEBUG, "Saved to file: " + getSaveLocation());
+		} catch (JSONException e) {
+			logger.log(LogLevel.DEBUG, "JSON conversion failed during save - "
+					+ e.getMessage());
+			throw new StreamIOException("JSON conversion failed - "
+					+ e.getMessage(), e);
+		} catch (IOException e) {
+			logger.log(LogLevel.DEBUG,
+					"IO failure during save - " + e.getMessage());
+			throw new StreamIOException("Could not save to file - "
+					+ e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Set the filename for saving.
+	 * 
+	 * @param saveFileName
+	 *            filename of storage file to save.
+	 */
+	public static void setFilename(String saveFileName) {
+		STREAM_FILENAME = saveFileName;
+	}
+
+	/**
+	 * Get the absolute path of save file's location
+	 * 
+	 * @return file path of the save location.
+	 * @throws StreamIOException
+	 */
+	public static String getSaveLocation() throws StreamIOException {
+		return new File(getStorageFile(STREAM_FILENAME)).getAbsolutePath();
+	}
+
+	/**
+	 * Loads data from file and populate the taskMap and taskList accordingly
+	 * with the data in the file
+	 * 
+	 * @param file
+	 *            to load
+	 * @param taskMap
+	 *            the map to populate loaded tasks
+	 * @param taskList
+	 *            the list to populate loaded task names
+	 * @throws StreamIOException
+	 *             if the file is corrupted or the file could not be loaded.
+	 */
+	private static void loadAndInflate(File file,
+			Map<String, StreamTask> taskMap, List<String> taskList)
+			throws StreamIOException {
+		JSONObject tasksJson = loadFromFile(file);
+		if (tasksJson != null) {
+			loadMap(taskMap, tasksJson);
+			loadTaskList(taskList, tasksJson);
+			logger.log(LogLevel.DEBUG, "Loaded file: " + STREAM_FILENAME);
+		} else {
+			logger.log(LogLevel.DEBUG, "File not found: " + STREAM_FILENAME);
+		}
+	}
+
+	/**
+	 * Serialized the given JSONObject and writes to the specified File.
+	 * 
+	 * @param destin
+	 *            destination file to write the data
+	 * @param tasksJson
+	 *            JSONObject to be serialized
+	 * @throws IOException
+	 *             from file IO errors
+	 */
+	static void writeToFile(File destin, JSONObject tasksJson)
+			throws IOException {
+		FileWriter fwriter = new FileWriter(destin, false);
+		BufferedWriter bw = new BufferedWriter(fwriter);
+		try {
+			bw.write(tasksJson.toString());
+			bw.newLine();
+		} finally {
+			try {
+				bw.close();
+			} catch (Exception e) {
+				// ignore exception
+			}
+		}
+	}
+
+	/**
+	 * Loads the contents in the given file and parse it into a JSONObject
+	 * 
+	 * @param file
+	 *            source file to be loaded
+	 * @return JSONObject that is parsed
+	 * @throws StreamIOException
+	 *             from file IO errors or when the contents could not be parsed
+	 */
+	static JSONObject loadFromFile(File file) throws StreamIOException {
+		StringBuilder stringBuilder = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line).append("\n");
+			}
+			String mapJsonString = stringBuilder.toString().trim();
+			if (mapJsonString.isEmpty()) {
+				return null;
+			} else {
+				return new JSONObject(mapJsonString);
+			}
+		} catch (IOException e) {
+			throw new StreamIOException("Could not load file - "
+					+ e.getMessage(), e);
+		} catch (JSONException e) {
+			throw new StreamIOException(
+					"File corrupted, could not parse file contents - "
+							+ e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Loads data from file in working directory, this used to be the default
+	 * save location before V0.4.
+	 * 
+	 * @param taskMap
+	 *            the map to populate loaded tasks
+	 * @param taskList
+	 *            the list to populate loaded task names
+	 * @throws StreamIOException
+	 *             if the file is corrupted or the file could not be loaded.
+	 */
+	private static void loadLegacyStorage(Map<String, StreamTask> taskMap,
+			List<String> taskList) throws StreamIOException {
+		File streamFile = new File(STREAM_FILENAME);
+		if (streamFile.exists()) {
+			loadAndInflate(streamFile, taskMap, taskList);
+			streamFile.delete();
+		}
+	}
+
+	/**
+	 * Populate the task list with task names from the json object given, which
+	 * should contain a list of tasks data
+	 * 
+	 * @param taskList
+	 *            the list to populate loaded task names
+	 * @param tasksJson
+	 *            the json containing all tasks data
+	 * @throws StreamIOException
+	 *             if the json could not be parsed
+	 */
+	static void loadTaskList(List<String> taskList, JSONObject tasksJson)
+			throws StreamIOException {
+		try {
+			JSONObject orderListJson = tasksJson
+					.getJSONObject(TaskKey.TASKLIST);
+			List<String> storedList = jsonToTaskList(orderListJson);
+			taskList.addAll(storedList);
+		} catch (JSONException e) {
+			throw new StreamIOException(
+					"File corrupted, could not parse file contents - "
+							+ e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Populate the task map with tasks from the json object given, which should
+	 * contain a list of tasks data
+	 * 
+	 * @param taskMap
+	 *            the map to populate with loaded task names
+	 * @param tasksJson
+	 *            the json containing all tasks data
+	 * @throws StreamIOException
+	 *             if the json could not be parsed
+	 */
+	static void loadMap(Map<String, StreamTask> taskMap, JSONObject tasksJson)
+			throws StreamIOException {
+		try {
+			JSONArray taskMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
+			HashMap<String, StreamTask> storedTasks = jsonToMap(taskMapJson);
+			taskMap.putAll(storedTasks);
+		} catch (JSONException e) {
+			throw new StreamIOException(
+					"File corrupted, could not parse file contents - "
+							+ e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Converts a list of task names to json object with each task mapped to
+	 * their index in the list.
+	 * 
+	 * @param taskList
+	 *            the list to be converted to json format
+	 * @return taskListJson json with array of tasks mapped to their index
+	 * @throws StreamIOException
+	 *             if the json could not be constructed
+	 */
+	static JSONObject taskListToJson(List<String> taskList)
+			throws StreamIOException {
+		try {
+			JSONObject orderListJson = new JSONObject();
+			for (int i = 0; i < taskList.size(); i++) {
+				orderListJson.put(String.valueOf(i), taskList.get(i));
+			}
+			return orderListJson;
+		} catch (JSONException e) {
+			throw new StreamIOException("JSON conversion failed - "
+					+ e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Parses the json object, with a list of task names mapped to their index,
+	 * into a string list.
+	 * 
+	 * @param orderListJson
+	 *            json with the task names mapped to their index
+	 * @return taskList the list of task names
+	 * @throws StreamIOException
+	 *             if the json could not be parsed
+	 */
+	static List<String> jsonToTaskList(JSONObject orderListJson)
+			throws StreamIOException {
+		try {
+			List<String> taskList = new ArrayList<String>();
+			for (int i = 0; orderListJson.has(String.valueOf(i)); i++) {
+				taskList.add(orderListJson.getString(String.valueOf(i)));
+			}
+			return taskList;
+		} catch (JSONException e) {
+			throw new StreamIOException(
+					"File corrupted, could not parse file contents - "
+							+ e.getMessage(), e);
+		}
+	}
+
+	static JSONArray mapToJson(Map<String, StreamTask> map)
+			throws StreamIOException {
+		JSONArray mapJson = new JSONArray();
+		for (String key : map.keySet()) {
+			JSONObject taskJson = taskToJson(map.get(key));
+			mapJson.put(taskJson);
+		}
+		return mapJson;
+	}
+
+	static HashMap<String, StreamTask> jsonToMap(JSONArray tasksJson)
+			throws StreamIOException {
+		try {
+			HashMap<String, StreamTask> map = new HashMap<String, StreamTask>();
+			for (int i = 0; i < tasksJson.length(); i++) {
+				StreamTask task = jsonToTask(tasksJson.getJSONObject(i));
+				map.put(task.getTaskName().toLowerCase(), task);
+			}
+			return map;
+		} catch (JSONException e) {
+			throw new StreamIOException("JSON conversion failed - "
+					+ e.getMessage(), e);
+		}
+	}
+
+	static JSONObject taskToJson(StreamTask task) throws StreamIOException {
+		try {
+			JSONObject taskJson = new JSONObject();
+			taskJson.put(TaskKey.NAME, task.getTaskName());
+			taskJson.put(TaskKey.DESCRIPTION, task.getDescription());
+			taskJson.put(TaskKey.TAGS, task.getTags());
+			taskJson.put(TaskKey.RANK, task.getRank());
+			taskJson.put(TaskKey.STARTTIME, formatDate(task.getStartTime()));
+			taskJson.put(TaskKey.DEADLINE, formatDate(task.getDeadline()));
+			taskJson.put(TaskKey.DONE, task.isDone());
+			return taskJson;
+		} catch (JSONException e) {
+			throw new StreamIOException("JSON conversion failed - "
+					+ e.getMessage(), e);
+		}
+	}
+
+	static StreamTask jsonToTask(JSONObject taskJson) throws StreamIOException {
+		try {
+			String taskName = taskJson.getString(TaskKey.NAME);
+			StreamTask task = new StreamTask(taskName);
+			if (taskJson.has(TaskKey.DESCRIPTION)) {
+				task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
+			}
+
+			if (taskJson.has(TaskKey.STARTTIME)) {
+				Calendar startTime = Calendar.getInstance();
+				Date startTimeDate = dateFormat.parse(taskJson
+						.getString(TaskKey.STARTTIME));
+				startTime.setTime(startTimeDate);
+				task.setStartTime(startTime);
+			}
+
+			if (taskJson.has(TaskKey.DEADLINE)) {
+				Calendar deadline = Calendar.getInstance();
+				Date deadlineDate = dateFormat.parse(taskJson
+						.getString(TaskKey.DEADLINE));
+				deadline.setTime(deadlineDate);
+				task.setDeadline(deadline);
+			}
+
+			if (taskJson.has(TaskKey.TAGS)) {
+				JSONArray tagsJson = taskJson.getJSONArray(TaskKey.TAGS);
+				for (int i = 0; i < tagsJson.length(); i++) {
+					taskLogic.addTags(task, tagsJson.getString(i));
+				}
+			}
+
+			if (taskJson.has(TaskKey.DONE)) {
+				Boolean isDone = taskJson.getBoolean(TaskKey.DONE);
+				if (isDone) {
+					task.markAsDone();
+				}
+			}
+
+			if (taskJson.has(TaskKey.RANK)) {
+				task.setRank(taskJson.getString(TaskKey.RANK));
+			}
+			return task;
+		} catch (JSONException | ParseException e) {
+			throw new StreamIOException("JSON conversion failed - "
+					+ e.getMessage(), e);
+		}
+	}
+
+	static String formatDate(Calendar calendar) {
+		if (calendar == null) {
+			return null;
+		} else {
+			return formatDate(calendar.getTime());
+		}
+	}
+
+	static String formatDate(Date date) {
+		if (date == null) {
+			return null;
+		} else {
+			return dateFormat.format(date);
+		}
+	}
+
+	private static String getUserHomeDirectory() {
+		String dir = null;
+		try {
+			dir = System.getProperty("user.home");
+		} catch (Exception e) {
+			logger.log(LogLevel.ERROR, String.format(
+					StreamConstants.LogMessage.LOAD_FAIL_USER_HOME, e
+							.getClass().getSimpleName(), e.getMessage()));
+		}
+		return dir == null ? "" : dir + File.separator;
+	}
+
+	private static String getStreamDirectory() throws StreamIOException {
+		String dir = getUserHomeDirectory() + "Documents" + File.separator
+				+ "Stream" + File.separator;
+		File streamDirectory = new File(dir);
+		if (!streamDirectory.exists()) {
+			if (!streamDirectory.mkdirs())
+				throw new StreamIOException(
+						StreamConstants.ExceptionMessage.ERR_CREATE_STREAM_DIR);
+		}
+		return dir;
+	}
+
+	private static String getStorageFile(String filename)
+			throws StreamIOException {
+		return getStreamDirectory() + filename;
+	}
+
+	private static String getLogsDirectory() throws StreamIOException {
+		String dir = getStreamDirectory() + "Logs" + File.separator;
+		File streamDirectory = new File(dir);
+		if (!streamDirectory.exists()) {
+			if (!streamDirectory.mkdirs())
+				throw new StreamIOException(
+						StreamConstants.ExceptionMessage.ERR_CREATE_LOG_DIR);
+		}
+		return dir;
+	}
+
+	private static String getLogsStorageFile(String logFileName)
+			throws StreamIOException {
+		return getLogsDirectory() + logFileName;
+	}
+
+	private class TaskKey {
+		static final String TASKMAP = "allTasks";
+		static final String TASKLIST = "taskList";
+		static final String STARTTIME = "startTime";
+		static final String DEADLINE = "deadline";
+		static final String NAME = "taskName";
+		static final String DESCRIPTION = "taskDescription";
+		static final String TAGS = "tags";
+		static final String DONE = "done";
+		static final String RANK = "rank";
+	}
+
+	// End of segment: src\fileio\StreamIO.java
+
+
+
+
+
+	/**
+	 * origin: src\fileio\StreamIOTest.java
+	 */
+
+public class StreamIOTest {
+
+	private static final String FAIL_EXCEPTION_MESSAGE = "%1$s, caused by %2$s - %3$s";
+	private static final String CREATEFILE_EXCEPTION_MESSAGE = "Test file could not be created "
+			+ "- %1$s\nDelete the file if already present.";
+	private static final String CHECKFILE_EXCEPTION_MESSAGE = "Check file could not be created "
+			+ "- %1$s\nDelete the file if already present.";
+	private static final String CHECK_FILE = "streamtestCheckFile.json";
+	private static final String TEST_SAVE_FILENAME = "streamtest";
+	private SimpleDateFormat simpleDateFormat = StreamIO.dateFormat;
+	private StreamTask task1, task2;
+	private HashMap<String, StreamTask> map;
+	private ArrayList<String> taskList;
+
+	@Before
+	public void setUp() throws Exception {
+		task1 = new StreamTask("Code Jarvis");
+		Calendar calendar = Calendar.getInstance();
+		Date date = StreamIO.dateFormat.parse("20410719000000");
+		calendar.setTime(date); // instead of Calendar.set(), for loadTest,
+		// serialized calendar.
+		task1.setDeadline(calendar);
+		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
+		task1.getTags().add("EPIC");
+		task1.getTags().add("IMPOSSIBLE");
+
+		task2 = new StreamTask("Build IoT");
+		Calendar calendar2 = Calendar.getInstance();
+		Date date2 = StreamIO.dateFormat.parse("20180101123456");
+		calendar2.setTime(date2); // instead of Calendar.set(), for loadTest,
+		// serialized calendar.
+		task2.setDeadline(calendar2);
+		task2.setDescription("Internet of Things");
+		task2.getTags().add("EPIC");
+		task2.getTags().add("POPULAR");
+		task2.getTags().add("URGENT");
+
+		map = new HashMap<String, StreamTask>();
+		map.put(task1.getTaskName().toLowerCase(), task1);
+		map.put(task2.getTaskName().toLowerCase(), task2);
+
+		taskList = new ArrayList<String>();
+		taskList.add(task1.getTaskName());
+		taskList.add(task2.getTaskName());
+
+		String fileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+				+ "\"taskName\":\"Code Jarvis\","
+				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
+				+ "\"taskName\":\"Build IoT\","
+				+ "\"taskDescription\":\"Internet of Things\"}]}";
+
+		StreamIO.STREAM_FILENAME = CHECK_FILE;
+		File checkFile = new File(StreamIO.getSaveLocation());
+		try {
+			stringToFile(checkFile, fileContent);
+		} catch (IOException e) {
+			throw new IOException(String.format(CHECKFILE_EXCEPTION_MESSAGE,
+					e.getMessage()), e);
+		}
+
+		StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
+		File saveFile = new File(StreamIO.getSaveLocation());
+		if (saveFile.exists() && !saveFile.delete()) {
+			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE,
+					saveFile.getAbsolutePath()));
+		}
+		if (!saveFile.createNewFile()) {
+			throw new IOException(String.format(CREATEFILE_EXCEPTION_MESSAGE,
+					saveFile.getAbsolutePath()));
+		}
+
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
+		new File(StreamIO.getSaveLocation()).delete();
+		StreamIO.STREAM_FILENAME = CHECK_FILE;
+		new File(StreamIO.getSaveLocation()).delete();
+	}
+
+	/*
+	 * Use case testing - applies the save case and tests the entire component
+	 * for this purpose
+	 */
+	@Test
+	public void saveTest() {
+		String testMessage = "Write map to file";
+		String expectedFileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
+				+ "\"taskName\":\"Code Jarvis\","
+				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
+				+ "\"taskName\":\"Build IoT\","
+				+ "\"taskDescription\":\"Internet of Things\"}]}";
+		try {
+			File saveFile = new File(StreamIO.getSaveLocation());
+			StreamIO.save(map, taskList);
+			assertEquals(testMessage, expectedFileContent,
+					fileToString(saveFile));
+		} catch (StreamIOException e) {
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
+		} catch (IOException e) {
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"IOException", e.getMessage()));
+		}
+	}
+
+	/*
+	 * Use case testing - applies the load case and tests the entire component
+	 * for this purpose
+	 */
+	@Test
+	public void loadTest() {
+		String testMessage = "Load map from file";
+		StreamIO.STREAM_FILENAME = CHECK_FILE;
+		try {
+			String expectedMap = serializeTaskMap(map);
+			StreamIO.load(map, taskList);
+
+			String actualMap = serializeTaskMap(map);
+			assertEquals(testMessage, expectedMap, actualMap);
+		} catch (StreamIOException e) {
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
+		} finally {
+			StreamIO.STREAM_FILENAME = TEST_SAVE_FILENAME;
+		}
+	}
+
+	@Test
+	public void mapToJsonTest() {
+		String testMessage = "Map to JSON conversion";
+		String expectedJsonString = "[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
+				+ "\"taskName\":\"Code Jarvis\","
+				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
+				+ "\"taskName\":\"Build IoT\","
+				+ "\"taskDescription\":\"Internet of Things\"}]";
+		try {
+			assertEquals(testMessage, expectedJsonString,
+					StreamIO.mapToJson(map).toString());
+		} catch (StreamIOException e) {
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
+		}
+	}
+
+	@Test
+	public void taskToJsonTest1() {
+		/*
+		 * Tests multiple inputs - Date, tags, descriptions, etc.
+		 */
+		testOneTaskToJson(
+				"Task to JSON conversion - Code Jarvis",
+				"{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
+						+ "\"taskName\":\"Code Jarvis\","
+						+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"}",
+				task1);
+	}
+
+	@Test
+	public void taskToJsonTest2() {
+		testOneTaskToJson(
+				"Task to JSON conversion - Build IoT",
+				"{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
+						+ "\"taskName\":\"Build IoT\","
+						+ "\"taskDescription\":\"Internet of Things\"}", task2);
+	}
+
+	private void testOneTaskToJson(String testMessage, String expected,
+			StreamTask task) {
+		try {
+			assertEquals(testMessage, expected, StreamIO.taskToJson(task)
+					.toString());
+		} catch (StreamIOException e) {
+			fail(String.format(FAIL_EXCEPTION_MESSAGE, testMessage,
+					"StreamIOException", e.getMessage()));
+		}
+	}
+
+	@Test
+	public void formatDateTest1() throws ParseException {
+		testOneFormatDate("Format date 11:22:33 30/05/1980", "19800530112233",
+				simpleDateFormat.parse("19800530112233"));
+	}
+
+	@Test
+	public void formatDateTest2() throws ParseException {
+		testOneFormatDate("Format date 23:00:33 30/12/2055", "20551230230033",
+				simpleDateFormat.parse("20551230230033"));
+	}
+
+	@Test
+	public void formatDateTest3() throws ParseException {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2014, 11, 24, 23, 59, 59);
+		testOneFormatCalendar("Format calendar 23:59:59 24/12/2014",
+				"20141224235959", calendar);
+	}
+
+	@Test
+	public void formatDateTest4() throws ParseException {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1965, 7, 9, 0, 0, 0);
+		testOneFormatCalendar("Format calendar 00:00:00 09/08/1965",
+				"19650809000000", calendar);
+	}
+
+	private void testOneFormatDate(String testMessage, String expected,
+			Date date) {
+		assertEquals(testMessage, expected, StreamIO.formatDate(date));
+	}
+
+	private void testOneFormatCalendar(String testMessage, String expected,
+			Calendar calendar) {
+		assertEquals(testMessage, expected, StreamIO.formatDate(calendar));
+	}
+
+	private String fileToString(File file) throws IOException {
+		StringBuilder stringBuilder = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line).append("\n");
+			}
+			return stringBuilder.toString().trim();
+		}
+	}
+
+	private void stringToFile(File destin, String content) throws IOException {
+		try (FileOutputStream fos = new FileOutputStream(destin)) {
+			if (destin.exists()) {
+				destin.delete();
+			}
+			fos.write(content.getBytes());
+		}
+	}
+
+	private String serializeTaskMap(HashMap<String, StreamTask> taskMap) {
+		JSONObject taskMapJson = new JSONObject(taskMap);
+		return taskMapJson.toString();
+	}
+}
+
+	// End of segment: src\fileio\StreamIOTest.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\BaseLogic.java
+	 */
+
+/**
+ * Base logic class that comes with basic logging
+ * implementation infrastructure.
+ * 
+ * <ul>
+ * <li>logDebug(String message)</li>
+ * <li>logInfo(String message)</li>
+ * <li>logWarning(String message)</li>
+ * <li>logError(String message)</li>
+ * <li>logFatal(String message)</li>
+ * </ul>
+ * 
+ */
+public abstract class BaseLogic {
+	protected StreamLogger logger = StreamLogger.init(getLoggerComponentName());
+	
+	/**
+	 * For setting up logging infrastructure.
+	 * 
+	 * @return componentTag the inherited logic
+	 * class' log tag.
+	 */
+	protected abstract String getLoggerComponentName();
+	protected void logDebug(String message) {
+		logger.log(LogLevel.DEBUG, message);
+	}
+	protected void logInfo(String message) {
+		logger.log(LogLevel.INFO, message);
+	}
+	protected void logWarning(String message) {
+		logger.log(LogLevel.WARNING, message);
+	}
+	protected void logError(String message) {
+		logger.log(LogLevel.ERROR, message);
+	}
+	protected void logFatal(String message) {
+		logger.log(LogLevel.FATAL, message);
+	}
+}
+
+	// End of segment: src\logic\BaseLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was added
+	 */
+	public void pushInverseAddCommand(int index) {
+		pushInput(String.format(StreamConstants.Commands.DISMISS,
+				index));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param originalOrder order of tasks to be reverted to
+	 * @param deletedTasks tasks that were deleted
+	 */
+	public void pushInverseClearCommand(ArrayList<String> originalOrder, ArrayList<StreamTask> deletedTasks) {
+		pushOrder(originalOrder);
+		for (StreamTask task:deletedTasks) {
+			pushDumpedTask(task);
+		}
+		pushInput(String.format(StreamConstants.Commands.RECOVER,
+				deletedTasks.size()));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param oldTaskName
+	 */
+	public void pushInverseSetNameCommand(int taskIndex, String oldTaskName) {
+		pushInput(String.format(StreamConstants.Commands.NAME, taskIndex, oldTaskName));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param inverseCommand entire command for reversion of action
+	 */
+	public void pushInverseModifyCommand(String inverseCommand) {
+		pushInput(inverseCommand.trim());
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param oldOrdering order of tasks to be reverted to
+	 */
+	public void pushInverseSortCommand(ArrayList<String> oldOrdering) {
+		pushOrder(oldOrdering);
+		pushInput("unsort");
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private String buildInverseModifyTag(StreamTask currTask, String inverseCommand) {
+		inverseCommand += "-settags ";
+		for (String tag:currTask.getTags()) {
+			inverseCommand += tag + " ";
+		}
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private void pushDumpedTask(StreamTask deletedTask) {
+		assert(deletedTask != null) : StreamConstants.Assertion.NULL_INVERSE_TASK;
+		dumpedTasks.push(deletedTask);
+		logDebug(String.format(StreamConstants.LogMessage.PUSH_INVERSE_TASK, 
+				deletedTask.getTaskName()));
+	}
+	
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	public StreamTask recoverTask() {
+		StreamTask dumpedTask = dumpedTasks.pop();
+		logDebug(String.format(StreamConstants.LogMessage.POP_INVERSE_TASK, 
+				dumpedTask.getTaskName()));
+		return dumpedTask;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private void pushInput(String inverseCommand) {
+		assert(inverseCommand != null && !inverseCommand.isEmpty()) : 
+			StreamConstants.Assertion.EMPTY_INVERSE_COMMAND;
+		inputStack.push(inverseCommand);
+		logDebug(String.format(StreamConstants.LogMessage.PUSH_INVERSE_COMMAND, 
+				inverseCommand));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Pops the inverse command for undoing purposes.
+	 * 
+	 * @return inverseCommand - the string consisting of the inverse command.
+	 */
+	public String popInverseCommand() {
+		String inverseCommand = inputStack.pop();
+		logDebug(String.format(StreamConstants.LogMessage.POP_INVERSE_COMMAND, 
+				inverseCommand));
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Checks whether there exists an inverse input inside the input stack. 
+	 * If it is empty then there is nothing to undo.
+	 * 
+	 * @return isEmpty - true if the stack is empty.
+	 */
+	public boolean hasInverseInput() {
+		return !inputStack.isEmpty();
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * pushes the place holder for undo
+	 * 
+	 */
+	public void pushPlaceholderInput() {
+		pushInput("placeholderforundo");
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private void pushOrder(ArrayList<String> order) {
+		assert(order != null && !order.isEmpty()) : 
+			StreamConstants.Assertion.EMPTY_INVERSE_ORDER;
+		orderingStack.push(order);
+		logDebug(String.format(StreamConstants.LogMessage.PUSH_ORDER, 
+				Arrays.toString(order.toArray())));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * what does this do?
+	 * 
+	 * @return
+	 */
+	public ArrayList<String> popOrder() {
+		ArrayList<String> order = orderingStack.pop();
+		logDebug(String.format(StreamConstants.LogMessage.POP_ORDER, 
+				Arrays.toString(order.toArray())));
+		return order;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * @deprecated use StreamUtil's getCalendarWriteUp
+	 */
+	@SuppressWarnings("unused")
+	private String getInputDate(Calendar currentDeadline) {
+		return currentDeadline.get(Calendar.MONTH + 1) + "/"
+				+ (currentDeadline.get(Calendar.DATE) + "/"
+				+ currentDeadline.get(Calendar.YEAR));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Sets the ordering with tasks.
+	 * 
+	 * @param anotherTaskList
+	 */
+	public void setOrderingWithTasks(List<StreamTask> anotherTaskList) {
+
+		ArrayList<String> orderList = new ArrayList<String>();
+		for (StreamTask task : anotherTaskList) {
+			orderList.add(task.getTaskName());
+		}
+		setOrdering(orderList);
+	}
+
+	/**
+	 * Sorts by task name, lexicographically.
+	 * 
+	 * @param descending
+	 *            true to reverse the order
+	 * @return result of the sort
+	 */
+	public String sortAlpha(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				return descending ? compareName(o1, o2) : compareName(o2, o1);
+			}
+		});
+		return "Sort by alphabetical order, "
+				+ (descending ? "descending." : "ascending.");
+	}
+
+	/**
+	 * Sorts by start time, earliest first
+	 * 
+	 * @param descending
+	 *            true to reverse the order
+	 * @return result of the sort
+	 */
+	public String sortStartTime(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				return descending ? compareStartTime(o1, o2, true)
+						: compareStartTime(o2, o1, false);
+			}
+		});
+		return "Sort by start time "
+				+ (descending ? "descending." : "ascending.");
+	}
+
+	/**
+	 * Sorts by deadline, earliest first
+	 * 
+	 * @param descending
+	 *            true to reverse the order
+	 * @return result of the sort
+	 */
+	public String sortDeadline(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				return descending ? compareDeadline(o1, o2, true)
+						: compareDeadline(o2, o1, false);
+			}
+		});
+		return "Sort by deadline "
+				+ (descending ? "descending." : "ascending.");
+	}
+
+	/**
+	 * Sorts based on importance.
+	 * 
+	 * <p>
+	 * Sort algorithm
+	 * </p>
+	 * <ul>
+	 * <li>Level 1: not done first</li>
+	 * <li>Level 2: overdue first (only applicable to not-done tasks)</li>
+	 * <li>Level 3: rank highest first</li>
+	 * <li>Level 4: deadline earliest first</li>
+	 * <li>Level 5: starttime earliest first</li>
+	 * <li>Level 6: task name alphanumeric</li>
+	 * </ul>
+	 * 
+	 * @param descending
+	 *            true to reverse the order
+	 * @return result of the sort
+	 */
+	public String sortImportance(final boolean descending) {
+		sort(new Comparator<StreamTask>() {
+			@Override
+			public int compare(StreamTask o1, StreamTask o2) {
+				int comparison = descending ? compareDone(o1, o2)
+						: compareDone(o2, o1);
+				if (comparison == 0 && !o1.isDone()
+						&& o1.isOverdue() != o2.isOverdue()) {
+					if (descending) {
+						comparison = o2.isOverdue() ? 1 : -1;
+					} else {
+						comparison = o1.isOverdue() ? 1 : -1;
+					}
+				}
+				if (comparison == 0) {
+					comparison = descending ? compareRank(o1, o2)
+							: compareRank(o2, o1);
+				}
+				if (comparison == 0) {
+					comparison = descending ? compareDeadline(o2, o1, false)
+							: compareDeadline(o1, o2, false);
+				}
+				if (comparison == 0) {
+					comparison = descending ? compareStartTime(o2, o1, false)
+							: compareStartTime(o1, o2, false);
+				}
+				if (comparison == 0) {
+					return descending ? compareName(o1, o2) : compareName(o2,
+							o1);
+				}
+				return comparison;
+			}
+		});
+		return "Sort by importance "
+				+ (descending ? "descending." : "ascending.");
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Sorts tasks based on given comparator.
+	 * 
+	 * @param comparator
+	 *            for sorting tasks
+	 */
+	private void sort(Comparator<StreamTask> comparator) {
+		assert (comparator != null);
+		List<StreamTask> tempList = getStreamTaskList();
+		Collections.sort(tempList, comparator);
+		setOrderingWithTasks(tempList);
+	}
+
+	/**
+	 * Compare the ranks of two tasks.
+	 * <p>
+	 * Values:
+	 * </p>
+	 * <ul>
+	 * <li>HI: 2</li>
+	 * <li>MED: 1</li>
+	 * <li>LO: 0</li>
+	 * <li>NULL: -1</li>
+	 * </ul>
+	 * 
+	 * @param task1
+	 *            the first task to compare
+	 * @param task2
+	 *            the second task to be compared to
+	 * @return 0 if tasks' ranks are equal, or the rank of task2 - rank of
+	 *         task1.
+	 */
+	private int compareRank(StreamTask task1, StreamTask task2) {
+		return valueRank(task2.getRank()) - valueRank(task1.getRank());
+	}
+
+	private int compareDone(StreamTask task1, StreamTask task2) {
+		if (task1.isDone() == task2.isDone()) {
+			return 0;
+		} else if (task1.isDone() && !task2.isDone()) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+	private int compareDeadline(StreamTask task1, StreamTask task2,
+			boolean reverse) {
+		if (task1.getDeadline() == null && task2.getDeadline() == null) {
+			return 0;
+		} else if (task1.getDeadline() == null) {
+			return reverse ? 1 : -1;
+		} else if (task2.getDeadline() == null) {
+			return reverse ? -1 : 1;
+		} else {
+			return task2.getDeadline().compareTo(task1.getDeadline());
+		}
+	}
+
+	private int compareName(StreamTask task1, StreamTask task2) {
+		return task2.getTaskName().compareTo(task1.getTaskName());
+	}
+
+	private int compareStartTime(StreamTask task1, StreamTask task2,
+			boolean reverse) {
+		if (task1.getStartTime() == null && task2.getStartTime() == null) {
+			return 0;
+		} else if (task1.getStartTime() == null) {
+			return reverse ? 1 : -1;
+		} else if (task2.getStartTime() == null) {
+			return reverse ? -1 : 1;
+		} else {
+			return task2.getStartTime().compareTo(task1.getStartTime());
+		}
+	}
+
+	private int valueRank(String rank) {
+		switch (StreamParser.parseRanking(rank)) {
+			case HI:
+				return 2;
+			case MED:
+				return 1;
+			case LO:
+				return 0;
+			default:
+				return -1;
+		}
+	}
+
+	/**
+	 * Clears the storage of all tasks.
+	 */
+	public void clear() {
+		streamObject.clear();
+		logDebug(StreamConstants.LogMessage.CLEARED_TASKS);
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Change task name of the task
+	 * 
+	 * <p>
+	 * Precondition: taskName, newName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            to be modified
+	 * @param newTaskName
+	 *            name to be set to the task
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found. Or when task with newTaskName is already present.
+	 */
+	public String updateTaskName(String taskName, String newTaskName)
+			throws StreamModificationException {
+		assert (taskName != null && newTaskName != null) : StreamConstants.Assertion.NULL_INPUT;
+		StreamTask task = getTask(taskName);
+		if (!taskName.equals(newTaskName)) {
+			if (streamObject.containsKey(newTaskName)) {
+				logDebug(String.format(
+						StreamConstants.LogMessage.UPDATE_TASK_NAME_DUPLICATE,
+						newTaskName));
+				throw new StreamModificationException(
+						String.format(
+								StreamConstants.ExceptionMessage.ERR_NEW_TASK_NAME_NOT_AVAILABLE,
+								newTaskName));
+			}
+		}
+		int index = streamObject.indexOf(taskName);
+
+		streamObject.remove(task.getTaskName());
+		task.setTaskName(newTaskName);
+		streamObject.put(newTaskName, task, index);
+		// This section is contributed by A0093874N
+		logDebug(String.format(StreamConstants.LogMessage.UPDATE_TASK_NAME,
+				taskName, newTaskName));
+		return String.format(StreamConstants.LogMessage.NAME, taskName,
+				newTaskName);
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Modify an attribute of a task
+	 * 
+	 * @param task
+	 *            to modify
+	 * @param attribute
+	 *            to be modified
+	 * @param contents
+	 *            that contains the instruction to modify that attribute
+	 * @return result of this operation
+	 * @throws StreamModificationException
+	 */
+	public void modifyTask(StreamTask task, String attribute, String contents)
+			throws StreamModificationException {
+		if (attribute.equalsIgnoreCase("-name")) {
+			// modify name need access to streamObject, special case
+			updateTaskName(task.getTaskName(), contents);
+		} else {
+			taskLogic.modifyTask(task, attribute, contents);
+		}
+	}
+
+	/**
+	 * Search for tasks with specified key phrase, in the task name, description
+	 * and tags.
+	 * <p>
+	 * Key phrase will be broken down into key words (by splitting with space
+	 * character). Key words will be used to search in the tags.
+	 * </p>
+	 * 
+	 * <p>
+	 * Precondition: keyphrase != null
+	 * </p>
+	 * 
+	 * @return tasks - a list of tasks containing the key phrase, empty list if
+	 *         nothing matches
+	 */
+	public ArrayList<Integer> findTasks(String keyphrase) {
+		// Split key phrase into keywords
+		String[] keywords = null;
+		if (keyphrase.contains(" ")) {
+			keywords = keyphrase.split(" ");
+		} else {
+			keywords = new String[] { keyphrase };
+		}
+
+		ArrayList<Integer> tasks = new ArrayList<Integer>();
+		for (int i = 0; i < streamObject.size(); i++) {
+			StreamTask task = streamObject.get(streamObject.get(i));
+
+			// check for matches between keywords and tags
+			if (task.hasTag(keywords)) {
+				tasks.add(i + 1);
+				continue;
+			}
+			// improved by A0093874N: case-insensitive search
+			// check if task description contains key phrase
+			if (task.getDescription() != null
+					&& task.getDescription().toLowerCase()
+							.contains(keyphrase.toLowerCase())) {
+				tasks.add(i + 1);
+				continue;
+			}
+			// check if task name contains key phrase
+			if (task.getTaskName().toLowerCase()
+					.contains(keyphrase.toLowerCase())) {
+				tasks.add(i + 1);
+				continue;
+			}
+		}
+
+		logDebug(String.format(StreamConstants.LogMessage.SEARCHED_TASKS,
+				keyphrase, Arrays.toString(tasks.toArray())));
+		return tasks;
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Retrieves the task name by index
+	 * 
+	 * <p>
+	 * Precondition: index is a valid index
+	 * </p>
+	 * 
+	 * @param index
+	 *            the index of the task
+	 */
+	public String getTaskNumber(int index) {
+		return streamObject.getTaskList().get(index - 1);
+	}
+
+	/**
+	 * @return taskMap a copy of the task map.
+	 */
+	public HashMap<String, StreamTask> getTaskMap() {
+		return new HashMap<String, StreamTask>(streamObject.getTaskMap());
+	}
+
+	/**
+	 * @return taskList a copy of the task list.
+	 */
+	public ArrayList<String> getTaskList() {
+		return new ArrayList<String>(streamObject.getTaskList());
+	}
+
+	/**
+	 * @return taskList a copy of the task list.
+	 */
+	public ArrayList<StreamTask> getStreamTaskList() {
+		ArrayList<StreamTask> taskList = new ArrayList<StreamTask>();
+		HashMap<String, StreamTask> taskMap = streamObject.getTaskMap();
+		for (String key : taskMap.keySet()) {
+			taskList.add(taskMap.get(key));
+		}
+		return taskList;
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamModificationTest.java
+	 */
+
+public class StreamModificationTest {
+	private TaskLogic taskLogic = TaskLogic.init();
+	private StreamLogic streamLogic = StreamLogic.init(StreamObject.getInstance());
+
+	private StreamTask task1, task2, task3;
+	private Calendar taskDeadline;
+	private String TASK_NAME_1 = "Find X";
+	private String TASK_NAME_2 = "Find Pandora's Box";
+	private String TASK_NAME_3 = "Code unit tests";
+	
+	@Before 
+	public void setUp() throws Exception {
+		taskDeadline = Calendar.getInstance();
+		taskDeadline.set(2014, 9, 17, 18, 48, 45);
+		
+		Calendar task1Deadline = Calendar.getInstance();
+		task1Deadline.setTime(taskDeadline.getTime());
+		task1 = new StreamTask(TASK_NAME_1);
+		task1.setDescription("If a = b and b = c, find x.");
+		task1.setDeadline(task1Deadline);
+		task1.getTags().add("X");
+		task1.getTags().add("FIND");
+		task1.getTags().add("MATH");
+		task1.getTags().add("SIMPLE");
+		streamLogic.recoverTask(task1);
+
+		Calendar task2Deadline = Calendar.getInstance();
+		task2Deadline.setTime(taskDeadline.getTime());
+		task2 = new StreamTask(TASK_NAME_2);
+		task2.setDescription("Try and search around the bamboo forest...");
+		task2.setDeadline(task2Deadline);
+		task2.getTags().add("IMPOSSIBLE");
+		task2.getTags().add("PANDA");
+		task2.getTags().add("NOLINE");
+		streamLogic.recoverTask(task2);
+		
+		task3 = new StreamTask(TASK_NAME_3);
+		task3.setDescription("Code the unit tests for StreamObject");
+		task3.getTags().add("BORINGTASK");
+		task3.getTags().add("PROCRASTINATE");
+		streamLogic.recoverTask(task3);
+	}
+
+	@Test 
+	public void testChangeDeadline() throws StreamModificationException {
+		assertEquals("Deadline before modification", 
+				toDateString(taskDeadline), toDateString(task1.getDeadline()));
+		
+		Calendar task1Deadline = Calendar.getInstance();
+		task1Deadline.set(2014, 9, 17, 18, 48, 45);
+		task1.setDeadline(task1Deadline);
+
+		assertEquals("Deadline after modification", 
+				toDateString(task1Deadline), toDateString(task1.getDeadline()));
+	}
+
+	@Test 
+	public void testRemoveTag() throws StreamModificationException {
+		assertEquals("Tags before modification", true, task3.hasTag("procrastinate"));
+
+		taskLogic.removeTags(task3, "procrastinate");
+
+		assertEquals("Tags after modification", false, task3.hasTag("procrastinate"));
+	}
+
+	@Test 
+	public void testAddTags() throws StreamModificationException {
+		assertEquals("Tags before modification", false, task3.hasTag("tagtobeadded"));
+
+		task3.getTags().add("TAGTOBEADDED");
+
+		assertEquals("Tags after modification", true, task3.hasTag("tagtobeadded"));
+	}
+
+	@Test 
+	public void testUpdateTaskName() throws StreamModificationException {
+		String newTaskName = "New task name";
+		
+		assertEquals("Task name before modification", TASK_NAME_3, task3.getTaskName());
+
+		streamLogic.updateTaskName(task3.getTaskName(), newTaskName);
+
+		assertEquals("Task name after modification", newTaskName, task3.getTaskName());
+	}
+
+	@Test 
+	public void testMarkTaskAsDone() throws StreamModificationException {
+		task1.markAsOngoing();
+		assertEquals("Done before modification", false, task2.isDone());
+
+		task2.markAsDone();
+
+		assertEquals("Done after modification", true, task2.isDone());
+	}
+
+	@Test 
+	public void testMarkTaskAsOngoing() throws StreamModificationException {
+		task1.markAsDone();
+		assertEquals("Done before modification", true, task1.isDone());
+
+		task1.markAsOngoing();
+
+		assertEquals("Done after modification", false, task1.isDone());
+	}
+
+	@Test 
+	public void testSetDueTime() throws StreamModificationException {
+		assertEquals("Deadline before modification", null, 
+				task3.getDeadline());
+
+		Calendar task3Deadline = Calendar.getInstance();
+		task3Deadline.setTime(taskDeadline.getTime());
+		task3.setDeadline(task3Deadline);
+
+		assertEquals("Deadline after modification", 
+				toDateString(taskDeadline), toDateString(task2.getDeadline()));
+	}
+
+	@Test 
+	public void testSetNullDeadline() throws StreamModificationException {
+		assertEquals("Deadline before modification", 
+				toDateString(taskDeadline), toDateString(task2.getDeadline()));
+		
+		task2.setDeadline(null);
+
+		assertEquals("Deadline after modification", 
+				null, task2.getDeadline());
+	}
+
+
+	private String toDateString(Calendar taskDeadline) {
+		return taskDeadline.getTime().toString();
+	}
+}
+
+	// End of segment: src\logic\StreamModificationTest.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamSearchTest.java
+	 */
+
+public class StreamSearchTest {
+
+	private StreamLogic streamLogic = StreamLogic.init(StreamObject.getInstance());
+	private StreamTask task1, task2;
+	private static final Comparator<StreamTask> taskComparator = new Comparator<StreamTask>() {
+		@Override public int compare(StreamTask o1, StreamTask o2) {
+			return o1.getTaskName().compareTo(o2.getTaskName());
+		}
+	};; 
+
+	@Before 
+	public void setUp() throws Exception {
+		streamLogic.addTask("Find X");
+		task1 = streamLogic.getTask("Find X");
+		task1.setDescription("If a = b and b = c, find x.");
+		task1.getTags().add("X");
+		task1.getTags().add("FIND");
+		task1.getTags().add("MATH");
+		task1.getTags().add("SIMPLE");
+		streamLogic.addTask("Find Pandora's Box");
+		task2 = streamLogic.getTask("Find Pandora's Box");
+		task2.setDescription("Try and search around the bamboo forest...");
+		task2.getTags().add("IMPOSSIBLE");
+		task2.getTags().add("PANDA");
+		task2.getTags().add("NOLINE");
+	}
+
+	@Test 
+	public void testSearch1() {
+		testOneSearch("Search for nothing", streamLogic.getStreamTaskList(streamLogic.findTasks("nothing")));
+	}
+	@Test 
+	public void testSearch2() {
+		testOneSearch("Search for x", streamLogic.getStreamTaskList(streamLogic.findTasks("x")), task1, task2);
+	}
+	@Test 
+	public void testSearch3() {
+		testOneSearch("Search for panda", streamLogic.getStreamTaskList(streamLogic.findTasks("im looking for a panda")), task2);
+	}
+
+	private void testOneSearch(String testMessage, List<StreamTask> actualTasks, StreamTask...tasks) {
+		List<StreamTask> expectedTasks = Arrays.asList(tasks);
+		Collections.sort(expectedTasks, taskComparator);
+		Collections.sort(actualTasks, taskComparator);
+		assertEquals(testMessage, expectedTasks, actualTasks);
+	}
+}
+
+	// End of segment: src\logic\StreamSearchTest.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\TaskLogic.java
+	 */
+
+	private void setTags(StreamTask task, String contents) {
+		task.getTags().clear();
+		if (!contents.trim().isEmpty()) {
+			addTags(task, contents.split(" "));
+		}
+	}
+
+	@Override
+	protected String getLoggerComponentName() {
+		return StreamConstants.ComponentTag.STREAMTASK;
+	}
+
+}
+	// End of segment: src\logic\TaskLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamObject.java
+	 */
+
+
+	// Delegate methods
+
+	/**
+	 * Gets the size (number) of tasks inside the arraylist.
+	 * 
+	 * @return size - the number of tasks.
+	 */
+	public int size() {
+		return taskList.size();
+	}
+
+	/**
+	 * Gets a task (as a StreamTask) by using the task name
+	 * 
+	 * @param taskName
+	 * @return the task as an instance of StreamTask
+	 */
+	public StreamTask get(String taskName) {
+		return taskMap.get(taskName.toLowerCase());
+	}
+
+	/**
+	 * Gets a task's name based on the index of the task
+	 * 
+	 * @param index
+	 * @return task name - the name of the task
+	 */
+	public String get(int index) {
+		return taskList.get(index);
+	}
+
+	/**
+	 * Adds a new task to the storage Updates the hashmap and arraylist
+	 * accordingly
+	 * 
+	 * @param taskName
+	 * @param task
+	 * @return
+	 */
+	public StreamTask put(String taskName, StreamTask task) {
+		taskList.add(taskName);
+		return taskMap.put(taskName.toLowerCase(), task);
+	}
+
+	/**
+	 * Adds a new task to the storage based on the specified index Updates the
+	 * hashmap and arraylist accordingly
+	 * 
+	 * @param taskName
+	 * @param task
+	 * @return
+	 */
+	public StreamTask put(String taskName, StreamTask task, int index) {
+		taskList.add(index, taskName);
+		return taskMap.put(taskName.toLowerCase(), task);
+	}
+
+	/**
+	 * Gets the keySet of the hashmap
+	 * 
+	 * @return keySet - the keys of taskMap
+	 */
+	public Set<String> keySet() {
+		return taskMap.keySet();
+	}
+
+	/**
+	 * Checks whether a given task name is already used / exists in the storage
+	 * 
+	 * @param taskName
+	 * @return true if it exists, false otherwise
+	 */
+	public boolean containsKey(String taskName) {
+		return taskMap.containsKey(taskName.toLowerCase());
+	}
+
+	/**
+	 * Checks whether a given task object is already included in the hashmap of tasks
+	 * 
+	 * @param task
+	 * @return true if it is included, false otherwise
+	 */
+	public boolean containsValue(StreamTask task) {
+		return taskMap.containsValue(task);
+	}
+
+	/**
+	 * Gets the index of a given task in the arraylist
+	 * 
+	 * @param taskName
+	 * @return index - the index of the task
+	 */
+	public int indexOf(String taskName) {
+		return taskList.indexOf(taskName);
+	}
+
+	/**
+	 * Checks whether a task name is already used
+	 * 
+	 * @param taskName
+	 * @return true if it is already used, false otherwise
+	 */
+	public boolean contains(String taskName) {
+		return taskList.contains(taskName);
+	}
+
+	/**
+	 * remove a given task from the storage.
+	 * update the arraylist and hashmap accordingly
+	 * 
+	 * @param taskName
+	 */
+	public void remove(String taskName) {
+		taskMap.remove(taskName.toLowerCase());
+		taskList.remove(taskName);
+	}
+
+	/**
+	 * Clears all tasks
+	 * 
+	 */
+	public void clear() {
+		taskMap.clear();
+		taskList.clear();
+	}
+}
+
+	// End of segment: src\model\StreamObject.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamTask.java
+	 */
+
+	/**
+	 * Sets a task ask done or not
+	 * 
+	 * @param done
+	 */
+	public void setDone(boolean done) {
+		this.isDone = done;
+	}
+
+	/**
+	 * Checks whether a given task is a timed task
+	 * 
+	 * @return true if it is a timed task, false otherwise
+	 */
+	public boolean isTimedTask() {
+		return startTime != null;
+	}
+
+	/**
+	 * Checks whether a given task has a deadline
+	 * 
+	 * @return true if it has a deadline, false otherwise
+	 */
+	public boolean isDeadlineTask() {
+		return deadline != null;
+	}
+
+	/**
+	 * Checks whether a given task is a floating task (no start and end time)
+	 * 
+	 * @return true if it is floating, false otherwise
+	 */
+	public boolean isFloatingTask() {
+		return startTime == null && deadline == null;
+	}
+
+	/**
+	 * Checks whether a task has the specified tag
+	 * 
+	 * @param tag - the tag to be checked
+	 * @return true if the task contains the specified tag, false otherwise
+	 */
+	public boolean hasTag(String tag) {
+		return tags.contains(tag.toUpperCase());
+	}
+
+	/**
+	 * Checks whether a task has a specified tag within an array of tags
+	 * 
+	 * @param tags - the tags to be checked
+	 * @return true if the task contains a specified tag within an array of tags, false otherwise
+	 */
+	public boolean hasTag(String[] tags) {
+		for (String tag : tags) {
+			if (this.hasTag(tag)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Depreciated methods
+
+	// End of segment: src\model\StreamTask.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void initStreamIO(String file) {
+		if (!file.endsWith(StreamConstants.SAVEFILE_EXTENSION)) {
+			filename = String.format(StreamConstants.SAVEFILE_FORMAT, file);
+		} else {
+			filename = file;
+		}
+		StreamIO.setFilename(filename);
+	}
+
+	/**
+	 * Loads the StreamObject state from a saved file, into the current
+	 * streamObject instance. No new instance of StreamObject is created.
+	 */
+	void load() {
+		try {
+			HashMap<String, StreamTask> taskMap = new HashMap<String, StreamTask>();
+			ArrayList<String> taskList = new ArrayList<String>();
+
+			StreamIO.load(taskMap, taskList);
+			streamObject.setTaskList(taskList);
+			streamObject.setTaskMap(taskMap);
+		} catch (StreamIOException e) {
+			e.printStackTrace();
+			log(String.format(StreamConstants.LogMessage.LOAD_FAILED,
+					e.getMessage()));
+		}
+	}
+
+	/**
+	 * Saves the current StreamObject state using StreamIO
+	 * 
+	 * @return result the result of this operation
+	 */
+	String save() {
+		String result = null;
+		try {
+			HashMap<String, StreamTask> allTasks = streamObject.getTaskMap();
+			ArrayList<String> taskList = streamObject.getTaskList();
+			StreamIO.save(allTasks, taskList);
+			result = "File saved to " + StreamIO.getSaveLocation();
+		} catch (StreamIOException e) {
+			e.printStackTrace();
+			result = String.format(StreamConstants.LogMessage.LOAD_FAILED,
+					e.getMessage());
+			log(result);
+		}
+
+		return result;
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	// updated by A0119401U
+	private void executeSort(String content) {
+		ArrayList<String> oldOrdering = streamLogic.getTaskList();
+		stackLogic.pushInverseSortCommand(oldOrdering);
+
+		String result = null;
+		String sortBy = null;
+		String order = null;
+		boolean descending = true;
+		if (content != null && content.contains(" ")) {
+			sortBy = content.split(" ")[0];
+			order = content.split(" ")[1];
+		} else {
+			sortBy = content == null ? "" : content;
+			order = "";
+		}
+		SortType type = StreamParser.parseSorting(sortBy);
+		try {
+			descending = StreamParser.getSortingOrder(order);
+		} catch (StreamParserException e) {
+			// ignore exception
+		}
+
+		result = processSorting(sortBy, descending, type);
+		showAndLogResult(result);
+	}
+
+	private String processSorting(String sortBy, boolean descending,
+			SortType type) {
+		String result;
+		switch (type) {
+			case ALPHA:
+				result = streamLogic.sortAlpha(descending);
+				break;
+			case END:
+				result = streamLogic.sortDeadline(descending);
+				break;
+			case START:
+				result = streamLogic.sortStartTime(descending);
+				break;
+			case TIME:
+				result = streamLogic.sortTime(descending);
+				break;
+			case IMPORTANCE:
+				result = streamLogic.sortImportance(descending);
+				break;
+			default:
+				result = "Unknown sort category \"" + sortBy + "\"";
+				break;
+		}
+		return result;
+	}
+
+	private void executeExit() {
+		showAndLogResult(StreamConstants.Message.THANK_YOU);
+		save();
+		try {
+			saveLogFile();
+		} catch (StreamIOException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		System.exit(0);
+	}
+
+	/**
+	 * Search for tasks with specified key phrase, in the task name, description
+	 * and tags.
+	 * <p>
+	 * Key phrase will be broken down into key words (by splitting with space
+	 * character). Key words will be used to search in the tags.
+	 * </p>
+	 * 
+	 * <p>
+	 * Precondition: keyphrase != null
+	 * </p>
+	 * 
+	 * @return tasks - a list of tasks containing the key phrase.
+	 */
+	private ArrayList<Integer> executeSearch(String content) {
+		assertNotNull(content);
+		ArrayList<Integer> searchResult = streamLogic.findTasks(content);
+
+		String result = String.format(StreamConstants.LogMessage.SEARCH,
+				content, searchResult.size());
+		showAndLogResult(result);
+
+		return searchResult;
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void refreshUI() {
+		refreshUI(false, false);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void log(String message) {
+		logger.log(LogLevel.DEBUG, message);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamLoadTest.java
+	 */
+
+	@Before 
+	public void setUp() throws Exception {
+		task1 = new StreamTask("Code Jarvis");
+		Calendar calendar = Calendar.getInstance();
+		Date date = simpleDateFormat.parse("20410719000000");
+		calendar.setTime(date);
+		task1.setDeadline(calendar);
+		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
+		task1.getTags().add("EPIC");
+		task1.getTags().add("IMPOSSIBLE");
+
+		task2 = new StreamTask("Build IoT");
+		Calendar calendar2 = Calendar.getInstance();
+		Date date2 = simpleDateFormat.parse("20180101123456");
+		calendar2.setTime(date2);
+		task2.setDeadline(calendar2);
+		task2.setDescription("Internet of Things");
+		task2.getTags().add("EPIC");
+		task2.getTags().add("POPULAR");
+		task2.getTags().add("URGENT");
+
+		map = new HashMap<String, StreamTask>();
+		map.put(task1.getTaskName().toLowerCase(), task1);
+		map.put(task2.getTaskName().toLowerCase(), task2);
+
+		taskList = new ArrayList<String>();
+		taskList.add(task1.getTaskName());
+		taskList.add(task2.getTaskName());
+
+		String fileContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"deadline\":\"20410719000000\","
+				+ "\"taskName\":\"Code Jarvis\","
+				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"deadline\":\"20180101123456\","
+				+ "\"taskName\":\"Build IoT\"," + "\"taskDescription\":\"Internet of Things\"}]}";
+		try {
+			StreamIO.setFilename(TEST_SAVE_FILENAME);
+			testFile = new File(StreamIO.getSaveLocation());
+			
+			if (testFile.exists()) {
+				testFile.delete();
+			}
+			stringToFile(testFile, fileContent);
+		} catch (IOException e) {
+			throw new IOException(String.format(StreamConstants.ExceptionMessage.ERR_CREATEFILE, e.getMessage()), e);
+		}
+	}
+
+	// End of segment: src\stream\StreamLoadTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamLoadTest.java
+	 */
+
+	@After
+	public void tearDown() throws Exception {
+		testFile.delete();
+	}
+
+	// End of segment: src\stream\StreamLoadTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamLoadTest.java
+	 */
+
+	@Test 
+	public void testLoadMap() {
+		Stream stream = new Stream(testFile.getName());
+		assertEquals("Loaded task map", serializeTaskMap(map),
+				serializeTaskMap(stream.streamLogic.getTaskMap()));
+	}
+
+	// End of segment: src\stream\StreamLoadTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamLoadTest.java
+	 */
+
+	@Test 
+	public void testLoadList() {
+		Stream stream = new Stream(testFile.getName());
+		assertEquals("Loaded task map", taskList, stream.streamLogic.getTaskList());
+	}
+
+	// End of segment: src\stream\StreamLoadTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamLoadTest.java
+	 */
+
+	private void stringToFile(File destin, String content) throws IOException {
+		try (FileOutputStream fos = new FileOutputStream(destin)) {
+			if (destin.exists()) {
+				destin.delete();
+			}
+			fos.write(content.getBytes());
+		}
+	}
+
+	// End of segment: src\stream\StreamLoadTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamLoadTest.java
+	 */
+
+	private String serializeTaskMap(HashMap<String, StreamTask> taskMap) {
+		JSONObject taskMapJson = new JSONObject(taskMap);
+		return taskMapJson.toString();
+	}
+}
+
+	// End of segment: src\stream\StreamLoadTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamSaveTest.java
+	 */
+
+	@Before
+	public void setUp() throws Exception {
+		StreamIO.setFilename(TEST_SAVE_FILENAME);
+		testFile = new File(StreamIO.getSaveLocation());
+
+		if (testFile.exists()) {
+			testFile.delete();
+		}
+
+		stream = new Stream(testFile.getName());
+		String taskName1 = "Code Jarvis";
+		stream.streamLogic.addTask(taskName1);
+		task1 = stream.streamLogic.getTask(taskName1);
+		Calendar calendar = Calendar.getInstance();
+		Date date = simpleDateFormat.parse("20410719000000");
+		calendar.setTime(date);
+		task1.setDeadline(calendar);
+		task1.setDescription("Just\na\nRather\nVery\nIntelligent\nSystem");
+		task1.getTags().add("EPIC");
+		task1.getTags().add("IMPOSSIBLE");
+
+		String taskName2 = "Build IoT";
+		stream.streamLogic.addTask(taskName2);
+		task2 = stream.streamLogic.getTask(taskName2);
+		Calendar calendar2 = Calendar.getInstance();
+		Date date2 = simpleDateFormat.parse("20180101123456");
+		calendar2.setTime(date2);
+		task2.setDeadline(calendar2);
+		task2.setDescription("Internet of Things");
+		task2.getTags().add("EPIC");
+		task2.getTags().add("POPULAR");
+		task2.getTags().add("URGENT");
+
+		map = new HashMap<String, StreamTask>();
+		map.put(task1.getTaskName().toLowerCase(), task1);
+		map.put(task2.getTaskName().toLowerCase(), task2);
+
+		taskList = new ArrayList<String>();
+		taskList.add(task1.getTaskName());
+		taskList.add(task2.getTaskName());
+	}
+
+	// End of segment: src\stream\StreamSaveTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamSaveTest.java
+	 */
+
+	@After 
+	public void tearDown() throws Exception {
+		testFile.delete();
+	}
+
+	// End of segment: src\stream\StreamSaveTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamSaveTest.java
+	 */
+
+	@Test
+	public void testSave() throws IOException {
+		stream.save();
+
+		String expectedContent = "{\"taskList\":{\"1\":\"Build IoT\",\"0\":\"Code Jarvis\"},"
+				+ "\"allTasks\":[{\"tags\":[\"EPIC\",\"IMPOSSIBLE\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20410719000000\","
+				+ "\"taskName\":\"Code Jarvis\","
+				+ "\"taskDescription\":\"Just\\na\\nRather\\nVery\\nIntelligent\\nSystem\"},"
+				+ "{\"tags\":[\"EPIC\",\"POPULAR\",\"URGENT\"],\"rank\":\"low\",\"done\":false,\"deadline\":\"20180101123456\","
+				+ "\"taskName\":\"Build IoT\","
+				+ "\"taskDescription\":\"Internet of Things\"}]}";
+		assertEquals("Saved state", expectedContent, fileToString(testFile));
+	}
+
+	// End of segment: src\stream\StreamSaveTest.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamSaveTest.java
+	 */
+
+	private String fileToString(File file) throws IOException {
+		StringBuilder stringBuilder = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line).append("\n");
+			}
+			return stringBuilder.toString().trim();
+		}
+	}
+}
+
+	// End of segment: src\stream\StreamSaveTest.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUI.java
+	 */
+
+	/**
+	 * Sets the active task for highlighting
+	 * 
+	 * @param task
+	 *            the task to be highlighted on next UI update
+	 * 
+	 */
+	public void setActiveTask(StreamTask task) {
+		activeTask = task;
+		isTaskHighlighted = false;
+	}
+
+	/**
+	 * Highlights the task view containing the active task
+	 */
+	public void highlightActiveTaskView() {
+		int index = availTasks.indexOf(activeTask);
+		assert (index >= 0) : StreamConstants.Assertion.TASK_TAG_NOTFOUND;
+		int page = index / StreamConstants.UI.MAX_VIEWABLE_TASK + 1;
+		repopulateTaskView(page);
+		fadeBorder(shownTasks[index % StreamConstants.UI.MAX_VIEWABLE_TASK]);
+		isTaskHighlighted = true;
+	}
+
+	/**
+	 * Fades the border by setting the alpha value.
+	 * <p>
+	 * Starts a daemon background thread to alter border
+	 * </p>
+	 * 
+	 * @param taskView
+	 *            to execute the fade effect on
+	 */
+	private void fadeBorder(final StreamTaskView taskView) {
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					for (int i = 255; i > 0; i -= 10) {
+						taskView.setBorder(BorderFactory
+								.createLineBorder(new Color(48, 111, 163, i))); // #2d6ea3
+						Thread.sleep(10);
+					}
+					for (int i = 0; i < 255; i += 10) {
+						taskView.setBorder(BorderFactory
+								.createLineBorder(new Color(48, 111, 163, i)));
+						Thread.sleep(10);
+					}
+					for (int i = 255; i > 0; i -= 2) {
+						taskView.setBorder(BorderFactory
+								.createLineBorder(new Color(48, 111, 163, i)));
+						Thread.sleep(10);
+					}
+					taskView.setBorder(null);
+				} catch (Exception e) {
+					loggerDoc
+							.log(LogLevel.ERROR,
+									String.format(
+											StreamConstants.ExceptionMessage.ERR_UI_FADE_THREAD,
+											e.getClass().getSimpleName(),
+											e.getMessage()));
+				}
+			}
+		}.start();
+	}
+
+	/**
+	 * Sets up the UI according to system theme i.e. MacOS, Windows, Ubuntu,
+	 * etc.
+	 */
+	private void setupLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			loggerDoc.log(LogLevel.ERROR,
+					StreamConstants.LogMessage.UI_LOOKANDFEEL_FAIL);
+		}
+	}
+
+	// End of segment: src\ui\StreamUI.java
+
+
+
+
+
+	/**
+	 * origin: src\util\StreamLogger.java
+	 */
+
+/**
+ * <h1>StreamLogger - Stream logger component</h1>
+ * 
+ * <p>
+ * Stores logs in a synchronized list for various components.
+ * </p>
+ * 
+ * <h2>Example</h2>
+ * 
+ * <pre>
+ * {
+ * 	&#064;code
+ * 	// Initialize logger, similar to Object.getInstance() taught.
+ * 	StreamLogger logger = StreamLogger.init(componentName);
+ * 
+ * 	// Use logger to add log to log stack
+ * 	logger.log(LogLevel.DEBUG, logMessage);
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamLogger {
+	private static SimpleDateFormat format = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+	private String componentName;
+	private static final List<String> logStack = new ArrayList<String>();
+	private static final String LOG_FORMAT = "%1$s %2$s [%3$s] %4$s";
+
+	public enum LogLevel {
+		DEBUG, INFO, WARNING, ERROR, FATAL;
+	}
+
+	/**
+	 * Lazy constructor for StreamLogger to obtain an instance.
+	 * 
+	 * @param componentName
+	 *            standardized name of component
+	 * @return StreamLogger instance for use to log
+	 */
+	public static StreamLogger init(String componentName) {
+		StreamLogger logger = new StreamLogger();
+		logger.componentName = componentName;
+		return logger;
+	}
+
+	/**
+	 * Adds log message to synchronized log stack.
+	 * 
+	 * @param logLevel
+	 *            importance level of log message
+	 * @param message
+	 *            the log message to be logged
+	 */
+	public void log(LogLevel logLevel, String message) {
+		synchronized (logStack) {
+			logStack.add(String.format(LOG_FORMAT, getDate(),
+					getLevel(logLevel), componentName.toUpperCase(), message));
+		}
+	}
+
+	/**
+	 * Returns a copy of the log stack
+	 * 
+	 * @return logStack list of log messages
+	 */
+	public static List<String> getLogStack() {
+		return new ArrayList<String>(logStack);
+	}
+
+	private static String getDate() {
+		return format.format(new Date());
+	}
+
+	private static String getLevel(LogLevel logLevel) {
+		switch (logLevel) {
+			case DEBUG:
+				return "DEBUG";
+			case INFO:
+				return "INFO";
+			case WARNING:
+				return "WARNING";
+			case ERROR:
+				return "ERROR";
+			case FATAL:
+				return "FATAL";
+		}
+		return null;
+	}
+}
+
+	// End of segment: src\util\StreamLogger.java
+
+
+
+
+
+	/**
+	 * origin: src\util\StreamUtil.java
+	 */
+
+
+	public static final SimpleDateFormat cleanDateFormat = new SimpleDateFormat(
+			"yyyyMMdd");
+
+	/**
+	 * Converts a <i>calendar</i> to simple date format yyyyMMdd.
+	 * 
+	 * @return <b>String</b> - the parsed calendar
+	 */
+	public static String getDateString(Calendar calendar) {
+		return cleanDateFormat.format(calendar.getTime());
+	}
+
+	// End of segment: src\util\StreamUtil.java
+
+
+
+
+

@@ -15,6 +15,7 @@ public class StreamExternals {
 	public static ImageIcon ICON_DONE;
 	public static ImageIcon ICON_NOT_DONE;
 	public static ImageIcon ICON_OVERDUE;
+	public static ImageIcon ICON_INACTIVE;
 	public static ImageIcon ICON_HI_RANK;
 	public static ImageIcon ICON_MED_RANK;
 	public static ImageIcon ICON_LOW_RANK;
@@ -26,14 +27,16 @@ public class StreamExternals {
 	public static Font FONT_CONSOLE;
 
 	public static void init(ImageIcon header, ImageIcon doneIcon,
-			ImageIcon notDoneIcon, ImageIcon overdueIcon, ImageIcon hiRankIcon,
+			ImageIcon notDoneIcon, ImageIcon overdueIcon,
+			ImageIcon inactiveIcon, ImageIcon hiRankIcon,
 			ImageIcon medRankIcon, ImageIcon lowRankIcon, ImageIcon startCal,
-			ImageIcon nullStartCal, ImageIcon endCal, ImageIcon nullEndCal, 
+			ImageIcon nullStartCal, ImageIcon endCal, ImageIcon nullEndCal,
 			Font titleFont, Font consoleFont) {
 		HEADER = header;
 		ICON_DONE = doneIcon;
 		ICON_NOT_DONE = notDoneIcon;
 		ICON_OVERDUE = overdueIcon;
+		ICON_INACTIVE = inactiveIcon;
 		ICON_HI_RANK = hiRankIcon;
 		ICON_MED_RANK = medRankIcon;
 		ICON_LOW_RANK = lowRankIcon;

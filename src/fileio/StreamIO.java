@@ -48,11 +48,13 @@ import exception.StreamIOException;
  * 
  * <h3>API</h3>
  * <ul>
- * <li>StreamIO.save(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) </li>
- * <li>StreamIO.load(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt; taskList) </li>
- * <li>StreamIO.setFilename() </li>
- * <li>StreamIO.setSaveLocation(String saveLocation) </li>
- * <li>StreamIO.saveLogFile(List&lt;String&gt; logMessages, String logFileName) </li>
+ * <li>StreamIO.save(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt;
+ * taskList)</li>
+ * <li>StreamIO.load(Map&lt;String, StreamTask&gt; taskMap, List&lt;String&gt;
+ * taskList)</li>
+ * <li>StreamIO.setFilename()</li>
+ * <li>StreamIO.setSaveLocation(String saveLocation)</li>
+ * <li>StreamIO.saveLogFile(List&lt;String&gt; logMessages, String logFileName)</li>
  * </ul>
  * <p>
  * Refer to method documentation for details.
@@ -61,13 +63,13 @@ import exception.StreamIOException;
  * @version V0.5
  */
 public class StreamIO {
-	
-	
+
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyyMMddHHmmss", Locale.ENGLISH);
 	static String STREAM_FILENAME = "default.json";
 	private static final TaskLogic taskLogic = TaskLogic.init();
-	private static final StreamLogger logger = StreamLogger.init(StreamConstants.ComponentTag.STREAMIO);
+	private static final StreamLogger logger = StreamLogger
+			.init(StreamConstants.ComponentTag.STREAMIO);
 
 	/**
 	 * Reads and inflate the contents of serialized storage file into
@@ -77,9 +79,9 @@ public class StreamIO {
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
 	 */
-	public static void load(Map<String, StreamTask> taskMap, List<String> taskList) 
-			throws StreamIOException {
-		assert(taskMap != null && taskList != null);
+	public static void load(Map<String, StreamTask> taskMap,
+			List<String> taskList) throws StreamIOException {
+		assert (taskMap != null && taskList != null);
 		File streamFile = new File(getStorageFile(STREAM_FILENAME));
 		if (streamFile.exists()) {
 			loadAndInflate(streamFile, taskMap, taskList);
@@ -89,8 +91,7 @@ public class StreamIO {
 	}
 
 	/**
-	 * Serializes and write the contents of StreamObject into
-	 * storage file.
+	 * Serializes and write the contents of StreamObject into storage file.
 	 * 
 	 * @param taskMap map of tasks to be saved
 	 * @param taskList list of task names
@@ -98,9 +99,9 @@ public class StreamIO {
 	 *             when JSON conversion fail due file corruption or IO failures
 	 *             when loading/accessing storage file.
 	 */
-	public static void save(Map<String, StreamTask> taskMap, List<String> taskList)
-			throws StreamIOException {
-		assert(taskMap != null && taskList != null);
+	public static void save(Map<String, StreamTask> taskMap,
+			List<String> taskList) throws StreamIOException {
+		assert (taskMap != null && taskList != null);
 		try {
 			File streamFile = new File(getStorageFile(STREAM_FILENAME));
 
@@ -112,11 +113,13 @@ public class StreamIO {
 			writeToFile(streamFile, tasksJson);
 			logger.log(LogLevel.DEBUG, "Saved to file: " + getSaveLocation());
 		} catch (JSONException e) {
-			logger.log(LogLevel.DEBUG, "JSON conversion failed during save - " + e.getMessage());
+			logger.log(LogLevel.DEBUG, "JSON conversion failed during save - "
+					+ e.getMessage());
 			throw new StreamIOException("JSON conversion failed - "
 					+ e.getMessage(), e);
 		} catch (IOException e) {
-			logger.log(LogLevel.DEBUG, "IO failure during save - " + e.getMessage());
+			logger.log(LogLevel.DEBUG,
+					"IO failure during save - " + e.getMessage());
 			throw new StreamIOException("Could not save to file - "
 					+ e.getMessage(), e);
 		}
@@ -125,7 +128,8 @@ public class StreamIO {
 	/**
 	 * Set the filename for saving.
 	 * 
-	 * @param saveFileName filename of storage file to save.
+	 * @param saveFileName
+	 *            filename of storage file to save.
 	 */
 	public static void setFilename(String saveFileName) {
 		STREAM_FILENAME = saveFileName;
@@ -135,24 +139,27 @@ public class StreamIO {
 	 * Get the absolute path of save file's location
 	 * 
 	 * @return file path of the save location.
-	 * @throws StreamIOException 
+	 * @throws StreamIOException
 	 */
-	public static String getSaveLocation() 
-			throws StreamIOException {
+	public static String getSaveLocation() throws StreamIOException {
 		return new File(getStorageFile(STREAM_FILENAME)).getAbsolutePath();
 	}
 
 	/**
-	 * Loads data from file and populate the 
-	 * taskMap and taskList accordingly with the data in the file
+	 * Loads data from file and populate the taskMap and taskList accordingly
+	 * with the data in the file
 	 * 
-	 * @param file to load
-	 * @param taskMap the map to populate loaded tasks
-	 * @param taskList the list to populate loaded task names
-	 * @throws StreamIOException if the file is corrupted or 
-	 * the file could not be loaded. 
+	 * @param file
+	 *            to load
+	 * @param taskMap
+	 *            the map to populate loaded tasks
+	 * @param taskList
+	 *            the list to populate loaded task names
+	 * @throws StreamIOException
+	 *             if the file is corrupted or the file could not be loaded.
 	 */
-	private static void loadAndInflate(File file, Map<String, StreamTask> taskMap, List<String> taskList) 
+	private static void loadAndInflate(File file,
+			Map<String, StreamTask> taskMap, List<String> taskList)
 			throws StreamIOException {
 		JSONObject tasksJson = loadFromFile(file);
 		if (tasksJson != null) {
@@ -165,13 +172,14 @@ public class StreamIO {
 	}
 
 	/**
-	 * Serialized the given JSONObject and writes
-	 * to the specified File.
+	 * Serialized the given JSONObject and writes to the specified File.
 	 * 
-	 * @param destin destination file to write the
-	 * data
-	 * @param tasksJson JSONObject to be serialized
-	 * @throws IOException from file IO errors
+	 * @param destin
+	 *            destination file to write the data
+	 * @param tasksJson
+	 *            JSONObject to be serialized
+	 * @throws IOException
+	 *             from file IO errors
 	 */
 	static void writeToFile(File destin, JSONObject tasksJson)
 			throws IOException {
@@ -190,14 +198,13 @@ public class StreamIO {
 	}
 
 	/**
-	 * Loads the contents in the given file
-	 * and parse it into a JSONObject
+	 * Loads the contents in the given file and parse it into a JSONObject
 	 * 
-	 * @param file source file to be loaded
+	 * @param file
+	 *            source file to be loaded
 	 * @return JSONObject that is parsed
-	 * @throws StreamIOException from file IO 
-	 * errors or when the contents could not be 
-	 * parsed
+	 * @throws StreamIOException
+	 *             from file IO errors or when the contents could not be parsed
 	 */
 	static JSONObject loadFromFile(File file) throws StreamIOException {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -223,16 +230,18 @@ public class StreamIO {
 	}
 
 	/**
-	 * Loads data from file in working directory, this used to
-	 * be the default save location before V0.4.
+	 * Loads data from file in working directory, this used to be the default
+	 * save location before V0.4.
 	 * 
-	 * @param taskMap the map to populate loaded tasks
-	 * @param taskList the list to populate loaded task names
-	 * @throws StreamIOException if the file is corrupted or 
-	 * the file could not be loaded. 
+	 * @param taskMap
+	 *            the map to populate loaded tasks
+	 * @param taskList
+	 *            the list to populate loaded task names
+	 * @throws StreamIOException
+	 *             if the file is corrupted or the file could not be loaded.
 	 */
-	private static void loadLegacyStorage(Map<String, StreamTask> taskMap, List<String> taskList) 
-			throws StreamIOException {
+	private static void loadLegacyStorage(Map<String, StreamTask> taskMap,
+			List<String> taskList) throws StreamIOException {
 		File streamFile = new File(STREAM_FILENAME);
 		if (streamFile.exists()) {
 			loadAndInflate(streamFile, taskMap, taskList);
@@ -241,17 +250,21 @@ public class StreamIO {
 	}
 
 	/**
-	 * Populate the task list with task names from the
-	 * json object given, which should contain a list of 
-	 * tasks data
+	 * Populate the task list with task names from the json object given, which
+	 * should contain a list of tasks data
 	 * 
-	 * @param taskList the list to populate loaded task names
-	 * @param tasksJson the json containing all tasks data
-	 * @throws StreamIOException if the json could not be parsed
+	 * @param taskList
+	 *            the list to populate loaded task names
+	 * @param tasksJson
+	 *            the json containing all tasks data
+	 * @throws StreamIOException
+	 *             if the json could not be parsed
 	 */
-	static void loadTaskList(List<String> taskList, JSONObject tasksJson) throws StreamIOException {
+	static void loadTaskList(List<String> taskList, JSONObject tasksJson)
+			throws StreamIOException {
 		try {
-			JSONObject orderListJson = tasksJson.getJSONObject(TaskKey.TASKLIST);
+			JSONObject orderListJson = tasksJson
+					.getJSONObject(TaskKey.TASKLIST);
 			List<String> storedList = jsonToTaskList(orderListJson);
 			taskList.addAll(storedList);
 		} catch (JSONException e) {
@@ -262,15 +275,18 @@ public class StreamIO {
 	}
 
 	/**
-	 * Populate the task map with tasks from the
-	 * json object given, which should contain a list of 
-	 * tasks data
+	 * Populate the task map with tasks from the json object given, which should
+	 * contain a list of tasks data
 	 * 
-	 * @param taskMap the map to populate with loaded task names
-	 * @param tasksJson the json containing all tasks data
-	 * @throws StreamIOException if the json could not be parsed
+	 * @param taskMap
+	 *            the map to populate with loaded task names
+	 * @param tasksJson
+	 *            the json containing all tasks data
+	 * @throws StreamIOException
+	 *             if the json could not be parsed
 	 */
-	static void loadMap(Map<String, StreamTask> taskMap, JSONObject tasksJson) throws StreamIOException {
+	static void loadMap(Map<String, StreamTask> taskMap, JSONObject tasksJson)
+			throws StreamIOException {
 		try {
 			JSONArray taskMapJson = tasksJson.getJSONArray(TaskKey.TASKMAP);
 			HashMap<String, StreamTask> storedTasks = jsonToMap(taskMapJson);
@@ -283,19 +299,20 @@ public class StreamIO {
 	}
 
 	/**
-	 * Converts a list of task names to json object with
-	 * each task mapped to their index in the list.
+	 * Converts a list of task names to json object with each task mapped to
+	 * their index in the list.
 	 * 
-	 * @param taskList the list to be converted to json format
-	 * @return taskListJson json with array of tasks 
-	 * mapped to their index
-	 * @throws StreamIOException if the json could 
-	 * not be constructed
+	 * @param taskList
+	 *            the list to be converted to json format
+	 * @return taskListJson json with array of tasks mapped to their index
+	 * @throws StreamIOException
+	 *             if the json could not be constructed
 	 */
-	static JSONObject taskListToJson(List<String> taskList) throws StreamIOException {
+	static JSONObject taskListToJson(List<String> taskList)
+			throws StreamIOException {
 		try {
 			JSONObject orderListJson = new JSONObject();
-			for (int i=0; i<taskList.size(); i++) {
+			for (int i = 0; i < taskList.size(); i++) {
 				orderListJson.put(String.valueOf(i), taskList.get(i));
 			}
 			return orderListJson;
@@ -306,18 +323,20 @@ public class StreamIO {
 	}
 
 	/**
-	 * Parses the json object, with a list of task names
-	 * mapped to their index, into a string list.
+	 * Parses the json object, with a list of task names mapped to their index,
+	 * into a string list.
 	 * 
-	 * @param orderListJson json with the task names mapped
-	 * to their index
+	 * @param orderListJson
+	 *            json with the task names mapped to their index
 	 * @return taskList the list of task names
-	 * @throws StreamIOException if the json could not be parsed
+	 * @throws StreamIOException
+	 *             if the json could not be parsed
 	 */
-	static List<String> jsonToTaskList(JSONObject orderListJson) throws StreamIOException {
+	static List<String> jsonToTaskList(JSONObject orderListJson)
+			throws StreamIOException {
 		try {
 			List<String> taskList = new ArrayList<String>();
-			for (int i=0; orderListJson.has(String.valueOf(i)); i++) {
+			for (int i = 0; orderListJson.has(String.valueOf(i)); i++) {
 				taskList.add(orderListJson.getString(String.valueOf(i)));
 			}
 			return taskList;
@@ -374,8 +393,8 @@ public class StreamIO {
 		try {
 			String taskName = taskJson.getString(TaskKey.NAME);
 			StreamTask task = new StreamTask(taskName);
-			if (taskJson.has(TaskKey.DESCRIPTION)){
-				task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));				
+			if (taskJson.has(TaskKey.DESCRIPTION)) {
+				task.setDescription(taskJson.getString(TaskKey.DESCRIPTION));
 			}
 
 			if (taskJson.has(TaskKey.STARTTIME)) {
@@ -408,7 +427,7 @@ public class StreamIO {
 				}
 			}
 
-			if (taskJson.has(TaskKey.RANK)){
+			if (taskJson.has(TaskKey.RANK)) {
 				task.setRank(taskJson.getString(TaskKey.RANK));
 			}
 			return task;
@@ -440,14 +459,15 @@ public class StreamIO {
 			dir = System.getProperty("user.home");
 		} catch (Exception e) {
 			logger.log(LogLevel.ERROR, String.format(
-					StreamConstants.LogMessage.LOAD_FAIL_USER_HOME, 
-					e.getClass().getSimpleName(), e.getMessage()));
+					StreamConstants.LogMessage.LOAD_FAIL_USER_HOME, e
+							.getClass().getSimpleName(), e.getMessage()));
 		}
 		return dir == null ? "" : dir + File.separator;
 	}
 
 	private static String getStreamDirectory() throws StreamIOException {
-		String dir = getUserHomeDirectory() + "Documents" + File.separator + "Stream" + File.separator;
+		String dir = getUserHomeDirectory() + "Documents" + File.separator
+				+ "Stream" + File.separator;
 		File streamDirectory = new File(dir);
 		if (!streamDirectory.exists()) {
 			if (!streamDirectory.mkdirs())
@@ -457,13 +477,12 @@ public class StreamIO {
 		return dir;
 	}
 
-	private static String getStorageFile(String filename) 
+	private static String getStorageFile(String filename)
 			throws StreamIOException {
 		return getStreamDirectory() + filename;
 	}
 
-	private static String getLogsDirectory() 
-			throws StreamIOException {
+	private static String getLogsDirectory() throws StreamIOException {
 		String dir = getStreamDirectory() + "Logs" + File.separator;
 		File streamDirectory = new File(dir);
 		if (!streamDirectory.exists()) {
@@ -474,14 +493,14 @@ public class StreamIO {
 		return dir;
 	}
 
-	private static String getLogsStorageFile(String logFileName) 
+	private static String getLogsStorageFile(String logFileName)
 			throws StreamIOException {
 		return getLogsDirectory() + logFileName;
 	}
 
 	private class TaskKey {
 		static final String TASKMAP = "allTasks";
-		static final String TASKLIST = "taskList";		
+		static final String TASKLIST = "taskList";
 		static final String STARTTIME = "startTime";
 		static final String DEADLINE = "deadline";
 		static final String NAME = "taskName";
@@ -490,7 +509,7 @@ public class StreamIO {
 		static final String DONE = "done";
 		static final String RANK = "rank";
 	}
-	
+
 	//@author A0093874N
 	/**
 	 * Saves the log file upon exiting.
@@ -502,10 +521,11 @@ public class StreamIO {
 	 * @throws StreamIOException
 	 *             if IO failures encountered during accessing of log file.
 	 */
-	public static void saveLogFile(List<String> logMessages, String logFileName) 
+	public static void saveLogFile(List<String> logMessages, String logFileName)
 			throws StreamIOException {
 		try {
-			FileWriter fwriter = new FileWriter(getLogsStorageFile(logFileName), true);
+			FileWriter fwriter = new FileWriter(
+					getLogsStorageFile(logFileName), true);
 			BufferedWriter bw = new BufferedWriter(fwriter);
 			try {
 				for (int i = 0; i < logMessages.size(); i++) {

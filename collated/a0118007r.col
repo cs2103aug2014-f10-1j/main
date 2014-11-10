@@ -1,0 +1,1562 @@
+//@author: a0118007r
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param currentDeadline time to be reverted to
+	 */
+	public void pushInverseDueCommand(int taskIndex, Calendar currentDeadline) {
+		String inverseCommand = null;
+		if (currentDeadline == null) {
+			inverseCommand = String.format(StreamConstants.Commands.DUE,
+					taskIndex, "null");
+		} else {
+			inverseCommand = String.format(StreamConstants.Commands.DUE,
+					taskIndex, StreamUtil.getCalendarWriteUp(currentDeadline));
+		}
+		pushInput(inverseCommand);
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param wasDone boolean state to be reverted to
+	 * @param taskIndex index of task that was modified
+	 */
+	public void pushInverseSetDoneCommand(boolean wasDone, int index) {
+		String inverseCommand = null;
+		if (wasDone) {
+			inverseCommand = String.format(StreamConstants.Commands.MARK_DONE, index);
+		} else {
+			inverseCommand = String.format(StreamConstants.Commands.MARK_NOT_DONE, index);
+		}
+		pushInput(inverseCommand);
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param tagsRemoved tags removed during modification
+	 * to be added back on reversion
+	 */
+	public void pushInverseUntagCommand(int taskIndex, ArrayList<String> tagsRemoved) {
+		if (tagsRemoved.size() > 0) {
+			pushInput(String.format(StreamConstants.Commands.TAG, taskIndex,
+					StreamUtil.listDownArrayContent(tagsRemoved, " ")));
+		}
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param tagsAdded tags added during modification
+	 * to be removed on reversion
+	 */
+	public void pushInverseAddTagCommand(int taskIndex, ArrayList<String> tagsAdded) {
+		if (tagsAdded.size() > 0) {
+			pushInput(String.format(StreamConstants.Commands.UNTAG, taskIndex,
+					StreamUtil.listDownArrayContent(tagsAdded, " ")));
+		}
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Prepares the inverse modify command to be used as undo command for the multi-modify command
+	 * 
+	 * @param taskName
+	 * @param taskIndex
+	 * @param currTask
+	 * @return inverseCommand - the inverse command for multi-modify input
+	 */
+	public String prepareInverseModifyCommand(String taskName, int taskIndex,
+			StreamTask currTask) {
+		String inverseCommand = "modify " + taskIndex + " -name " + taskName
+				+ " ";
+		// added by A0093874N
+		Boolean isDone = currTask.isDone();
+		inverseCommand = buildInverseModifyRank(currTask, inverseCommand,
+				isDone);
+		 //end of addition by A0093874N //
+		inverseCommand = buildInverseModifyDescription(currTask, inverseCommand);
+		inverseCommand = buildInverseModifyDeadline(currTask, inverseCommand);
+		inverseCommand = buildInverseModifyTag(currTask, inverseCommand);
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private String buildInverseModifyDeadline(StreamTask currTask,
+			String inverseCommand) {
+		Calendar oldDue = currTask.getDeadline();
+		if (oldDue != null) {
+			String dueString = StreamUtil.getCalendarWriteUp(oldDue);
+			inverseCommand = inverseCommand + "-due " + dueString + " ";
+		} else {
+			inverseCommand = inverseCommand + "-due null ";
+		}
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private String buildInverseModifyDescription(StreamTask currTask,
+			String inverseCommand) {
+		String oldDesc = currTask.getDescription();
+		if (oldDesc != null) {
+			inverseCommand = inverseCommand + "-desc " + oldDesc + " ";
+		} else {
+			inverseCommand = inverseCommand + "-desc null ";
+		}
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * 
+	 * @param inverseCommand
+	 * @param oldTags
+	 * @param newTags
+	 * @return
+	 * @deprecated replaced with new methodology
+	 * use settags to clear tags then add previous 
+	 * tag state
+	 */
+	public String processTagModification(String inverseCommand,
+			ArrayList<String> oldTags, ArrayList<String> newTags) {
+		String inverseTag = compareTagged(oldTags, newTags);
+		String inverseUntag = compareUntagged(oldTags, newTags);
+		if (inverseTag != "tag ") {
+			inverseCommand += inverseTag;
+		}
+		if (inverseUntag != "untag ") {
+			inverseCommand += inverseUntag;
+		}
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * 
+	 * @param oldTags
+	 * @param newTags
+	 * @param inverseTag
+	 * @return
+	 * @deprecated replaced with new methodology
+	 * use settags to clear tags then add previous 
+	 * tag state
+	 */
+	private String buildInverseTag(ArrayList<String> oldTags,
+			ArrayList<String> newTags, String inverseTag) {
+		for (String old : oldTags) {
+			if (!newTags.contains(old)) {
+				inverseTag = inverseTag + old + " ";
+			}
+		}
+		return inverseTag;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * 
+	 * @param oldTags
+	 * @param newTags
+	 * @param inverseUntag
+	 * @return
+	 * @deprecated replaced with new methodology
+	 * use settags to clear tags then add previous 
+	 * tag state
+	 */
+	private String buildInverseUntag(ArrayList<String> oldTags,
+			ArrayList<String> newTags, String inverseUntag) {
+		for (String newer : newTags) {
+			if (!oldTags.contains(newer)) {
+				inverseUntag += inverseUntag + newer + " ";
+			}
+		}
+		return inverseUntag;
+	}
+
+}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamAddTaskTest.java
+	 */
+
+public class StreamAddTaskTest {
+
+	private StreamLogic streamLogic;
+
+	@Before
+	public void setup() throws Exception {
+		streamLogic = StreamLogic.init(StreamObject.getInstance());
+		streamLogic.addTask("Submit CE2");
+		streamLogic.addTask("Study for midterms");
+	}
+	
+	@Test
+	public void addTaskTest1() {
+		assertEquals("Submit CE2 is added to the list.", true,
+				streamLogic.hasTask("Submit CE2"));
+	}
+	@Test
+	public void addTaskTest2() {
+		assertEquals("Study for midterms is added to the list.", true,
+				streamLogic.hasTask("Study for midterms"));
+	}
+	@Test
+	public void addTaskTest3() {
+		assertEquals("Watch Rurouni Kenshin is not added to the list.", false,
+				streamLogic.hasTask("Watch Rurouni Kenshin"));
+	}
+	@Test
+	public void addTaskTest4() {
+		try {
+			streamLogic.addTask("Submit CE2");
+		} catch (Exception e) {
+			assertEquals("Exception should be generated.",
+					"\"Submit CE2\" already exists in the tasks list.",
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void deleteTest() throws Exception {
+		streamLogic.deleteTask("Submit CE2");
+		assertEquals(streamLogic.hasTask("Submit CE2"), false);
+	}
+	
+	//"Boundary" cases for get task
+	
+
+
+	@Before
+	public void resetup() throws Exception {
+		streamLogic = StreamLogic.init(StreamObject.getInstance());
+		streamLogic.addTask("Submit CE2");
+		streamLogic.addTask("Study for midterms");
+	}
+	
+	@Test 
+	public void getTaskTestOne() throws StreamModificationException{
+		StreamTask myTask = streamLogic.getTask("Submit CE2");
+		assertTrue(myTask.getTaskName().equals("Submit CE2"));
+	}
+	
+	@Test 
+	public void getTaskTestTwo() {
+		try {
+			streamLogic.getTask("AAA");
+			fail("A test message");
+		} catch (StreamModificationException e) {
+			
+		}
+		
+	}
+	
+	
+	
+}
+
+	// End of segment: src\logic\StreamAddTaskTest.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+public class StreamLogic extends BaseLogic {
+
+	private StreamObject streamObject;
+	private TaskLogic taskLogic = TaskLogic.init();
+
+	private StreamLogic() {
+
+	}
+
+	/**
+	 * Initializes StreamLogic.
+	 * 
+	 * @param streamObject
+	 * @return logic, the instance of the StreamLogic class
+	 */
+	public static StreamLogic init(StreamObject streamObject) {
+		StreamLogic logic = new StreamLogic();
+		logic.streamObject = streamObject;
+		return logic;
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Gets a specific task
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            name of task to be returned
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
+	 */
+	public StreamTask getTask(String taskName)
+			throws StreamModificationException {
+		if (hasTask(taskName)) {
+			return streamObject.get(taskName);
+		} else {
+			throw new StreamModificationException(String.format(
+					StreamConstants.ExceptionMessage.ERR_TASK_DOES_NOT_EXIST,
+					taskName));
+		}
+	}
+
+	/**
+	 * Deletes a specific task
+	 * 
+	 * <p>
+	 * Precondition: taskName != null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            name of task to be deleted
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found
+	 */
+	public void deleteTask(String taskName) throws StreamModificationException {
+		if (hasTask(taskName)) {
+			streamObject.remove(taskName);
+		} else {
+			throw new StreamModificationException(String.format(
+					StreamConstants.ExceptionMessage.ERR_TASK_DOES_NOT_EXIST,
+					taskName));
+		}
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Modifies the various specified parameters of a task.
+	 * 
+	 * <p>
+	 * Precondition: head of the modifyParams list is a valid parameter
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            to be modified
+	 * @param modifyParams
+	 *            various parameters that are going to be modified
+	 * @throws StreamModificationException
+	 *             if taskName given does not return a match, i.e. task not
+	 *             found.
+	 */
+	public void modifyTaskWithParams(String taskName, List<String> modifyParams)
+			throws StreamModificationException {
+		StreamTask task = getTask(taskName);
+		String attribute = modifyParams.get(0);
+		String contents = "";
+		for (int i = 1; i < modifyParams.size(); i++) {
+			String s = modifyParams.get(i);
+			if (StreamUtil.isValidAttribute(s)) {
+				// first content is guaranteed to be a valid parameter
+				modifyTask(task, attribute, contents.trim());
+				attribute = s;
+				contents = "";
+			} else {
+				contents = contents + s + " ";
+			}
+		}
+		modifyTask(task, attribute, contents);
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\TaskLogic.java
+	 */
+
+	/**
+	 * The logic behind task modification for multi-add and multi-modify commands.
+	 * 
+	 * The "-" symbol is added to avoid confusion with parameters of each keywords.
+	 * 
+	 * @param task
+	 * @param attribute
+	 * @param contents
+	 */
+	public void modifyTask(StreamTask task, String attribute, String contents) {
+		contents = contents.trim();
+		
+		switch (attribute) {
+			case "-desc":
+				description(task, contents);
+				break;
+			case "-due":
+			case "-by":
+			case "-to":
+				deadline(task, contents);
+				break;
+			case "-start":
+			case "-from":
+				startTime(task, contents);
+				break;
+			case "-tag":
+				addTags(task, contents.split(" "));
+				break;
+			case "-untag":
+				removeTags(task, contents.split(" "));
+				break;
+			case "-settags":
+				setTags(task, contents);
+				break;
+			case "-rank":
+				rank(task, contents);
+				break;
+			case "-mark":
+				mark(task, contents);
+				break;
+		}
+		logDebug(String.format(StreamConstants.LogMessage.NEW_MODIFICATION,
+				task.getTaskName(), attribute, contents));
+	}
+
+	private void description(StreamTask task, String contents) {
+		if (contents.equals("null")) {
+			task.setDescription(null);
+		} else {
+			task.setDescription(contents);
+		}
+	}
+
+	private void deadline(StreamTask task, String contents) {
+		if (contents.equals("null")) {
+			task.setDeadline(null);
+		} else {
+			contents = StreamUtil.parseWithChronic(contents);
+			try {
+				Calendar due = StreamUtil.parseCalendar(contents);
+				Calendar startTime = task.getStartTime();
+				if (StreamUtil.isValidDeadline(due, startTime)) {
+					task.setDeadline(due);				
+				} 
+			} catch (Exception e) {
+				
+			}
+		}
+	}
+
+	private void startTime(StreamTask task, String contents) {
+		if (contents.equals("null")) {
+			task.setStartTime(null);
+		} else {
+			contents = StreamUtil.parseWithChronic(contents);
+			try {
+				Calendar start = StreamUtil.parseCalendar(contents);
+				Calendar deadline = task.getDeadline();
+				if (StreamUtil.isValidStartTime(deadline, start)) {
+					task.setStartTime(start);				
+				}
+			} catch (Exception e) {
+				
+			}
+		}
+	}
+
+	private void mark(StreamTask task, String contents) {
+		String status = contents.trim();
+		MarkType parsedMarkType = StreamParser.parseMarking(status);
+		switch (parsedMarkType) {
+			case DONE:
+				task.markAsDone();
+				break;
+			case NOT:
+				task.markAsOngoing();
+				break;
+			default:
+		}
+	}
+
+	// End of segment: src\logic\TaskLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamObject.java
+	 */
+
+/**
+ * StreamObject is a class that stores the data of all StreamTasks inside a
+ * hashmap and an arraylist.
+ * 
+ * This is the internal storage of the software.
+ * 
+ * It is implemented as a singleton.
+ * 
+ * @version V0.5
+ */
+public class StreamObject {
+
+	private HashMap<String, StreamTask> taskMap;
+	private ArrayList<String> taskList;
+
+	private StreamObject(HashMap<String, StreamTask> taskMap,
+			ArrayList<String> taskList) {
+		this.taskMap = taskMap;
+		this.taskList = taskList;
+	}
+
+	private StreamObject() {
+		this.taskMap = new HashMap<String, StreamTask>();
+		this.taskList = new ArrayList<String>();
+	}
+
+	/**
+	 * Accesses the constructor of this class
+	 * 
+	 * @return StreamObject - an instance of this class
+	 */
+	public static StreamObject getInstance() {
+		return new StreamObject();
+	}
+
+	public static StreamObject getInstance(HashMap<String, StreamTask> taskMap,
+			ArrayList<String> taskList) {
+		return new StreamObject(taskMap, taskList);
+	}
+
+	// End of segment: src\model\StreamObject.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamTask.java
+	 */
+
+/**
+ * This class is the StreamTask class - the task object acting as the heart of
+ * the software.
+ * 
+ * This class contains all the attributes, constructor, getter, and setters for
+ * the task object.
+ * 
+ * @version V0.5
+ */
+public class StreamTask {
+
+	// Attributes
+	private String taskName;
+	private String taskDescription;
+	private Calendar startTime;
+	private Calendar deadline;
+	private ArrayList<String> tags;
+	private boolean isDone;
+	private String rank;
+
+	// Constructor
+	public StreamTask(String taskName) {
+		this.taskName = taskName;
+		this.taskDescription = null;
+		this.startTime = null;
+		this.deadline = null;
+		this.tags = new ArrayList<String>();
+		this.isDone = false;
+		this.rank = "low";
+	}
+
+	// Getters and Setters
+
+	/**
+	 * Gets the name of a task
+	 * 
+	 * @return this.taskName - the name of the task
+	 */
+	public String getTaskName() {
+		return this.taskName;
+	}
+
+	/**
+	 * Sets the name of a task
+	 * 
+	 * @param newTaskName - the new task's name
+	 */
+	public void setTaskName(String newTaskName) {
+		this.taskName = newTaskName;
+	}
+
+	/**
+	 * Gets the description of a task
+	 * 
+	 * @return this.taskDescription - the description of the task
+	 */
+	public String getDescription() {
+		return this.taskDescription;
+	}
+
+	/**
+	 * Sets the description of a task
+	 * 
+	 * @param description - the new description of the task
+	 */
+	public void setDescription(String description) {
+		this.taskDescription = description;
+	}
+
+	// End of segment: src\model\StreamTask.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Stream Constructor to initialize the program.
+	 */
+	public Stream(String file) {
+		initializeExtFiles();
+		initStreamIO(file);
+		initializeStream();
+		load();
+		refreshUI();
+	}
+
+	private void initializeStream() {
+		stui = new StreamUI(this);
+		parser = new StreamParser();
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void executeInput(CommandType command, Integer index, String content)
+			throws StreamModificationException, StreamIOException {
+		switch (command) {
+			case ADD:
+				executeAdd(content);
+				refreshUI();
+				break;
+
+			case DEL:
+				executeDelete(index);
+				refreshUI();
+				break;
+
+			case DESC:
+				executeDescribe(index, content);
+				refreshUI();
+				break;
+
+			case DUE:
+				executeDue(index, content);
+				refreshUI();
+				break;
+
+			case START:
+				executeStartTime(index, content);
+				refreshUI();
+				break;
+
+			case MODIFY:
+				executeModify(index, content);
+				refreshUI();
+				break;
+
+			case NAME:
+				executeName(index, content);
+				refreshUI();
+				break;
+
+			case RANK:
+				executeRank(index, content);
+				refreshUI();
+				break;
+
+			case MARK:
+				executeMark(index, content.trim());
+				refreshUI();
+				break;
+
+			case TAG:
+				executeTag(index, content);
+				refreshUI();
+				break;
+
+			case UNTAG:
+				executeUntag(index, content);
+				refreshUI();
+				break;
+
+			case FILTER:
+				ArrayList<Integer> filterResult = executeFilter(content);
+				refreshUI(filterResult, true, true);
+				break;
+
+			case CLRSRC:
+				refreshUI();
+				break;
+
+			case SEARCH:
+				ArrayList<Integer> searchResult = executeSearch(content);
+				refreshUI(searchResult, true, true);
+				break;
+
+			case SORT:
+				executeSort(content);
+				refreshUI();
+				break;
+
+			case VIEW:
+				executeView(index);
+				break;
+
+			case CLEAR:
+				executeClear();
+				refreshUI();
+				break;
+
+			case UNDO:
+				executeUndo();
+				break;
+
+			case RECOVER:
+				executeRecover(index);
+				refreshUI();
+				break;
+
+			case DISMISS:
+				executeDismiss(index);
+				refreshUI();
+				break;
+
+			case UNSORT:
+				executeUnsort();
+				refreshUI();
+				break;
+
+			case FIRST:
+				stui.goToFirstPage();
+				break;
+
+			case PREV:
+				stui.goToPrevPage();
+				break;
+
+			case NEXT:
+				stui.goToNextPage();
+				break;
+
+			case LAST:
+				stui.goToLastPage();
+				break;
+
+			case PAGE:
+				stui.goToPage(index);
+				break;
+
+			case HELP:
+				stui.openHelpBox();
+				break;
+
+			case EXIT:
+				executeExit();
+
+			default:
+				showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
+		}
+	}
+
+	/**
+	 * Adds a new task to the tasks list.
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null
+	 * </p>
+	 * 
+	 * @param taskNameWithParams
+	 *            - the task name
+	 * @throws StreamModificationException
+	 *             - if a <b>StreamTask<b> named <i>taskName</i> is already
+	 *             present.
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeAdd(String taskNameWithParams)
+			throws StreamModificationException {
+
+		assertNotNull(taskNameWithParams);
+		String[] contents = taskNameWithParams.split(" ");
+		String taskName = "";
+		ArrayList<String> modifyParams = new ArrayList<String>();
+
+		for (int i = 0; i < contents.length; i++) {
+			String word = contents[i];
+			if (StreamUtil.isValidAttribute(word)) {
+				appendEverything(contents, modifyParams, i);
+				break;
+			} else {
+				taskName = taskName + word + " ";
+			}
+		}
+
+		taskName = taskName.trim();
+		addTaskWithParams(taskName, modifyParams);
+
+		StreamTask task = streamLogic.getTask(taskName);
+		stui.setActiveTask(task);
+
+		String result = String.format(StreamConstants.LogMessage.ADD, taskName);
+		showAndLogResult(result);
+	}
+
+	/**
+	 * Appends all trailing strings that are not part of a task's name to be
+	 * modified as parameters.
+	 * 
+	 * @param contents
+	 *            - the trailing strings
+	 * @param modifyParams
+	 *            - the storage for parameter modification
+	 * @param i
+	 *            - the starting index
+	 */
+	private void appendEverything(String[] contents,
+			ArrayList<String> modifyParams, int i) {
+		for (int k = i - 1; k < contents.length; k++) {
+			modifyParams.add(contents[k]);
+		}
+	}
+
+	/**
+	 * Deletes a task from the tasks list and then archives it so it can be
+	 * recovered by undo process.
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null.
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeDelete(Integer taskIndex)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		assertNotNull(taskName);
+		StreamTask deletedTask = streamLogic.getTask(taskName);
+		ArrayList<String> order = streamLogic.getTaskList();
+
+		assertNotNull(taskName);
+		
+		streamLogic.deleteTask(taskName);
+		assertNoTask(taskName);
+
+		stackLogic.pushInverseDeleteCommand(deletedTask, order);
+		String result = String.format(StreamConstants.LogMessage.DELETE,
+				taskName);
+		showAndLogResult(result);
+	}
+
+	/**
+	 * Asserts if the given task name does not exists.
+	 * 
+	 * @param taskName
+	 *            - the task name to be checked whether it exists or not
+	 */
+	private void assertNoTask(String taskName) {
+		assert (!streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_DELETED;
+	}
+
+	/**
+	 * Asserts if the task name is null.
+	 * 
+	 * @param taskName
+	 *            - the task name to be chekced whether it is null
+	 */
+	private void assertNotNull(String taskName) {
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Prints the task details.
+	 * 
+	 * @throws StreamModificationException
+	 */
+	private void executeView(Integer taskIndex)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+
+		assertNotNull(taskName);
+		StreamTask currentTask = streamLogic.getTask(taskName);
+		stui.displayDetails(currentTask);
+		stui.setActiveTask(currentTask);
+
+		// This section is contributed by A0093874N
+		String result = String
+				.format(StreamConstants.LogMessage.VIEW, taskName);
+		showAndLogResult(result);
+	}
+
+	/**
+	 * Adds a description to a task.
+	 * <p>
+	 * Pre-condition: <i>task, index, description</i> not null
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeDescribe(Integer taskIndex, String description)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		StreamTask currentTask = streamLogic.getTask(taskName);
+		String oldDescription = currentTask.getDescription();
+		currentTask.setDescription(description.equals("null") ? null
+				: description);
+		stui.setActiveTask(currentTask);
+
+		stackLogic.pushInverseSetDescriptionCommand(taskIndex, oldDescription);
+		String result = String.format(StreamConstants.LogMessage.DESC,
+				currentTask.getTaskName(), description);
+		showAndLogResult(result);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Changes the name of a task.
+	 * <p>
+	 * Pre-condition: <i>task, index, name</i> not null
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeName(Integer taskIndex, String newTaskName)
+			throws StreamModificationException {
+		String oldTaskName = streamLogic.getTaskNumber(taskIndex);
+		streamLogic.updateTaskName(oldTaskName, newTaskName);
+		StreamTask task = streamLogic.getTask(newTaskName);
+		stui.setActiveTask(task);
+
+		stackLogic.pushInverseSetNameCommand(taskIndex, oldTaskName);
+
+		String result = String.format(StreamConstants.LogMessage.NAME,
+				oldTaskName, newTaskName);
+		showAndLogResult(result);
+	}
+
+	/**
+	 * Modifies various parameters of a task.
+	 * <p>
+	 * Pre-condition: <i>task, index, specified params</i> not null
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeModify(Integer taskIndex, String content)
+			throws StreamModificationException {
+		String[] contents = content.split(" ");
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		StreamTask currTask = streamLogic.getTask(taskName);
+
+		String inverseCommand = stackLogic.prepareInverseModifyCommand(
+				taskName, taskIndex, currTask);
+
+		streamLogic.modifyTaskWithParams(taskName, Arrays.asList(contents));
+		stackLogic.pushInverseModifyCommand(inverseCommand);
+		stui.setActiveTask(currTask);
+
+		String result = String.format(StreamConstants.LogMessage.MODIFY,
+				taskName);
+		showAndLogResult(result);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Marks the category as the specified category
+	 * 
+	 * @param taskIndex
+	 * @param markType
+	 *            - the category to be used for marking
+	 * @throws StreamModificationException
+	 */
+	private void executeMark(Integer taskIndex, String markType)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		MarkType parsedMarkType = StreamParser.parseMarking(markType);
+		StreamTask task = streamLogic.getTask(taskName);
+		String result = null;
+		result = processMarking(taskIndex, markType, parsedMarkType, task);
+		stui.setActiveTask(task);
+		showAndLogResult(result);
+	}
+
+	private String processMarking(Integer taskIndex, String markType,
+			MarkType parsedMarkType, StreamTask task) {
+		String result;
+		switch (parsedMarkType) {
+			case DONE:
+				result = markAsDone(task, taskIndex);
+				break;
+			case NOT:
+				result = markAsOngoing(task, taskIndex);
+				break;
+			case INACTIVE:
+			case OVERDUE:
+				result = "Disallowed marking type: " + markType;
+				break;
+			default:
+				// should not happen, but let's play safe
+				result = "Unknown marking type: " + markType;
+		}
+		return result;
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void executeDue(Integer taskIndex, String content)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		String result = null;
+		result = processDue(content, taskIndex, taskName);
+		StreamTask task = streamLogic.getTask(taskName);
+		stui.setActiveTask(task);
+		showAndLogResult(result);
+	}
+
+	private String processDue(String content, int taskIndex, String taskName)
+			throws StreamModificationException {
+		String result;
+		if (content.trim().equals("null")) {
+			result = setDueDate(taskName, taskIndex, null);
+		} else {
+			String due = content;
+			due = StreamUtil.parseWithChronic(due);
+			Calendar calendar = StreamUtil.parseCalendar(due);
+			result = setDueDate(taskName, taskIndex, calendar);
+		}
+		return result;
+	}
+
+	private void executeStartTime(Integer taskIndex, String content)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		String result = processStartTime(content, taskIndex, taskName);
+		StreamTask task = streamLogic.getTask(taskName);
+		stui.setActiveTask(task);
+		showAndLogResult(result);
+	}
+
+	private String processStartTime(String content, int taskIndex,
+			String taskName) throws StreamModificationException {
+		String result;
+		if (content.trim().equals("null")) {
+			result = setStartDate(taskName, taskIndex, null);
+		} else {
+			String start = content;
+			start = StreamUtil.parseWithChronic(start);
+			Calendar calendar = StreamUtil.parseCalendar(start);
+			result = setStartDate(taskName, taskIndex, calendar);
+		}
+		return result;
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void addTaskWithParams(String taskName,
+			ArrayList<String> modifyParams) throws StreamModificationException {
+
+		streamLogic.addTask(taskName);
+		assert (streamLogic.hasTask(taskName)) : StreamConstants.Assertion.NOT_ADDED;
+		stackLogic.pushInverseAddCommand(streamLogic.getNumberOfTasks());
+		processParameterAddition(taskName, modifyParams);
+	}
+
+	private void processParameterAddition(String taskName,
+			ArrayList<String> modifyParams) throws StreamModificationException {
+		if (modifyParams.size() > 0) {
+			streamLogic.modifyTaskWithParams(taskName, modifyParams);
+		}
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Mark the selected task as ongoing
+	 * 
+	 * @return <strong>String</strong> - the log message
+	 */
+	private String markAsOngoing(StreamTask task, int index) {
+		boolean wasDone = task.isDone();
+		task.markAsOngoing();
+
+		stackLogic.pushInverseSetDoneCommand(wasDone, index);
+		// This section is contributed by A0093874N
+		return String.format(StreamConstants.LogMessage.MARK,
+				task.getTaskName(), "ongoing");
+		//
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void showAndLogError(String errorMessage) {
+		showAndLogError(errorMessage, errorMessage);
+	}
+
+	/*
+	 * These two can be used if the log message to be documented and to be
+	 * displayed are different (especially for exception/error messages)
+	 */
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\util\StreamUtil.java
+	 */
+
+
+	/**
+	 * With the help of JChronic, parses a <b>String</b> <i>due</i> and tries to
+	 * get a proper calendar from it when possible, or simply return <i>due</i>
+	 * itself if fails.
+	 * 
+	 * @param due
+	 *            - the <b> String to be parsed
+	 * @return <b>String</b> - the parse result, regardless of successful or not
+	 */
+	public static String parseWithChronic(String due) {
+		Span x;
+		try {
+			x = Chronic.parse(due);
+			Calendar begin = x.getBeginCalendar();
+			String calendarWriteUp = StreamUtil.getCalendarWriteUp(begin);
+			due = StreamUtil.stripCalendarChars(calendarWriteUp);
+		} catch (NullPointerException e) {
+			System.out.println("\"" + due + "\" cannot be parsed");
+			// TODO change to logging... show to user?
+		}
+		return due;
+	}
+
+	/**
+	 * Parses <i>contents</i> back to <b>Calendar</b> format.
+	 * 
+	 * @param contents
+	 *            - the <b>String</b> to be parsed
+	 * @return <b>Calendar</b>
+	 */
+	public static Calendar parseCalendar(String contents) {
+		String[] dueDate = contents.split(" ");
+		int[] dueDateParameters = new int[dueDate.length];
+		for (int i = 0; i < dueDate.length; i++) {
+			if (i != 1) {
+				dueDateParameters[i] = Integer.parseInt(dueDate[i].trim());
+			}
+		}
+		int date = dueDateParameters[0];
+		int month = getMonthIndex(dueDate[1]);
+		int year = dueDateParameters[2];
+		int hour = dueDateParameters[3];
+		int minute = dueDateParameters[4];
+		int second = dueDateParameters[5];
+		Calendar calendar = new GregorianCalendar(year, month - 1, date, hour,
+				minute, second);
+		return calendar;
+	}
+
+	/**
+	 * Gets the month index of <i>month</i>, i.e January is 1, February is 2,
+	 * ...
+	 * 
+	 * @return <b>int</b> - the month index of <i>month</i>
+	 */
+	public static int getMonthIndex(String month) {
+		switch (month) {
+			case "January":
+				return 1;
+			case "February":
+				return 2;
+			case "March":
+				return 3;
+			case "April":
+				return 4;
+			case "May":
+				return 5;
+			case "June":
+				return 6;
+			case "July":
+				return 7;
+			case "August":
+				return 8;
+			case "September":
+				return 9;
+			case "October":
+				return 10;
+			case "November":
+				return 11;
+			case "December":
+				return 12;
+			default:
+				return 0;
+		}
+	}
+
+	/**
+	 * Checks whether <i>param</i> is a valid modifier attribute for Stream
+	 * modify command.
+	 * 
+	 * @return <b>boolean</b> - indicates whether <i>param</i> is a valid
+	 *         attribute
+	 */
+	public static boolean isValidAttribute(String param) {
+		for (String s : StreamConstants.MODIFICATION_ATTRIBUTES) {
+			if (s.equals(param)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks whether the <i>deadline</i> entered is after <i>startTime</i>
+	 * 
+	 * @return <b>boolean</b> - indicates whether <i>deadline</i> is after
+	 *         <i>startTime</i>
+	 */
+	public static boolean isValidDeadline(Calendar deadline, Calendar startTime) {
+		if (deadline == null || startTime == null) {
+			return true;
+		} else {
+			return deadline.after(startTime);
+		}
+	}
+
+	/**
+	 * Checks whether the <i>startTime</i> entered is before <i>deadline</i>
+	 * 
+	 * @return <b>boolean</b> - indicates whether <i>startTime</i> is before
+	 *         <i>deadline</i>
+	 */
+	public static boolean isValidStartTime(Calendar deadline, Calendar startTime) {
+		if (deadline == null || startTime == null) {
+			return true;
+		} else {
+			return startTime.before(deadline);
+		}
+	}
+
+	// End of segment: src\util\StreamUtil.java
+
+
+
+
+
+	/**
+	 * origin: src\util\StreamUtilTest.java
+	 */
+
+
+import static org.junit.Assert.*;
+
+import java.util.Calendar;
+
+import model.StreamTask;
+
+import org.junit.Test;
+
+public class StreamUtilTest {
+	
+	//Tests for display description
+	@Test //null input value
+	public void displayDescriptionTest1() {
+		String description = StreamUtil.displayDescription(null);
+		assertEquals("no description provided", description);
+	}
+	
+	@Test //some random input, already covers boundary cases / partitioning
+	public void displayDescriptionTest2() {
+		String description = StreamUtil.displayDescription("task description");
+		assertEquals("task description", description);
+	}
+	
+	//Tests for displayStatus
+	@Test
+	public void displayStatusTest1() {
+		StreamTask myTask = new StreamTask("my task");
+		myTask.markAsDone();
+		String status = StreamUtil.displayStatus(myTask);
+		assertEquals(status, "done");
+	}
+	
+	@Test
+	public void displayStatusTest2() {
+		StreamTask myTask = new StreamTask("my task");
+		String status = StreamUtil.displayStatus(myTask);
+		assertEquals(status, "ongoing");
+	}
+	
+	//Tests parseWithChronic
+	@Test
+	public void parseWithChronicTest1() {
+		String date = "now";
+		Calendar now = Calendar.getInstance();
+		String parsedDate = StreamUtil.parseWithChronic(date);
+		Calendar parsedCalendar = StreamUtil.parseCalendar(parsedDate);
+		String nowCalendar = StreamUtil.getCalendarWriteUp(now);
+		String calendarWriteUp = StreamUtil.getCalendarWriteUp(parsedCalendar);
+		assertEquals(nowCalendar, calendarWriteUp);
+	}
+	
+	//Tests getMonthIndex
+	@Test
+	public void getMonthIndexTest1() {
+		String month = "January";
+		assertEquals(1, StreamUtil.getMonthIndex(month));
+	}
+	
+	@Test
+	public void getMonthIndexTest2() {
+		String month = "Some weird month";
+		assertEquals(0, StreamUtil.getMonthIndex(month));
+	}
+	
+	@Test
+	public void getMonthIndexTest3() {
+		String month = "5";
+		assertEquals(0, StreamUtil.getMonthIndex(month));
+	}
+	
+	//Tests isValidAttribute
+	@Test
+	public void isValidAttributeTest1() {
+		String att = "-desc";
+		assertTrue(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest2() {
+		String att = "-due";
+		assertTrue(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest3() {
+		String att = "-name";
+		assertTrue(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest4() {
+		String att = "-weirdAttribute";
+		assertFalse(StreamUtil.isValidAttribute(att));
+	}
+	
+	@Test
+	public void isValidAttributeTest5() {
+		String att = null;
+		assertFalse(StreamUtil.isValidAttribute(att));
+	}
+	
+	
+}
+
+	// End of segment: src\util\StreamUtilTest.java
+
+
+
+
+

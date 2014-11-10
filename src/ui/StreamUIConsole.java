@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 import javax.swing.JTextField;
@@ -33,7 +32,6 @@ import util.StreamConstants;
  * <h3>API</h3>
  * <ul>
  * <li>StreamUIConsole.addPossibility(String possibility, String helpText)</li>
- * <li>StreamUIConsole.removePossibility(String possibility)</li>
  * </ul>
  * <p>
  * Refer to method documentation for details.
@@ -54,12 +52,19 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 
 	private static final String DEFAULT_HELP_TEXT = "Press space to fill";
 	private static final String UNKNOWN_COMMAND = "Warning: unknown command";
+	private static final String COMMAND_PROMPT = "Enter your command here";
+	private static final String HELP_TEXT_EMPTY = StreamConstants.Message.WELCOME
+			+ " Type \"help\" and press enter to get some assistance!";
+
+	private static final int GUESS_NOT_FOUND = -1;
+	private static final int COORD_X = 5;
+	private static final int COORD_Y = 20;
 
 	StreamUIConsole(StreamUIFeedback fdb) {
 		super();
 		setMargin(StreamConstants.UI.MARGIN_CONSOLE);
 		this.possibilities = new ArrayList<String>();
-		this.currentGuess = -1;
+		this.currentGuess = GUESS_NOT_FOUND;
 		this.isGuessing = false;
 		this.addKeyListener(this);
 		this.getDocument().addDocumentListener(this);
@@ -68,7 +73,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	}
 
 	/**
-	 * Add a new possibility to the list of possibilities for the auto-complete
+	 * Adds a new possibility to the list of possibilities for the auto-complete
 	 * processor to process.
 	 * 
 	 * @param possibility
@@ -79,19 +84,6 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	public void addPossibility(String possibility, String helpText) {
 		this.possibilities.add(possibility);
 		this.helpTextMap.put(possibility, helpText);
-		Collections.sort(possibilities);
-	}
-
-	/**
-	 * Removes the given possibility from the list of possibilities so that it
-	 * will no longer be matched.
-	 * 
-	 * @param possibility
-	 *            - the possibility to remove
-	 */
-	public void removePossibility(String possibility) {
-		this.possibilities.remove(possibility);
-		this.helpTextMap.remove(possibility);
 	}
 
 	/**
@@ -101,7 +93,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	 * @return <b>String</b> - the current guess
 	 */
 	private String getCurrentGuess() {
-		if (this.currentGuess != -1) {
+		if (this.currentGuess != GUESS_NOT_FOUND) {
 			isFound = true;
 			return this.possibilities.get(this.currentGuess);
 		}
@@ -116,7 +108,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 		String entered = this.getText().toLowerCase();
 
 		for (int i = 0; i < this.possibilities.size(); i++) {
-			currentGuess = -1;
+			currentGuess = GUESS_NOT_FOUND;
 
 			String possibility = this.possibilities.get(i);
 			possibility = possibility.toLowerCase();
@@ -131,7 +123,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	public void setText(String text) {
 		super.setText(text);
 		this.isGuessing = false;
-		this.currentGuess = -1;
+		this.currentGuess = GUESS_NOT_FOUND;
 	}
 
 	@Override
@@ -155,22 +147,23 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 			String subGuess = drawGuess.substring(entered.length(),
 					drawGuess.length());
 			g.setColor(Color.GRAY);
-			g.drawString(subGuess, (int) (enteredBounds.getWidth()) + 6, 20);
+			g.drawString(subGuess, (int) (enteredBounds.getWidth()) + COORD_X
+					+ 1, COORD_Y);
 			String[] typed = entered.trim().split(" ");
 			if (helpTextMap.containsKey(typed[0])) {
-				feedback.showFeedbackMessage(helpTextMap.get(typed[0]));
+				feedback.setText(helpTextMap.get(typed[0]));
 			} else if (isFound) {
-				feedback.showFeedbackMessage(DEFAULT_HELP_TEXT);
+				feedback.setText(DEFAULT_HELP_TEXT);
 			} else {
-				feedback.showFeedbackMessage(UNKNOWN_COMMAND);
+				feedback.setText(UNKNOWN_COMMAND);
 			}
 		} else {
 			Graphics2D g2 = (Graphics2D) g.create();
 			g2.setFont(StreamConstants.UI.FONT_CONSOLE);
 			g2.setColor(Color.GRAY);
-			g2.drawString("Enter your command here", 5, 20);
+			g2.drawString(COMMAND_PROMPT, COORD_X, COORD_Y);
 			g2.dispose();
-			feedback.showFeedbackMessage(StreamConstants.Message.WELCOME);
+			feedback.setText(HELP_TEXT_EMPTY);
 		}
 	}
 

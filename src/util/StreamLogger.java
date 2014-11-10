@@ -14,15 +14,16 @@ import java.util.Locale;
  * Stores logs in a synchronized list for various components.
  * </p>
  * 
- * <h2>Example</h2> 
+ * <h2>Example</h2>
  * 
  * <pre>
- * {@code
- * //Initialize logger, similar to Object.getInstance() taught.
- * StreamLogger logger = StreamLogger.init(componentName);
+ * {
+ * 	&#064;code
+ * 	// Initialize logger, similar to Object.getInstance() taught.
+ * 	StreamLogger logger = StreamLogger.init(componentName);
  * 
- * //Use logger to add log to log stack
- * logger.log(LogLevel.DEBUG, logMessage);
+ * 	// Use logger to add log to log stack
+ * 	logger.log(LogLevel.DEBUG, logMessage);
  * }
  * </pre>
  * 
@@ -33,11 +34,12 @@ import java.util.Locale;
  * @version V0.5
  */
 public class StreamLogger {
-	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+	private static SimpleDateFormat format = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 	private String componentName;
 	private static final List<String> logStack = new ArrayList<String>();
 	private static final String LOG_FORMAT = "%1$s %2$s [%3$s] %4$s";
-	
+
 	public enum LogLevel {
 		DEBUG, INFO, WARNING, ERROR, FATAL;
 	}
@@ -45,7 +47,8 @@ public class StreamLogger {
 	/**
 	 * Lazy constructor for StreamLogger to obtain an instance.
 	 * 
-	 * @param componentName standardized name of component
+	 * @param componentName
+	 *            standardized name of component
 	 * @return StreamLogger instance for use to log
 	 */
 	public static StreamLogger init(String componentName) {
@@ -57,13 +60,15 @@ public class StreamLogger {
 	/**
 	 * Adds log message to synchronized log stack.
 	 * 
-	 * @param logLevel importance level of log message
-	 * @param message the log message to be logged
+	 * @param logLevel
+	 *            importance level of log message
+	 * @param message
+	 *            the log message to be logged
 	 */
 	public void log(LogLevel logLevel, String message) {
 		synchronized (logStack) {
-			logStack.add(String.format(LOG_FORMAT, getDate(), 
-					getLevel(logLevel), componentName.toUpperCase(), message));	
+			logStack.add(String.format(LOG_FORMAT, getDate(),
+					getLevel(logLevel), componentName.toUpperCase(), message));
 		}
 	}
 
@@ -82,16 +87,16 @@ public class StreamLogger {
 
 	private static String getLevel(LogLevel logLevel) {
 		switch (logLevel) {
-		case DEBUG:
-			return "DEBUG";
-		case INFO:
-			return "INFO";
-		case WARNING:
-			return "WARNING";
-		case ERROR:
-			return "ERROR";
-		case FATAL:
-			return "FATAL";
+			case DEBUG:
+				return "DEBUG";
+			case INFO:
+				return "INFO";
+			case WARNING:
+				return "WARNING";
+			case ERROR:
+				return "ERROR";
+			case FATAL:
+				return "FATAL";
 		}
 		return null;
 	}

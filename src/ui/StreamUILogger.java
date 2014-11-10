@@ -9,7 +9,7 @@ import util.StreamUtil;
 
 /**
  * <p>
- * A simple, non-editable <b>JTextField</b> component to display log messages.
+ * A simple, non-editable <b>JTextArea</b> component to display log messages.
  * Error messages and normal log messages are displayed differently.
  * </p>
  * 
