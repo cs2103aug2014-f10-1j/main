@@ -48,7 +48,6 @@ public class TaskLogic extends BaseLogic {
 		return tagsAdded;
 	}
 
-	//@author A0093874N
 	/**
 	 * Process the removal of tags to the task object.
 	 * 
@@ -74,7 +73,6 @@ public class TaskLogic extends BaseLogic {
 		return tagsRemoved;
 	}
 
-	//@author A0093874N
 	/**
 	 * Sets the deadline of a task to the task object
 	 * 
@@ -127,6 +125,20 @@ public class TaskLogic extends BaseLogic {
 		return result;
 	}
 
+	private void rank(StreamTask task, String contents) {
+		String inputRank = contents.trim();
+		RankType parsedRankType = StreamParser.parseRanking(inputRank);
+		switch (parsedRankType) {
+			case HI:
+			case MED:
+			case LO:
+				String translatedRank = StreamParser
+						.translateRanking(parsedRankType);
+				task.setRank(translatedRank);
+			default:
+		}
+	}
+
 	//@author A0118007R
 	/**
 	 * The logic behind task modification for multi-add and multi-modify commands.
@@ -173,7 +185,6 @@ public class TaskLogic extends BaseLogic {
 				task.getTaskName(), attribute, contents));
 	}
 
-	//@author A0118007R
 	private void description(StreamTask task, String contents) {
 		if (contents.equals("null")) {
 			task.setDescription(null);
@@ -182,7 +193,6 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	//@author A0118007R
 	private void deadline(StreamTask task, String contents) {
 		if (contents.equals("null")) {
 			task.setDeadline(null);
@@ -200,7 +210,6 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	//@author A0118007R
 	private void startTime(StreamTask task, String contents) {
 		if (contents.equals("null")) {
 			task.setStartTime(null);
@@ -218,15 +227,6 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	//@author A0096529N
-	private void setTags(StreamTask task, String contents) {
-		task.getTags().clear();
-		if (!contents.trim().isEmpty()) {
-			addTags(task, contents.split(" "));
-		}
-	}
-
-	//@author A0118007R
 	private void mark(StreamTask task, String contents) {
 		String status = contents.trim();
 		MarkType parsedMarkType = StreamParser.parseMarking(status);
@@ -241,18 +241,11 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	//@author A0119401U
-	private void rank(StreamTask task, String contents) {
-		String inputRank = contents.trim();
-		RankType parsedRankType = StreamParser.parseRanking(inputRank);
-		switch (parsedRankType) {
-			case HI:
-			case MED:
-			case LO:
-				String translatedRank = StreamParser
-						.translateRanking(parsedRankType);
-				task.setRank(translatedRank);
-			default:
+	//@author A0096529N
+	private void setTags(StreamTask task, String contents) {
+		task.getTags().clear();
+		if (!contents.trim().isEmpty()) {
+			addTags(task, contents.split(" "));
 		}
 	}
 

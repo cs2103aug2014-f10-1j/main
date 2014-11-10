@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import exception.StreamModificationException;
 
+//@author A0118007R
 public class StreamAddTaskTest {
 
 	private StreamLogic streamLogic;

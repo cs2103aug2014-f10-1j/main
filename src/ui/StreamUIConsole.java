@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 import javax.swing.JTextField;
@@ -33,7 +32,6 @@ import util.StreamConstants;
  * <h3>API</h3>
  * <ul>
  * <li>StreamUIConsole.addPossibility(String possibility, String helpText)</li>
- * <li>StreamUIConsole.removePossibility(String possibility)</li>
  * </ul>
  * <p>
  * Refer to method documentation for details.
@@ -75,7 +73,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	}
 
 	/**
-	 * Add a new possibility to the list of possibilities for the auto-complete
+	 * Adds a new possibility to the list of possibilities for the auto-complete
 	 * processor to process.
 	 * 
 	 * @param possibility
@@ -86,19 +84,6 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 	public void addPossibility(String possibility, String helpText) {
 		this.possibilities.add(possibility);
 		this.helpTextMap.put(possibility, helpText);
-		Collections.sort(possibilities);
-	}
-
-	/**
-	 * Removes the given possibility from the list of possibilities so that it
-	 * will no longer be matched.
-	 * 
-	 * @param possibility
-	 *            - the possibility to remove
-	 */
-	public void removePossibility(String possibility) {
-		this.possibilities.remove(possibility);
-		this.helpTextMap.remove(possibility);
 	}
 
 	/**
@@ -166,11 +151,11 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 					+ 1, COORD_Y);
 			String[] typed = entered.trim().split(" ");
 			if (helpTextMap.containsKey(typed[0])) {
-				feedback.showFeedbackMessage(helpTextMap.get(typed[0]));
+				feedback.setText(helpTextMap.get(typed[0]));
 			} else if (isFound) {
-				feedback.showFeedbackMessage(DEFAULT_HELP_TEXT);
+				feedback.setText(DEFAULT_HELP_TEXT);
 			} else {
-				feedback.showFeedbackMessage(UNKNOWN_COMMAND);
+				feedback.setText(UNKNOWN_COMMAND);
 			}
 		} else {
 			Graphics2D g2 = (Graphics2D) g.create();
@@ -178,7 +163,7 @@ public class StreamUIConsole extends JTextField implements KeyListener,
 			g2.setColor(Color.GRAY);
 			g2.drawString(COMMAND_PROMPT, COORD_X, COORD_Y);
 			g2.dispose();
-			feedback.showFeedbackMessage(HELP_TEXT_EMPTY);
+			feedback.setText(HELP_TEXT_EMPTY);
 		}
 	}
 

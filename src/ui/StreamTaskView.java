@@ -15,9 +15,7 @@ import util.StreamUtil;
 
 /**
  * <p>
- * The task graphical view as viewed by the user. Immediately see-able fields
- * include start/end dates (if applicable), task name, task rank, and task
- * status (done or not done).
+ * The task graphical view as seen by the user.
  * </p>
  * 
  * <h3>API</h3>
