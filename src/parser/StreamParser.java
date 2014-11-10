@@ -384,6 +384,7 @@ public class StreamParser {
 	 * @return <b>SortType</b> - the parsed sorting type
 	 */
 	public static SortType parseSorting(String sortType) {
+		sortType = sortType.toLowerCase();
 		switch (sortType) {
 			case "d":
 			case "due":
@@ -424,6 +425,7 @@ public class StreamParser {
 	 */
 	public static boolean getSortingOrder(String order)
 			throws StreamParserException {
+		order = order.toLowerCase();
 		switch (order) {
 			case "a":
 			case "asc":
