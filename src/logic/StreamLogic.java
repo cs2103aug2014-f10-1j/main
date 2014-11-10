@@ -486,7 +486,6 @@ public class StreamLogic extends BaseLogic {
 				modifyTask(task, attribute, contents.trim());
 				attribute = s;
 				contents = "";
-
 			} else {
 				contents = contents + s + " ";
 			}
@@ -659,6 +658,16 @@ public class StreamLogic extends BaseLogic {
 				break;
 			case EVENT:
 				if (task.isTimedTask()) {
+					tasks.add(i);
+				}
+				break;
+			case OVERDUE:
+				if (task.isOverdue()) {
+					tasks.add(i);
+				}
+				break;
+			case INACTIVE:
+				if (task.isInactive()) {
 					tasks.add(i);
 				}
 				break;

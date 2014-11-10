@@ -13,12 +13,12 @@ import util.StreamConstants;
 import util.StreamUtil;
 
 public class TaskLogic extends BaseLogic {
-
+	
 	public static TaskLogic init() {
 		return new TaskLogic();
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	public ArrayList<String> addTags(StreamTask task, String... tags) {
 		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_ADD,
 				task.getTaskName(), Arrays.toString(tags)));
@@ -41,7 +41,7 @@ public class TaskLogic extends BaseLogic {
 		return tagsAdded;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	public ArrayList<String> removeTags(StreamTask task, String... tags) {
 		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_REMOVE,
 				task.getTaskName(), Arrays.toString(tags)));
@@ -60,7 +60,7 @@ public class TaskLogic extends BaseLogic {
 		return tagsRemoved;
 	}
 
-	// @author A0093874N
+	//@author A0093874N
 	public String setDeadline(StreamTask task, Calendar calendar) {
 		String result = null;
 		String parsedCalendar = null;
@@ -79,7 +79,7 @@ public class TaskLogic extends BaseLogic {
 		return result;
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	public String setStartTime(StreamTask task, Calendar calendar) {
 		String result = null;
 		String parsedCalendar = null;
@@ -99,7 +99,7 @@ public class TaskLogic extends BaseLogic {
 		return result;
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	public void modifyTask(StreamTask task, String attribute, String contents) {
 		contents = contents.trim();
 		
@@ -136,7 +136,7 @@ public class TaskLogic extends BaseLogic {
 				task.getTaskName(), attribute, contents));
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void description(StreamTask task, String contents) {
 		if (contents.equals("null")) {
 			task.setDescription(null);
@@ -145,7 +145,7 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void deadline(StreamTask task, String contents) {
 		if (contents.equals("null")) {
 			task.setDeadline(null);
@@ -163,7 +163,7 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void startTime(StreamTask task, String contents) {
 		if (contents.equals("null")) {
 			task.setStartTime(null);
@@ -181,7 +181,7 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0096529N
+	//@author A0096529N
 	private void setTags(StreamTask task, String contents) {
 		task.getTags().clear();
 		if (!contents.trim().isEmpty()) {
@@ -189,7 +189,7 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0118007R
+	//@author A0118007R
 	private void mark(StreamTask task, String contents) {
 		String status = contents.trim();
 		MarkType parsedMarkType = StreamParser.parseMarking(status);
@@ -204,7 +204,7 @@ public class TaskLogic extends BaseLogic {
 		}
 	}
 
-	// @author A0119401U
+	//@author A0119401U
 	private void rank(StreamTask task, String contents) {
 		String inputRank = contents.trim();
 		RankType parsedRankType = StreamParser.parseRanking(inputRank);

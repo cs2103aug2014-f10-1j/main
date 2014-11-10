@@ -682,6 +682,10 @@ public class Stream {
 			case NOT:
 				result = markAsOngoing(task, taskIndex);
 				break;
+			case INACTIVE:
+			case OVERDUE:
+				result = "Disallowed marking type: " + markType;
+				break;
 			default:
 				// should not happen, but let's play safe
 				result = "Unknown marking type: " + markType;

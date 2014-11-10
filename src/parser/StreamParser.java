@@ -22,7 +22,7 @@ public class StreamParser {
 	}
 
 	public enum MarkType {
-		DONE, NOT, NULL;
+		DONE, NOT, OVERDUE, INACTIVE, NULL;
 	}
 
 	public enum RankType {
@@ -36,7 +36,7 @@ public class StreamParser {
 	public enum FilterType {
 		DONE, NOT, HIRANK, MEDRANK, LORANK, DUEON, DUEBEF,
 		DUEAFT, STARTON, STARTBEF, STARTAFT, NOTIMING,
-		DEADLINED, EVENT, NULL;
+		DEADLINED, EVENT, NULL, OVERDUE, INACTIVE;
 	}
 
 	private CommandType commandKey;
@@ -497,6 +497,10 @@ public class StreamParser {
 			case "not finished":
 			case "ongoing":
 				return MarkType.NOT;
+			case "overdue":
+				return MarkType.OVERDUE;
+			case "inactive":
+				return MarkType.INACTIVE;
 			default:
 				return MarkType.NULL;
 		}
@@ -527,6 +531,10 @@ public class StreamParser {
 				return "done";
 			case NOT:
 				return "ongoing";
+			case OVERDUE:
+				return "overdue";
+			case INACTIVE:
+				return "inactive";
 			default:
 				return null;
 		}
@@ -545,6 +553,10 @@ public class StreamParser {
 				return FilterType.DONE;
 			case NOT:
 				return FilterType.NOT;
+			case OVERDUE:
+				return FilterType.OVERDUE;
+			case INACTIVE:
+				return FilterType.INACTIVE;
 			default:
 		}
 		if (contents[0].equals("rank")) {
