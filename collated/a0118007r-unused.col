@@ -1,0 +1,310 @@
+//@author: a0118007r-unused
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * get task description
+	 * 
+	 * @throws StreamModificationException
+	 * @deprecated
+	 */
+	public String getTaskDescription(String taskName)
+			throws StreamModificationException {
+		StreamTask myTask = getTask(taskName);
+		return myTask.getDescription();
+	}
+
+	/**
+	 * get task deadline
+	 * 
+	 * @deprecated
+	 */
+	public Calendar getTaskDeadline(String taskName)
+			throws StreamModificationException {
+		StreamTask myTask = getTask(taskName);
+		return myTask.getDeadline();
+	}
+
+}
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamTask.java
+	 */
+
+	/**
+	 * @deprecated - same as setDeadline(null)
+	 */
+	public void setNullDeadline() {
+		this.deadline = null;
+	}
+
+	// updated by A0119401U
+	/**
+	 * @deprecated by A0093874N, since we're implementing UI-based task details
+	 *             viewer. thanks for all the hard work though!
+	 */
+	public void printTaskDetails() {
+		System.out.println("Task name = " + taskName);
+		String strDesc;
+		if (taskDescription == null) {
+			strDesc = "Not specified";
+		} else {
+			strDesc = taskDescription;
+		}
+		System.out.println("Description = " + strDesc);
+		String strDeadline;
+		if (deadline == null) {
+			strDeadline = "Not specified";
+		} else {
+			strDeadline = deadline.get(Calendar.DATE)
+					+ " "
+					+ StreamConstants.Calendar.MONTHS[(deadline
+							.get(Calendar.MONTH))] + " "
+					+ deadline.get(Calendar.YEAR);
+		}
+		System.out.println("Deadline = " + strDeadline);
+		System.out.print("Tags = ");
+		String strTags = "";
+		for (String tag : tags) {
+			strTags += ", " + tag;
+		}
+		if (strTags.equals("")) {
+			System.out.println("No tags found");
+		} else {
+			System.out.println(strTags.substring(2));
+		}
+		if (done) {
+			System.out.println("Status: Done");
+		} else {
+			System.out.println("Status: Not finished");
+		}
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void resetTags() {
+		this.tags = new ArrayList<String>();
+	}
+
+	/**
+	 * @deprecated by A0093874N, we don't use methods to get tags by index
+	 *             number
+	 */
+	public String getTag(int index) {
+		if (tags.isEmpty()) {
+			return null;
+		} else {
+			return tags.get(index);
+		}
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void resetParams() {
+		this.taskDescription = null;
+		this.deadline = null;
+		this.tags = new ArrayList<String>();
+	}
+
+	// End of segment: src\model\StreamTask.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * @deprecated - use resetUI instead
+	 */
+	@SuppressWarnings("unused")
+	private void resetTasks() {
+		stui.resetAvailableTasks(streamLogic.getIndices(),
+				streamLogic.getStreamTaskList(streamLogic.getIndices()), true,
+				false);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void printTasks() {
+		System.out.println(" ");
+		System.out.println("Your current tasks: ");
+		int numberOfTasks = streamLogic.getNumberOfTasks();
+
+		for (int i = 1; i <= numberOfTasks; i++) {
+			System.out.println(i + ". " + streamLogic.getTaskNumber(i));
+		}
+	}
+
+	/**
+	 * @deprecated for now
+	 */
+	@SuppressWarnings("unused")
+	private void showAndLogCommand(String command) {
+		String commandReceived = String.format(
+				StreamConstants.LogMessage.CMD_RECEIVED, command);
+		System.out.println(commandReceived);
+		log(StreamUtil.showAsTerminalResponse(commandReceived));
+	}
+
+	/**
+	 * Modify a task's description This method is just to differentiate the set
+	 * new description and modify description part
+	 * 
+	 * @deprecated by A0093874N. Can be un-deprecated if we find a use for it.
+	 */
+	@SuppressWarnings("unused")
+	private void changeDescription(String task, int index, String newDescription) {
+		try {
+			// executeDescribe(newDescription);
+		} catch (Exception e) {
+
+		}
+	}
+
+	/**
+	 * <p>
+	 * Changes a task's name.
+	 * </p>
+	 * <p>
+	 * Pre-condition: <i>oldName, newName, index</i> not null
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 * @deprecated by A0096529N merged into StreamLogic.updateTaskName
+	 */
+	@SuppressWarnings("unused")
+	private String setName(String oldName, String newName)
+			throws StreamModificationException {
+		assert (oldName != null && newName != null) : StreamConstants.Assertion.NULL_INPUT;
+		streamLogic.updateTaskName(oldName, newName);
+
+		// This section is contributed by A0093874N
+		return String.format(StreamConstants.LogMessage.NAME, oldName, newName);
+	}
+
+	/**
+	 * @deprecated the powered-up parser now handles this already
+	 */
+	@SuppressWarnings("unused")
+	private void removeIndex(String[] tags, String[] tagsToBeAdded) {
+		for (int i = 1; i < tags.length; i++) {
+			tagsToBeAdded[i - 1] = tags[i];
+		}
+	}
+}
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\util\StreamUtil.java
+	 */
+
+
+	/**
+	 * @deprecated
+	 */
+	public static boolean isValidMonth(int month) {
+		return (month >= 1) && (month <= 12);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public static boolean isValidDate(int day, int month, int year) {
+		if (isMonthWith31Days(month)) {
+			return (day >= 1) && (day <= 31);
+		} else if (month == 2) {
+			if (isLeapYear(year)) {
+				return (day >= 1) && (day <= 29);
+			} else {
+				return (day >= 1) && (day <= 28);
+			}
+		} else {
+			return (day >= 1) && (day <= 30);
+		}
+
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public static boolean isLeapYear(int year) {
+		if (year % 400 == 0) {
+			return true;
+		} else if (year % 100 == 0) {
+			return false;
+		} else {
+			return year % 4 == 0;
+		}
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private static boolean isMonthWith31Days(int month) {
+		return (month == 1) || (month == 3) || (month == 5) || (month == 7)
+				|| (month == 8) || (month == 10) || (month == 12);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public static boolean isValidYear(int year) {
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		return year >= currentYear;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public static int parseYear(String[] dueDate) {
+		int year;
+		if (dueDate.length == 2) {
+			year = Calendar.getInstance().get(Calendar.YEAR);
+		} else {
+			year = Integer.parseInt(dueDate[2].trim());
+		}
+		return year;
+	}
+
+	/**
+	 * @deprecated not needed
+	 */
+	public static String getCalendarWriteUpForUndo(Calendar calendar) {
+		return addZeroToTime(calendar.get(Calendar.MONTH) + 1)
+				+ StreamConstants.DATE_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH))
+				+ StreamConstants.DATE_DELIMITER + calendar.get(Calendar.YEAR)
+				+ " " + addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.MINUTE))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.SECOND));
+	}
+}
+	// End of segment: src\util\StreamUtil.java
+
+
+
+
+

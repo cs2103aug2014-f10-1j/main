@@ -1,0 +1,3141 @@
+//@author: a0093874n
+
+
+
+	/**
+	 * origin: src\fileio\StreamIO.java
+	 */
+
+	/**
+	 * Saves the log file upon exiting.
+	 * 
+	 * @param logMessages
+	 *            - the list of log messages to be stored
+	 * @param logFileName
+	 *            - the name of the log file
+	 * @throws StreamIOException
+	 *             if IO failures encountered during accessing of log file.
+	 */
+	public static void saveLogFile(List<String> logMessages, String logFileName)
+			throws StreamIOException {
+		try {
+			FileWriter fwriter = new FileWriter(
+					getLogsStorageFile(logFileName), true);
+			BufferedWriter bw = new BufferedWriter(fwriter);
+			try {
+				for (int i = 0; i < logMessages.size(); i++) {
+					bw.write(logMessages.get(i));
+					bw.newLine();
+				}
+			} finally {
+				bw.close();
+			}
+		} catch (IOException e) {
+			throw new StreamIOException(
+					StreamConstants.ExceptionMessage.ERR_SAVE_LOG, e);
+		}
+	}
+}
+	// End of segment: src\fileio\StreamIO.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param deletedTask task that was deleted
+	 * @param order order of tasks to be reverted to
+	 */
+	public void pushInverseDeleteCommand(StreamTask deletedTask, ArrayList<String> order) {
+		pushOrder(order);
+		pushDumpedTask(deletedTask);
+		pushInput(String.format(StreamConstants.Commands.RECOVER, 1));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param oldRank rank to be reverted to 
+	 */
+	public void pushInverseSetRankingCommand(int index, String oldRank) {
+		pushInput(String.format(StreamConstants.Commands.RANK, index, oldRank));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * Add the inverse command to undo stack
+	 * 
+	 * @param taskIndex index of task that was modified
+	 * @param oldDescription description to be reverted to
+	 */
+	public void pushInverseSetDescriptionCommand(int index, String oldDescription) {
+		pushInput(String.format(StreamConstants.Commands.DESC, index, oldDescription));
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private String buildInverseModifyRank(StreamTask currTask,
+			String inverseCommand, Boolean isDone) {
+		inverseCommand = determineStatus(inverseCommand, isDone);
+		String oldRank = currTask.getRank();
+		inverseCommand += "-rank " + oldRank + " ";
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	private String determineStatus(String inverseCommand, Boolean isDone) {
+		if (isDone) {
+			inverseCommand += "-mark done ";
+		} else {
+			inverseCommand += "-mark ongoing ";
+		}
+		return inverseCommand;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * 
+	 * @param oldTags
+	 * @param newTags
+	 * @return
+	 * @deprecated replaced with new methodology
+	 * use settags to clear tags then add previous 
+	 * tag state
+	 */
+	private String compareTagged(ArrayList<String> oldTags,
+			ArrayList<String> newTags) {
+		String inverseTag = "tag ";
+		inverseTag = buildInverseTag(oldTags, newTags, inverseTag);
+		return inverseTag;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StackLogic.java
+	 */
+
+	/**
+	 * 
+	 * @param oldTags
+	 * @param newTags
+	 * @return
+	 * @deprecated replaced with new methodology
+	 * use settags to clear tags then add previous 
+	 * tag state
+	 */
+	private String compareUntagged(ArrayList<String> oldTags,
+			ArrayList<String> newTags) {
+		String inverseUntag = "untag ";
+		inverseUntag = buildInverseUntag(oldTags, newTags, inverseUntag);
+		return inverseUntag;
+	}
+
+	// End of segment: src\logic\StackLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Returns the indices of all tasks.
+	 * 
+	 * @return <strong>indices</strong> - the ArrayList containing the indices
+	 *         of all tasks.
+	 */
+	public ArrayList<Integer> getIndices() {
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+		for (int i = 0; i < streamObject.size(); i++) {
+			indices.add(i + 1);
+		}
+		return indices;
+	}
+
+	/**
+	 * Sets the ordering of a task list.
+	 * 
+	 * @param anotherTaskList
+	 */
+	public void setOrdering(ArrayList<String> anotherTaskList) {
+		assert (StreamUtil.listEqual(streamObject.getTaskList(),
+				anotherTaskList)) : StreamConstants.Assertion.NOT_EQUAL;
+		streamObject.setTaskList(anotherTaskList);
+		logDebug(String.format(StreamConstants.LogMessage.REORDER_TASKS,
+				Arrays.toString(anotherTaskList.toArray())));
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Adds a new task to StreamObject
+	 * 
+	 * <p>
+	 * Precondition: newTaskName != null
+	 * </p>
+	 * 
+	 * @param newTaskName
+	 *            name of the new task
+	 */
+	public void addTask(String newTaskName) throws StreamModificationException {
+		if (hasTask(newTaskName)) {
+			logDebug(String.format(
+					StreamConstants.LogMessage.ADD_DUPLICATE_TASK, newTaskName));
+			throw new StreamModificationException(String.format(
+					StreamConstants.ExceptionMessage.ERR_TASK_ALREADY_EXISTS,
+					newTaskName));
+		} else {
+			streamObject.put(newTaskName, new StreamTask(newTaskName));
+			logDebug(String.format(StreamConstants.LogMessage.ADDED_TASK,
+					newTaskName));
+		}
+	}
+
+	/**
+	 * Adds the given task back into storage
+	 * 
+	 * @param task
+	 *            to be added
+	 */
+	public void recoverTask(StreamTask task) {
+		streamObject.put(task.getTaskName(), task);
+		logDebug(String.format(StreamConstants.LogMessage.RECOVERED_TASK,
+				task.getTaskName()));
+	}
+
+	/**
+	 * Checks whether a specific task is already included in the tasks list.
+	 * Only for testing.
+	 * <p>
+	 * Pre-condition: <i>taskName</i> is not null
+	 * </p>
+	 * 
+	 * @param taskName
+	 *            - the task name
+	 * @return <strong>Boolean</strong> - true if the
+	 *         <strong>StreamTask</strong> <i>taskName</i> exists, false
+	 *         otherwise.
+	 */
+	public Boolean hasTask(String taskName) {
+		assert (taskName != null) : StreamConstants.Assertion.NULL_INPUT;
+		return streamObject.containsKey(taskName);
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+	/**
+	 * Filter tasks by various categories
+	 * 
+	 * @param criteria
+	 *            the filtering criteria
+	 * 
+	 */
+	public ArrayList<Integer> filterTasks(String criteria) {
+		ArrayList<Integer> tasks = new ArrayList<Integer>();
+		FilterType type = StreamParser.parseFilterType(criteria);
+		String[] contents;
+		Calendar dueDate;
+		for (int i = 1; i <= streamObject.size(); i++) {
+			StreamTask task = streamObject.get(streamObject.get(i - 1));
+			switch (type) {
+				case DONE:
+					if (task.isDone()) {
+						tasks.add(i);
+					}
+					break;
+				case NOT:
+					if (!task.isDone()) {
+						tasks.add(i);
+					}
+					break;
+				case HIRANK:
+					if (StreamParser.parseRanking(task.getRank()) == RankType.HI) {
+						tasks.add(i);
+					}
+					break;
+				case MEDRANK:
+					if (StreamParser.parseRanking(task.getRank()) == RankType.MED) {
+						tasks.add(i);
+					}
+					break;
+				case LORANK:
+					if (StreamParser.parseRanking(task.getRank()) == RankType.LO) {
+						tasks.add(i);
+					}
+					break;
+				case STARTBEF:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getStartTime() != null
+							&& task.getStartTime().before(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case STARTAFT:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getStartTime() != null
+							&& task.getStartTime().after(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case DUEBEF:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getDeadline() != null
+							&& task.getDeadline().before(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case DUEAFT:
+					contents = criteria.split(" ", 3);
+					dueDate = Chronic.parse(contents[2]).getBeginCalendar();
+					if (task.getDeadline() != null
+							&& task.getDeadline().after(dueDate)) {
+						tasks.add(i);
+					}
+					break;
+				case NOTIMING:
+					if (task.isFloatingTask()) {
+						tasks.add(i);
+					}
+					break;
+				case DEADLINED:
+					if (task.isDeadlineTask()) {
+						tasks.add(i);
+					}
+					break;
+				case EVENT:
+					if (task.isTimedTask()) {
+						tasks.add(i);
+					}
+					break;
+				case OVERDUE:
+					if (task.isOverdue()) {
+						tasks.add(i);
+					}
+					break;
+				case INACTIVE:
+					if (task.isInactive()) {
+						tasks.add(i);
+					}
+					break;
+				// case STARTON:
+				// case DUEON:
+				// TODO think on how to implement this
+				default:
+					// shouldn't happen, but in case it happens, pretend
+					// that there is no filter
+					tasks.add(i);
+					break;
+			}
+		}
+		logDebug(String.format(StreamConstants.LogMessage.FILTERED_TASKS,
+				criteria, Arrays.toString(tasks.toArray())));
+		return tasks;
+	}
+
+	/**
+	 * Gets the number of tasks added.
+	 * 
+	 */
+	public int getNumberOfTasks() {
+		return streamObject.size();
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\StreamLogic.java
+	 */
+
+
+	public ArrayList<StreamTask> getStreamTaskList(ArrayList<Integer> indices) {
+		ArrayList<StreamTask> tasks = new ArrayList<StreamTask>();
+		HashMap<String, StreamTask> taskMap = streamObject.getTaskMap();
+		ArrayList<String> taskList = streamObject.getTaskList();
+		for (Integer index : indices) {
+			tasks.add(taskMap.get(taskList.get(index - 1).toLowerCase()));
+		}
+		return tasks;
+	}
+
+	// End of segment: src\logic\StreamLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\logic\TaskLogic.java
+	 */
+
+	/**
+	 * Process the addition of tags to the task object.
+	 * 
+	 * @param task
+	 * @param tags
+	 * @return tagsAdded - the ArrayList consisting of added tags to the task object
+	 */
+	public ArrayList<String> addTags(StreamTask task, String... tags) {
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_ADD,
+				task.getTaskName(), Arrays.toString(tags)));
+		ArrayList<String> tagsAdded = new ArrayList<String>();
+		for (String tag : tags) {
+			if (tag.contains(" ")) {
+				addTags(task, tag.split(" "));
+			} else {
+				tag = tag.toUpperCase();
+				if (!task.hasTag(tag)) {
+					task.getTags().add(tag);
+					tagsAdded.add(tag);
+				}
+			}
+		}
+
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_ADDED,
+				task.getTaskName(), Arrays.toString(tagsAdded.toArray())));
+		Collections.sort(task.getTags());
+		return tagsAdded;
+	}
+
+	/**
+	 * Process the removal of tags to the task object.
+	 * 
+	 * @param task
+	 * @param tags
+	 * @return tagsRemoved - the ArrayList consisting of removed tags from the task object
+	 */
+	public ArrayList<String> removeTags(StreamTask task, String... tags) {
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_TO_REMOVE,
+				task.getTaskName(), Arrays.toString(tags)));
+		ArrayList<String> tagsRemoved = new ArrayList<String>();
+		for (String tag : tags) {
+			tag = tag.toUpperCase();
+			if (task.hasTag(tag)) {
+				task.getTags().remove(tag);
+				tagsRemoved.add(tag);
+			}
+		}
+
+		logDebug(String.format(StreamConstants.LogMessage.TAGS_REMOVED,
+				task.getTaskName(), Arrays.toString(tags)));
+		Collections.sort(task.getTags());
+		return tagsRemoved;
+	}
+
+	/**
+	 * Sets the deadline of a task to the task object
+	 * 
+	 * @param task
+	 * @param calendar
+	 * @return result - the string consisting of the final deadline assigned to the task.
+	 */
+	public String setDeadline(StreamTask task, Calendar calendar) {
+		String result = null;
+		String parsedCalendar = null;
+		if (calendar == null) {
+			task.setDeadline(null);
+			result = String.format(StreamConstants.LogMessage.DUE_NEVER,
+					task.getTaskName());
+		} else {
+			task.setDeadline(calendar);
+			parsedCalendar = StreamUtil.getCalendarWriteUp(calendar);
+			result = String.format(StreamConstants.LogMessage.DUE,
+					task.getTaskName(), parsedCalendar);
+		}
+		logDebug(String.format(StreamConstants.LogMessage.SET_DEADLINE,
+				task.getTaskName(), parsedCalendar));
+		return result;
+	}
+
+	// End of segment: src\logic\TaskLogic.java
+
+
+
+
+
+	/**
+	 * origin: src\model\StreamTask.java
+	 */
+
+	/**
+	 * Gets the start time of a task
+	 * 
+	 * @return this.startTime - the start time of the task
+	 */
+	public Calendar getStartTime() {
+		return this.startTime;
+	}
+
+	/**
+	 * Sets the start time of a task
+	 * 
+	 * @param startTime - the new start time of the task
+	 */
+	public void setStartTime(Calendar startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * Checks whether a task is overdue
+	 * 
+	 * @return true if not overdue, false otherwise
+	 */
+	public boolean isOverdue() {
+		if (deadline == null) {
+			return false;
+		} else {
+			return deadline.before(Calendar.getInstance());
+		}
+	}
+
+	/**
+	 * Checks whether a task is inactive
+	 * 
+	 * @return true if inactive, false otherwise
+	 */
+	public boolean isInactive() {
+		if (startTime == null) {
+			return false;
+		} else {
+			return startTime.after(Calendar.getInstance());
+		}
+	}
+
+	// End of segment: src\model\StreamTask.java
+
+
+
+
+
+	/**
+	 * origin: src\parser\StreamParser.java
+	 */
+
+
+	/**
+	 * Parses a supplied sorting type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>SortType</b> - the parsed sorting type
+	 */
+	public static SortType parseSorting(String sortType) {
+		sortType = sortType.toLowerCase();
+		switch (sortType) {
+			case "d":
+			case "due":
+			case "deadline":
+			case "end":
+			case "endtime":
+				return SortType.END;
+			case "s":
+			case "start":
+			case "begin":
+			case "starttime":
+				return SortType.START;
+			case "a":
+			case "alpha":
+			case "alphabetical":
+			case "alphabetically":
+				return SortType.ALPHA;
+			case "t":
+			case "time":
+				return SortType.TIME;
+			case "":
+			case "impt":
+			case "importance":
+			case "priority":
+				return SortType.IMPORTANCE;
+			default:
+				return SortType.NULL;
+		}
+	}
+
+	/**
+	 * Translates a supplied sorting order into boolean value, indicating
+	 * whether the intended order is descending or not.
+	 * 
+	 * @return <b>boolean</b> - indicates if descending or not
+	 * @throws StreamParserException
+	 *             if <i>order</i> is not recognizable
+	 */
+	public static boolean getSortingOrder(String order)
+			throws StreamParserException {
+		order = order.toLowerCase();
+		switch (order) {
+			case "a":
+			case "asc":
+			case "ascending":
+				return false;
+			case "":
+			case "d":
+			case "desc":
+			case "descending":
+				return true;
+			default:
+				throw new StreamParserException();
+		}
+	}
+
+	/**
+	 * Parses a supplied rank type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>RankType</b> - the parsed ranking type
+	 */
+	public static RankType parseRanking(String rankInput) {
+		rankInput = rankInput.toLowerCase();
+		switch (rankInput) {
+			case "high":
+			case "hi":
+			case "h":
+				return RankType.HI;
+			case "medium":
+			case "med":
+			case "m":
+				return RankType.MED;
+			case "low":
+			case "l":
+				return RankType.LO;
+			default:
+				return RankType.NULL;
+		}
+	}
+
+	/**
+	 * Translates an internal ranking format to readable <b>String</b>.
+	 * 
+	 * @return <b>String</b> - the translated ranking type
+	 */
+	public static String translateRanking(RankType parsedRank) {
+		switch (parsedRank) {
+			case HI:
+				return "high";
+			case MED:
+				return "medium";
+			case LO:
+				return "low";
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Parses a supplied marking type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>MarkType</b> - the parsed marking type
+	 */
+	public static MarkType parseMarking(String markInput) {
+		markInput = markInput.toLowerCase();
+		switch (markInput) {
+			case "done":
+			case "finished":
+			case "over":
+				return MarkType.DONE;
+			case "not done":
+			case "not finished":
+			case "ongoing":
+				return MarkType.NOT;
+			case "overdue":
+				return MarkType.OVERDUE;
+			case "inactive":
+				return MarkType.INACTIVE;
+			default:
+				return MarkType.NULL;
+		}
+	}
+
+	/**
+	 * Parses a boolean value of is done or not into <b>STREAM</b>-recognizable
+	 * format for marking.
+	 * 
+	 * @return <b>MarkType</b> - the parsed marking type
+	 */
+	public static MarkType parseMarking(Boolean isDone) {
+		if (isDone) {
+			return MarkType.DONE;
+		} else {
+			return MarkType.NOT;
+		}
+	}
+
+	/**
+	 * Translates an internal marking format to readable <b>String</b>.
+	 * 
+	 * @return <b>String</b> - the translated marking type
+	 */
+	public static String translateMarking(MarkType parsedMark) {
+		switch (parsedMark) {
+			case DONE:
+				return "done";
+			case NOT:
+				return "ongoing";
+			case OVERDUE:
+				return "overdue";
+			case INACTIVE:
+				return "inactive";
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Parses a supplied filter type into <b>STREAM</b>-recognizable format.
+	 * 
+	 * @return <b>FilterType</b> - the parsed filter type
+	 */
+	public static FilterType parseFilterType(String filterInput) {
+		String[] contents = filterInput.split(" ", 2);
+		MarkType parsedMark = parseMarking(contents[0]);
+		switch (parsedMark) {
+			case DONE:
+				return FilterType.DONE;
+			case NOT:
+				return FilterType.NOT;
+			case OVERDUE:
+				return FilterType.OVERDUE;
+			case INACTIVE:
+				return FilterType.INACTIVE;
+			default:
+		}
+		if (contents[0].equals("rank")) {
+			if (contents.length == 2) {
+				RankType parsedRank = parseRanking(contents[1]);
+				switch (parsedRank) {
+					case HI:
+						return FilterType.HIRANK;
+					case MED:
+						return FilterType.MEDRANK;
+					case LO:
+						return FilterType.LORANK;
+					default:
+						return FilterType.NULL;
+				}
+			} else {
+				return FilterType.NULL;
+			}
+		} else {
+			contents = filterInput.split(" ", 3);
+			if (contents.length == 3 && StreamUtil.isParseableDate(contents[2])) {
+				switch (contents[0] + " " + contents[1]) {
+					case "due before":
+						return FilterType.DUEBEF;
+					case "due after":
+						return FilterType.DUEAFT;
+					case "start before":
+						return FilterType.STARTBEF;
+					case "start after":
+						return FilterType.STARTAFT;
+					default:
+						return FilterType.NULL;
+				}
+			} else {
+				contents = filterInput.split(" ", 2);
+				/*
+				 * if (contents.length == 2 &&
+				 * StreamUtil.isParseableDate(contents[1])) { switch
+				 * (contents[0]) { case "due": return FilterType.DUEON; case
+				 * "start": return FilterType.STARTON; default: return
+				 * FilterType.NULL; } } else
+				 */
+				// Not implemented until we know how to.
+				if (contents.length == 2) {
+					switch (contents[0] + " " + contents[1]) {
+						case "no timing":
+							return FilterType.NOTIMING;
+						case "has deadline":
+							return FilterType.DEADLINED;
+						default:
+							return FilterType.NULL;
+					}
+				} else {
+					switch (contents[0]) {
+						case "deadlined":
+							return FilterType.DEADLINED;
+						case "event":
+						case "timed":
+							return FilterType.EVENT;
+						default:
+							return FilterType.NULL;
+					}
+				}
+			}
+		}
+	}
+
+	private void checkSortValidity(String[] contents, String[] contentsWithIndex)
+			throws StreamParserException {
+		String sortBy = contents.length > 1 ? contentsWithIndex[PARAM_POS_SORTTYPE]
+				: "";
+		String order = contentsWithIndex.length > 2 ? contentsWithIndex[PARAM_POS_SORTORDER]
+				: "";
+		if (!checkSort(sortBy, order)) {
+			throw new StreamParserException(ERROR_INVALID_SORT);
+		} else if (contents.length > 1) {
+			this.commandContent = contents[PARAM_POS_SORTTYPE];
+		} else {
+			this.commandContent = null;
+		}
+	}
+
+	private boolean checkRanking(String rankInput) {
+		RankType parsedRank = parseRanking(rankInput);
+		switch (parsedRank) {
+			case NULL:
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	private boolean checkMarking(String markInput) {
+		MarkType parsedMark = parseMarking(markInput);
+		switch (parsedMark) {
+			case NULL:
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	private boolean checkFilter(String type) {
+		FilterType parsedFilter = parseFilterType(type);
+		switch (parsedFilter) {
+			case NULL:
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	private boolean checkSort(String sortBy, String order) {
+		switch (parseSorting(sortBy)) {
+			case NULL:
+				return false;
+			default:
+				try {
+					getSortingOrder(order);
+					return true;
+				} catch (StreamParserException e) {
+					return false;
+				}
+		}
+	}
+
+}
+
+	// End of segment: src\parser\StreamParser.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void initializeExtFiles() {
+		ImageIcon headerText = new ImageIcon(getClass().getResource(
+				"/img/header.png"));
+		ImageIcon doneIcon = new ImageIcon(getClass().getResource(
+				"/img/taskDoneIcon.png"));
+		ImageIcon notDoneIcon = new ImageIcon(getClass().getResource(
+				"/img/taskOngoingIcon.png"));
+		ImageIcon overdueIcon = new ImageIcon(getClass().getResource(
+				"/img/taskOverdueIcon.png"));
+		ImageIcon inactiveIcon = new ImageIcon(getClass().getResource(
+				"/img/taskInactiveIcon.png"));
+		ImageIcon hiRankIcon = new ImageIcon(getClass().getResource(
+				"/img/taskHighPriority.png"));
+		ImageIcon medRankIcon = new ImageIcon(getClass().getResource(
+				"/img/taskNormalPriority.png"));
+		ImageIcon lowRankIcon = new ImageIcon(getClass().getResource(
+				"/img/taskLowPriority.png"));
+		ImageIcon startCalIcon = new ImageIcon(getClass().getResource(
+				"/img/startdate.png"));
+		ImageIcon nullStartCalIcon = new ImageIcon(getClass().getResource(
+				"/img/nostartdate.png"));
+		ImageIcon endCalIcon = new ImageIcon(getClass().getResource(
+				"/img/enddate.png"));
+		ImageIcon nullEndCalIcon = new ImageIcon(getClass().getResource(
+				"/img/noenddate.png"));
+		Font titleFont = null;
+		Font consoleFont = null;
+		try {
+			titleFont = Font.createFont(Font.TRUETYPE_FONT, getClass()
+					.getResourceAsStream("/fonts/Awesome Java.ttf"));
+			consoleFont = Font.createFont(Font.TRUETYPE_FONT, getClass()
+					.getResourceAsStream("/fonts/Ubuntu.ttf"));
+		} catch (Exception e) {
+
+		}
+		StreamExternals.init(headerText, doneIcon, notDoneIcon, overdueIcon,
+				inactiveIcon, hiRankIcon, medRankIcon, lowRankIcon,
+				startCalIcon, nullStartCalIcon, endCalIcon, nullEndCalIcon,
+				titleFont, consoleFont);
+	}
+
+	private void saveLogFile() throws StreamIOException {
+		Calendar now = Calendar.getInstance();
+		String logFileName = String.format(StreamConstants.LOGFILE_FORMAT,
+				StreamUtil.getDateString(now));
+		StreamIO.saveLogFile(StreamLogger.getLogStack(), logFileName);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Deletes a task from the tasks list permanently.
+	 * 
+	 * @throws StreamModificationException
+	 */
+	private void executeDismiss(Integer taskIndex)
+			throws StreamModificationException {
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+
+		assertNotNull(taskName);
+		streamLogic.deleteTask(taskName);
+		assertNoTask(taskName);
+
+		stackLogic.pushPlaceholderInput();
+		String result = String.format(StreamConstants.LogMessage.DELETE,
+				taskName);
+		showAndLogResult(result);
+	}
+
+	/**
+	 * Clears all tasks upon receiving the command "clear".
+	 * 
+	 * @throws StreamModificationException
+	 */
+	private void executeClear() throws StreamModificationException {
+		stackLogic.pushInverseClearCommand(streamLogic.getTaskList(),
+				streamLogic.getStreamTaskList());
+		streamLogic.clear();
+		assert (streamLogic.getNumberOfTasks() == 0) : StreamConstants.Assertion.NOT_CLEARED;
+		showAndLogResult(StreamConstants.LogMessage.CLEAR);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	/**
+	 * Untags some tags that are specified in the input.
+	 * <p>
+	 * Pre-condition: <i>task, index, tags</i> not null
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeUntag(Integer taskIndex, String content)
+			throws StreamModificationException {
+		String[] tags = content.split(" ");
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		StreamTask task = streamLogic.getTask(taskName);
+		ArrayList<String> processedTags = taskLogic.removeTags(task, tags);
+		stackLogic.pushInverseUntagCommand(taskIndex, processedTags);
+		stui.setActiveTask(task);
+		logRemovedTags(taskName, processedTags);
+	}
+
+	/**
+	 * Tag some tags that are specified in the input.
+	 * <p>
+	 * Pre-condition: <i>task, index, tags</i> not null
+	 * </p>
+	 * 
+	 * @throws StreamModificationException
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeTag(Integer taskIndex, String content)
+			throws StreamModificationException {
+		String[] tags = content.split(" ");
+		String taskName = streamLogic.getTaskNumber(taskIndex);
+		StreamTask task = streamLogic.getTask(taskName);
+		ArrayList<String> processedTags = taskLogic.addTags(task, tags);
+		stackLogic.pushInverseAddTagCommand(taskIndex, processedTags);
+		stui.setActiveTask(task);
+		logAddedTags(taskName, processedTags);
+	}
+
+	/**
+	 * Reverts ordering after being sorted.
+	 * 
+	 * @return <strong>String</strong> - the log message
+	 */
+	private void executeUnsort() {
+		streamLogic.setOrdering(stackLogic.popOrder());
+		stackLogic.pushPlaceholderInput();
+		showAndLogResult(StreamConstants.LogMessage.UNSORT);
+	}
+
+	/**
+	 * Recovers deleted task from the archive.
+	 */
+	private void executeRecover(Integer noOfTasksToRecover) {
+		stackLogic.pushPlaceholderInput();
+
+		for (int i = 0; i < noOfTasksToRecover; i++) {
+			StreamTask task = stackLogic.recoverTask();
+			streamLogic.recoverTask(task);
+		}
+		streamLogic.setOrdering(stackLogic.popOrder());
+
+		String result = String.format(StreamConstants.LogMessage.RECOVER,
+				noOfTasksToRecover);
+		showAndLogResult(result);
+	}
+
+	/**
+	 * Execute the undo operation for the last user action
+	 */
+	private void executeUndo() {
+		if (!stackLogic.hasInverseInput()) {
+			showAndLogResult(StreamConstants.LogMessage.UNDO_FAIL);
+		} else {
+			String undoneInput = stackLogic.popInverseCommand();
+			showAndLogResult(StreamConstants.LogMessage.UNDO_SUCCESS);
+			log(StreamUtil.showAsTerminalInput(undoneInput));
+			processInput(undoneInput);
+
+			/*
+			 * VERY IMPORTANT because almost all inputs will add its counterpart
+			 * to the inputStack. If not popped, the undo process will be
+			 * trapped between just two processes.
+			 */
+			stackLogic.popInverseCommand();
+		}
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private ArrayList<Integer> executeFilter(String content) {
+		assertNotNull(content);
+		ArrayList<Integer> filterResult = streamLogic.filterTasks(content);
+
+		String result = String.format(StreamConstants.LogMessage.FILTER,
+				content, filterResult.size());
+		showAndLogResult(result);
+
+		return filterResult;
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void refreshUI(boolean isReset, boolean isSearching) {
+		stui.resetAvailableTasks(streamLogic.getIndices(),
+				streamLogic.getStreamTaskList(streamLogic.getIndices()), isReset,
+				isSearching);
+	}
+
+	private void refreshUI(ArrayList<Integer> index, boolean isReset,
+			boolean isSearching) {
+		stui.resetAvailableTasks(index, streamLogic.getStreamTaskList(index),
+				isReset, isSearching);
+	}
+
+	private void logAddedTags(String taskName, ArrayList<String> tagsAdded) {
+		if (!tagsAdded.isEmpty()) {
+			showAndLogResult(String.format(
+					StreamConstants.LogMessage.TAGS_ADDED, taskName,
+					StreamUtil.listDownArrayContent(tagsAdded, ", ")));
+		} else {
+			showAndLogResult(StreamConstants.LogMessage.NO_TAGS_ADDED);
+		}
+	}
+
+	private void logRemovedTags(String taskName, ArrayList<String> tagsRemoved) {
+		if (!tagsRemoved.isEmpty()) {
+			showAndLogResult(String.format(
+					StreamConstants.LogMessage.TAGS_REMOVED, taskName,
+					StreamUtil.listDownArrayContent(tagsRemoved, ", ")));
+		} else {
+			showAndLogResult(StreamConstants.LogMessage.NO_TAGS_REMOVED);
+		}
+	}
+
+	private void showAndLogResult(String logMessage) {
+		showAndLogResult(logMessage, logMessage);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void showAndLogResult(String logMessageForDoc,
+			String logMessageForUser) {
+		stui.log(logMessageForUser, false);
+		log(StreamUtil.showAsTerminalResponse(logMessageForDoc));
+	}
+
+	private void showAndLogError(String errorMessageForDoc,
+			String errorMessageForUser) {
+		stui.log(errorMessageForUser, true);
+		log(StreamUtil.showAsTerminalResponse(errorMessageForDoc));
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\Stream.java
+	 */
+
+	private void processInput(String input) {
+		try {
+			executeUserInput(input);
+		} catch (AssertionError e) {
+			processAssertionError(e);
+		} catch (StreamParserException e) {
+			log(String.format(StreamConstants.LogMessage.ERRORS, e.getClass()
+					.getSimpleName(), e.getMessage()));
+			processAndShowParserExceptionMessage(e);
+		} catch (Exception e) {
+			log(String.format(StreamConstants.LogMessage.ERRORS, e.getClass()
+					.getSimpleName(), e.getMessage()));
+			processAndShowExceptionMessage(e);
+		}
+	}
+
+	private void processAndShowExceptionMessage(Exception e) {
+		showAndLogError(String.format(
+				StreamConstants.LogMessage.UNEXPECTED_ERROR, e.getClass()
+						.getSimpleName() + " " + e.getMessage()));
+	}
+
+	private void processAndShowParserExceptionMessage(StreamParserException e) {
+		if (e.getMessage().equals("Empty Input")) {
+			showAndLogError(String.format(
+					StreamConstants.LogMessage.EMPTY_INPUT_ERROR, e.getClass()
+							.getSimpleName() + " " + e.getMessage()));
+		} else {
+			showAndLogError(String.format(
+					StreamConstants.LogMessage.PARSER_ERROR, e.getClass()
+							.getSimpleName() + " " + e.getMessage()));
+		}
+	}
+
+	private void processAssertionError(AssertionError e) {
+		log(String.format(StreamConstants.LogMessage.ERRORS, "AssertionError",
+				e.getMessage()));
+		showAndLogError(String.format(
+				StreamConstants.LogMessage.UNEXPECTED_ERROR, e.getMessage()));
+	}
+
+	private void executeUserInput(String input) throws StreamParserException,
+			StreamModificationException, StreamIOException {
+		parser.interpretCommand(input, streamLogic.getNumberOfTasks());
+		CommandType command = parser.getCommandType();
+		Integer index = parser.getCommandIndex();
+		String content = parser.getCommandContent();
+		executeInput(command, index, content);
+	}
+
+	/*
+	 * Inputs like unsort, recover, and dismiss cannot be triggered by user;
+	 * only can be triggered by the machine as part of undo.
+	 */
+	private Boolean isRestrictedInput(String input) {
+		if (input.length() >= 6) {
+			return checkRestrictedInput(input);
+		} else {
+			return false;
+		}
+	}
+
+	private Boolean checkRestrictedInput(String input) {
+		if (input.substring(0, 6).equals("unsort")) {
+			return true;
+		} else {
+			return input.length() >= 7
+					&& (input.substring(0, 7).equals("recover") || input
+							.substring(0, 7).equals("dismiss"));
+		}
+	}
+
+	public void filterAndProcessInput(String input) {
+		assert (input != null) : String.format(
+				StreamConstants.LogMessage.ERRORS, "AssertionError",
+				StreamConstants.Assertion.NULL_INPUT);
+
+		log(StreamUtil.showAsTerminalInput(input));
+		if (isRestrictedInput(input)) {
+			showAndLogError(StreamConstants.LogMessage.CMD_UNKNOWN);
+		} else {
+			processInput(input);
+			save();
+		}
+	}
+
+	public static void main(String[] args) {
+		new Stream(StreamConstants.FILENAME);
+	}
+
+	// End of segment: src\stream\Stream.java
+
+
+
+
+
+	/**
+	 * origin: src\stream\StreamUndoTest.java
+	 */
+
+
+/**
+ * Most tests here are based on the "combining multiple inputs" heuristic.
+ * 
+ * "Equivalence partitioning" can also be seen for null and non-null field
+ * modification (see nullModificationTest).
+ * 
+ * Each test has more than one asserts because separating into multiple tests
+ * will be very, very cumbersome.
+ */
+public class StreamUndoTest {
+
+	private static Stream st;
+	private static final String TEST_SAVE_FILENAME = "streamtest"
+			+ StreamConstants.SAVEFILE_EXTENSION;
+	private File testFile;
+
+	@Before
+	public void setUp() throws Exception {
+		StreamIO.setFilename(TEST_SAVE_FILENAME);
+		testFile = new File(StreamIO.getSaveLocation());
+
+		if (testFile.exists()) {
+			testFile.delete();
+		}
+		st = new Stream(TEST_SAVE_FILENAME);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		testFile.delete();
+	}
+
+	// for extreme convenience
+
+	public void in(String input) {
+		st.filterAndProcessInput(input);
+	}
+
+	public Boolean compare(ArrayList<String> actual, String[] expected) {
+		if (actual.size() != expected.length) {
+			return false;
+		} else {
+			for (int i = 0; i < actual.size(); i++) {
+				if (!actual.get(i).equals(expected[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	@Test
+	public void undoAddTest() throws Exception {
+		in("add do CS2103");
+		assertTrue("do CS2103 is included", st.streamLogic.hasTask("do CS2103"));
+		in("add ");
+		assertEquals("no new added task", 1, st.streamLogic.getNumberOfTasks());
+		in("undo");
+		assertFalse("do CS2103 is not included",
+				st.streamLogic.hasTask("do CS2103"));
+	}
+
+	@Test
+	public void undoRemoveTest() throws Exception {
+		in("add do CS2103");
+		in("delete 1");
+		in("delete 3");
+		in("delete -1");
+		in("delete ");
+		assertFalse("do CS2103 is not included",
+				st.streamLogic.hasTask("do CS2103"));
+		in("undo");
+		assertTrue("do CS2103 is included", st.streamLogic.hasTask("do CS2103"));
+	}
+
+	@Test
+	public void undoRenameTest() throws Exception {
+		in("add do CS2103");
+		in("name 1 do CS2104");
+		assertTrue("do CS2104 is included", st.streamLogic.hasTask("do CS2104"));
+		in("name 1 ");
+		assertTrue("name doesn't change", st.streamLogic.hasTask("do CS2104"));
+		in("undo");
+		assertTrue("do CS2103 is included", st.streamLogic.hasTask("do CS2103"));
+	}
+
+	@Test
+	public void undoClearTest() throws Exception {
+		in("add do CS2103");
+		in("add do CS2104");
+		in("add do CS2105");
+		in("add do CS2106");
+		in("add do CS2107");
+		in("clear");
+		assertEquals("no tasks added", 0, st.streamLogic.getNumberOfTasks());
+		in("undo");
+		assertEquals("5 tasks added", 5, st.streamLogic.getNumberOfTasks());
+	}
+
+	@Test
+	public void undoModifyTest() throws Exception {
+		String taskNameForTest = "a task";
+		String newTaskName = "another task";
+		in("add " + taskNameForTest);
+		in("modify 1 -name " + newTaskName
+				+ " -tag fordemo v0.2 -desc multiple inputs");
+		assertEquals("new name is \"" + newTaskName + "\"", false,
+				st.streamLogic.hasTask(taskNameForTest));
+		assertEquals("has description", "multiple inputs", st.streamLogic
+				.getTask(newTaskName).getDescription());
+		assertFalse("has tags", st.streamLogic.getTask(newTaskName).getTags()
+				.isEmpty());
+		in("undo");
+		assertEquals("old name is \"" + taskNameForTest + "\"", true,
+				st.streamLogic.hasTask(taskNameForTest));
+		assertNull("no description", st.streamLogic.getTask(taskNameForTest)
+				.getDescription());
+		assertTrue("no tags", st.streamLogic.getTask(taskNameForTest).getTags()
+				.isEmpty());
+		in("undo");
+		assertFalse("no task added", st.streamLogic.hasTask(taskNameForTest));
+	}
+
+	@Test
+	public void nullModificationTest() throws Exception {
+		String taskNameForTest = "a task";
+		in("add " + taskNameForTest);
+		in("modify 1 -due 11/11 -desc multiple inputs");
+		assertEquals(
+				"has date 11/11",
+				"11 November 2014 12:00:00",
+				StreamUtil.getCalendarWriteUp(st.streamLogic.getTask(
+						taskNameForTest).getDeadline()));
+		assertEquals("has description", "multiple inputs", st.streamLogic
+				.getTask(taskNameForTest).getDescription());
+		in("modify 1 -due null -desc null");
+		assertNull("has date 11/11", st.streamLogic.getTask(taskNameForTest)
+				.getDeadline());
+		assertNull("has description", st.streamLogic.getTask(taskNameForTest)
+				.getDescription());
+	}
+
+	@Test
+	public void undoSearchTest() throws Exception {
+		// undoing search is done by invoking clrsrc - short form of clear
+		// search
+		in("add a task");
+		in("add some task");
+		in("add another task");
+		in("add new task");
+		in("add other task");
+		assertEquals("4 tasks viewable", 5, st.stui.getNumberOfTasksStored());
+		in("search new");
+		assertEquals("1 task viewable", 1, st.stui.getNumberOfTasksStored());
+		in("search other");
+		assertEquals("2 tasks viewable", 2, st.stui.getNumberOfTasksStored());
+		in("clrsrc");
+		assertEquals("4 tasks viewable", 5, st.stui.getNumberOfTasksStored());
+	}
+
+	@Test
+	public void undoFilterTest() throws Exception {
+		in("add a task");
+		in("add some task");
+		in("add another task");
+		in("add new task");
+		in("mark 1 done");
+		assertEquals("4 tasks viewable", 4, st.stui.getNumberOfTasksStored());
+		in("filter done");
+		assertEquals("1 task viewable", 1, st.stui.getNumberOfTasksStored());
+		in("filter ongoing");
+		assertEquals("3 tasks viewable", 3, st.stui.getNumberOfTasksStored());
+		in("clrsrc");
+		assertEquals("4 tasks viewable", 4, st.stui.getNumberOfTasksStored());
+	}
+
+	@Test
+	public void undoMarkTest() throws Exception {
+		in("add a task");
+		assertFalse("Task 1 is not done", st.streamLogic.getTask("a task")
+				.isDone());
+		in("mark 1 done");
+		assertTrue("Task 1 is done", st.streamLogic.getTask("a task").isDone());
+		in("undo");
+		assertFalse("Task 1 is not done", st.streamLogic.getTask("a task")
+				.isDone());
+	}
+
+	@Test
+	public void undoSortTest() throws Exception {
+		in("add Task D -due 4/4/2015");
+		in("add Task A -due 3/3/2015");
+		in("add Task C -due 2/2/2015");
+		in("add Task B -due 1/1/2015");
+		String[] alphaSorted = { "Task A", "Task B", "Task C", "Task D" };
+		String[] chronoSorted = { "Task D", "Task A", "Task C", "Task B" };
+		String[] unsorted = { "Task D", "Task A", "Task C", "Task B" };
+		assertTrue("Unsorted", compare(st.streamLogic.getTaskList(), unsorted));
+		in("sort a asc");
+		assertTrue("Sorted alphabetically",
+				compare(st.streamLogic.getTaskList(), alphaSorted));
+		in("sort d desc");
+		assertTrue("Sorted chronologically",
+				compare(st.streamLogic.getTaskList(), chronoSorted));
+		in("undo");
+		in("undo");
+		assertTrue("Now unsorted again",
+				compare(st.streamLogic.getTaskList(), unsorted));
+	}
+
+	@Test
+	public void undoTagTest() throws Exception {
+		in("add a task");
+		in("tag 1 sometask randomtask");
+		assertTrue("Tag sometask exists", st.streamLogic.getTask("a task")
+				.hasTag("sometask"));
+		assertTrue("Tag randomtask exists", st.streamLogic.getTask("a task")
+				.hasTag("randomtask"));
+		in("tag 1 sometask newtask");
+		assertTrue("Tag newtask exists", st.streamLogic.getTask("a task")
+				.hasTag("newtask"));
+		in("undo");
+		assertTrue("Tag sometask still exists", st.streamLogic
+				.getTask("a task").hasTag("sometask"));
+		assertFalse("Tag newtask no longer exists",
+				st.streamLogic.getTask("a task").hasTag("newtask"));
+		in("untag 1 randomtask newtask");
+		assertFalse("Tag randomtask no longer exists",
+				st.streamLogic.getTask("a task").hasTag("randomtask"));
+		in("undo");
+		assertTrue("Tag randomtask exists again",
+				st.streamLogic.getTask("a task").hasTag("randomtask"));
+		assertFalse("Tag newtask still not exist",
+				st.streamLogic.getTask("a task").hasTag("newtask"));
+		in("undo");
+		assertFalse("Tag randomtask no longer exists",
+				st.streamLogic.getTask("a task").hasTag("randomtask"));
+		assertFalse("Tag sometask no longer exists",
+				st.streamLogic.getTask("a task").hasTag("sometask"));
+	}
+
+	@Test
+	public void undoRankTest() throws Exception {
+		in("add a task");
+		in("rank 1 wat");
+		in("rank 1 high");
+		assertEquals("high", st.streamLogic.getTask("a task").getRank());
+		in("rank 1 ");
+		in("rank 1 m");
+		assertEquals("medium", st.streamLogic.getTask("a task").getRank());
+		in("undo");
+		assertEquals("high", st.streamLogic.getTask("a task").getRank());
+		in("undo");
+		assertEquals("low", st.streamLogic.getTask("a task").getRank());
+	}
+
+	@Test
+	public void undoDescTest() throws Exception {
+		in("add a task");
+		in("desc 1 a description");
+		assertEquals("description updated", "a description", st.streamLogic
+				.getTask("a task").getDescription());
+		in("desc 1 ");
+		assertEquals("description remains", "a description", st.streamLogic
+				.getTask("a task").getDescription());
+		in("undo");
+		assertEquals("no description", null, st.streamLogic.getTask("a task")
+				.getDescription());
+	}
+
+	// TODO add multi-modify or multi-add tests where some of the parameters are
+	// invalid
+}
+	// End of segment: src\stream\StreamUndoTest.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamTaskView.java
+	 */
+
+
+/**
+ * <p>
+ * The task graphical view as seen by the user.
+ * </p>
+ * 
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamTaskView.hideView()</li>
+ * <li>StreamTaskView.updateView(final Integer ind, StreamTask task)</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamTaskView extends JPanel {
+
+	private JLabel index;
+	private StreamUICalendarIcon startCal;
+	private StreamUICalendarIcon endCal;
+	private JLabel taskName;
+	private JLabel descLabel;
+	private JLabel rankImage;
+	private JLabel statusImage;
+	private static final long serialVersionUID = 1L;
+
+	StreamTaskView() {
+		super();
+		initParams();
+		addIndexNumber();
+		addStartCalendar();
+		addEndCalendar();
+		addTaskNameLabel();
+		addDescLabel();
+		addRankImage();
+		addStatusImage();
+	}
+
+	private void initParams() {
+		setLayout(null);
+		setBackground(StreamConstants.UI.COLOR_TASKPANEL);
+	}
+
+	/**
+	 * Adds the index number label to the task view.
+	 */
+	private void addIndexNumber() {
+		index = new JLabel();
+		index.setHorizontalAlignment(SwingConstants.CENTER);
+		index.setFont(StreamConstants.UI.FONT_INDEX);
+		index.setBounds(StreamConstants.UI.BOUNDS_INDEX_NUM);
+		add(index);
+	}
+
+	/**
+	 * Adds the start calendar icon.
+	 */
+	private void addStartCalendar() {
+		startCal = new StreamUICalendarIcon(StreamExternals.ICON_START_CAL,
+				StreamExternals.ICON_NULL_START_CAL);
+		startCal.setBounds(StreamConstants.UI.BOUNDS_START_CAL);
+		add(startCal);
+	}
+
+	/**
+	 * Adds the end calendar icon.
+	 */
+	private void addEndCalendar() {
+		endCal = new StreamUICalendarIcon(StreamExternals.ICON_END_CAL,
+				StreamExternals.ICON_NULL_END_CAL);
+		endCal.setBounds(StreamConstants.UI.BOUNDS_END_CAL);
+		add(endCal);
+	}
+
+	/**
+	 * Adds the task name label to the task view.
+	 */
+	private void addTaskNameLabel() {
+		taskName = new JLabel();
+		taskName.setFont(StreamConstants.UI.FONT_TASK);
+		taskName.setBounds(StreamConstants.UI.BOUNDS_TASK_NAME);
+		add(taskName);
+	}
+
+	/**
+	 * Adds the description label to the task view.
+	 */
+	private void addDescLabel() {
+		descLabel = new JLabel();
+		descLabel.setFont(StreamConstants.UI.FONT_DESC);
+		descLabel.setBounds(StreamConstants.UI.BOUNDS_TASK_DESC);
+		add(descLabel);
+	}
+
+	/**
+	 * Adds the rank image to the task view.
+	 */
+	private void addRankImage() {
+		rankImage = new JLabel();
+		rankImage.setBounds(StreamConstants.UI.BOUNDS_RANK_ICON);
+		add(rankImage);
+	}
+
+	/**
+	 * Adds the status image to the task view.
+	 */
+	private void addStatusImage() {
+		statusImage = new JLabel();
+		statusImage.setBounds(StreamConstants.UI.BOUNDS_STATS_ICON);
+		add(statusImage);
+	}
+
+	private void updateStartTime(Calendar startTime) {
+		if (startTime == null) {
+			startCal.hideView();
+		} else {
+			startCal.updateView(startTime);
+		}
+	}
+
+	private void updateEndTime(Calendar endTime) {
+		if (endTime == null) {
+			endCal.hideView();
+		} else {
+			endCal.updateView(endTime);
+		}
+	}
+
+	private void updateRank(String rank) {
+		switch (rank) {
+			case "high":
+				rankImage.setIcon(StreamExternals.ICON_HI_RANK);
+				break;
+			case "medium":
+				rankImage.setIcon(StreamExternals.ICON_MED_RANK);
+				break;
+			case "low":
+				rankImage.setIcon(StreamExternals.ICON_LOW_RANK);
+				break;
+			default:
+
+		}
+	}
+
+	private void updateDoneStatus(StreamTask task) {
+		if (task.isDone()) {
+			statusImage.setIcon(StreamExternals.ICON_DONE);
+		} else if (task.isOverdue()) {
+			statusImage.setIcon(StreamExternals.ICON_OVERDUE);
+		} else if (task.isInactive()) {
+			statusImage.setIcon(StreamExternals.ICON_INACTIVE);
+		} else {
+			statusImage.setIcon(StreamExternals.ICON_NOT_DONE);
+		}
+	}
+
+	private void updateBasicParams(Integer ind, String name, String desc) {
+		index.setText(String.format(StreamConstants.Message.TEXT_INDEX,
+				ind.toString()));
+		taskName.setText(name);
+		descLabel.setText(StreamUtil.displayDescription(desc));
+		setVisible(true);
+	}
+
+	/**
+	 * Hides the task from the user view. Invoked if the view object has no task
+	 * assigned to it.
+	 */
+	public void hideView() {
+		setVisible(false);
+	}
+
+	/**
+	 * Updates the task view according to the fields supplied by the
+	 * <b>StreamTask</b> <i>task</i>, assigning it with index number <i>ind</i>.
+	 * 
+	 * @param ind
+	 *            - the index number assigned
+	 * @param task
+	 *            - the <b>StreamTask</b> from which the information is obtained
+	 *            from
+	 */
+	public void updateView(Integer ind, StreamTask task) {
+		updateStartTime(task.getStartTime());
+		updateEndTime(task.getDeadline());
+		updateRank(task.getRank());
+		updateDoneStatus(task);
+		updateBasicParams(ind, task.getTaskName(), task.getDescription());
+	}
+}
+	// End of segment: src\ui\StreamTaskView.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUI.java
+	 */
+
+
+/**
+ * <p>
+ * StreamUI is the GUI for STREAM, featuring graphical view of user’s added
+ * tasks, console for user input, logger for terminal feedback, and helper box
+ * for user assistance. Also equipped with some keyboard shortcuts and simple
+ * auto-completion for user’s convenience.
+ * </p>
+ * 
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamUI.resetAvailableTasks(ArrayList&lt;Integer&gt; indices,
+ * ArrayList&lt;StreamTask&gt; tasks, Boolean isReset, Boolean isSearching)</li>
+ * <li>StreamUI.log(String logMsg, Boolean isErrorMsg)</li>
+ * <li>StreamUI.displayDetails(StreamTask task)</li>
+ * <li>StreamUI.getNumberOfTasksStored()</li>
+ * <li>StreamUI.goToFirstPage()</li>
+ * <li>StreamUI.goToPrevPage()</li>
+ * <li>StreamUI.goToNextPage()</li>
+ * <li>StreamUI.goToLastPage()</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamUI {
+
+	private Stream stream;
+
+	private JFrame mainFrame;
+	private JPanel contentPanel;
+	private StreamUIConsole console;
+	private StreamUIFeedback feedback;
+	private StreamUILogger logger;
+	private JLabel pageNumber;
+	private static final StreamLogger loggerDoc = StreamLogger
+			.init(StreamConstants.ComponentTag.STREAMUI);
+
+	private boolean isSearch;
+	private boolean isTaskHighlighted;
+	private int pageShown;
+	private int totalPage;
+	private StreamTaskView[] shownTasks;
+	private ArrayList<StreamTask> availTasks;
+	private ArrayList<Integer> availIndices;
+	private StreamTask activeTask;
+
+	public StreamUI(Stream str) {
+
+		initParams(str);
+		setupLookAndFeel();
+		addMainFrame();
+		addContentPanel();
+		addHeader();
+		setUpView();
+		addFeedbackBox();
+		addConsole();
+		addAutocomplete();
+		empowerConsole(new StreamUIConsoleEnterAction(stream, console));
+		addLogger();
+		addKeyboardShortcuts();
+		addNavigShortcuts();
+		addPageNumber();
+		addFooter();
+		setFocusTraversal();
+		log(StreamConstants.Message.WELCOME, false);
+		presentToUser();
+	}
+
+	private void initParams(Stream str) {
+		stream = str;
+		isSearch = false;
+		pageShown = 1;
+		totalPage = 1;
+		availTasks = new ArrayList<StreamTask>();
+		availIndices = new ArrayList<Integer>();
+	}
+
+	// End of segment: src\ui\StreamUI.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUI.java
+	 */
+
+
+	/**
+	 * Constructs the autocomplete helper texts.
+	 */
+	private void addAutocomplete() {
+		HashMap<String, String> helpTexts = new HashMap<String, String>();
+		helpTexts.put("add",
+				"add (task name) (properties): Add a new task here");
+		helpTexts
+				.put("due",
+						"due (index) (time): Set the deadline for a task based on index number");
+		helpTexts
+				.put("start",
+						"start (index) (time): Set the start time for a task based on index number");
+		helpTexts
+				.put("search",
+						"search (keyphrase): Searches tasks by its name, description, or tags");
+		helpTexts.put("delete", "delete (index): Delete based on index number");
+		helpTexts.put("del", "del (index): Delete based on index number");
+
+		helpTexts
+				.put("desc",
+						"desc (index) (description): Sets a description to a task based on index number");
+
+		helpTexts
+				.put("describe",
+						"describe (index) (description): Sets a description to a task based on index number");
+		helpTexts.put("filter",
+				"filter (criteria): Filters tasks by dates or ranks");
+		helpTexts.put("mark",
+				"mark (index) (mark type): Marks task as done or ongoing");
+		helpTexts.put("modify",
+				"Modifies multiple parameters of a task in one go");
+		helpTexts.put("view", "view (index): Views the details of a task");
+		helpTexts
+				.put("tag",
+						"tag (index) (tag1) ... (tagN): Add tags to a task based on index number.");
+		helpTexts
+				.put("name",
+						"name (index) (new name): Changes a task's name based on index number.");
+		helpTexts
+				.put("untag",
+						"tag (index) (tag1) ... (tagN): Remove tags of a task based on index number.");
+		helpTexts
+				.put("sort",
+						"sort (criteria): Sorts tasks by alphabetical or chronological order");
+		helpTexts.put("clear", "Clears all added tasks");
+		helpTexts
+				.put("clrsrc", "CLeaR SeaRCh - Clears search or filter result");
+		helpTexts
+				.put("rank",
+						"rank (index) (rank type): Change the rank of a certain task based on index number");
+		helpTexts.put("first ", "Go to the first page");
+		helpTexts.put("last", "Go to the last page");
+		helpTexts.put("next", "Go to the next page");
+		helpTexts.put("prev", "Go to the previous page");
+		helpTexts.put("page", "page (page): Go to a specific page");
+		helpTexts.put("undo", "Undo the last action");
+		helpTexts.put("help", "Opens the help dialog box");
+		helpTexts.put("exit", "Exits the program");
+		for (String h : helpTexts.keySet()) {
+			console.addPossibility(h, helpTexts.get(h));
+		}
+	}
+
+	/**
+	 * Adds the keyboard shortcuts.
+	 */
+	private void addKeyboardShortcuts() {
+		HashMap<Character, String> shortcut = new HashMap<Character, String>();
+		shortcut.put('a', "add ");
+		shortcut.put('s', "search ");
+		shortcut.put('d', "delete ");
+		shortcut.put('f', "filter ");
+		shortcut.put('m', "mark ");
+		shortcut.put('y', "modify ");
+		shortcut.put('v', "view ");
+		shortcut.put('t', "sort ");
+		shortcut.put('u', "undo");
+		shortcut.put('p', "page ");
+		shortcut.put('h', "help");
+		shortcut.put('e', "exit");
+		shortcut.put('c', "");
+		for (Character c : shortcut.keySet()) {
+			empowerKeyboardShortcuts(c, shortcut.get(c));
+		}
+	}
+
+	/**
+	 * Adds the navigation shortcuts.
+	 */
+	private void addNavigShortcuts() {
+		HashMap<String, String> navig = new HashMap<String, String>();
+		navig.put("DOWN", "first");
+		navig.put("LEFT", "prev");
+		navig.put("RIGHT", "next");
+		navig.put("UP", "last");
+		for (String s : navig.keySet()) {
+			empowerNavigationShortcuts(s, navig.get(s));
+		}
+	}
+
+	/**
+	 * Sets the customized tab-based focus traversal policy.
+	 */
+	private void setFocusTraversal() {
+		Vector<Component> order = new Vector<Component>(2);
+		order.add(console);
+		order.add(logger);
+		mainFrame.setFocusTraversalPolicy(new StreamUIFocusTraversal(order));
+	}
+
+	/**
+	 * Constructs the main frame for Stream's User Interface.
+	 */
+	private void addMainFrame() {
+		mainFrame = new JFrame(StreamConstants.Message.TEXT_TITLE);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setSize(StreamConstants.UI.WIDTH_MAINFRAME,
+				StreamConstants.UI.HEIGHT_MAINFRAME);
+		mainFrame.setResizable(false);
+		mainFrame.setLocationRelativeTo(null);
+	}
+
+	/**
+	 * Constructs the content panel for Stream's User Interface.
+	 */
+	private void addContentPanel() {
+		contentPanel = new JPanel();
+		contentPanel.setBackground(Color.WHITE);
+		contentPanel.setLayout(null);
+		mainFrame.setContentPane(contentPanel);
+	}
+
+	/**
+	 * Constructs the task view panel.
+	 */
+	private void setUpView() {
+		shownTasks = new StreamTaskView[StreamConstants.UI.MAX_VIEWABLE_TASK];
+		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
+			StreamTaskView taskPanel = new StreamTaskView();
+			taskPanel
+					.setBounds(
+							StreamConstants.UI.MARGIN_SIDE,
+							StreamConstants.UI.MARGIN_COMPONENT
+									* 2
+									+ StreamConstants.UI.HEIGHT_HEADER
+									+ i
+									* (StreamConstants.UI.HEIGHT_TASKPANEL + StreamConstants.UI.MARGIN_COMPONENT),
+							StreamConstants.UI.COMPONENT_WIDTH,
+							StreamConstants.UI.HEIGHT_TASKPANEL);
+			contentPanel.add(taskPanel);
+			shownTasks[i] = taskPanel;
+			taskPanel.hideView();
+		}
+	}
+
+	/**
+	 * Constructs the header portion.
+	 */
+	private void addHeader() {
+		JLabel title = new JLabel();
+		title.setIcon(StreamExternals.HEADER);
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		title.setBounds(StreamConstants.UI.BOUNDS_HEADER);
+		contentPanel.add(title);
+	}
+
+	/**
+	 * Constructs the console for user input.
+	 */
+	private void addConsole() {
+		console = new StreamUIConsole(feedback);
+		console.setFont(StreamConstants.UI.FONT_CONSOLE);
+		console.setBounds(StreamConstants.UI.BOUNDS_CONSOLE);
+		contentPanel.add(console);
+	}
+
+	private void addFeedbackBox() {
+		feedback = new StreamUIFeedback();
+		feedback.setFont(StreamConstants.UI.FONT_CONSOLE);
+		feedback.setBounds(StreamConstants.UI.BOUNDS_FEEDBACK);
+		contentPanel.add(feedback);
+	}
+
+	/**
+	 * Constructs the logger panel to display terminal response.
+	 */
+	private void addLogger() {
+		logger = new StreamUILogger();
+		logger.setFont(StreamConstants.UI.FONT_LOGGER);
+		logger.setBounds(StreamConstants.UI.BOUNDS_LOGGER);
+		contentPanel.add(logger);
+	}
+
+	/**
+	 * Constructs the page number portion.
+	 */
+	private void addPageNumber() {
+		pageNumber = new JLabel();
+		pageNumber.setFont(StreamConstants.UI.FONT_PAGE_NUM);
+		pageNumber.setHorizontalAlignment(SwingConstants.LEFT);
+		pageNumber.setBounds(StreamConstants.UI.BOUNDS_PAGE_NUM);
+		contentPanel.add(pageNumber);
+	}
+
+	/**
+	 * Constructs the footer portion.
+	 */
+	private void addFooter() {
+		JLabel footer = new JLabel(StreamConstants.Message.TEXT_FOOTER);
+		footer.setFont(StreamConstants.UI.FONT_FOOTER);
+		footer.setHorizontalAlignment(SwingConstants.RIGHT);
+		footer.setBounds(StreamConstants.UI.BOUNDS_FOOTER);
+		contentPanel.add(footer);
+	}
+
+	private void presentToUser() {
+		mainFrame.setVisible(true);
+	}
+
+	/**
+	 * Equips the console with the action invoked upon pressing enter.
+	 * 
+	 * @param action
+	 *            - the enter action
+	 */
+	private void empowerConsole(Action action) {
+		console.getInputMap().put(KeyStroke.getKeyStroke("ENTER"),
+				"processInput");
+		console.getActionMap().put("processInput", action);
+	}
+
+	/**
+	 * Equips keyboard shortcut to elements outside the command line.
+	 * 
+	 * @param key
+	 *            - the key shortcut
+	 * @param cmd
+	 *            - the target command
+	 */
+	private void empowerKeyboardShortcuts(char key, String cmd) {
+		feedback.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
+		feedback.getActionMap().put(cmd,
+				new StreamUIKeyboardShortcut(console, cmd));
+		logger.getInputMap().put(KeyStroke.getKeyStroke(key), cmd);
+		logger.getActionMap().put(cmd,
+				new StreamUIKeyboardShortcut(console, cmd));
+	}
+
+	/**
+	 * Equips navigation shortcut to elements outside the command line.
+	 * 
+	 * @param dir
+	 *            - the key shortcut (L/R/U/D)
+	 * @param cmd
+	 *            - the target command
+	 */
+	private void empowerNavigationShortcuts(String dir, String cmd) {
+		feedback.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+		feedback.getActionMap().put(cmd,
+				new StreamUINavigationShortcut(stream, logger, cmd));
+		logger.getInputMap().put(KeyStroke.getKeyStroke(dir), cmd);
+		logger.getActionMap().put(cmd,
+				new StreamUINavigationShortcut(stream, logger, cmd));
+	}
+
+	/**
+	 * Resets the viewable tasks according to the page shown.
+	 * 
+	 * @param page
+	 *            - the page number to be shown
+	 */
+	private void repopulateTaskView(int page) {
+		if (page > totalPage) {
+			page = totalPage;
+		} else if (page < 1) {
+			page = 1;
+		}
+		pageShown = page;
+		int startPoint = (pageShown - 1) * StreamConstants.UI.MAX_VIEWABLE_TASK;
+		for (int i = 0; i < StreamConstants.UI.MAX_VIEWABLE_TASK; i++) {
+			StreamTaskView taskPanel = shownTasks[i];
+			try {
+				int index = availIndices.get(startPoint + i);
+				StreamTask task = availTasks.get(startPoint + i);
+				taskPanel.updateView(index, task);
+			} catch (IndexOutOfBoundsException e) {
+				taskPanel.hideView();
+			}
+		}
+		pageNumber.setText(String.format(StreamConstants.Message.TEXT_PAGE_NUM,
+				pageShown, totalPage));
+	}
+
+	/**
+	 * Resets the viewable tasks to the chosen indices and <b>StreamTask</b>s.
+	 * 
+	 * @param indices
+	 *            - the list of indices to be displayed
+	 * @param tasks
+	 *            - the list of <b>StreamTask</b>s to be displayed
+	 * @param isReset
+	 *            - indicating if the view needs to be reset to the first page
+	 * @param isSearching
+	 *            - indicating if this is a search result
+	 */
+	public void resetAvailableTasks(ArrayList<Integer> indices,
+			ArrayList<StreamTask> tasks, Boolean isReset, Boolean isSearching) {
+		// error: length not the same
+		assert (indices.size() == tasks.size()) : StreamConstants.Assertion.SIZE_DIFFERENT;
+		availIndices = indices;
+		availTasks = tasks;
+		if (tasks.size() == 0) {
+			// no task added: go to page one
+			totalPage = 1;
+		} else {
+			totalPage = (int) Math.ceil(1.0 * tasks.size()
+					/ StreamConstants.UI.MAX_VIEWABLE_TASK);
+		}
+		if (isReset || tasks.size() == 0 || isSearch) {
+			/*
+			 * resetting or clearing search result automatically resets the view
+			 * back to first page
+			 */
+			repopulateTaskView(1);
+			isSearch = isSearching;
+		} else {
+			if ((int) Math.ceil(1.0 * tasks.size()
+					/ StreamConstants.UI.MAX_VIEWABLE_TASK) < pageShown) {
+				// last task in the last page deleted: move back one page
+				assert (pageShown != 1) : StreamConstants.Assertion.NO_PREV_PAGE;
+				repopulateTaskView(pageShown - 1);
+			} else {
+				repopulateTaskView(pageShown);
+			}
+		}
+		if (activeTask != null && !isTaskHighlighted) {
+			highlightActiveTaskView();
+		}
+		loggerDoc.log(StreamLogger.LogLevel.DEBUG,
+				"Task viewer refreshed with " + indices.size() + " new tasks");
+	}
+
+	/**
+	 * Logs a message/error message to the logger.
+	 * 
+	 * @param logMsg
+	 *            - the message to be logged
+	 * @param isErrorMsg
+	 *            - determines the formatting (different for error message)
+	 */
+	public void log(String logMsg, Boolean isErrorMsg) {
+		if (isErrorMsg) {
+			logger.showErrorMessage(logMsg);
+		} else {
+			logger.showLogMessage(logMsg);
+		}
+	}
+
+	/**
+	 * Displays the detailed information of a task in a dialog window upon
+	 * clicking the name.
+	 * 
+	 * @param task
+	 *            - the <b>StreamTask</b> from which the information is obtained
+	 *            from
+	 */
+	public void displayDetails(StreamTask task) {
+		JOptionPane.showMessageDialog(mainFrame, String.format(
+				StreamConstants.Message.DETAILS_CONTENT,
+				task.getTaskName(),
+				StreamUtil.displayStatus(task),
+				StreamUtil.getWrittenTime(task.getStartTime(),
+						task.getDeadline()),
+				StreamUtil.displayDescription(task.getDescription()),
+				StreamUtil.displayTags(task.getTags()), task.getRank()), String
+				.format(StreamConstants.Message.DETAILS_HEADER,
+						task.getTaskName()), JOptionPane.INFORMATION_MESSAGE);
+		loggerDoc.log(StreamLogger.LogLevel.DEBUG, "Displaying details for"
+				+ task.getTaskName());
+	}
+
+	/**
+	 * Gets the number of tasks stored in the task viewer after
+	 * search/filter/add/remove/...
+	 * 
+	 * @return <b>int</b> - the number of tasks stored in task viewer
+	 */
+	public int getNumberOfTasksStored() {
+		return availTasks.size();
+	}
+
+	/**
+	 * Navigates to the first page.
+	 */
+	public void goToFirstPage() {
+		repopulateTaskView(1);
+	}
+
+	/**
+	 * Navigates to the previous page.
+	 */
+	public void goToPrevPage() {
+		if (pageShown != 1) {
+			repopulateTaskView(pageShown - 1);
+		}
+	}
+
+	/**
+	 * Navigates to the next page.
+	 */
+	public void goToNextPage() {
+		if (pageShown != totalPage) {
+			repopulateTaskView(pageShown + 1);
+		}
+	}
+
+	/**
+	 * Navigates to the last page.
+	 */
+	public void goToLastPage() {
+		repopulateTaskView(totalPage);
+	}
+
+	/**
+	 * Navigates to a specific page.
+	 */
+	public void goToPage(Integer page) {
+		repopulateTaskView(page);
+	}
+
+	/**
+	 * Opens the help dialog panel.
+	 */
+	public void openHelpBox() {
+		JOptionPane.showMessageDialog(mainFrame,
+				StreamConstants.Message.UI_HELP);
+	}
+
+	// End of segment: src\ui\StreamUI.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUICalendarIcon.java
+	 */
+
+
+/**
+ * <p>
+ * A user-friendly calendar icon to show start date and end date or deadline,
+ * whichever ones applicable.
+ * </p>
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamUICalendarIcon.hideView()</li>
+ * <li>StreamUICalendarIcon.updateView(Calendar cal)</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamUICalendarIcon extends JLayeredPane {
+
+	private static final long serialVersionUID = 1L;
+	ImageIcon nullCalIcon;
+	ImageIcon calIcon;
+	JLabel imageUsed;
+	JLabel month;
+	JLabel date;
+	JLabel time;
+
+	public StreamUICalendarIcon(ImageIcon cal, ImageIcon nullCal) {
+		setParams(cal, nullCal);
+		setBackgroundImage();
+		setMonthView();
+		setDateView();
+		setTimeView();
+	}
+
+	private void setParams(ImageIcon cal, ImageIcon nullCal) {
+		calIcon = cal;
+		nullCalIcon = nullCal;
+		setSize(StreamConstants.UI.HEIGHT_TASKPANEL,
+				StreamConstants.UI.HEIGHT_TASKPANEL);
+		setLayout(null);
+	}
+
+	private void setBackgroundImage() {
+		imageUsed = new JLabel();
+		imageUsed.setBounds(StreamConstants.UI.BOUNDS_CAL_ICON);
+		add(imageUsed, 0, 0);
+	}
+
+	private void setMonthView() {
+		month = new JLabel();
+		month.setFont(StreamConstants.UI.FONT_MONTH);
+		month.setForeground(StreamConstants.UI.COLOR_MONTH);
+		month.setHorizontalAlignment(SwingConstants.CENTER);
+		month.setBounds(StreamConstants.UI.BOUNDS_MONTH);
+		add(month, 1, 0);
+	}
+
+	private void setDateView() {
+		date = new JLabel();
+		date.setFont(StreamConstants.UI.FONT_DATE);
+		date.setHorizontalAlignment(SwingConstants.CENTER);
+		date.setBounds(StreamConstants.UI.BOUNDS_DATE);
+		add(date, 1, 0);
+	}
+
+	private void setTimeView() {
+		time = new JLabel();
+		time.setFont(StreamConstants.UI.FONT_TIME);
+		time.setHorizontalAlignment(SwingConstants.CENTER);
+		time.setBounds(StreamConstants.UI.BOUNDS_TIME);
+		add(time);
+	}
+
+	private void updateMonthView(int mon) {
+		String parsedMonth = StreamUtil.getMonthAbbrev(mon);
+		month.setText(parsedMonth);
+		month.setVisible(true);
+	}
+
+	private void updateDateView(Integer day) {
+		date.setText(day.toString());
+		date.setVisible(true);
+	}
+
+	private void updateTimeView(int hr, int min) {
+		time.setText(hr + ":" + StreamUtil.addZeroToTime(min));
+		time.setVisible(true);
+	}
+
+	/**
+	 * Changes the calendar to a simple null display. Invoked if the task has no
+	 * calendar assigned to it.
+	 */
+	public void hideView() {
+		imageUsed.setIcon(nullCalIcon);
+		month.setVisible(false);
+		date.setVisible(false);
+		time.setVisible(false);
+	}
+
+	/**
+	 * Updates the calendar according to the fields supplied by the
+	 * <b>Calendar</b> <i>cal</i>.
+	 * 
+	 * @param cal
+	 *            - the calendar from which the information is obtained from
+	 */
+	public void updateView(Calendar cal) {
+		imageUsed.setIcon(calIcon);
+		updateMonthView(cal.get(Calendar.MONTH));
+		updateDateView(cal.get(Calendar.DAY_OF_MONTH));
+		updateTimeView(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+	}
+
+}
+
+	// End of segment: src\ui\StreamUICalendarIcon.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUIConsole.java
+	 */
+
+
+/**
+ * <p>
+ * A simple <b>JTextField</b> functioning as console for user input. Equipped
+ * with placeholder text so that user knows where to go. Also equipped with
+ * auto-complete and built-in user guide for user's convenience.
+ * </p>
+ * <p>
+ * The auto-complete code is adapted from
+ * http://java2s.com/Code/Java/Swing-Components/AutoCompleteTextField.htm.
+ * Credits to the author, Brandon Buck.
+ * </p>
+ * 
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamUIConsole.addPossibility(String possibility, String helpText)</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamUIConsole extends JTextField implements KeyListener,
+		DocumentListener {
+
+	private static final long serialVersionUID = 1L;
+	private ArrayList<String> possibilities;
+	private int currentGuess;
+	private boolean isGuessing;
+	private boolean isFound;
+	private HashMap<String, String> helpTextMap;
+	private StreamUIFeedback feedback;
+
+	private static final String DEFAULT_HELP_TEXT = "Press space to fill";
+	private static final String UNKNOWN_COMMAND = "Warning: unknown command";
+	private static final String COMMAND_PROMPT = "Enter your command here";
+	private static final String HELP_TEXT_EMPTY = StreamConstants.Message.WELCOME
+			+ " Type \"help\" and press enter to get some assistance!";
+
+	private static final int GUESS_NOT_FOUND = -1;
+	private static final int COORD_X = 5;
+	private static final int COORD_Y = 20;
+
+	StreamUIConsole(StreamUIFeedback fdb) {
+		super();
+		setMargin(StreamConstants.UI.MARGIN_CONSOLE);
+		this.possibilities = new ArrayList<String>();
+		this.currentGuess = GUESS_NOT_FOUND;
+		this.isGuessing = false;
+		this.addKeyListener(this);
+		this.getDocument().addDocumentListener(this);
+		this.helpTextMap = new HashMap<String, String>();
+		this.feedback = fdb;
+	}
+
+	/**
+	 * Adds a new possibility to the list of possibilities for the auto-complete
+	 * processor to process.
+	 * 
+	 * @param possibility
+	 *            - the new possibility to add
+	 * @param helpText
+	 *            - the accompanying help text
+	 */
+	public void addPossibility(String possibility, String helpText) {
+		this.possibilities.add(possibility);
+		this.helpTextMap.put(possibility, helpText);
+	}
+
+	/**
+	 * Returns the string at the location of the current guess in the list of
+	 * possibilities.
+	 * 
+	 * @return <b>String</b> - the current guess
+	 */
+	private String getCurrentGuess() {
+		if (this.currentGuess != GUESS_NOT_FOUND) {
+			isFound = true;
+			return this.possibilities.get(this.currentGuess);
+		}
+		isFound = false;
+		return this.getText();
+	}
+
+	/**
+	 * Sets the current guess based on the text entered in the console.
+	 */
+	private void findCurrentGuess() {
+		String entered = this.getText().toLowerCase();
+
+		for (int i = 0; i < this.possibilities.size(); i++) {
+			currentGuess = GUESS_NOT_FOUND;
+
+			String possibility = this.possibilities.get(i);
+			possibility = possibility.toLowerCase();
+			if (possibility.startsWith(entered)) {
+				this.currentGuess = i;
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void setText(String text) {
+		super.setText(text);
+		this.isGuessing = false;
+		this.currentGuess = GUESS_NOT_FOUND;
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		String guess = this.getCurrentGuess();
+		String drawGuess = guess;
+
+		super.paintComponent(g);
+		String entered = this.getText();
+		Rectangle2D enteredBounds = g.getFontMetrics().getStringBounds(entered,
+				g);
+
+		entered = entered.toLowerCase();
+		guess = guess.toLowerCase();
+
+		if (!(guess.startsWith(entered))) {
+			this.isGuessing = false;
+		}
+
+		if (!(entered.trim().equals(""))) {
+			String subGuess = drawGuess.substring(entered.length(),
+					drawGuess.length());
+			g.setColor(Color.GRAY);
+			g.drawString(subGuess, (int) (enteredBounds.getWidth()) + COORD_X
+					+ 1, COORD_Y);
+			String[] typed = entered.trim().split(" ");
+			if (helpTextMap.containsKey(typed[0])) {
+				feedback.setText(helpTextMap.get(typed[0]));
+			} else if (isFound) {
+				feedback.setText(DEFAULT_HELP_TEXT);
+			} else {
+				feedback.setText(UNKNOWN_COMMAND);
+			}
+		} else {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setFont(StreamConstants.UI.FONT_CONSOLE);
+			g2.setColor(Color.GRAY);
+			g2.drawString(COMMAND_PROMPT, COORD_X, COORD_Y);
+			g2.dispose();
+			feedback.setText(HELP_TEXT_EMPTY);
+		}
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			if (this.isGuessing) {
+				this.setText(this.getCurrentGuess());
+				this.isGuessing = false;
+				e.consume();
+			}
+		}
+	}
+
+	public void keyReleased(KeyEvent e) {
+	}
+
+	public void insertUpdate(DocumentEvent e) {
+		String temp = this.getText();
+
+		if (temp.length() == 1) {
+			this.isGuessing = true;
+		}
+		if (this.isGuessing) {
+			this.findCurrentGuess();
+		}
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		String temp = this.getText();
+
+		if (!(this.isGuessing)) {
+			this.isGuessing = true;
+		}
+		if (temp.length() == 0) {
+			this.isGuessing = false;
+		} else if (this.isGuessing) {
+			this.findCurrentGuess();
+		}
+	}
+
+	public void changedUpdate(DocumentEvent e) {
+	}
+
+}
+	// End of segment: src\ui\StreamUIConsole.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUIConsoleEnterAction.java
+	 */
+
+
+/**
+ * <p>
+ * The action invoked upon pressing "enter" in console. It fires the text in
+ * console to the input parser and subsequently processor.
+ * </p>
+ * <p>
+ * Credits to developers from F10-4J for this idea.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamUIConsoleEnterAction extends AbstractAction {
+
+	private static final long serialVersionUID = 1L;
+	private Stream stream;
+	private StreamUIConsole console;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String input = console.getText();
+		stream.filterAndProcessInput(input);
+		console.setText("");
+	}
+
+	StreamUIConsoleEnterAction(Stream st, StreamUIConsole cons) {
+		this.stream = st;
+		this.console = cons;
+	}
+
+}
+	// End of segment: src\ui\StreamUIConsoleEnterAction.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUIFeedback.java
+	 */
+
+
+/**
+ * <p>
+ * A simple, non-editable <b>JTextField</b> component to assist users in
+ * entering their commands.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamUIFeedback extends JTextField {
+
+	private static final long serialVersionUID = 1L;
+
+	StreamUIFeedback() {
+		super();
+		setBackground(StreamConstants.UI.COLOR_FEEDBACK);
+		setForeground(StreamConstants.UI.COLOR_HELP_MSG);
+		setMargin(StreamConstants.UI.MARGIN_CONSOLE);
+		setEditable(false);
+	}
+
+}
+	// End of segment: src\ui\StreamUIFeedback.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUIFocusTraversal.java
+	 */
+
+
+/**
+ * Customizes the tab-based focus traversal policy.
+ * 
+ * @version V0.5
+ */
+public class StreamUIFocusTraversal extends FocusTraversalPolicy {
+
+	private Vector<Component> order;
+
+	StreamUIFocusTraversal(Vector<Component> order) {
+		this.order = new Vector<Component>(order.size());
+		this.order.addAll(order);
+	}
+
+	public Component getComponentAfter(Container focusCycleRoot,
+			Component aComponent) {
+		int idx = (order.indexOf(aComponent) + 1) % order.size();
+		return order.get(idx);
+	}
+
+	public Component getComponentBefore(Container focusCycleRoot,
+			Component aComponent) {
+		int idx = order.indexOf(aComponent) - 1;
+		if (idx < 0) {
+			idx = order.size() - 1;
+		}
+		return order.get(idx);
+	}
+
+	public Component getDefaultComponent(Container focusCycleRoot) {
+		return order.get(0);
+	}
+
+	public Component getLastComponent(Container focusCycleRoot) {
+		return order.lastElement();
+	}
+
+	public Component getFirstComponent(Container focusCycleRoot) {
+		return order.get(0);
+	}
+
+}
+
+	// End of segment: src\ui\StreamUIFocusTraversal.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUIKeyboardShortcut.java
+	 */
+
+
+/**
+ * The action invoked upon pressing the keyboard shortcut, i.e matching the key
+ * pressed to the corresponding command.
+ * 
+ * @version V0.5
+ */
+
+public class StreamUIKeyboardShortcut extends AbstractAction {
+
+	private static final long serialVersionUID = 1L;
+	private StreamUIConsole console;
+	private String text;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		console.setText(text);
+		console.requestFocus();
+	}
+
+	StreamUIKeyboardShortcut(StreamUIConsole cons, String str) {
+		this.console = cons;
+		this.text = str;
+	}
+
+}
+	// End of segment: src\ui\StreamUIKeyboardShortcut.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUILogger.java
+	 */
+
+
+/**
+ * <p>
+ * A simple, non-editable <b>JTextArea</b> component to display log messages.
+ * Error messages and normal log messages are displayed differently.
+ * </p>
+ * 
+ * <h3>API</h3>
+ * <ul>
+ * <li>StreamUILogger.showLogMessage(String logMsg)</li>
+ * <li>StreamUILogger.showErrorMessage(String errMsg)</li>
+ * </ul>
+ * <p>
+ * Refer to method documentation for details.
+ * </p>
+ * 
+ * @version V0.5
+ */
+public class StreamUILogger extends JTextArea {
+
+	private static final long serialVersionUID = 1L;
+
+	StreamUILogger() {
+		super();
+		setBackground(StreamConstants.UI.COLOR_LOGGER);
+		setMargin(StreamConstants.UI.MARGIN_LOGGER);
+		setEditable(false);
+	}
+
+	/**
+	 * Displays normal log messages.
+	 * 
+	 * @param logMsg
+	 *            - the message to be logged
+	 */
+	public void showLogMessage(String logMsg) {
+		setForeground(StreamConstants.UI.COLOR_LOG_MSG);
+		setText(StreamUtil.showAsTerminalResponse(logMsg));
+		setCaretPosition(0);
+	}
+
+	/**
+	 * Displays error messages.
+	 * 
+	 * @param errMsg
+	 *            - the error message to be logged
+	 */
+	public void showErrorMessage(String errMsg) {
+		setForeground(StreamConstants.UI.COLOR_ERR_MSG);
+		setText(StreamUtil.showAsTerminalResponse(errMsg));
+		setCaretPosition(0);
+	}
+
+}
+
+	// End of segment: src\ui\StreamUILogger.java
+
+
+
+
+
+	/**
+	 * origin: src\ui\StreamUINavigationShortcut.java
+	 */
+
+
+/**
+ * The action invoked upon pressing the navigation shortcut, i.e matching the
+ * key pressed to the corresponding navigation command.
+ * 
+ * @version V0.5
+ */
+public class StreamUINavigationShortcut extends AbstractAction {
+
+	private static final long serialVersionUID = 1L;
+	private String command;
+	private Stream stream;
+	private StreamUILogger logger;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		stream.filterAndProcessInput(command);
+		logger.requestFocus();
+	}
+
+	StreamUINavigationShortcut(Stream str, StreamUILogger log, String cmd) {
+		this.stream = str;
+		this.logger = log;
+		this.command = cmd;
+	}
+
+}
+
+	// End of segment: src\ui\StreamUINavigationShortcut.java
+
+
+
+
+
+	/**
+	 * origin: src\util\StreamUtil.java
+	 */
+
+
+	/**
+	 * A utility function to list down contents of <i>array</i>, connecting each
+	 * element with the specified <i>connector</i>.
+	 * 
+	 * @param array
+	 *            - array of <b>String</b> elements
+	 * @param connector
+	 *            - the connector character
+	 * @return <b>String</b> - the listed down array contents
+	 */
+	public static String listDownArrayContent(ArrayList<String> array,
+			String connector) {
+		String result = "";
+		for (String str : array) {
+			result += connector + str;
+		}
+		return result.substring(connector.length());
+	}
+
+	/**
+	 * Displays task description to user.
+	 * 
+	 * @param desc
+	 *            - the task description, <b>null</b> if not specified
+	 * @return <b>String</b> - the task description
+	 */
+	public static String displayDescription(String desc) {
+		if (desc == null) {
+			return "no description provided";
+		} else {
+			return desc;
+		}
+	}
+
+	/**
+	 * Displays tags to user nicely.
+	 * 
+	 * @param tags
+	 *            - array of tags
+	 * @return <b>String</b> - the listed down tags
+	 */
+	public static String displayTags(ArrayList<String> tags) {
+		if (tags.size() == 0) {
+			return "no tags added";
+		} else {
+			return listDownArrayContent(tags, ", ");
+		}
+	}
+
+	/**
+	 * Displays the status of a task to user.
+	 * 
+	 * @param task
+	 * @return <b>String</b> - the task status
+	 */
+	public static String displayStatus(StreamTask task) {
+		if (task.isOverdue()) {
+			return "overdue";
+		} else if (task.isInactive()) {
+			return "inactive";
+		} else {
+			return StreamParser.translateMarking(StreamParser.parseMarking(task
+					.isDone()));
+		}
+	}
+
+	/**
+	 * A utility function to add 0 to <i>time</i> less than 10, e.g from 9 to
+	 * 09.
+	 * 
+	 * @return <b>String</b> - the time appended with 0 when applicable
+	 */
+	public static String addZeroToTime(Integer time) {
+		String convertedTime = time.toString();
+		if (time < 10) {
+			convertedTime = "0" + convertedTime;
+		}
+		return convertedTime;
+	}
+
+	/**
+	 * Decorates a <i>logMessage</i> to make it look like terminal input.
+	 * 
+	 * @return <b>String</b> - the decorated log message
+	 */
+	public static String showAsTerminalInput(String logMessage) {
+		return StreamConstants.PREFIX_INPUT + logMessage;
+	}
+
+	/**
+	 * Decorates a <i>logMessage</i> to make it look like terminal response.
+	 * 
+	 * @return <b>String</b> - the decorated log message
+	 */
+	public static String showAsTerminalResponse(String logMessage) {
+		return StreamConstants.PREFIX_OUTPUT + logMessage;
+	}
+
+	/**
+	 * Checks if both lists of <b>String</b>, <i>firstList</i> and
+	 * <i>secondList</i>, are equal. It is assumed that within each list, all
+	 * elements are distinct.
+	 * 
+	 * @param firstList
+	 *            - the first list of <b>String</b>
+	 * @param secondList
+	 *            - the second list of <b>String</b>
+	 * @return <b>Boolean</b> - indicates whether both lists are equal or not
+	 */
+	public static Boolean listEqual(List<String> firstList,
+			List<String> secondList) {
+		if (firstList.size() != secondList.size()) {
+			return false;
+		}
+		for (String str : firstList) {
+			if (!secondList.contains(str)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Checks two calendars <i>startTime</i> and <i>endTime</i>, formats them
+	 * when applicable, and present to user accordingly depending on the
+	 * existence of each.
+	 * 
+	 * @return <b>String</b> - the properly formatted and presentable time
+	 */
+	public static String getWrittenTime(Calendar startTime, Calendar endTime) {
+		if (startTime == null && endTime == null) {
+			return "no timing specified";
+		} else if (startTime == null) {
+			return "by " + getCalendarWriteUp(endTime);
+		} else if (endTime == null) {
+			// is there a task like this?
+			return "from " + getCalendarWriteUp(startTime);
+		} else {
+			return "from " + getCalendarWriteUp(startTime) + " to "
+					+ getCalendarWriteUp(endTime);
+		}
+	}
+
+	/**
+	 * Converts a <i>calendar</i> to format dd MONTHNAME yyyy hh:mm:ss.
+	 * 
+	 * @return <b>String</b> - the converted calendar
+	 */
+	public static String getCalendarWriteUp(Calendar calendar) {
+		return addZeroToTime(calendar.get(Calendar.DAY_OF_MONTH)) + " "
+				+ StreamConstants.Calendar.MONTHS[calendar.get(Calendar.MONTH)]
+				+ " " + calendar.get(Calendar.YEAR) + " "
+				+ addZeroToTime(calendar.get(Calendar.HOUR_OF_DAY))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.MINUTE))
+				+ StreamConstants.TIME_DELIMITER
+				+ addZeroToTime(calendar.get(Calendar.SECOND));
+	}
+
+	/**
+	 * Converts a dd MONTHNAME yyyy hh:mm:ss calendar to dd MONTHNAME yyyy hh mm
+	 * ss.
+	 * 
+	 * @param str
+	 *            - a converted calendar
+	 * @return <b>String</b> - another converted calendar
+	 */
+	public static String stripCalendarChars(String str) {
+		str = str.replaceAll(StreamConstants.TIME_DELIMITER, " ");
+		return str;
+	}
+
+	/**
+	 * Gets the abbreviated month name, e.g JAN, FEB, ...
+	 * 
+	 * @param mon
+	 *            - the month index
+	 * @return <b>String</b> - the abbreviated month name
+	 */
+	public static String getMonthAbbrev(int mon) {
+		return StreamConstants.Calendar.MONTHS[mon].substring(0, 3)
+				.toUpperCase();
+	}
+
+	/**
+	 * Checks whether a particular <b>String</b> is parseable by JChronic to
+	 * form a <b>Calendar<b>
+	 * 
+	 * @param date
+	 *            - the <b>String</b> to be parsed
+	 * @return <b>boolean</b> - indicates whether parsing can be done or not
+	 */
+	public static boolean isParseableDate(String date) {
+		if (date.trim().equals("null")) {
+			/*
+			 * special case: we allow "null" since this is to indicate null
+			 * timing
+			 */
+			return true;
+		}
+		try {
+			Chronic.parse(date).getBeginCalendar();
+			return true;
+		} catch (NullPointerException e) {
+			return false;
+		}
+	}
+
+	// End of segment: src\util\StreamUtil.java
+
+
+
+
+
