@@ -2149,7 +2149,7 @@ public class StreamUI {
 	 * @param page
 	 *            - the page number to be shown
 	 */
-	private void repopulateTaskView(int page) {
+	public void repopulateTaskView(int page) {
 		if (page > totalPage) {
 			page = totalPage;
 		} else if (page < 1) {
@@ -2169,6 +2169,8 @@ public class StreamUI {
 		}
 		pageNumber.setText(String.format(StreamConstants.Message.TEXT_PAGE_NUM,
 				pageShown, totalPage));
+		loggerDoc.log(StreamLogger.LogLevel.DEBUG,
+				"Task viewer moved to page " + pageShown + "/" + totalPage);
 	}
 
 	/**
@@ -2237,8 +2239,7 @@ public class StreamUI {
 	}
 
 	/**
-	 * Displays the detailed information of a task in a dialog window upon
-	 * clicking the name.
+	 * Displays the detailed information of a task in a dialog window.
 	 * 
 	 * @param task
 	 *            - the <b>StreamTask</b> from which the information is obtained
@@ -2299,13 +2300,6 @@ public class StreamUI {
 	 */
 	public void goToLastPage() {
 		repopulateTaskView(totalPage);
-	}
-
-	/**
-	 * Navigates to a specific page.
-	 */
-	public void goToPage(Integer page) {
-		repopulateTaskView(page);
 	}
 
 	/**

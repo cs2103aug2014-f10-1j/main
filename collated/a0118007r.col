@@ -884,7 +884,7 @@ public class StreamTask {
 				break;
 
 			case PAGE:
-				stui.goToPage(index);
+				stui.repopulateTaskView(index);
 				break;
 
 			case HELP:

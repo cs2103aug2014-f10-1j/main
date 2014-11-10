@@ -1119,9 +1119,10 @@ public abstract class BaseLogic {
 	 */
 
 	/**
-	 * what does this do?
+	 * Pops the order on the top of the ordering stack
 	 * 
-	 * @return
+	 * @return taskList List of taskNames in the order
+	 * that was pushed previously
 	 */
 	public ArrayList<String> popOrder() {
 		ArrayList<String> order = orderingStack.pop();

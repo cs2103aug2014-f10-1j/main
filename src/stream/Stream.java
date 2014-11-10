@@ -289,7 +289,7 @@ public class Stream {
 				break;
 
 			case PAGE:
-				stui.goToPage(index);
+				stui.repopulateTaskView(index);
 				break;
 
 			case HELP:
